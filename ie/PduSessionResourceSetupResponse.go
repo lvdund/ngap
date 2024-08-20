@@ -1,0 +1,11 @@
+package ie
+
+type PduSessionResourceSetupResponse struct {
+MessageType	*MessageType
+AmfUeNgapId	*AmfUeNgapId
+RanUeNgapId	*RanUeNgapId
+PduSessionResourceSetupResponseList	*[]PduSessionResourceSetupResponseItem
+PduSessionResourceFailedToSetupList	*[]PduSessionResourceFailedToSetupItem
+CriticalityDiagnostics	*CriticalityDiagnostics
+UserLocationInformation	*UserLocationInformation
+}

@@ -1,0 +1,27 @@
+package ie
+
+type PduSessionResourceSetupRequestTransfer struct {
+PduSessionAggregateMaximumBitRate	*PduSessionAggregateMaximumBitRate
+UlNgUUpTnlInformation	*UpTransportLayerInformation
+AdditionalUlNgUUpTnlInformation	*UpTransportLayerInformationList
+DataForwardingNotPossible	*DataForwardingNotPossible
+PduSessionType	*PduSessionType
+SecurityIndication	*SecurityIndication
+NetworkInstance	*NetworkInstance
+QosFlowSetupRequestList	*[]QosFlowSetupRequestItem
+CommonNetworkInstance	*CommonNetworkInstance
+DirectForwardingPathAvailability	*DirectForwardingPathAvailability
+RedundantUlNgUUpTnlInformation	*UpTransportLayerInformation
+AdditionalRedundantUlNgUUpTnlInformation	*UpTransportLayerInformationList
+RedundantCommonNetworkInstance	*CommonNetworkInstance
+RedundantPduSessionInformation	*RedundantPduSessionInformation
+MbsSessionSetupRequestList	*MbsSessionSetupRequestList
+}
+
+type QosFlowSetupRequestItem struct {
+QosFlowIdentifier	*QosFlowIdentifier
+QosFlowLevelQosParameters	*QosFlowLevelQosParameters
+ERabId	*ERabId
+TscTrafficCharacteristics	*TscTrafficCharacteristics
+RedundantQosFlowIndicator	*RedundantQosFlowIndicator
+}

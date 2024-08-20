@@ -1,0 +1,17 @@
+package ie
+
+type MbsSessionSetupOrModifyRequestList struct {
+MbsSessionSetupOrModifyRequestList	*[]MbsSessionSetupOrModifyRequestItem
+}
+
+type MbsSessionSetupOrModifyRequestItem struct {
+MbsSessionId	*MbsSessionId
+MbsAreaSessionId	*MbsAreaSessionId
+AssociatedMbsQosFlowSetupOrModifyRequestList	*[]AssociatedMbsQosFlowSetupOrModifyRequestItem
+MbsQosFlowToReleaseList	*QosFlowListWithCause
+}
+
+type AssociatedMbsQosFlowSetupOrModifyRequestItem struct {
+MbsQosFlowIdentifier	*QosFlowIdentifier
+AssociatedUnicastQosFlowIdentifier	*QosFlowIdentifier
+}

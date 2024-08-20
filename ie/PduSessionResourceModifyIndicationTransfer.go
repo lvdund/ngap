@@ -1,0 +1,11 @@
+package ie
+
+type PduSessionResourceModifyIndicationTransfer struct {
+DlQosFlowPerTnlInformation	*QosFlowPerTnlInformation
+AdditionalDlQosFlowPerTnlInformation	*QosFlowPerTnlInformationList
+SecondaryRatUsageInformation	*SecondaryRatUsageInformation
+SecurityResult	*SecurityResult
+RedundantDlQosFlowPerTnlInformation	*QosFlowPerTnlInformation
+AdditionalRedundantDlQosFlowPerTnlInformation	*QosFlowPerTnlInformationList
+GlobalRanNodeIdOfSecondaryNgRanNode	*GlobalRanNodeId
+}

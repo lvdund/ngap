@@ -1,0 +1,12 @@
+ies = []
+ies.append({ "iei" : "ChoiceEventTriggerType", "level" : "0", "range" : "", "type" : ""})
+ies.append({ "iei" : "OutOfCoverage", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "OutOfCoverageConfiguration", "level" : "2", "range" : "", "type" : "ENUMERATED (true, ...)"})
+ies.append({ "iei" : "L1Event", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "ChoiceL1EventThreshold", "level" : "2", "range" : "", "type" : ""})
+ies.append({ "iei" : "Rsrp", "level" : "3", "range" : "", "type" : ""})
+ies.append({ "iei" : "ThresholdRsrp", "level" : "4", "range" : "", "type" : "INTEGER (0..127)"})
+ies.append({ "iei" : "Rsrq", "level" : "3", "range" : "", "type" : ""})
+ies.append({ "iei" : "ThresholdRsrq", "level" : "4", "range" : "", "type" : "INTEGER (0..127)"})
+ies.append({ "iei" : "Hysteresis", "level" : "2", "range" : "", "type" : "INTEGER (0..30)"})
+ies.append({ "iei" : "TimeToTrigger", "level" : "2", "range" : "", "type" : "ENUMERATED (ms0, ms40, ms64, ms80, ms100, ms128, ms160, ms256, ms320, ms480, ms512, ms640, ms1024, ms1280, ms2560, ms5120)"})

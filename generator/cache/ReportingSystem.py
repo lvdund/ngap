@@ -1,0 +1,11 @@
+ies = []
+ies.append({ "iei" : "ChoiceReportingSystem", "level" : "0", "range" : "", "type" : ""})
+ies.append({ "iei" : "EUtran", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "EUtranCellToReportList", "level" : "2", "range" : "1", "type" : ""})
+ies.append({ "iei" : "EUtranCellToReportItem", "level" : "3", "range" : "1..<maxnoofReportedCells>", "type" : ""})
+ies.append({ "iei" : "CellId", "level" : "4", "range" : "", "type" : "EUtraCgi"})
+ies.append({ "iei" : "NgRan", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "NgRanCellToReportList", "level" : "2", "range" : "1", "type" : ""})
+ies.append({ "iei" : "NgRanCellToReportItem", "level" : "3", "range" : "1..<maxnoofReportedCells>", "type" : ""})
+ies.append({ "iei" : "CellId", "level" : "4", "range" : "", "type" : "NgRanCgi"})
+ies.append({ "iei" : "NoReporting", "level" : "1", "range" : "", "type" : "NULL"})

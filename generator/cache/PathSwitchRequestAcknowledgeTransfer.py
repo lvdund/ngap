@@ -1,0 +1,13 @@
+ies = []
+ies.append({ "iei" : "UlNgUUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformation"})
+ies.append({ "iei" : "SecurityIndication", "level" : "0", "range" : "", "type" : "SecurityIndication"})
+ies.append({ "iei" : "AdditionalNgUUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformationPairList"})
+ies.append({ "iei" : "RedundantUlNgUUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformation"})
+ies.append({ "iei" : "AdditionalRedundantNgUUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformationPairList"})
+ies.append({ "iei" : "QosFlowParametersList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "QosFlowParametersItem", "level" : "1", "range" : "1..<maxnoofQoSFlows>", "type" : ""})
+ies.append({ "iei" : "QosFlowIdentifier", "level" : "2", "range" : "", "type" : "QosFlowIdentifier"})
+ies.append({ "iei" : "AlternativeQosParametersSetList", "level" : "2", "range" : "", "type" : "AlternativeQosParametersSetList"})
+ies.append({ "iei" : "CnPacketDelayBudgetDownlink", "level" : "2", "range" : "", "type" : "ExtendedPacketDelayBudget"})
+ies.append({ "iei" : "CnPacketDelayBudgetUplink", "level" : "2", "range" : "", "type" : "ExtendedPacketDelayBudget"})
+ies.append({ "iei" : "BurstArrivalTimeDownlink", "level" : "2", "range" : "", "type" : "BurstArrivalTime"})

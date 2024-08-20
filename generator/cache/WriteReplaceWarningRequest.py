@@ -1,0 +1,13 @@
+ies = []
+ies.append({ "iei" : "MessageType", "level" : "0", "range" : "", "type" : "MessageType"})
+ies.append({ "iei" : "MessageIdentifier", "level" : "0", "range" : "", "type" : "MessageIdentifier"})
+ies.append({ "iei" : "SerialNumber", "level" : "0", "range" : "", "type" : "SerialNumber"})
+ies.append({ "iei" : "WarningAreaList", "level" : "0", "range" : "", "type" : "WarningAreaList"})
+ies.append({ "iei" : "RepetitionPeriod", "level" : "0", "range" : "", "type" : "RepetitionPeriod"})
+ies.append({ "iei" : "NumberOfBroadcastsRequested", "level" : "0", "range" : "", "type" : "NumberOfBroadcastsRequested"})
+ies.append({ "iei" : "WarningType", "level" : "0", "range" : "", "type" : "WarningType"})
+ies.append({ "iei" : "WarningSecurityInformation", "level" : "0", "range" : "", "type" : "OCTET STRING (SIZE(50))"})
+ies.append({ "iei" : "DataCodingScheme", "level" : "0", "range" : "", "type" : "DataCodingScheme"})
+ies.append({ "iei" : "WarningMessageContents", "level" : "0", "range" : "", "type" : "WarningMessageContents"})
+ies.append({ "iei" : "ConcurrentWarningMessageIndicator", "level" : "0", "range" : "", "type" : "ConcurrentWarningMessageIndicator"})
+ies.append({ "iei" : "WarningAreaCoordinates", "level" : "0", "range" : "", "type" : "WarningAreaCoordinates"})

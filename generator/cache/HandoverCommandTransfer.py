@@ -1,0 +1,11 @@
+ies = []
+ies.append({ "iei" : "DlForwardingUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformation"})
+ies.append({ "iei" : "QosFlowToBeForwardedList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "QosFlowToBeForwardedItem", "level" : "1", "range" : "1..<maxnoofQoSFlows>", "type" : ""})
+ies.append({ "iei" : "QosFlowIdentifier", "level" : "2", "range" : "", "type" : "QosFlowIdentifier"})
+ies.append({ "iei" : "DataForwardingResponseDrbList", "level" : "0", "range" : "", "type" : "DataForwardingResponseDrbList"})
+ies.append({ "iei" : "AdditionalDlForwardingUpTnlInformation", "level" : "0", "range" : "", "type" : "QosFlowPerTnlInformationList"})
+ies.append({ "iei" : "UlForwardingUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformation"})
+ies.append({ "iei" : "AdditionalUlForwardingUpTnlInformation", "level" : "0", "range" : "", "type" : "UpTransportLayerInformationList"})
+ies.append({ "iei" : "DataForwardingResponseERabList", "level" : "0", "range" : "", "type" : "DataForwardingResponseERabList"})
+ies.append({ "iei" : "QosFlowFailedToSetupList", "level" : "0", "range" : "", "type" : "QosFlowListWithCause"})

@@ -1,0 +1,6 @@
+package ie
+
+type PduSessionAggregateMaximumBitRate struct {
+PduSessionAggregateMaximumBitRateDownlink	*BitRate
+PduSessionAggregateMaximumBitRateUplink	*BitRate
+}

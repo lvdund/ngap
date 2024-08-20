@@ -1,0 +1,26 @@
+package ie
+
+type CoreNetworkAssistanceInformationForRrcInactive struct {
+UeIdentityIndexValue	*UeIdentityIndexValue
+UeSpecificDrx	*PagingDrx
+PeriodicRegistrationUpdateTimer	*PeriodicRegistrationUpdateTimer
+MicoModeIndication	*MicoModeIndication
+TaiListForRrcInactive	*TaiListForRrcInactive
+ExpectedUeBehaviour	*ExpectedUeBehaviour
+EUtraPagingEdrxInformation	*EUtraPagingEdrxInformation
+ExtendedUeIdentityIndexValue	*ExtendedUeIdentityIndexValue
+UeRadioCapabilityForPaging	*UeRadioCapabilityForPaging
+MicoAllPlmn	*MicoAllPlmn
+NrPagingEdrxInformation	*NrPagingEdrxInformation
+PagingCauseIndicationForVoiceService	*[]byte
+PeipsAssistanceInformation	*PeipsAssistanceInformation
+HashedUeIdentityIndexValue	*HashedUeIdentityIndexValue
+}
+
+type TaiListForRrcInactive struct {
+TaiListForRrcInactiveItem	*TaiListForRrcInactiveItem
+}
+
+type TaiListForRrcInactiveItem struct {
+Tai	*Tai
+}

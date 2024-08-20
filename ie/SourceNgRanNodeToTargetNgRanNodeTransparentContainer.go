@@ -1,0 +1,60 @@
+package ie
+
+type SourceNgRanNodeToTargetNgRanNodeTransparentContainer struct {
+RrcContainer	*[]byte
+PduSessionResourceInformationList	*[]PduSessionResourceInformationItem
+ERabInformationList	*[]ERabInformationItem
+TargetCellId	*NgRanCgi
+IndexToRatFrequencySelectionPriority	*IndexToRatFrequencySelectionPriority
+UeHistoryInformation	*UeHistoryInformation
+SgnbUeX2ApId	*SgnbUeX2ApId
+UeHistoryInformationFromUe	*UeHistoryInformationFromUe
+SourceNodeId	*SourceNodeId
+UeContextReferenceAtSource	*RanUeNgapId
+MbsActiveSessionInformationSourceToTargetList	*[]MbsActiveSessionInformationSourceToTargetItem
+QmcConfigurationInformation	*QmcConfigurationInformation
+NgapIeSupportInformationRequestList	*[]NgapIeSupportInformationRequestItem
+}
+
+type PduSessionResourceInformationItem struct {
+PduSessionId	*PduSessionId
+QosFlowInformationList	*[]QosFlowInformationItem
+DrbsToQosFlowsMappingList	*DrbsToQosFlowsMappingList
+}
+
+type QosFlowInformationItem struct {
+QosFlowIdentifier	*QosFlowIdentifier
+DlForwarding	*DlForwarding
+UlForwarding	*UlForwarding
+SourceTransportLayerAddress	*TransportLayerAddress
+SourceNodeTransportLayerAddress	*TransportLayerAddress
+}
+
+type ERabInformationItem struct {
+ERabId	*ERabId
+DlForwarding	*DlForwarding
+SourceTransportLayerAddress	*TransportLayerAddress
+SourceNodeTransportLayerAddress	*TransportLayerAddress
+}
+
+type MbsActiveSessionInformationSourceToTargetItem struct {
+MbsSessionId	*MbsSessionId
+MbsAreaSessionId	*MbsAreaSessionId
+MbsServiceArea	*MbsServiceArea
+MbsQosFlowsToBeSetupList	*MbsQosFlowsToBeSetupList
+MbsMappingAndDataForwardingRequestList	*[]MbsMappingAndDataForwardingRequestItem
+}
+
+type MbsMappingAndDataForwardingRequestItem struct {
+MrbId	*MrbId
+MbsQosFlowList	*MbsQosFlowList
+MrbProgressInformation	*MrbProgressInformation
+}
+
+type MbsQosFlowList struct {
+MbsQosFlowIdentifier	*QosFlowIdentifier
+}
+
+type NgapIeSupportInformationRequestItem struct {
+NgapProtocolIeId	*NgapProtocolIeId
+}

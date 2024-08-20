@@ -1,0 +1,25 @@
+package ie
+
+type DownlinkNasTransport struct {
+MessageType	*MessageType
+AmfUeNgapId	*AmfUeNgapId
+RanUeNgapId	*RanUeNgapId
+OldAmf	*AmfName
+RanPagingPriority	*RanPagingPriority
+NasPdu	*NasPdu
+MobilityRestrictionList	*MobilityRestrictionList
+IndexToRatFrequencySelectionPriority	*IndexToRatFrequencySelectionPriority
+UeAggregateMaximumBitRate	*UeAggregateMaximumBitRate
+AllowedNssai	*AllowedNssai
+SrvccOperationPossible	*SrvccOperationPossible
+EnhancedCoverageRestriction	*EnhancedCoverageRestriction
+ExtendedConnectedTime	*ExtendedConnectedTime
+UeDifferentiationInformation	*UeDifferentiationInformation
+CeModeBRestricted	*CeModeBRestricted
+UeRadioCapability	*UeRadioCapability
+UeCapabilityInfoRequest	*UeCapabilityInfoRequest
+EndIndication	*EndIndication
+UeRadioCapabilityId	*UeRadioCapabilityId
+TargetNssaiInformation	*TargetNssaiInformation
+MaskedImeisv	*MaskedImeisv
+}

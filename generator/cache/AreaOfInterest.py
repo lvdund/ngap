@@ -1,0 +1,10 @@
+ies = []
+ies.append({ "iei" : "AreaOfInterestTaiList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "AreaOfInterestTaiItem", "level" : "1", "range" : "1..<maxnoofTAIinAoI>", "type" : ""})
+ies.append({ "iei" : "Tai", "level" : "2", "range" : "", "type" : "Tai"})
+ies.append({ "iei" : "AreaOfInterestCellList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "AreaOfInterestCellItem", "level" : "1", "range" : "1..<maxnoofCellinAoI>", "type" : ""})
+ies.append({ "iei" : "NgRanCgi", "level" : "2", "range" : "", "type" : "NgRanCgi"})
+ies.append({ "iei" : "AreaOfInterestRanNodeList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "AreaOfInterestRanNodeItem", "level" : "1", "range" : "1..<maxnoofRANNodeinAoI>", "type" : ""})
+ies.append({ "iei" : "GlobalRanNodeId", "level" : "2", "range" : "", "type" : "GlobalRanNodeId"})

@@ -1,0 +1,10 @@
+ies = []
+ies.append({ "iei" : "ChoiceSonInformationReport", "level" : "0", "range" : "", "type" : ""})
+ies.append({ "iei" : "FailureIndicationInformation", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "FailureIndication", "level" : "2", "range" : "", "type" : "FailureIndication"})
+ies.append({ "iei" : "HoReportInformation", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "HoReport", "level" : "2", "range" : "", "type" : "HoReport"})
+ies.append({ "iei" : "SuccessfulHoReportInformation", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "SuccessfulHoReportList", "level" : "2", "range" : "1", "type" : ""})
+ies.append({ "iei" : "SuccessfulHoReportItem", "level" : "3", "range" : "1..<maxnoofSuccessfulHOReports>", "type" : ""})
+ies.append({ "iei" : "SuccessfulHoReportContainer", "level" : "4", "range" : "", "type" : "OCTET STRING"})

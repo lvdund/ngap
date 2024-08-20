@@ -1,0 +1,10 @@
+package ie
+
+type UeRadioCapabilityInfoIndication struct {
+MessageType	*MessageType
+AmfUeNgapId	*AmfUeNgapId
+RanUeNgapId	*RanUeNgapId
+UeRadioCapability	*UeRadioCapability
+UeRadioCapabilityForPaging	*UeRadioCapabilityForPaging
+UeRadioCapabilityEUtraFormat	*UeRadioCapabilityEUtraFormat
+}

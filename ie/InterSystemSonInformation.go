@@ -1,0 +1,11 @@
+package ie
+
+type InterSystemSonInformation struct {
+ChoiceInterSystemSonInformation	*ChoiceInterSystemSonInformation
+}
+
+type ChoiceInterSystemSonInformation struct {
+InterSystemSonInformationReport	*InterSystemSonInformationReport
+InterSystemSonInformationRequest	*InterSystemSonInformationRequest
+InterSystemSonInformationReply	*InterSystemSonInformationReply
+}

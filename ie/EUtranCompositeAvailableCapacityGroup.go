@@ -1,0 +1,6 @@
+package ie
+
+type EUtranCompositeAvailableCapacityGroup struct {
+CompositeAvailableCapacityDownlink	*EUtranCompositeAvailableCapacity
+CompositeAvailableCapacityUplink	*EUtranCompositeAvailableCapacity
+}

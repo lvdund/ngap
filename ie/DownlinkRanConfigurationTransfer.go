@@ -1,0 +1,8 @@
+package ie
+
+type DownlinkRanConfigurationTransfer struct {
+MessageType	*MessageType
+SonConfigurationTransfer	*SonConfigurationTransfer
+EnDcSonConfigurationTransfer	*[]byte
+InterSystemSonConfigurationTransfer	*InterSystemSonConfigurationTransfer
+}

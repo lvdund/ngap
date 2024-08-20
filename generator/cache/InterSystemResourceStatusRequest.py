@@ -1,0 +1,10 @@
+ies = []
+ies.append({ "iei" : "ReportingSystem", "level" : "0", "range" : "", "type" : "ReportingSystem"})
+ies.append({ "iei" : "ReportCharacteristics", "level" : "0", "range" : "", "type" : "BITSTRING(SIZE(32))"})
+ies.append({ "iei" : "ChoiceReportType", "level" : "0", "range" : "", "type" : ""})
+ies.append({ "iei" : "EventBasedReporting", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "InterSystemResourceThresholdLow", "level" : "2", "range" : "", "type" : "INTEGER (0..100)"})
+ies.append({ "iei" : "InterSystemResourceThresholdHigh", "level" : "2", "range" : "", "type" : "INTEGER (0..100)"})
+ies.append({ "iei" : "NumberOfMeasurementReportingLevels", "level" : "2", "range" : "", "type" : "ENUMERATED (2, 3, 4, 5, 10, ..., 0)"})
+ies.append({ "iei" : "PeriodicReporting", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "ReportingPeriodicity", "level" : "2", "range" : "", "type" : "ENUMERATED (stop, single, 1000ms, 2000ms, 5000ms, 10000ms, …)"})

@@ -1,0 +1,10 @@
+ies = []
+ies.append({ "iei" : "PeriodicCommunicationIndicator", "level" : "0", "range" : "", "type" : "ENUMERATED(periodically, on demand, …)"})
+ies.append({ "iei" : "PeriodicTime", "level" : "0", "range" : "", "type" : "INTEGER (1..3600, …)"})
+ies.append({ "iei" : "ScheduledCommunicationTime", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "DayOfWeek", "level" : "1", "range" : "", "type" : "BIT STRING (SIZE(7))"})
+ies.append({ "iei" : "TimeOfDayStart", "level" : "1", "range" : "", "type" : "INTEGER (0..86399, …)"})
+ies.append({ "iei" : "TimeOfDayEnd", "level" : "1", "range" : "", "type" : "INTEGER (0..86399, …)"})
+ies.append({ "iei" : "StationaryIndication", "level" : "0", "range" : "", "type" : "ENUMERATED(stationary, mobile, …)"})
+ies.append({ "iei" : "TrafficProfile", "level" : "0", "range" : "", "type" : "ENUMERATED(single packet, dual packets, multiple packets, …)"})
+ies.append({ "iei" : "BatteryIndication", "level" : "0", "range" : "", "type" : "ENUMERATED(battery powered, battery powered not rechargeable or replaceable, not battery powered, …)"})

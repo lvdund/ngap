@@ -1,0 +1,11 @@
+package ie
+
+type NgapIeSupportInformationResponseList struct {
+NgapIeSupportInformationResponseItem	*NgapIeSupportInformationResponseItem
+}
+
+type NgapIeSupportInformationResponseItem struct {
+NgapProtocolIeId	*NgapProtocolIeId
+NgapProtocolIeSupportInformation	*NgapProtocolIeSupportInformation
+NgapProtocolIePresenceInformation	*NgapProtocolIePresenceInformation
+}

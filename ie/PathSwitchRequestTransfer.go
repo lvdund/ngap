@@ -1,0 +1,20 @@
+package ie
+
+type PathSwitchRequestTransfer struct {
+DlNgUUpTnlInformation	*UpTransportLayerInformation
+DlNgUTnlInformationReused	*[]byte
+UserPlaneSecurityInformation	*UserPlaneSecurityInformation
+QosFlowAcceptedList	*[]QosFlowAcceptedItem
+AdditionalDlQosFlowPerTnlInformation	*QosFlowPerTnlInformationList
+RedundantDlNgUUpTnlInformation	*UpTransportLayerInformation
+RedundantDlNgUTnlInformationReused	*[]byte
+AdditionalRedundantDlQosFlowPerTnlInformation	*QosFlowPerTnlInformationList
+UsedRsnInformation	*RedundantPduSessionInformation
+GlobalRanNodeIdOfSecondaryNgRanNode	*GlobalRanNodeId
+MbsSupportIndicator	*MbsSupportIndicator
+}
+
+type QosFlowAcceptedItem struct {
+QosFlowIdentifier	*QosFlowIdentifier
+CurrentQosParametersSetIndex	*AlternativeQosParametersSetIndex
+}

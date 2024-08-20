@@ -1,0 +1,15 @@
+package ie
+
+type UeContextSuspendRequest struct {
+MessageType	*MessageType
+AmfUeNgapId	*AmfUeNgapId
+RanUeNgapId	*RanUeNgapId
+InformationOnRecommendedCellsAndRanNodesForPaging	*InformationOnRecommendedCellsAndRanNodesForPaging
+PagingAssistanceDataForCeCapableUe	*PagingAssistanceDataForCeCapableUe
+PduSessionResourceSuspendList	*[]PduSessionResourceSuspendItem
+}
+
+type PduSessionResourceSuspendItem struct {
+PduSessionId	*PduSessionId
+UeContextSuspendRequestTransfer	*UeContextSuspendRequestTransfer
+}

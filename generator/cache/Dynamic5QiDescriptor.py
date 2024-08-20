@@ -1,0 +1,11 @@
+ies = []
+ies.append({ "iei" : "PriorityLevel", "level" : "0", "range" : "", "type" : "PriorityLevel"})
+ies.append({ "iei" : "PacketDelayBudget", "level" : "0", "range" : "", "type" : "PacketDelayBudget"})
+ies.append({ "iei" : "PacketErrorRate", "level" : "0", "range" : "", "type" : "PacketErrorRate"})
+ies.append({ "iei" : "Ie5Qi", "level" : "0", "range" : "", "type" : "INTEGER (0..255, …)"})
+ies.append({ "iei" : "DelayCritical", "level" : "0", "range" : "", "type" : "ENUMERATED (delay critical, non-delay critical, …)"})
+ies.append({ "iei" : "AveragingWindow", "level" : "0", "range" : "", "type" : "AveragingWindow"})
+ies.append({ "iei" : "MaximumDataBurstVolume", "level" : "0", "range" : "", "type" : "MaximumDataBurstVolume"})
+ies.append({ "iei" : "ExtendedPacketDelayBudget", "level" : "0", "range" : "", "type" : "ExtendedPacketDelayBudget"})
+ies.append({ "iei" : "CnPacketDelayBudgetDownlink", "level" : "0", "range" : "", "type" : "ExtendedPacketDelayBudget"})
+ies.append({ "iei" : "CnPacketDelayBudgetUplink", "level" : "0", "range" : "", "type" : "ExtendedPacketDelayBudget"})

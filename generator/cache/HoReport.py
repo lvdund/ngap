@@ -1,0 +1,11 @@
+ies = []
+ies.append({ "iei" : "HandoverReportType", "level" : "0", "range" : "", "type" : "ENUMERATED (HO too early, HO to wrong cell, Inter-system ping-pong, …)"})
+ies.append({ "iei" : "HandoverCause", "level" : "0", "range" : "", "type" : "Cause"})
+ies.append({ "iei" : "SourceCellCgi", "level" : "0", "range" : "", "type" : "NgRanCgi"})
+ies.append({ "iei" : "TargetCellCgi", "level" : "0", "range" : "", "type" : "NgRanCgi"})
+ies.append({ "iei" : "ReEstablishmentCellCgi", "level" : "0", "range" : "", "type" : "NgRanCgi"})
+ies.append({ "iei" : "SourceCellCRnti", "level" : "0", "range" : "", "type" : "BIT STRING (SIZE (16))"})
+ies.append({ "iei" : "TargetCellInEUtran", "level" : "0", "range" : "", "type" : "EUtraCgi"})
+ies.append({ "iei" : "MobilityInformation", "level" : "0", "range" : "", "type" : "BIT STRING (SIZE (16))"})
+ies.append({ "iei" : "UeRlfReportContainer", "level" : "0", "range" : "", "type" : "UeRlfReportContainer"})
+ies.append({ "iei" : "ExtendedMobilityInformation", "level" : "0", "range" : "", "type" : "BIT STRING (SIZE (32))"})

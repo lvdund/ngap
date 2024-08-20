@@ -1,0 +1,12 @@
+ies = []
+ies.append({ "iei" : "MessageType", "level" : "0", "range" : "", "type" : "MessageType"})
+ies.append({ "iei" : "AmfUeNgapId", "level" : "0", "range" : "", "type" : "AmfUeNgapId"})
+ies.append({ "iei" : "RanUeNgapId", "level" : "0", "range" : "", "type" : "RanUeNgapId"})
+ies.append({ "iei" : "RanPagingPriority", "level" : "0", "range" : "", "type" : "RanPagingPriority"})
+ies.append({ "iei" : "PduSessionResourceModifyRequestList", "level" : "0", "range" : "1", "type" : ""})
+ies.append({ "iei" : "PduSessionResourceModifyRequestItem", "level" : "1", "range" : "1..<maxnoofPDUSessions>", "type" : ""})
+ies.append({ "iei" : "PduSessionId", "level" : "2", "range" : "", "type" : "PduSessionId"})
+ies.append({ "iei" : "NasPdu", "level" : "2", "range" : "", "type" : "NasPdu"})
+ies.append({ "iei" : "PduSessionResourceModifyRequestTransfer", "level" : "2", "range" : "", "type" : "OCTET STRING"})
+ies.append({ "iei" : "SNssai", "level" : "2", "range" : "", "type" : "SNssai"})
+ies.append({ "iei" : "PduSessionExpectedUeActivityBehaviour", "level" : "2", "range" : "", "type" : "ExpectedUeActivityBehaviour"})

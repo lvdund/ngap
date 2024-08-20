@@ -1,0 +1,10 @@
+ies = []
+ies.append({ "iei" : "ChoiceSonInformationReport", "level" : "0", "range" : "", "type" : ""})
+ies.append({ "iei" : "HoReportInformation", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "InterSystemHoReport", "level" : "2", "range" : "", "type" : "InterSystemHoReport"})
+ies.append({ "iei" : "FailureIndicationInformation", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "InterSystemFailureIndication", "level" : "2", "range" : "", "type" : "InterSystemFailureIndication"})
+ies.append({ "iei" : "EnergySavingsIndication", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "InterSystemCellStateIndication", "level" : "2", "range" : "", "type" : "InterSystemCellStateIndication"})
+ies.append({ "iei" : "ResourceStatusReport", "level" : "1", "range" : "", "type" : ""})
+ies.append({ "iei" : "InterSystemResourceStatusReport", "level" : "2", "range" : "", "type" : "InterSystemResourceStatusReport"})

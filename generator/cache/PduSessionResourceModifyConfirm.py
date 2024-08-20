@@ -1,0 +1,13 @@
+ies = []
+ies.append({ "iei" : "MessageType", "level" : "0", "range" : "", "type" : "MessageType"})
+ies.append({ "iei" : "AmfUeNgapId", "level" : "0", "range" : "", "type" : "AmfUeNgapId"})
+ies.append({ "iei" : "RanUeNgapId", "level" : "0", "range" : "", "type" : "RanUeNgapId"})
+ies.append({ "iei" : "PduSessionResourceModifyConfirmList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "PduSessionResourceModifyConfirmItem", "level" : "1", "range" : "1..<maxnoofPDUSessions>", "type" : ""})
+ies.append({ "iei" : "PduSessionId", "level" : "2", "range" : "", "type" : "PduSessionId"})
+ies.append({ "iei" : "PduSessionResourceModifyConfirmTransfer", "level" : "2", "range" : "", "type" : "OCTET STRING"})
+ies.append({ "iei" : "PduSessionResourceFailedToModifyList", "level" : "0", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "PduSessionResourceFailedToModifyItem", "level" : "1", "range" : "1..<maxnoofPDUSessions>", "type" : ""})
+ies.append({ "iei" : "PduSessionId", "level" : "2", "range" : "", "type" : "PduSessionId"})
+ies.append({ "iei" : "PduSessionResourceModifyIndicationUnsuccessfulTransfer", "level" : "2", "range" : "", "type" : "OCTET STRING"})
+ies.append({ "iei" : "CriticalityDiagnostics", "level" : "0", "range" : "", "type" : "CriticalityDiagnostics"})

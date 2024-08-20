@@ -1,0 +1,18 @@
+package ie
+
+type HandoverRequestAcknowledge struct {
+MessageType	*MessageType
+AmfUeNgapId	*AmfUeNgapId
+RanUeNgapId	*RanUeNgapId
+PduSessionResourceAdmittedList	*[]PduSessionResourceAdmittedItem
+PduSessionResourceFailedToSetupList	*[]PduSessionResourceFailedToSetupItem
+TargetToSourceTransparentContainer	*TargetToSourceTransparentContainer
+CriticalityDiagnostics	*CriticalityDiagnostics
+NpnAccessInformation	*NpnAccessInformation
+RedcapIndication	*RedcapIndication
+}
+
+type PduSessionResourceAdmittedItem struct {
+PduSessionId	*PduSessionId
+HandoverRequestAcknowledgeTransfer	*[]byte
+}

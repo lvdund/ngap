@@ -1,0 +1,9 @@
+ies = []
+ies.append({ "iei" : "MbsSessionSetupRequestList", "level" : "0", "range" : "1", "type" : ""})
+ies.append({ "iei" : "MbsSessionSetupRequestItem", "level" : "1", "range" : "1..<maxnoofMBSSessions>", "type" : ""})
+ies.append({ "iei" : "MbsSessionId", "level" : "2", "range" : "", "type" : "MbsSessionId"})
+ies.append({ "iei" : "MbsAreaSessionId", "level" : "2", "range" : "", "type" : "MbsAreaSessionId"})
+ies.append({ "iei" : "AssociatedMbsQosFlowSetupRequestList", "level" : "2", "range" : "0..1", "type" : ""})
+ies.append({ "iei" : "AssociatedMbsQosFlowSetupRequestItem", "level" : "3", "range" : "1..<maxnoofMBSQoSflows>", "type" : ""})
+ies.append({ "iei" : "MbsQosFlowIdentifier", "level" : "4", "range" : "", "type" : "QosFlowIdentifier"})
+ies.append({ "iei" : "AssociatedUnicastQosFlowIdentifier", "level" : "4", "range" : "", "type" : "QosFlowIdentifier"})
