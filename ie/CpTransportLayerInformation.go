@@ -1,19 +1,19 @@
 package ie
 
 type CpTransportLayerInformation struct {
-ChoiceCpTransportLayerInformation	*ChoiceCpTransportLayerInformation
+	ChoiceCpTransportLayerInformation *ChoiceCpTransportLayerInformation
 }
 
 type ChoiceCpTransportLayerInformation struct {
-EndpointIpAddress	*EndpointIpAddress
-EndpointIpAddressAndPort	*EndpointIpAddressAndPort
+	EndpointIpAddress        *EndpointIpAddress
+	EndpointIpAddressAndPort *EndpointIpAddressAndPort
 }
 
 type EndpointIpAddress struct {
-EndpointIpAddress	*TransportLayerAddress
+	EndpointIpAddress *TransportLayerAddress
 }
 
 type EndpointIpAddressAndPort struct {
-EndpointIpAddress	*TransportLayerAddress
-PortNumber	[]byte	//`bitstring:"sizeLB:2,sizeUB:2"`
+	EndpointIpAddress *TransportLayerAddress
+	PortNumber        []byte //`bitstring:"sizeLB:2,sizeUB:2"`
 }

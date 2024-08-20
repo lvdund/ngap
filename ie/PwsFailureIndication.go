@@ -1,20 +1,20 @@
 package ie
 
 type PwsFailureIndication struct {
-MessageType	*MessageType
-ChoicePwsFailedCellList	*ChoicePwsFailedCellList
-GlobalRanNodeId	*GlobalRanNodeId
+	MessageType             *MessageType
+	ChoicePwsFailedCellList *ChoicePwsFailedCellList
+	GlobalRanNodeId         *GlobalRanNodeId
 }
 
 type ChoicePwsFailedCellList struct {
-EUtra	*EUtra
-Nr	*Nr
+	EUtra *EUtra
+	Nr    *Nr
 }
 
 type PwsFailedEUtraCellList struct {
-EUtraCgi	*EUtraCgi
+	EUtraCgi *EUtraCgi
 }
 
 type PwsFailedNrCellList struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }

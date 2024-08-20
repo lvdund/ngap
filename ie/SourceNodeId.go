@@ -1,13 +1,13 @@
 package ie
 
 type SourceNodeId struct {
-ChoiceSourceNodeId	*ChoiceSourceNodeId
+	ChoiceSourceNodeId *ChoiceSourceNodeId
 }
 
 type ChoiceSourceNodeId struct {
-SourceEUtranNodeId	*SourceEUtranNodeId
+	SourceEUtranNodeId *SourceEUtranNodeId
 }
 
 type SourceEUtranNodeId struct {
-SourceEnGnbId	*GlobalGnbId
+	SourceEnGnbId *GlobalGnbId
 }

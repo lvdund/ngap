@@ -1,11 +1,11 @@
 package ie
 
 type QosFlowListWithDataForwarding struct {
-QosFlowItemWithDataForwarding	*QosFlowItemWithDataForwarding
+	QosFlowItemWithDataForwarding *QosFlowItemWithDataForwarding
 }
 
 type QosFlowItemWithDataForwarding struct {
-QosFlowIdentifier	*QosFlowIdentifier
-DataForwardingAccepted	*DataForwardingAccepted
-CurrentQosParametersSetIndex	*AlternativeQosParametersSetIndex
+	QosFlowIdentifier            *QosFlowIdentifier
+	DataForwardingAccepted       *DataForwardingAccepted
+	CurrentQosParametersSetIndex *AlternativeQosParametersSetIndex
 }

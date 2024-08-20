@@ -1,14 +1,14 @@
 package ie
 
 type MbsServiceAreaInformation struct {
-MbsServiceAreaCellList	*MbsServiceAreaCellList
-MbsServiceAreaTaiList	*MbsServiceAreaTaiList
+	MbsServiceAreaCellList *MbsServiceAreaCellList
+	MbsServiceAreaTaiList  *MbsServiceAreaTaiList
 }
 
 type MbsServiceAreaCellList struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }
 
 type MbsServiceAreaTaiList struct {
-Tai	*Tai
+	Tai *Tai
 }

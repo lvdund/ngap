@@ -1,6 +1,6 @@
 package ie
 
 type CellCagInformation struct {
-NgRanCgi	*NgRanCgi
-CellCagList	*CellCagList
+	NgRanCgi    *NgRanCgi
+	CellCagList *CellCagList
 }

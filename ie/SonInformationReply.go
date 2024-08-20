@@ -1,5 +1,5 @@
 package ie
 
 type SonInformationReply struct {
-XnTnlConfigurationInfo	*XnTnlConfigurationInfo
+	XnTnlConfigurationInfo *XnTnlConfigurationInfo
 }

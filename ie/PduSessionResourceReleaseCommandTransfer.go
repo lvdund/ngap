@@ -1,5 +1,5 @@
 package ie
 
 type PduSessionResourceReleaseCommandTransfer struct {
-Cause	*Cause
+	Cause *Cause
 }

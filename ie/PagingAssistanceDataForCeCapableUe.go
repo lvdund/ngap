@@ -1,6 +1,6 @@
 package ie
 
 type PagingAssistanceDataForCeCapableUe struct {
-GlobalCellId	*EUtraCgi
-CoverageEnhancementLevel	*[]byte
+	GlobalCellId             *EUtraCgi
+	CoverageEnhancementLevel *[]byte
 }

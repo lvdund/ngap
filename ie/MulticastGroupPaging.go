@@ -1,18 +1,18 @@
 package ie
 
 type MulticastGroupPaging struct {
-MessageType	*MessageType
-MbsSessionId	*MbsSessionId
-MbsServiceArea	*MbsServiceArea
-MulticastGroupPagingAreaList	*[]MulticastGroupPagingAreaItem
+	MessageType                  *MessageType
+	MbsSessionId                 *MbsSessionId
+	MbsServiceArea               *MbsServiceArea
+	MulticastGroupPagingAreaList *[]MulticastGroupPagingAreaItem
 }
 
 type MulticastGroupPagingAreaItem struct {
-MulticastGroupPagingArea	*MulticastGroupPagingArea
-UePagingList	*[]UePagingItem
+	MulticastGroupPagingArea *MulticastGroupPagingArea
+	UePagingList             *[]UePagingItem
 }
 
 type UePagingItem struct {
-UeIdentityIndexValue	*UeIdentityIndexValue
-PagingDrx	*PagingDrx
+	UeIdentityIndexValue *UeIdentityIndexValue
+	PagingDrx            *PagingDrx
 }

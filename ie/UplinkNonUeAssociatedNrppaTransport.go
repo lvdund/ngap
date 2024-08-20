@@ -1,7 +1,7 @@
 package ie
 
 type UplinkNonUeAssociatedNrppaTransport struct {
-MessageType	*MessageType
-RoutingId	*RoutingId
-NrppaPdu	*NrppaPdu
+	MessageType *MessageType
+	RoutingId   *RoutingId
+	NrppaPdu    *NrppaPdu
 }

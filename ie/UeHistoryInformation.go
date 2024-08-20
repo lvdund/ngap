@@ -1,9 +1,9 @@
 package ie
 
 type UeHistoryInformation struct {
-LastVisitedCellItem	*LastVisitedCellItem
+	LastVisitedCellItem *LastVisitedCellItem
 }
 
 type LastVisitedCellItem struct {
-LastVisitedCellInformation	*LastVisitedCellInformation
+	LastVisitedCellInformation *LastVisitedCellInformation
 }

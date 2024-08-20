@@ -1,5 +1,5 @@
 package ie
 
 type PduSessionType struct {
-PduSessionType	*[]byte
+	PduSessionType *[]byte
 }

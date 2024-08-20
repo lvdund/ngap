@@ -1,8 +1,8 @@
 package ie
 
 type DistributionSetupRequest struct {
-MessageType	*MessageType
-MbsSessionId	*MbsSessionId
-MbsAreaSessionId	*MbsAreaSessionId
-MbsDistributionSetupRequestTransfer	*[]byte
+	MessageType                         *MessageType
+	MbsSessionId                        *MbsSessionId
+	MbsAreaSessionId                    *MbsAreaSessionId
+	MbsDistributionSetupRequestTransfer *[]byte
 }

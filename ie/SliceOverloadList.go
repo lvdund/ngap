@@ -1,9 +1,9 @@
 package ie
 
 type SliceOverloadList struct {
-SliceOverloadItem	*SliceOverloadItem
+	SliceOverloadItem *SliceOverloadItem
 }
 
 type SliceOverloadItem struct {
-SNssai	*SNssai
+	SNssai *SNssai
 }

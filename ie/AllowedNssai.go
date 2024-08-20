@@ -1,9 +1,9 @@
 package ie
 
 type AllowedNssai struct {
-AllowedSNssaiList	*[]AllowedSNssaiItem
+	AllowedSNssaiList *[]AllowedSNssaiItem
 }
 
 type AllowedSNssaiItem struct {
-SNssai	*SNssai
+	SNssai *SNssai
 }

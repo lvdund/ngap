@@ -1,7 +1,7 @@
 package ie
 
 type NgResetAcknowledge struct {
-MessageType	*MessageType
-UeAssociatedLogicalNgConnectionList	*UeAssociatedLogicalNgConnectionList
-CriticalityDiagnostics	*CriticalityDiagnostics
+	MessageType                         *MessageType
+	UeAssociatedLogicalNgConnectionList *UeAssociatedLogicalNgConnectionList
+	CriticalityDiagnostics              *CriticalityDiagnostics
 }

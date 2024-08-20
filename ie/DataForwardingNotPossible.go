@@ -1,5 +1,5 @@
 package ie
 
 type DataForwardingNotPossible struct {
-DataForwardingNotPossible	*[]byte
+	DataForwardingNotPossible *[]byte
 }

@@ -1,9 +1,9 @@
 package ie
 
 type OverloadResponse struct {
-ChoiceOverloadResponse	*ChoiceOverloadResponse
+	ChoiceOverloadResponse *ChoiceOverloadResponse
 }
 
 type ChoiceOverloadResponse struct {
-OverloadAction	*OverloadAction
+	OverloadAction *OverloadAction
 }

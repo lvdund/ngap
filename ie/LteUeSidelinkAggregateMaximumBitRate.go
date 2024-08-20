@@ -1,5 +1,5 @@
 package ie
 
 type LteUeSidelinkAggregateMaximumBitRate struct {
-LteUeSidelinkAggregateMaximumBitRate	*BitRate
+	LteUeSidelinkAggregateMaximumBitRate *BitRate
 }

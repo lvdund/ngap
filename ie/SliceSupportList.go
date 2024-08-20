@@ -1,5 +1,5 @@
 package ie
 
 type SliceSupportList struct {
-SliceSupportItem	*SliceSupportItem
+	SliceSupportItem *SliceSupportItem
 }

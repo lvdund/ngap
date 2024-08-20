@@ -1,13 +1,13 @@
 package ie
 
 type InterSystemSonInformationReport struct {
-ChoiceSonInformationReport	*ChoiceSonInformationReport
+	ChoiceSonInformationReport *ChoiceSonInformationReport
 }
 
 type EnergySavingsIndication struct {
-InterSystemCellStateIndication	*InterSystemCellStateIndication
+	InterSystemCellStateIndication *InterSystemCellStateIndication
 }
 
 type ResourceStatusReport struct {
-InterSystemResourceStatusReport	*InterSystemResourceStatusReport
+	InterSystemResourceStatusReport *InterSystemResourceStatusReport
 }

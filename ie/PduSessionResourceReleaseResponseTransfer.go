@@ -1,5 +1,5 @@
 package ie
 
 type PduSessionResourceReleaseResponseTransfer struct {
-SecondaryRatUsageInformation	*SecondaryRatUsageInformation
+	SecondaryRatUsageInformation *SecondaryRatUsageInformation
 }

@@ -1,17 +1,17 @@
 package ie
 
 type SecondaryRatUsageInformation struct {
-PduSessionUsageReport	*PduSessionUsageReport
-QosFlowsUsageReportList	*[]QosFlowUsageReportItem
+	PduSessionUsageReport   *PduSessionUsageReport
+	QosFlowsUsageReportList *[]QosFlowUsageReportItem
 }
 
 type PduSessionUsageReport struct {
-RatType	*[]byte
-PduSessionTimedReportList	*VolumeTimedReportList
+	RatType                   *[]byte
+	PduSessionTimedReportList *VolumeTimedReportList
 }
 
 type QosFlowUsageReportItem struct {
-QosFlowIndicator	*QosFlowIdentifier
-RatType	*[]byte
-QosFlowsTimedReportList	*VolumeTimedReportList
+	QosFlowIndicator        *QosFlowIdentifier
+	RatType                 *[]byte
+	QosFlowsTimedReportList *VolumeTimedReportList
 }

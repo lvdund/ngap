@@ -1,10 +1,10 @@
 package ie
 
 type UePresenceInAreaOfInterestList struct {
-UePresenceInAreaOfInterestItem	*UePresenceInAreaOfInterestItem
+	UePresenceInAreaOfInterestItem *UePresenceInAreaOfInterestItem
 }
 
 type UePresenceInAreaOfInterestItem struct {
-LocationReportingReferenceId	*LocationReportingReferenceId
-UePresence	*[]byte
+	LocationReportingReferenceId *LocationReportingReferenceId
+	UePresence                   *[]byte
 }

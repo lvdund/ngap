@@ -1,5 +1,5 @@
 package ie
 
 type PagingPriority struct {
-PagingPriority	*[]byte
+	PagingPriority *[]byte
 }

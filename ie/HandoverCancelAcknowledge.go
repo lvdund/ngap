@@ -1,8 +1,8 @@
 package ie
 
 type HandoverCancelAcknowledge struct {
-MessageType	*MessageType
-AmfUeNgapId	*AmfUeNgapId
-RanUeNgapId	*RanUeNgapId
-CriticalityDiagnostics	*CriticalityDiagnostics
+	MessageType            *MessageType
+	AmfUeNgapId            *AmfUeNgapId
+	RanUeNgapId            *RanUeNgapId
+	CriticalityDiagnostics *CriticalityDiagnostics
 }

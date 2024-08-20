@@ -1,8 +1,8 @@
 package ie
 
 type SecurityIndication struct {
-IntegrityProtectionIndication	*[]byte
-ConfidentialityProtectionIndication	*[]byte
-MaximumIntegrityProtectedDataRateUplink	*MaximumIntegrityProtectedDataRate
-MaximumIntegrityProtectedDataRateDownlink	*MaximumIntegrityProtectedDataRate
+	IntegrityProtectionIndication             *[]byte
+	ConfidentialityProtectionIndication       *[]byte
+	MaximumIntegrityProtectedDataRateUplink   *MaximumIntegrityProtectedDataRate
+	MaximumIntegrityProtectedDataRateDownlink *MaximumIntegrityProtectedDataRate
 }

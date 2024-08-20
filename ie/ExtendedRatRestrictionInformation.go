@@ -1,6 +1,6 @@
 package ie
 
 type ExtendedRatRestrictionInformation struct {
-PrimaryRatRestriction	*[]byte
-SecondaryRatRestriction	*[]byte
+	PrimaryRatRestriction   *[]byte
+	SecondaryRatRestriction *[]byte
 }

@@ -1,5 +1,5 @@
 package ie
 
 type MulticastSessionDeactivationRequestTransfer struct {
-MbsSessionId	*MbsSessionId
+	MbsSessionId *MbsSessionId
 }

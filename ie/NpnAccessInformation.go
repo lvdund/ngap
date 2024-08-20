@@ -1,13 +1,13 @@
 package ie
 
 type NpnAccessInformation struct {
-ChoiceNpnAccessInformation	*ChoiceNpnAccessInformation
+	ChoiceNpnAccessInformation *ChoiceNpnAccessInformation
 }
 
 type ChoiceNpnAccessInformation struct {
-PniNpnAccessInformation	*PniNpnAccessInformation
+	PniNpnAccessInformation *PniNpnAccessInformation
 }
 
 type PniNpnAccessInformation struct {
-CellCagList	*CellCagList
+	CellCagList *CellCagList
 }

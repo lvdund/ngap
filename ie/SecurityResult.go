@@ -1,6 +1,6 @@
 package ie
 
 type SecurityResult struct {
-IntegrityProtectionResult	*[]byte
-ConfidentialityProtectionResult	*[]byte
+	IntegrityProtectionResult       *[]byte
+	ConfidentialityProtectionResult *[]byte
 }

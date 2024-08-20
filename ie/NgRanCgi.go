@@ -1,10 +1,10 @@
 package ie
 
 type NgRanCgi struct {
-ChoiceNgRanCgi	*ChoiceNgRanCgi
+	ChoiceNgRanCgi *ChoiceNgRanCgi
 }
 
 type ChoiceNgRanCgi struct {
-Nr	*Nr
-EUtra	*EUtra
+	Nr    *Nr
+	EUtra *EUtra
 }

@@ -1,5 +1,5 @@
 package ie
 
 type InterSystemFailureIndication struct {
-UeRlfReportContainer	*UeRlfReportContainer
+	UeRlfReportContainer *UeRlfReportContainer
 }

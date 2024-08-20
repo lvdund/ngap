@@ -1,5 +1,5 @@
 package ie
 
 type MdtPlmnModificationList struct {
-PlmnIdentity	*PlmnIdentity
+	PlmnIdentity *PlmnIdentity
 }

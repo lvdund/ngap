@@ -1,6 +1,6 @@
 package ie
 
 type UeAggregateMaximumBitRate struct {
-UeAggregateMaximumBitRateDownlink	*BitRate
-UeAggregateMaximumBitRateUplink	*BitRate
+	UeAggregateMaximumBitRateDownlink *BitRate
+	UeAggregateMaximumBitRateUplink   *BitRate
 }

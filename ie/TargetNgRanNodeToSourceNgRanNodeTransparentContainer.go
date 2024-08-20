@@ -1,25 +1,25 @@
 package ie
 
 type TargetNgRanNodeToSourceNgRanNodeTransparentContainer struct {
-RrcContainer	*[]byte
-DapsResponseInformationList	*[]DapsResponseInformationItem
-DirectForwardingPathAvailability	*DirectForwardingPathAvailability
-MbsActiveSessionInformationTargetToSourceList	*[]MbsActiveSessionInformationTargetToSourceItem
-NgapIeSupportInformationResponseList	*NgapIeSupportInformationResponseList
+	RrcContainer                                  *[]byte
+	DapsResponseInformationList                   *[]DapsResponseInformationItem
+	DirectForwardingPathAvailability              *DirectForwardingPathAvailability
+	MbsActiveSessionInformationTargetToSourceList *[]MbsActiveSessionInformationTargetToSourceItem
+	NgapIeSupportInformationResponseList          *NgapIeSupportInformationResponseList
 }
 
 type DapsResponseInformationItem struct {
-DrbId	*DrbId
-DapsResponseInformation	*DapsResponseInformation
+	DrbId                   *DrbId
+	DapsResponseInformation *DapsResponseInformation
 }
 
 type MbsActiveSessionInformationTargetToSourceItem struct {
-MbsSessionId	*MbsSessionId
-DataForwardingResponseMrbList	*[]DataForwardingResponseMrbItem
+	MbsSessionId                  *MbsSessionId
+	DataForwardingResponseMrbList *[]DataForwardingResponseMrbItem
 }
 
 type DataForwardingResponseMrbItem struct {
-MrbId	*MrbId
-DlForwardingUpTnlInformation	*UpTransportLayerInformation
-MrbProgressInformation	*MrbProgressInformation
+	MrbId                        *MrbId
+	DlForwardingUpTnlInformation *UpTransportLayerInformation
+	MrbProgressInformation       *MrbProgressInformation
 }

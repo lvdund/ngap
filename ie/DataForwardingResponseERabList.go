@@ -1,6 +1,6 @@
 package ie
 
 type DataForwardingResponseERabList struct {
-ERabId	*ERabId
-DlForwardingUpTnlInformation	*UpTransportLayerInformation
+	ERabId                       *ERabId
+	DlForwardingUpTnlInformation *UpTransportLayerInformation
 }

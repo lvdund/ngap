@@ -1,5 +1,5 @@
 package ie
 
 type NasPdu struct {
-NasPdu	*[]byte
+	NasPdu *[]byte
 }

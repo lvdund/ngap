@@ -1,9 +1,9 @@
 package ie
 
 type QmcConfigurationInformation struct {
-UeApplicationLayerMeasurementInformationList	*[]UeApplicationLayerMeasurementInformationItem
+	UeApplicationLayerMeasurementInformationList *[]UeApplicationLayerMeasurementInformationItem
 }
 
 type UeApplicationLayerMeasurementInformationItem struct {
-UeApplicationLayerMeasurementConfigurationInformation	*UeApplicationLayerMeasurementConfigurationInformation
+	UeApplicationLayerMeasurementConfigurationInformation *UeApplicationLayerMeasurementConfigurationInformation
 }

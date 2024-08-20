@@ -1,5 +1,5 @@
 package ie
 
 type OverloadStop struct {
-MessageType	*MessageType
+	MessageType *MessageType
 }

@@ -1,38 +1,38 @@
 package ie
 
 type PwsRestartIndication struct {
-MessageType	*MessageType
-ChoiceCellListForRestart	*ChoiceCellListForRestart
-GlobalRanNodeId	*GlobalRanNodeId
-TaiListForRestart	*TaiListForRestart
-EmergencyAreaIdListForRestart	*EmergencyAreaIdListForRestart
+	MessageType                   *MessageType
+	ChoiceCellListForRestart      *ChoiceCellListForRestart
+	GlobalRanNodeId               *GlobalRanNodeId
+	TaiListForRestart             *TaiListForRestart
+	EmergencyAreaIdListForRestart *EmergencyAreaIdListForRestart
 }
 
 type ChoiceCellListForRestart struct {
-EUtra	*EUtra
-Nr	*Nr
+	EUtra *EUtra
+	Nr    *Nr
 }
 
 type EUtra struct {
-EUtraCellListForRestart	*EUtraCellListForRestart
+	EUtraCellListForRestart *EUtraCellListForRestart
 }
 
 type EUtraCellListForRestart struct {
-EUtraCgi	*EUtraCgi
+	EUtraCgi *EUtraCgi
 }
 
 type Nr struct {
-NrCellListForRestart	*NrCellListForRestart
+	NrCellListForRestart *NrCellListForRestart
 }
 
 type NrCellListForRestart struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }
 
 type TaiListForRestart struct {
-Tai	*Tai
+	Tai *Tai
 }
 
 type EmergencyAreaIdListForRestart struct {
-EmergencyAreaId	*EmergencyAreaId
+	EmergencyAreaId *EmergencyAreaId
 }

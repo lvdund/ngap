@@ -1,5 +1,5 @@
 package ie
 
 type BurstArrivalTime struct {
-BurstArrivalTime	*[]byte
+	BurstArrivalTime *[]byte
 }

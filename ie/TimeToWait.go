@@ -1,5 +1,5 @@
 package ie
 
 type TimeToWait struct {
-TimeToWait	*[]byte
+	TimeToWait *[]byte
 }

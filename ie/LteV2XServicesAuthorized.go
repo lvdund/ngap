@@ -1,6 +1,6 @@
 package ie
 
 type LteV2XServicesAuthorized struct {
-VehicleUe	*[]byte
-PedestrianUe	*[]byte
+	VehicleUe    *[]byte
+	PedestrianUe *[]byte
 }

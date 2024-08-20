@@ -1,13 +1,13 @@
 package ie
 
 type NpnPagingAssistanceInformation struct {
-ChoiceNpnPagingAssistanceInformation	*ChoiceNpnPagingAssistanceInformation
+	ChoiceNpnPagingAssistanceInformation *ChoiceNpnPagingAssistanceInformation
 }
 
 type ChoiceNpnPagingAssistanceInformation struct {
-PniNpnPagingAssistance	*PniNpnPagingAssistance
+	PniNpnPagingAssistance *PniNpnPagingAssistance
 }
 
 type PniNpnPagingAssistance struct {
-PniNpnPagingAssistance	*AllowedPniNpnList
+	PniNpnPagingAssistance *AllowedPniNpnList
 }

@@ -1,5 +1,5 @@
 package ie
 
 type RedcapIndication struct {
-RedcapIndication	*[]byte
+	RedcapIndication *[]byte
 }

@@ -1,5 +1,5 @@
 package ie
 
 type MbsSessionStatus struct {
-MbsSessionStatus	*[]byte
+	MbsSessionStatus *[]byte
 }

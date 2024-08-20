@@ -1,5 +1,5 @@
 package ie
 
 type HandoverPreparationUnsuccessfulTransfer struct {
-Cause	*Cause
+	Cause *Cause
 }

@@ -1,41 +1,41 @@
 package ie
 
 type InterSystemHoReport struct {
-ChoiceHandoverReportType	*ChoiceHandoverReportType
+	ChoiceHandoverReportType *ChoiceHandoverReportType
 }
 
 type ChoiceHandoverReportType struct {
-TooEarlyInterSystemHo	*TooEarlyInterSystemHo
-InterSystemUnnecessaryHo	*InterSystemUnnecessaryHo
+	TooEarlyInterSystemHo    *TooEarlyInterSystemHo
+	InterSystemUnnecessaryHo *InterSystemUnnecessaryHo
 }
 
 type TooEarlyInterSystemHo struct {
-SourceCellId	*EUtraCgi
-FailureCellId	*NgRanCgi
-UeRlfReportContainer	*UeRlfReportContainer
+	SourceCellId         *EUtraCgi
+	FailureCellId        *NgRanCgi
+	UeRlfReportContainer *UeRlfReportContainer
 }
 
 type InterSystemUnnecessaryHo struct {
-SourceCellCgi	*NgRanCgi
-TargetCellCgi	*EUtraCgi
-EarlyIratHo	*[]byte
-CandidateCellList	*[]CandidateCellItem
+	SourceCellCgi     *NgRanCgi
+	TargetCellCgi     *EUtraCgi
+	EarlyIratHo       *[]byte
+	CandidateCellList *[]CandidateCellItem
 }
 
 type CandidateCellItem struct {
-ChoiceCandidateCellType	*ChoiceCandidateCellType
+	ChoiceCandidateCellType *ChoiceCandidateCellType
 }
 
 type ChoiceCandidateCellType struct {
-CandidateCgi	*CandidateCgi
-CandidatePci	*CandidatePci
+	CandidateCgi *CandidateCgi
+	CandidatePci *CandidatePci
 }
 
 type CandidateCgi struct {
-CandidateCellId	*NrCgi
+	CandidateCellId *NrCgi
 }
 
 type CandidatePci struct {
-CandidatePci	uint16	//`bitstring:"sizeLB:0,sizeUB:1007"`
-CandidateNrArfcn	*int
+	CandidatePci     uint16 //`bitstring:"sizeLB:0,sizeUB:1007"`
+	CandidateNrArfcn *int
 }

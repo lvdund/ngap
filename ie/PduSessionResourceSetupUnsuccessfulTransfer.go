@@ -1,6 +1,6 @@
 package ie
 
 type PduSessionResourceSetupUnsuccessfulTransfer struct {
-Cause	*Cause
-CriticalityDiagnostics	*CriticalityDiagnostics
+	Cause                  *Cause
+	CriticalityDiagnostics *CriticalityDiagnostics
 }

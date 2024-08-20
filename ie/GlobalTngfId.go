@@ -1,14 +1,14 @@
 package ie
 
 type GlobalTngfId struct {
-PlmnIdentity	*PlmnIdentity
-ChoiceTngfId	*ChoiceTngfId
+	PlmnIdentity *PlmnIdentity
+	ChoiceTngfId *ChoiceTngfId
 }
 
 type ChoiceTngfId struct {
-TngfId	*TngfId
+	TngfId *TngfId
 }
 
 type TngfId struct {
-TngfId	*[]byte
+	TngfId *[]byte
 }

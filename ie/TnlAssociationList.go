@@ -1,10 +1,10 @@
 package ie
 
 type TnlAssociationList struct {
-TnlAssociationItem	*TnlAssociationItem
+	TnlAssociationItem *TnlAssociationItem
 }
 
 type TnlAssociationItem struct {
-TnlAssociationAddress	*CpTransportLayerInformation
-Cause	*Cause
+	TnlAssociationAddress *CpTransportLayerInformation
+	Cause                 *Cause
 }

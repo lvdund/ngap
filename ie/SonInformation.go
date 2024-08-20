@@ -1,15 +1,15 @@
 package ie
 
 type SonInformation struct {
-ChoiceSonInformation	*ChoiceSonInformation
+	ChoiceSonInformation *ChoiceSonInformation
 }
 
 type ChoiceSonInformation struct {
-SonInformationRequest	*SonInformationRequest
-SonInformationReply	*SonInformationReply
-SonInformationReport	*SonInformationReport
+	SonInformationRequest *SonInformationRequest
+	SonInformationReply   *SonInformationReply
+	SonInformationReport  *SonInformationReport
 }
 
 type SonInformationRequest struct {
-SonInformationRequest	*[]byte
+	SonInformationRequest *[]byte
 }

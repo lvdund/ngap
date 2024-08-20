@@ -1,6 +1,6 @@
 package ie
 
 type TargetNgRanNodeToSourceNgRanNodeFailureTransparentContainer struct {
-CellCagInformation	*CellCagInformation
-NgapIeSupportInformationResponseList	*NgapIeSupportInformationResponseList
+	CellCagInformation                   *CellCagInformation
+	NgapIeSupportInformationResponseList *NgapIeSupportInformationResponseList
 }

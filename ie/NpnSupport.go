@@ -1,13 +1,13 @@
 package ie
 
 type NpnSupport struct {
-ChoiceNpnSupport	*ChoiceNpnSupport
+	ChoiceNpnSupport *ChoiceNpnSupport
 }
 
 type ChoiceNpnSupport struct {
-Snpn	*Snpn
+	Snpn *Snpn
 }
 
 type Snpn struct {
-Nid	*Nid
+	Nid *Nid
 }

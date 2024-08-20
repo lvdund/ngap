@@ -1,6 +1,6 @@
 package ie
 
 type UserPlaneSecurityInformation struct {
-SecurityResult	*SecurityResult
-SecurityIndication	*SecurityIndication
+	SecurityResult     *SecurityResult
+	SecurityIndication *SecurityIndication
 }

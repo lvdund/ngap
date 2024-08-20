@@ -1,60 +1,60 @@
 package ie
 
 type BroadcastCompletedAreaList struct {
-ChoiceBroadcastCompletedArea	*ChoiceBroadcastCompletedArea
+	ChoiceBroadcastCompletedArea *ChoiceBroadcastCompletedArea
 }
 
 type ChoiceBroadcastCompletedArea struct {
-CellIdBroadcastEUtra	*CellIdBroadcastEUtra
-TaiBroadcastEUtra	*TaiBroadcastEUtra
-EmergencyAreaIdBroadcastEUtra	*EmergencyAreaIdBroadcastEUtra
-CellIdBroadcastNr	*CellIdBroadcastNr
-TaiBroadcastNr	*TaiBroadcastNr
-EmergencyAreaIdBroadcastNr	*EmergencyAreaIdBroadcastNr
+	CellIdBroadcastEUtra          *CellIdBroadcastEUtra
+	TaiBroadcastEUtra             *TaiBroadcastEUtra
+	EmergencyAreaIdBroadcastEUtra *EmergencyAreaIdBroadcastEUtra
+	CellIdBroadcastNr             *CellIdBroadcastNr
+	TaiBroadcastNr                *TaiBroadcastNr
+	EmergencyAreaIdBroadcastNr    *EmergencyAreaIdBroadcastNr
 }
 
 type CellIdBroadcastEUtra struct {
-CompletedCellList	*CompletedCellList
+	CompletedCellList *CompletedCellList
 }
 
 type CompletedCellList struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }
 
 type TaiBroadcastEUtra struct {
-TaiBroadcast	*TaiBroadcast
+	TaiBroadcast *TaiBroadcast
 }
 
 type TaiBroadcast struct {
-Tai	*Tai
-CompletedCellInTaiList	*CompletedCellInTaiList
+	Tai                    *Tai
+	CompletedCellInTaiList *CompletedCellInTaiList
 }
 
 type CompletedCellInTaiList struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }
 
 type EmergencyAreaIdBroadcastEUtra struct {
-EmergencyAreaIdBroadcast	*EmergencyAreaIdBroadcast
+	EmergencyAreaIdBroadcast *EmergencyAreaIdBroadcast
 }
 
 type EmergencyAreaIdBroadcast struct {
-EmergencyAreaId	*EmergencyAreaId
-CompletedCellInEmergencyAreaIdList	*CompletedCellInEmergencyAreaIdList
+	EmergencyAreaId                    *EmergencyAreaId
+	CompletedCellInEmergencyAreaIdList *CompletedCellInEmergencyAreaIdList
 }
 
 type CompletedCellInEmergencyAreaIdList struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }
 
 type CellIdBroadcastNr struct {
-CompletedCellList	*CompletedCellList
+	CompletedCellList *CompletedCellList
 }
 
 type TaiBroadcastNr struct {
-TaiBroadcast	*TaiBroadcast
+	TaiBroadcast *TaiBroadcast
 }
 
 type EmergencyAreaIdBroadcastNr struct {
-EmergencyAreaIdBroadcast	*EmergencyAreaIdBroadcast
+	EmergencyAreaIdBroadcast *EmergencyAreaIdBroadcast
 }

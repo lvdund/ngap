@@ -1,10 +1,10 @@
 package ie
 
 type UpTransportLayerInformationList struct {
-UpTransportLayerInformationItem	*UpTransportLayerInformationItem
+	UpTransportLayerInformationItem *UpTransportLayerInformationItem
 }
 
 type UpTransportLayerInformationItem struct {
-NgUUpTnlInformation	*UpTransportLayerInformation
-CommonNetworkInstance	*CommonNetworkInstance
+	NgUUpTnlInformation   *UpTransportLayerInformation
+	CommonNetworkInstance *CommonNetworkInstance
 }

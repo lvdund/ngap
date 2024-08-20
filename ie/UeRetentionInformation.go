@@ -1,5 +1,5 @@
 package ie
 
 type UeRetentionInformation struct {
-UeRetentionInformation	*[]byte
+	UeRetentionInformation *[]byte
 }

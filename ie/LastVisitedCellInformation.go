@@ -1,28 +1,28 @@
 package ie
 
 type LastVisitedCellInformation struct {
-ChoiceLastVisitedCellInformation	*ChoiceLastVisitedCellInformation
+	ChoiceLastVisitedCellInformation *ChoiceLastVisitedCellInformation
 }
 
 type ChoiceLastVisitedCellInformation struct {
-NgRanCell	*NgRanCell
-EUtranCell	*EUtranCell
-UtranCell	*UtranCell
-GeranCell	*GeranCell
+	NgRanCell  *NgRanCell
+	EUtranCell *EUtranCell
+	UtranCell  *UtranCell
+	GeranCell  *GeranCell
 }
 
 type NgRanCell struct {
-LastVisitedNgRanCellInformation	*LastVisitedNgRanCellInformation
+	LastVisitedNgRanCellInformation *LastVisitedNgRanCellInformation
 }
 
 type EUtranCell struct {
-LastVisitedEUtranCellInformation	*[]byte
+	LastVisitedEUtranCellInformation *[]byte
 }
 
 type UtranCell struct {
-LastVisitedUtranCellInformation	*[]byte
+	LastVisitedUtranCellInformation *[]byte
 }
 
 type GeranCell struct {
-LastVisitedGeranCellInformation	*[]byte
+	LastVisitedGeranCellInformation *[]byte
 }

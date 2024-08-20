@@ -1,44 +1,44 @@
 package ie
 
 type WarningAreaList struct {
-ChoiceWarningArea	*ChoiceWarningArea
+	ChoiceWarningArea *ChoiceWarningArea
 }
 
 type ChoiceWarningArea struct {
-EUtraCellIds	*EUtraCellIds
-NrCellIds	*NrCellIds
-TaisForWarning	*TaisForWarning
-EmergencyAreaIds	*EmergencyAreaIds
+	EUtraCellIds     *EUtraCellIds
+	NrCellIds        *NrCellIds
+	TaisForWarning   *TaisForWarning
+	EmergencyAreaIds *EmergencyAreaIds
 }
 
 type EUtraCellIds struct {
-EutraCgiListForWarning	*EutraCgiListForWarning
+	EutraCgiListForWarning *EutraCgiListForWarning
 }
 
 type EutraCgiListForWarning struct {
-EUtraCgi	*EUtraCgi
+	EUtraCgi *EUtraCgi
 }
 
 type NrCellIds struct {
-NrCgiListForWarning	*NrCgiListForWarning
+	NrCgiListForWarning *NrCgiListForWarning
 }
 
 type NrCgiListForWarning struct {
-NrCgi	*NrCgi
+	NrCgi *NrCgi
 }
 
 type TaisForWarning struct {
-TaiListForWarning	*TaiListForWarning
+	TaiListForWarning *TaiListForWarning
 }
 
 type TaiListForWarning struct {
-Tai	*Tai
+	Tai *Tai
 }
 
 type EmergencyAreaIds struct {
-EmergencyAreaIdList	*EmergencyAreaIdList
+	EmergencyAreaIdList *EmergencyAreaIdList
 }
 
 type EmergencyAreaIdList struct {
-EmergencyAreaId	*EmergencyAreaId
+	EmergencyAreaId *EmergencyAreaId
 }

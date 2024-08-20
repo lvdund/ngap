@@ -1,10 +1,10 @@
 package ie
 
 type MbsServiceArea struct {
-ChoiceSessionType	*ChoiceSessionType
+	ChoiceSessionType *ChoiceSessionType
 }
 
 type MbsServiceAreaInformationItem struct {
-MbsAreaSessionId	*MbsAreaSessionId
-MbsServiceAreaInformation	*MbsServiceAreaInformation
+	MbsAreaSessionId          *MbsAreaSessionId
+	MbsServiceAreaInformation *MbsServiceAreaInformation
 }

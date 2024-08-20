@@ -1,7 +1,7 @@
 package ie
 
 type MbsDistributionSetupRequestTransfer struct {
-MbsSessionId	*MbsSessionId
-MbsAreaSessionId	*MbsAreaSessionId
-SharedNgUUnicastTnlInformation	*UpTransportLayerInformation
+	MbsSessionId                   *MbsSessionId
+	MbsAreaSessionId               *MbsAreaSessionId
+	SharedNgUUnicastTnlInformation *UpTransportLayerInformation
 }

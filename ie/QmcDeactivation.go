@@ -1,9 +1,9 @@
 package ie
 
 type QmcDeactivation struct {
-QoeReferenceList	*QoeReferenceList
+	QoeReferenceList *QoeReferenceList
 }
 
 type QoeReferenceList struct {
-QoeReference	[]byte	//`bitstring:"sizeLB:6,sizeUB:6"`
+	QoeReference []byte //`bitstring:"sizeLB:6,sizeUB:6"`
 }

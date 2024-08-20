@@ -1,9 +1,9 @@
 package ie
 
 type MulticastSessionUpdateRequestTransfer struct {
-MbsSessionId	*MbsSessionId
-MbsServiceArea	*MbsServiceArea
-MbsQosFlowsToBeSetupOrModifiedList	*MbsQosFlowsToBeSetupList
-MbsQosFlowToReleaseList	*QosFlowListWithCause
-MbsSessionTnlInformation5Gc	*MbsSessionTnlInformation5Gc
+	MbsSessionId                       *MbsSessionId
+	MbsServiceArea                     *MbsServiceArea
+	MbsQosFlowsToBeSetupOrModifiedList *MbsQosFlowsToBeSetupList
+	MbsQosFlowToReleaseList            *QosFlowListWithCause
+	MbsSessionTnlInformation5Gc        *MbsSessionTnlInformation5Gc
 }

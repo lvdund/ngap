@@ -1,18 +1,18 @@
 package ie
 
 type RecommendedRanNodesForPaging struct {
-RecommendedRanNodeList	*[]RecommendedRanNodeItem
+	RecommendedRanNodeList *[]RecommendedRanNodeItem
 }
 
 type RecommendedRanNodeItem struct {
-ChoiceAmfPagingTarget	*ChoiceAmfPagingTarget
+	ChoiceAmfPagingTarget *ChoiceAmfPagingTarget
 }
 
 type ChoiceAmfPagingTarget struct {
-RanNode	*RanNode
-Tai	*Tai
+	RanNode *RanNode
+	Tai     *Tai
 }
 
 type RanNode struct {
-GlobalRanNodeId	*GlobalRanNodeId
+	GlobalRanNodeId *GlobalRanNodeId
 }

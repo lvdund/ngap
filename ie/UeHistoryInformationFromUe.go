@@ -1,9 +1,9 @@
 package ie
 
 type UeHistoryInformationFromUe struct {
-ChoiceUeHistoryInformationFromUe	*ChoiceUeHistoryInformationFromUe
+	ChoiceUeHistoryInformationFromUe *ChoiceUeHistoryInformationFromUe
 }
 
 type ChoiceUeHistoryInformationFromUe struct {
-Nr	*Nr
+	Nr *Nr
 }

@@ -1,6 +1,6 @@
 package ie
 
 type NrPagingEdrxInformation struct {
-NrPagingEdrxCycle	*[]byte
-NrPagingTimeWindow	*[]byte
+	NrPagingEdrxCycle  *[]byte
+	NrPagingTimeWindow *[]byte
 }

@@ -1,18 +1,18 @@
 package ie
 
 type NpnMobilityInformation struct {
-ChoiceNpnMobilityInformation	*ChoiceNpnMobilityInformation
+	ChoiceNpnMobilityInformation *ChoiceNpnMobilityInformation
 }
 
 type ChoiceNpnMobilityInformation struct {
-SnpnMobilityInformation	*SnpnMobilityInformation
-PniNpnMobilityInformation	*PniNpnMobilityInformation
+	SnpnMobilityInformation   *SnpnMobilityInformation
+	PniNpnMobilityInformation *PniNpnMobilityInformation
 }
 
 type SnpnMobilityInformation struct {
-ServingNid	*Nid
+	ServingNid *Nid
 }
 
 type PniNpnMobilityInformation struct {
-AllowedPniNpnList	*AllowedPniNpnList
+	AllowedPniNpnList *AllowedPniNpnList
 }

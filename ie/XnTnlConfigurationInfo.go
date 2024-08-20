@@ -1,24 +1,24 @@
 package ie
 
 type XnTnlConfigurationInfo struct {
-XnTransportLayerAddresses	*XnTransportLayerAddresses
-XnExtendedTransportLayerAddresses	*XnExtendedTransportLayerAddresses
+	XnTransportLayerAddresses         *XnTransportLayerAddresses
+	XnExtendedTransportLayerAddresses *XnExtendedTransportLayerAddresses
 }
 
 type XnTransportLayerAddresses struct {
-TransportLayerAddress	*TransportLayerAddress
+	TransportLayerAddress *TransportLayerAddress
 }
 
 type XnExtendedTransportLayerAddresses struct {
-IpSecTransportLayerAddress	*TransportLayerAddress
-XnGtpTransportLayerAddresses	*XnGtpTransportLayerAddresses
-XnSctpTransportLayerAddresses	*XnSctpTransportLayerAddresses
+	IpSecTransportLayerAddress    *TransportLayerAddress
+	XnGtpTransportLayerAddresses  *XnGtpTransportLayerAddresses
+	XnSctpTransportLayerAddresses *XnSctpTransportLayerAddresses
 }
 
 type XnGtpTransportLayerAddresses struct {
-GtpTransportLayerAddress	*TransportLayerAddress
+	GtpTransportLayerAddress *TransportLayerAddress
 }
 
 type XnSctpTransportLayerAddresses struct {
-TransportLayerAddressSctp	*TransportLayerAddress
+	TransportLayerAddressSctp *TransportLayerAddress
 }

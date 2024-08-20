@@ -1,8 +1,8 @@
 package ie
 
 type AssistanceDataForPaging struct {
-AssistanceDataForRecommendedCells	*AssistanceDataForRecommendedCells
-PagingAttemptInformation	*PagingAttemptInformation
-NpnPagingAssistanceInformation	*NpnPagingAssistanceInformation
-PagingAssistanceDataForCeCapableUe	*PagingAssistanceDataForCeCapableUe
+	AssistanceDataForRecommendedCells  *AssistanceDataForRecommendedCells
+	PagingAttemptInformation           *PagingAttemptInformation
+	NpnPagingAssistanceInformation     *NpnPagingAssistanceInformation
+	PagingAssistanceDataForCeCapableUe *PagingAssistanceDataForCeCapableUe
 }

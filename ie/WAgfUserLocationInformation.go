@@ -1,37 +1,37 @@
 package ie
 
 type WAgfUserLocationInformation struct {
-ChoiceWAgfUserLocationInformation	*ChoiceWAgfUserLocationInformation
+	ChoiceWAgfUserLocationInformation *ChoiceWAgfUserLocationInformation
 }
 
 type ChoiceWAgfUserLocationInformation struct {
-GlobalLineId	*GlobalLineId
-HfcNodeId	*HfcNodeId
-GlobalCableId	*GlobalCableId
-HfcNodeIdNew	*HfcNodeIdNew
-GlobalCableIdNew	*GlobalCableIdNew
+	GlobalLineId     *GlobalLineId
+	HfcNodeId        *HfcNodeId
+	GlobalCableId    *GlobalCableId
+	HfcNodeIdNew     *HfcNodeIdNew
+	GlobalCableIdNew *GlobalCableIdNew
 }
 
 type GlobalLineId struct {
-GlobalLineId	*[]byte
-LineType	*[]byte
-Tai	*Tai
+	GlobalLineId *[]byte
+	LineType     *[]byte
+	Tai          *Tai
 }
 
 type HfcNodeId struct {
-HfcNodeId	*[]byte
+	HfcNodeId *[]byte
 }
 
 type GlobalCableId struct {
-GlobalCableId	*[]byte
+	GlobalCableId *[]byte
 }
 
 type HfcNodeIdNew struct {
-HfcNodeId	*[]byte
-Tai	*Tai
+	HfcNodeId *[]byte
+	Tai       *Tai
 }
 
 type GlobalCableIdNew struct {
-GlobalCableId	*[]byte
-Tai	*Tai
+	GlobalCableId *[]byte
+	Tai           *Tai
 }

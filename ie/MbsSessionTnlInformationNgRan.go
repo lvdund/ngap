@@ -1,23 +1,23 @@
 package ie
 
 type MbsSessionTnlInformationNgRan struct {
-ChoiceSessionType	*ChoiceSessionType
+	ChoiceSessionType *ChoiceSessionType
 }
 
 type ChoiceSessionType struct {
-LocationIndependent	*LocationIndependent
-LocationDependent	*LocationDependent
+	LocationIndependent *LocationIndependent
+	LocationDependent   *LocationDependent
 }
 
 type LocationIndependent struct {
-SharedNgUUnicastTnlInformation	*UpTransportLayerInformation
+	SharedNgUUnicastTnlInformation *UpTransportLayerInformation
 }
 
 type LocationDependent struct {
-MbsSessionTnlInformationNgRanList	*[]MbsSessionTnlInformationNgRanItem
+	MbsSessionTnlInformationNgRanList *[]MbsSessionTnlInformationNgRanItem
 }
 
 type MbsSessionTnlInformationNgRanItem struct {
-MbsAreaSessionId	*MbsAreaSessionId
-SharedNgUUnicastTnlInformation	*UpTransportLayerInformation
+	MbsAreaSessionId               *MbsAreaSessionId
+	SharedNgUUnicastTnlInformation *UpTransportLayerInformation
 }

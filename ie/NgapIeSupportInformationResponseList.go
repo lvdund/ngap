@@ -1,11 +1,11 @@
 package ie
 
 type NgapIeSupportInformationResponseList struct {
-NgapIeSupportInformationResponseItem	*NgapIeSupportInformationResponseItem
+	NgapIeSupportInformationResponseItem *NgapIeSupportInformationResponseItem
 }
 
 type NgapIeSupportInformationResponseItem struct {
-NgapProtocolIeId	*NgapProtocolIeId
-NgapProtocolIeSupportInformation	*NgapProtocolIeSupportInformation
-NgapProtocolIePresenceInformation	*NgapProtocolIePresenceInformation
+	NgapProtocolIeId                  *NgapProtocolIeId
+	NgapProtocolIeSupportInformation  *NgapProtocolIeSupportInformation
+	NgapProtocolIePresenceInformation *NgapProtocolIePresenceInformation
 }

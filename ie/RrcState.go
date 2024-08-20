@@ -1,5 +1,5 @@
 package ie
 
 type RrcState struct {
-RrcState	*[]byte
+	RrcState *[]byte
 }

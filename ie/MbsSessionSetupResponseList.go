@@ -1,10 +1,10 @@
 package ie
 
 type MbsSessionSetupResponseList struct {
-MbsSessionSetupResponseList	*[]MbsSessionSetupResponseItem
+	MbsSessionSetupResponseList *[]MbsSessionSetupResponseItem
 }
 
 type MbsSessionSetupResponseItem struct {
-MbsSessionId	*MbsSessionId
-MbsAreaSessionId	*MbsAreaSessionId
+	MbsSessionId     *MbsSessionId
+	MbsAreaSessionId *MbsAreaSessionId
 }

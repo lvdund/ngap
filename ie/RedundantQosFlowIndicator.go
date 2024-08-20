@@ -1,5 +1,5 @@
 package ie
 
 type RedundantQosFlowIndicator struct {
-RedundantQosFlowIndicator	*[]byte
+	RedundantQosFlowIndicator *[]byte
 }

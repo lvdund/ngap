@@ -1,12 +1,12 @@
 package ie
 
 type UeContextReleaseComplete struct {
-MessageType	*MessageType
-AmfUeNgapId	*AmfUeNgapId
-RanUeNgapId	*RanUeNgapId
-UserLocationInformation	*UserLocationInformation
-InformationOnRecommendedCellsAndRanNodesForPaging	*InformationOnRecommendedCellsAndRanNodesForPaging
-PduSessionResourceList	*[]PduSessionResourceItem
-CriticalityDiagnostics	*CriticalityDiagnostics
-PagingAssistanceDataForCeCapableUe	*PagingAssistanceDataForCeCapableUe
+	MessageType                                       *MessageType
+	AmfUeNgapId                                       *AmfUeNgapId
+	RanUeNgapId                                       *RanUeNgapId
+	UserLocationInformation                           *UserLocationInformation
+	InformationOnRecommendedCellsAndRanNodesForPaging *InformationOnRecommendedCellsAndRanNodesForPaging
+	PduSessionResourceList                            *[]PduSessionResourceItem
+	CriticalityDiagnostics                            *CriticalityDiagnostics
+	PagingAssistanceDataForCeCapableUe                *PagingAssistanceDataForCeCapableUe
 }

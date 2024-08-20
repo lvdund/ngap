@@ -1,7 +1,7 @@
 package ie
 
 type MulticastSessionActivationRequest struct {
-MessageType	*MessageType
-MbsSessionId	*MbsSessionId
-MulticastSessionActivationRequestTransfer	*[]byte
+	MessageType                               *MessageType
+	MbsSessionId                              *MbsSessionId
+	MulticastSessionActivationRequestTransfer *[]byte
 }

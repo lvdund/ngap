@@ -1,11 +1,11 @@
 package ie
 
 type InterSystemSonInformation struct {
-ChoiceInterSystemSonInformation	*ChoiceInterSystemSonInformation
+	ChoiceInterSystemSonInformation *ChoiceInterSystemSonInformation
 }
 
 type ChoiceInterSystemSonInformation struct {
-InterSystemSonInformationReport	*InterSystemSonInformationReport
-InterSystemSonInformationRequest	*InterSystemSonInformationRequest
-InterSystemSonInformationReply	*InterSystemSonInformationReply
+	InterSystemSonInformationReport  *InterSystemSonInformationReport
+	InterSystemSonInformationRequest *InterSystemSonInformationRequest
+	InterSystemSonInformationReply   *InterSystemSonInformationReply
 }

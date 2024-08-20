@@ -1,9 +1,9 @@
 package ie
 
 type MulticastGroupPagingArea struct {
-MbsAreaTaiList	*MbsAreaTaiList
+	MbsAreaTaiList *MbsAreaTaiList
 }
 
 type MbsAreaTaiList struct {
-Tai	*Tai
+	Tai *Tai
 }

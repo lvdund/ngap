@@ -1,19 +1,19 @@
 package ie
 
 type AreaOfInterest struct {
-AreaOfInterestTaiList	*[]AreaOfInterestTaiItem
-AreaOfInterestCellList	*[]AreaOfInterestCellItem
-AreaOfInterestRanNodeList	*[]AreaOfInterestRanNodeItem
+	AreaOfInterestTaiList     *[]AreaOfInterestTaiItem
+	AreaOfInterestCellList    *[]AreaOfInterestCellItem
+	AreaOfInterestRanNodeList *[]AreaOfInterestRanNodeItem
 }
 
 type AreaOfInterestTaiItem struct {
-Tai	*Tai
+	Tai *Tai
 }
 
 type AreaOfInterestCellItem struct {
-NgRanCgi	*NgRanCgi
+	NgRanCgi *NgRanCgi
 }
 
 type AreaOfInterestRanNodeItem struct {
-GlobalRanNodeId	*GlobalRanNodeId
+	GlobalRanNodeId *GlobalRanNodeId
 }

@@ -1,51 +1,51 @@
 package ie
 
 type MobilityRestrictionList struct {
-ServingPlmn	*PlmnIdentity
-EquivalentPlmns	*EquivalentPlmns
-RatRestrictions	*RatRestrictions
-ForbiddenAreaInformation	*ForbiddenAreaInformation
-ServiceAreaInformation	*ServiceAreaInformation
-LastEUtranPlmnIdentity	*PlmnIdentity
-CoreNetworkTypeRestrictionForServingPlmn	*[]byte
-CoreNetworkTypeRestrictionForEquivalentPlmns	*CoreNetworkTypeRestrictionForEquivalentPlmns
-NpnMobilityInformation	*NpnMobilityInformation
+	ServingPlmn                                  *PlmnIdentity
+	EquivalentPlmns                              *EquivalentPlmns
+	RatRestrictions                              *RatRestrictions
+	ForbiddenAreaInformation                     *ForbiddenAreaInformation
+	ServiceAreaInformation                       *ServiceAreaInformation
+	LastEUtranPlmnIdentity                       *PlmnIdentity
+	CoreNetworkTypeRestrictionForServingPlmn     *[]byte
+	CoreNetworkTypeRestrictionForEquivalentPlmns *CoreNetworkTypeRestrictionForEquivalentPlmns
+	NpnMobilityInformation                       *NpnMobilityInformation
 }
 
 type EquivalentPlmns struct {
-PlmnIdentity	*PlmnIdentity
+	PlmnIdentity *PlmnIdentity
 }
 
 type RatRestrictions struct {
-PlmnIdentity	*PlmnIdentity
-RatRestrictionInformation	*[]byte
-ExtendedRatRestrictionInformation	*ExtendedRatRestrictionInformation
+	PlmnIdentity                      *PlmnIdentity
+	RatRestrictionInformation         *[]byte
+	ExtendedRatRestrictionInformation *ExtendedRatRestrictionInformation
 }
 
 type ForbiddenAreaInformation struct {
-PlmnIdentity	*PlmnIdentity
-ForbiddenTacs	*ForbiddenTacs
+	PlmnIdentity  *PlmnIdentity
+	ForbiddenTacs *ForbiddenTacs
 }
 
 type ForbiddenTacs struct {
-Tac	*Tac
+	Tac *Tac
 }
 
 type ServiceAreaInformation struct {
-PlmnIdentity	*PlmnIdentity
-AllowedTacs	*AllowedTacs
-NotAllowedTacs	*NotAllowedTacs
+	PlmnIdentity   *PlmnIdentity
+	AllowedTacs    *AllowedTacs
+	NotAllowedTacs *NotAllowedTacs
 }
 
 type AllowedTacs struct {
-Tac	*Tac
+	Tac *Tac
 }
 
 type NotAllowedTacs struct {
-Tac	*Tac
+	Tac *Tac
 }
 
 type CoreNetworkTypeRestrictionForEquivalentPlmns struct {
-PlmnIdentity	*PlmnIdentity
-CoreNetworkTypeRestriction	*[]byte
+	PlmnIdentity               *PlmnIdentity
+	CoreNetworkTypeRestriction *[]byte
 }

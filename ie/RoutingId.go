@@ -1,5 +1,5 @@
 package ie
 
 type RoutingId struct {
-RoutingId	*[]byte
+	RoutingId *[]byte
 }

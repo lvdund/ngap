@@ -1,14 +1,14 @@
 package ie
 
 type UpTransportLayerInformation struct {
-ChoiceUpTransportLayerInformation	*ChoiceUpTransportLayerInformation
+	ChoiceUpTransportLayerInformation *ChoiceUpTransportLayerInformation
 }
 
 type ChoiceUpTransportLayerInformation struct {
-GtpTunnel	*GtpTunnel
+	GtpTunnel *GtpTunnel
 }
 
 type GtpTunnel struct {
-EndpointIpAddress	*TransportLayerAddress
-GtpTeid	*GtpTeid
+	EndpointIpAddress *TransportLayerAddress
+	GtpTeid           *GtpTeid
 }

@@ -1,9 +1,9 @@
 package ie
 
 type TargetNssai struct {
-TargetSNssaiList	*[]TargetSNssaiItem
+	TargetSNssaiList *[]TargetSNssaiItem
 }
 
 type TargetSNssaiItem struct {
-SNssai	*SNssai
+	SNssai *SNssai
 }

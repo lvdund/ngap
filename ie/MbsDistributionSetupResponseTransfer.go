@@ -1,10 +1,10 @@
 package ie
 
 type MbsDistributionSetupResponseTransfer struct {
-MbsSessionId	*MbsSessionId
-MbsAreaSessionId	*MbsAreaSessionId
-SharedNgUMulticastTnlInformation	*SharedNgUMulticastTnlInformation
-MbsQosFlowsToBeSetupList	*MbsQosFlowsToBeSetupList
-MbsSessionStatus	*MbsSessionStatus
-MbsServiceArea	*MbsServiceArea
+	MbsSessionId                     *MbsSessionId
+	MbsAreaSessionId                 *MbsAreaSessionId
+	SharedNgUMulticastTnlInformation *SharedNgUMulticastTnlInformation
+	MbsQosFlowsToBeSetupList         *MbsQosFlowsToBeSetupList
+	MbsSessionStatus                 *MbsSessionStatus
+	MbsServiceArea                   *MbsServiceArea
 }

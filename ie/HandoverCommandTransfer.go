@@ -1,16 +1,16 @@
 package ie
 
 type HandoverCommandTransfer struct {
-DlForwardingUpTnlInformation	*UpTransportLayerInformation
-QosFlowToBeForwardedList	*[]QosFlowToBeForwardedItem
-DataForwardingResponseDrbList	*DataForwardingResponseDrbList
-AdditionalDlForwardingUpTnlInformation	*QosFlowPerTnlInformationList
-UlForwardingUpTnlInformation	*UpTransportLayerInformation
-AdditionalUlForwardingUpTnlInformation	*UpTransportLayerInformationList
-DataForwardingResponseERabList	*DataForwardingResponseERabList
-QosFlowFailedToSetupList	*QosFlowListWithCause
+	DlForwardingUpTnlInformation           *UpTransportLayerInformation
+	QosFlowToBeForwardedList               *[]QosFlowToBeForwardedItem
+	DataForwardingResponseDrbList          *DataForwardingResponseDrbList
+	AdditionalDlForwardingUpTnlInformation *QosFlowPerTnlInformationList
+	UlForwardingUpTnlInformation           *UpTransportLayerInformation
+	AdditionalUlForwardingUpTnlInformation *UpTransportLayerInformationList
+	DataForwardingResponseERabList         *DataForwardingResponseERabList
+	QosFlowFailedToSetupList               *QosFlowListWithCause
 }
 
 type QosFlowToBeForwardedItem struct {
-QosFlowIdentifier	*QosFlowIdentifier
+	QosFlowIdentifier *QosFlowIdentifier
 }

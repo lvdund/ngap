@@ -1,9 +1,9 @@
 package ie
 
 type ExtendedSliceSupportList struct {
-SliceSupportItem	*SliceSupportItem
+	SliceSupportItem *SliceSupportItem
 }
 
 type SliceSupportItem struct {
-SNssai	*SNssai
+	SNssai *SNssai
 }

@@ -1,10 +1,10 @@
 package ie
 
 type RecommendedCellsForPaging struct {
-RecommendedCellList	*[]RecommendedCellItem
+	RecommendedCellList *[]RecommendedCellItem
 }
 
 type RecommendedCellItem struct {
-NgRanCgi	*NgRanCgi
-TimeStayedInCell	uint16	//`bitstring:"sizeLB:0,sizeUB:4095"`
+	NgRanCgi         *NgRanCgi
+	TimeStayedInCell uint16 //`bitstring:"sizeLB:0,sizeUB:4095"`
 }

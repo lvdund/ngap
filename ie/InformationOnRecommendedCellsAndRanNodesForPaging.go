@@ -1,6 +1,6 @@
 package ie
 
 type InformationOnRecommendedCellsAndRanNodesForPaging struct {
-RecommendedCellsForPaging	*RecommendedCellsForPaging
-RecommendedRanNodesForPaging	*RecommendedRanNodesForPaging
+	RecommendedCellsForPaging    *RecommendedCellsForPaging
+	RecommendedRanNodesForPaging *RecommendedRanNodesForPaging
 }

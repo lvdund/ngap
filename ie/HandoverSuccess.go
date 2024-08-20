@@ -1,7 +1,7 @@
 package ie
 
 type HandoverSuccess struct {
-MessageType	*MessageType
-AmfUeNgapId	*AmfUeNgapId
-RanUeNgapId	*RanUeNgapId
+	MessageType *MessageType
+	AmfUeNgapId *AmfUeNgapId
+	RanUeNgapId *RanUeNgapId
 }

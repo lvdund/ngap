@@ -1,5 +1,5 @@
 package ie
 
 type RrcEstablishmentCause struct {
-RrcEstablishmentCause	*[]byte
+	RrcEstablishmentCause *[]byte
 }

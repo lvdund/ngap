@@ -1,5 +1,5 @@
 package ie
 
 type UeRadioCapabilityEUtraFormat struct {
-UeRadioCapabilityEUtraFormat	*[]byte
+	UeRadioCapabilityEUtraFormat *[]byte
 }

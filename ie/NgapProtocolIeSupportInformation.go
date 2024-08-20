@@ -1,5 +1,5 @@
 package ie
 
 type NgapProtocolIeSupportInformation struct {
-NgapProtocolIeSupportInformation	*[]byte
+	NgapProtocolIeSupportInformation *[]byte
 }

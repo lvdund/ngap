@@ -1,38 +1,38 @@
 package ie
 
 type GlobalRanNodeId struct {
-ChoiceNgRanNode	*ChoiceNgRanNode
+	ChoiceNgRanNode *ChoiceNgRanNode
 }
 
 type ChoiceNgRanNode struct {
-Gnb	*Gnb
-NgEnb	*NgEnb
-N3Iwf	*N3Iwf
-Tngf	*Tngf
-Twif	*Twif
-WAgf	*WAgf
+	Gnb   *Gnb
+	NgEnb *NgEnb
+	N3Iwf *N3Iwf
+	Tngf  *Tngf
+	Twif  *Twif
+	WAgf  *WAgf
 }
 
 type Gnb struct {
-GlobalGnbId	*GlobalGnbId
+	GlobalGnbId *GlobalGnbId
 }
 
 type NgEnb struct {
-GlobalNgEnbId	*GlobalNgEnbId
+	GlobalNgEnbId *GlobalNgEnbId
 }
 
 type N3Iwf struct {
-GlobalN3IwfId	*GlobalN3IwfId
+	GlobalN3IwfId *GlobalN3IwfId
 }
 
 type Tngf struct {
-GlobalTngfId	*GlobalTngfId
+	GlobalTngfId *GlobalTngfId
 }
 
 type Twif struct {
-GlobalTwifId	*GlobalTwifId
+	GlobalTwifId *GlobalTwifId
 }
 
 type WAgf struct {
-GlobalWAgfId	*GlobalWAgfId
+	GlobalWAgfId *GlobalWAgfId
 }

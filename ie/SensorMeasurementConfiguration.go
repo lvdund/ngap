@@ -1,28 +1,28 @@
 package ie
 
 type SensorMeasurementConfiguration struct {
-SensorMeasurementConfiguration	*[]byte
-SensorMeasurementConfigurationNameList	*[]SensorMeasurementConfigurationNameItem
+	SensorMeasurementConfiguration         *[]byte
+	SensorMeasurementConfigurationNameList *[]SensorMeasurementConfigurationNameItem
 }
 
 type SensorMeasurementConfigurationNameItem struct {
-ChoiceSensorName	*ChoiceSensorName
+	ChoiceSensorName *ChoiceSensorName
 }
 
 type ChoiceSensorName struct {
-UncompensatedBarometric	*UncompensatedBarometric
-UeSpeed	*UeSpeed
-UeOrientation	*UeOrientation
+	UncompensatedBarometric *UncompensatedBarometric
+	UeSpeed                 *UeSpeed
+	UeOrientation           *UeOrientation
 }
 
 type UncompensatedBarometric struct {
-UncompensatedBarometricConfiguration	*[]byte
+	UncompensatedBarometricConfiguration *[]byte
 }
 
 type UeSpeed struct {
-UeSpeedConfiguration	*[]byte
+	UeSpeedConfiguration *[]byte
 }
 
 type UeOrientation struct {
-UeOrientationConfiguration	*[]byte
+	UeOrientationConfiguration *[]byte
 }

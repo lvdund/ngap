@@ -1,5 +1,5 @@
 package ie
 
 type WusAssistanceInformation struct {
-PagingProbabilityInformation	*[]byte
+	PagingProbabilityInformation *[]byte
 }

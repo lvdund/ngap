@@ -1,5 +1,5 @@
 package ie
 
 type UeRadioCapability struct {
-UeRadioCapability	*[]byte
+	UeRadioCapability *[]byte
 }

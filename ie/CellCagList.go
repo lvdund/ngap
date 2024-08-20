@@ -1,5 +1,5 @@
 package ie
 
 type CellCagList struct {
-CagId	*CagId
+	CagId *CagId
 }

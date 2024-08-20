@@ -1,10 +1,10 @@
 package ie
 
 type QosFlowListWithCause struct {
-QosFlowItem	*QosFlowItem
+	QosFlowItem *QosFlowItem
 }
 
 type QosFlowItem struct {
-QosFlowIdentifier	*QosFlowIdentifier
-Cause	*Cause
+	QosFlowIdentifier *QosFlowIdentifier
+	Cause             *Cause
 }

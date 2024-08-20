@@ -1,11 +1,11 @@
 package ie
 
 type MbsSessionFailedToSetupList struct {
-MbsSessionFailedToSetupList	*[]MbsSessionFailedToSetupItem
+	MbsSessionFailedToSetupList *[]MbsSessionFailedToSetupItem
 }
 
 type MbsSessionFailedToSetupItem struct {
-MbsSessionId	*MbsSessionId
-MbsAreaSessionId	*MbsAreaSessionId
-Cause	*Cause
+	MbsSessionId     *MbsSessionId
+	MbsAreaSessionId *MbsAreaSessionId
+	Cause            *Cause
 }

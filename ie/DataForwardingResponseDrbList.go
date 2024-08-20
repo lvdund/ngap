@@ -1,11 +1,11 @@
 package ie
 
 type DataForwardingResponseDrbList struct {
-DataForwardingResponseDrbItem	*DataForwardingResponseDrbItem
+	DataForwardingResponseDrbItem *DataForwardingResponseDrbItem
 }
 
 type DataForwardingResponseDrbItem struct {
-DrbId	*DrbId
-DlForwardingUpTnlInformation	*UpTransportLayerInformation
-UlForwardingUpTnlInformation	*UpTransportLayerInformation
+	DrbId                        *DrbId
+	DlForwardingUpTnlInformation *UpTransportLayerInformation
+	UlForwardingUpTnlInformation *UpTransportLayerInformation
 }

@@ -1,13 +1,13 @@
 package ie
 
 type ReportingSystem struct {
-ChoiceReportingSystem	*ChoiceReportingSystem
+	ChoiceReportingSystem *ChoiceReportingSystem
 }
 
 type EUtranCellToReportItem struct {
-CellId	*EUtraCgi
+	CellId *EUtraCgi
 }
 
 type NgRanCellToReportItem struct {
-CellId	*NgRanCgi
+	CellId *NgRanCgi
 }

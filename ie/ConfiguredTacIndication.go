@@ -1,5 +1,5 @@
 package ie
 
 type ConfiguredTacIndication struct {
-ConfiguredTacIndication	*[]byte
+	ConfiguredTacIndication *[]byte
 }

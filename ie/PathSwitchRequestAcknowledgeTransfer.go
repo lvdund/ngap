@@ -1,18 +1,18 @@
 package ie
 
 type PathSwitchRequestAcknowledgeTransfer struct {
-UlNgUUpTnlInformation	*UpTransportLayerInformation
-SecurityIndication	*SecurityIndication
-AdditionalNgUUpTnlInformation	*UpTransportLayerInformationPairList
-RedundantUlNgUUpTnlInformation	*UpTransportLayerInformation
-AdditionalRedundantNgUUpTnlInformation	*UpTransportLayerInformationPairList
-QosFlowParametersList	*[]QosFlowParametersItem
+	UlNgUUpTnlInformation                  *UpTransportLayerInformation
+	SecurityIndication                     *SecurityIndication
+	AdditionalNgUUpTnlInformation          *UpTransportLayerInformationPairList
+	RedundantUlNgUUpTnlInformation         *UpTransportLayerInformation
+	AdditionalRedundantNgUUpTnlInformation *UpTransportLayerInformationPairList
+	QosFlowParametersList                  *[]QosFlowParametersItem
 }
 
 type QosFlowParametersItem struct {
-QosFlowIdentifier	*QosFlowIdentifier
-AlternativeQosParametersSetList	*AlternativeQosParametersSetList
-CnPacketDelayBudgetDownlink	*ExtendedPacketDelayBudget
-CnPacketDelayBudgetUplink	*ExtendedPacketDelayBudget
-BurstArrivalTimeDownlink	*BurstArrivalTime
+	QosFlowIdentifier               *QosFlowIdentifier
+	AlternativeQosParametersSetList *AlternativeQosParametersSetList
+	CnPacketDelayBudgetDownlink     *ExtendedPacketDelayBudget
+	CnPacketDelayBudgetUplink       *ExtendedPacketDelayBudget
+	BurstArrivalTimeDownlink        *BurstArrivalTime
 }

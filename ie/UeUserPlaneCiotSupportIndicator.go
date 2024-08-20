@@ -1,5 +1,5 @@
 package ie
 
 type UeUserPlaneCiotSupportIndicator struct {
-UeUserPlaneCiotSupportIndicator	*[]byte
+	UeUserPlaneCiotSupportIndicator *[]byte
 }

@@ -1,6 +1,6 @@
 package ie
 
 type AvailableRanVisibleQoeMetrics struct {
-ApplicationLayerBufferLevelList	*[]byte
-PlayoutDelayForMediaStartup	*[]byte
+	ApplicationLayerBufferLevelList *[]byte
+	PlayoutDelayForMediaStartup     *[]byte
 }

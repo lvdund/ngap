@@ -1,6 +1,6 @@
 package ie
 
 type EUtranCompositeAvailableCapacity struct {
-EUtranCellCapacityClassValue	*EUtranCellCapacityClassValue
-EUtranCapacityValue	*EUtranCapacityValue
+	EUtranCellCapacityClassValue *EUtranCellCapacityClassValue
+	EUtranCapacityValue          *EUtranCapacityValue
 }

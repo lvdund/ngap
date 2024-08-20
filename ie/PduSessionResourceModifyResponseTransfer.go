@@ -1,23 +1,23 @@
 package ie
 
 type PduSessionResourceModifyResponseTransfer struct {
-DlNgUUpTnlInformation	*UpTransportLayerInformation
-UlNgUUpTnlInformation	*UpTransportLayerInformation
-QosFlowAddOrModifyResponseList	*[]QosFlowAddOrModifyResponseItem
-AdditionalDlQosFlowPerTnlInformation	*QosFlowPerTnlInformationList
-QosFlowFailedToAddOrModifyList	*QosFlowListWithCause
-AdditionalNgUUpTnlInformation	*UpTransportLayerInformationPairList
-RedundantDlNgUUpTnlInformation	*UpTransportLayerInformation
-RedundantUlNgUUpTnlInformation	*UpTransportLayerInformation
-AdditionalRedundantDlQosFlowPerTnlInformation	*QosFlowPerTnlInformationList
-AdditionalRedundantNgUUpTnlInformation	*UpTransportLayerInformationPairList
-SecondaryRatUsageInformation	*SecondaryRatUsageInformation
-MbsSupportIndicator	*MbsSupportIndicator
-MbsSessionSetupOrModifyResponseList	*MbsSessionSetupResponseList
-MbsSessionFailedToSetupOrModifyList	*MbsSessionFailedToSetupList
+	DlNgUUpTnlInformation                         *UpTransportLayerInformation
+	UlNgUUpTnlInformation                         *UpTransportLayerInformation
+	QosFlowAddOrModifyResponseList                *[]QosFlowAddOrModifyResponseItem
+	AdditionalDlQosFlowPerTnlInformation          *QosFlowPerTnlInformationList
+	QosFlowFailedToAddOrModifyList                *QosFlowListWithCause
+	AdditionalNgUUpTnlInformation                 *UpTransportLayerInformationPairList
+	RedundantDlNgUUpTnlInformation                *UpTransportLayerInformation
+	RedundantUlNgUUpTnlInformation                *UpTransportLayerInformation
+	AdditionalRedundantDlQosFlowPerTnlInformation *QosFlowPerTnlInformationList
+	AdditionalRedundantNgUUpTnlInformation        *UpTransportLayerInformationPairList
+	SecondaryRatUsageInformation                  *SecondaryRatUsageInformation
+	MbsSupportIndicator                           *MbsSupportIndicator
+	MbsSessionSetupOrModifyResponseList           *MbsSessionSetupResponseList
+	MbsSessionFailedToSetupOrModifyList           *MbsSessionFailedToSetupList
 }
 
 type QosFlowAddOrModifyResponseItem struct {
-QosFlowIdentifier	*QosFlowIdentifier
-CurrentQosParametersSetIndex	*AlternativeQosParametersSetIndex
+	QosFlowIdentifier            *QosFlowIdentifier
+	CurrentQosParametersSetIndex *AlternativeQosParametersSetIndex
 }

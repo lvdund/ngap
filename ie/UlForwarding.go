@@ -1,5 +1,5 @@
 package ie
 
 type UlForwarding struct {
-UlForwarding	*[]byte
+	UlForwarding *[]byte
 }

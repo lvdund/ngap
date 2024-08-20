@@ -1,6 +1,6 @@
 package ie
 
 type QosFlowPerTnlInformation struct {
-UpTransportLayerInformation	*UpTransportLayerInformation
-AssociatedQosFlowList	*AssociatedQosFlowList
+	UpTransportLayerInformation *UpTransportLayerInformation
+	AssociatedQosFlowList       *AssociatedQosFlowList
 }

@@ -1,5 +1,5 @@
 package ie
 
 type HandoverRequiredTransfer struct {
-DirectForwardingPathAvailability	*DirectForwardingPathAvailability
+	DirectForwardingPathAvailability *DirectForwardingPathAvailability
 }

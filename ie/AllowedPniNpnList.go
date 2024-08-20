@@ -1,15 +1,15 @@
 package ie
 
 type AllowedPniNpnList struct {
-AllowedPniNpnItem	*AllowedPniNpnItem
+	AllowedPniNpnItem *AllowedPniNpnItem
 }
 
 type AllowedPniNpnItem struct {
-PlmnIdentity	*PlmnIdentity
-PniNpnRestricted	*[]byte
-AllowedCagListPerPlmn	*AllowedCagListPerPlmn
+	PlmnIdentity          *PlmnIdentity
+	PniNpnRestricted      *[]byte
+	AllowedCagListPerPlmn *AllowedCagListPerPlmn
 }
 
 type AllowedCagListPerPlmn struct {
-CagId	*CagId
+	CagId *CagId
 }

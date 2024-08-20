@@ -1,5 +1,5 @@
 package ie
 
 type AssistanceDataForRecommendedCells struct {
-RecommendedCellsForPaging	*RecommendedCellsForPaging
+	RecommendedCellsForPaging *RecommendedCellsForPaging
 }

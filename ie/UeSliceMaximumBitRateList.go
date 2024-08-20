@@ -1,11 +1,11 @@
 package ie
 
 type UeSliceMaximumBitRateList struct {
-UeSliceMaximumBitRateItem	*UeSliceMaximumBitRateItem
+	UeSliceMaximumBitRateItem *UeSliceMaximumBitRateItem
 }
 
 type UeSliceMaximumBitRateItem struct {
-SNssai	*SNssai
-UeSliceMaximumBitRateDownlink	*BitRate
-UeSliceMaximumBitRateUplink	*BitRate
+	SNssai                        *SNssai
+	UeSliceMaximumBitRateDownlink *BitRate
+	UeSliceMaximumBitRateUplink   *BitRate
 }
