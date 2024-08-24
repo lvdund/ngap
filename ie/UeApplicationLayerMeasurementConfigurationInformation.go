@@ -1,69 +1,71 @@
 package ie
 
+import "ngap/aper"
+
 type UeApplicationLayerMeasurementConfigurationInformation struct {
-	QoeReference                                         []byte //`bitstring:"sizeLB:6,sizeUB:6"`
-	ServiceType                                          *[]byte
-	ChoiceAreaScopeOfQmc                                 *ChoiceAreaScopeOfQmc
-	MeasurementCollectionEntityIpAddress                 *TransportLayerAddress
-	QoeMeasurementStatus                                 *[]byte
-	ContainerForApplicationLayerMeasurementConfiguration *[]byte
-	MeasurementConfigurationApplicationLayerId           uint8 //`bitstring:"sizeLB:0,sizeUB:15"`
-	SliceSupportListForQmc                               *SliceSupportListForQmc
-	ChoiceMdtAlignmentInformation                        *ChoiceMdtAlignmentInformation
-	AvailableRanVisibleQoeMetrics                        *AvailableRanVisibleQoeMetrics
+QoeReference	aper.OctetString	//`octetstring:"sizeLB:6,sizeUB:6"`
+ServiceType	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+ChoiceAreaScopeOfQmc	ChoiceAreaScopeOfQmc	//`bitstring:"sizeLB:0,sizeUB:150"`
+MeasurementCollectionEntityIpAddress	TransportLayerAddress	//`bitstring:"sizeLB:0,sizeUB:150"`
+QoeMeasurementStatus	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+ContainerForApplicationLayerMeasurementConfiguration	aper.OctetString	//`octetstring:"sizeLB:0,sizeUB:150"`
+MeasurementConfigurationApplicationLayerId	aper.Integer	//`Integer:"valueLB:0,valueUB:15"`
+SliceSupportListForQmc	SliceSupportListForQmc	//`bitstring:"sizeLB:0,sizeUB:150"`
+ChoiceMdtAlignmentInformation	ChoiceMdtAlignmentInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+AvailableRanVisibleQoeMetrics	AvailableRanVisibleQoeMetrics	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceAreaScopeOfQmc struct {
-	CellBased     *CellBased
-	TaBased       *TaBased
-	TaiBased      *TaiBased
-	PlmnAreaBased *PlmnAreaBased
+CellBased	CellBased	//`bitstring:"sizeLB:0,sizeUB:150"`
+TaBased	TaBased	//`bitstring:"sizeLB:0,sizeUB:150"`
+TaiBased	TaiBased	//`bitstring:"sizeLB:0,sizeUB:150"`
+PlmnAreaBased	PlmnAreaBased	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type CellBased struct {
-	CellIdListForQmc *CellIdListForQmc
+CellIdListForQmc	CellIdListForQmc	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type CellIdListForQmc struct {
-	NgRanCgi *NgRanCgi
+NgRanCgi	NgRanCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TaBased struct {
-	TaListForQmc *TaListForQmc
+TaListForQmc	TaListForQmc	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TaListForQmc struct {
-	Tac *Tac
+Tac	Tac	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TaiBased struct {
-	TaiListForQmc *TaiListForQmc
+TaiListForQmc	TaiListForQmc	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TaiListForQmc struct {
-	Tai *Tai
+Tai	Tai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type PlmnAreaBased struct {
-	PlmnListForQmc *PlmnListForQmc
+PlmnListForQmc	PlmnListForQmc	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type PlmnListForQmc struct {
-	PlmnIdentity *PlmnIdentity
+PlmnIdentity	PlmnIdentity	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SliceSupportListForQmc struct {
-	SliceSupportQmcItem *SliceSupportQmcItem
+SliceSupportQmcItem	SliceSupportQmcItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SliceSupportQmcItem struct {
-	SNssai *SNssai
+SNssai	SNssai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceMdtAlignmentInformation struct {
-	SBasedMdt *SBasedMdt
+SBasedMdt	SBasedMdt	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SBasedMdt struct {
-	NgRanTraceId []byte //`bitstring:"sizeLB:8,sizeUB:8"`
+NgRanTraceId	aper.OctetString	//`octetstring:"sizeLB:8,sizeUB:8"`
 }

@@ -361,5 +361,7 @@ func (aw *aperWriter) WriteInteger(v int64, c *Constrain, e bool) (err error) {
 		valueRange = c.Ub - c.Lb +1
 	}
 
+	fmt.Println(valueRange)
+
 	return nil
 }

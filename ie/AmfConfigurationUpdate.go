@@ -1,44 +1,44 @@
 package ie
 
 type AmfConfigurationUpdate struct {
-	MessageType                   *MessageType
-	AmfName                       *AmfName
-	ServedGuamiList               *[]ServedGuamiItem
-	RelativeAmfCapacity           *RelativeAmfCapacity
-	PlmnSupportList               *[]PlmnSupportItem
-	AmfTnlAssociationToAddList    *[]AmfTnlAssociationToAddItem
-	AmfTnlAssociationToRemoveList *[]AmfTnlAssociationToRemoveItem
-	AmfTnlAssociationToUpdateList *[]AmfTnlAssociationToUpdateItem
-	ExtendedAmfName               *ExtendedAmfName
+MessageType	MessageType	//`bitstring:"sizeLB:0,sizeUB:150"`
+AmfName	AmfName	//`bitstring:"sizeLB:0,sizeUB:150"`
+ServedGuamiList	[]ServedGuamiItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+RelativeAmfCapacity	RelativeAmfCapacity	//`bitstring:"sizeLB:0,sizeUB:150"`
+PlmnSupportList	[]PlmnSupportItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+AmfTnlAssociationToAddList	[]AmfTnlAssociationToAddItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+AmfTnlAssociationToRemoveList	[]AmfTnlAssociationToRemoveItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+AmfTnlAssociationToUpdateList	[]AmfTnlAssociationToUpdateItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+ExtendedAmfName	ExtendedAmfName	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ServedGuamiItem struct {
-	Guami         *Guami
-	BackupAmfName *AmfName
-	GuamiType     *[]byte
+Guami	Guami	//`bitstring:"sizeLB:0,sizeUB:150"`
+BackupAmfName	AmfName	//`bitstring:"sizeLB:0,sizeUB:150"`
+GuamiType	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type PlmnSupportItem struct {
-	PlmnIdentity             *PlmnIdentity
-	SliceSupportList         *SliceSupportList
-	NpnSupport               *NpnSupport
-	ExtendedSliceSupportList *ExtendedSliceSupportList
-	OnboardingSupport        *[]byte
+PlmnIdentity	PlmnIdentity	//`bitstring:"sizeLB:0,sizeUB:150"`
+SliceSupportList	SliceSupportList	//`bitstring:"sizeLB:0,sizeUB:150"`
+NpnSupport	NpnSupport	//`bitstring:"sizeLB:0,sizeUB:150"`
+ExtendedSliceSupportList	ExtendedSliceSupportList	//`bitstring:"sizeLB:0,sizeUB:150"`
+OnboardingSupport	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type AmfTnlAssociationToAddItem struct {
-	AmfTnlAssociationAddress *CpTransportLayerInformation
-	TnlAssociationUsage      *TnlAssociationUsage
-	TnlAddressWeightFactor   *TnlAddressWeightFactor
+AmfTnlAssociationAddress	CpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+TnlAssociationUsage	TnlAssociationUsage	//`bitstring:"sizeLB:0,sizeUB:150"`
+TnlAddressWeightFactor	TnlAddressWeightFactor	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type AmfTnlAssociationToRemoveItem struct {
-	AmfTnlAssociationAddress                 *CpTransportLayerInformation
-	TnlAssociationTransportLayerAddressNgRan *CpTransportLayerInformation
+AmfTnlAssociationAddress	CpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+TnlAssociationTransportLayerAddressNgRan	CpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type AmfTnlAssociationToUpdateItem struct {
-	AmfTnlAssociationAddress *CpTransportLayerInformation
-	TnlAssociationUsage      *TnlAssociationUsage
-	TnlAddressWeightFactor   *TnlAddressWeightFactor
+AmfTnlAssociationAddress	CpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+TnlAssociationUsage	TnlAssociationUsage	//`bitstring:"sizeLB:0,sizeUB:150"`
+TnlAddressWeightFactor	TnlAddressWeightFactor	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

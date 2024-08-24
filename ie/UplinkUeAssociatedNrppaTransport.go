@@ -1,9 +1,9 @@
 package ie
 
 type UplinkUeAssociatedNrppaTransport struct {
-	MessageType *MessageType
-	AmfUeNgapId *AmfUeNgapId
-	RanUeNgapId *RanUeNgapId
-	RoutingId   *RoutingId
-	NrppaPdu    *NrppaPdu
+MessageType	MessageType	//`bitstring:"sizeLB:0,sizeUB:150"`
+AmfUeNgapId	AmfUeNgapId	//`bitstring:"sizeLB:0,sizeUB:150"`
+RanUeNgapId	RanUeNgapId	//`bitstring:"sizeLB:0,sizeUB:150"`
+RoutingId	RoutingId	//`bitstring:"sizeLB:0,sizeUB:150"`
+NrppaPdu	NrppaPdu	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

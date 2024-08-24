@@ -1,33 +1,33 @@
 package ie
 
 type Cause struct {
-	ChoiceCauseGroup *ChoiceCauseGroup
+ChoiceCauseGroup	ChoiceCauseGroup	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceCauseGroup struct {
-	RadioNetworkLayer *RadioNetworkLayer
-	TransportLayer    *TransportLayer
-	Nas               *Nas
-	Protocol          *Protocol
-	Miscellaneous     *Miscellaneous
+RadioNetworkLayer	RadioNetworkLayer	//`bitstring:"sizeLB:0,sizeUB:150"`
+TransportLayer	TransportLayer	//`bitstring:"sizeLB:0,sizeUB:150"`
+Nas	Nas	//`bitstring:"sizeLB:0,sizeUB:150"`
+Protocol	Protocol	//`bitstring:"sizeLB:0,sizeUB:150"`
+Miscellaneous	Miscellaneous	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type RadioNetworkLayer struct {
-	RadioNetworkLayerCause *[]byte
+RadioNetworkLayerCause	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TransportLayer struct {
-	TransportLayerCause *[]byte
+TransportLayerCause	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type Nas struct {
-	NasCause *[]byte
+NasCause	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type Protocol struct {
-	ProtocolCause *[]byte
+ProtocolCause	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type Miscellaneous struct {
-	MiscellaneousCause *[]byte
+MiscellaneousCause	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

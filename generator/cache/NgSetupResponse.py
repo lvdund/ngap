@@ -1,6 +1,6 @@
 ies = []
 ies.append({ "iei" : "MessageType", "level" : "0", "range" : "", "type" : "MessageType"})
-ies.append({ "iei" : "AmfName", "level" : "0", "range" : "", "type" : "Ie9.3.3.21 "})
+ies.append({ "iei" : "AmfName", "level" : "0", "range" : "", "type" : "AmfName"})
 ies.append({ "iei" : "ServedGuamiList", "level" : "0", "range" : "1", "type" : ""})
 ies.append({ "iei" : "ServedGuamiItem", "level" : "1", "range" : "1..<maxnoofServedGUAMIs>", "type" : ""})
 ies.append({ "iei" : "Guami", "level" : "2", "range" : "", "type" : "Guami"})

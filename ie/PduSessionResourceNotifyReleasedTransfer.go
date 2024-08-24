@@ -1,6 +1,6 @@
 package ie
 
 type PduSessionResourceNotifyReleasedTransfer struct {
-	Cause                        *Cause
-	SecondaryRatUsageInformation *SecondaryRatUsageInformation
+Cause	Cause	//`bitstring:"sizeLB:0,sizeUB:150"`
+SecondaryRatUsageInformation	SecondaryRatUsageInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

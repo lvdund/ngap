@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type MrbId struct {
-	MrbId uint16 //`bitstring:"sizeLB:1,sizeUB:512"`
+MrbId	aper.Integer	//`Integer:"valueLB:1,valueUB:512"`
 }

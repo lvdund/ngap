@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type MaskedImeisv struct {
-	MaskedImeisv []byte //`bitstring:"sizeLB:64,sizeUB:64"`
+MaskedImeisv	aper.BitString	//`bitstring:"sizeLB:64,sizeUB:64"`
 }

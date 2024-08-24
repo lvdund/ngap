@@ -1,7 +1,9 @@
 package ie
 
+import "ngap/aper"
+
 type ExpectedUeActivityBehaviour struct {
-	ExpectedActivityPeriod                 uint8 //`bitstring:"sizeLB:1,sizeUB:30"`
-	ExpectedIdlePeriod                     uint8 //`bitstring:"sizeLB:1,sizeUB:30"`
-	SourceOfUeActivityBehaviourInformation *[]byte
+ExpectedActivityPeriod	aper.Integer	//`Integer:"valueLB:1,valueUB:30"`
+ExpectedIdlePeriod	aper.Integer	//`Integer:"valueLB:1,valueUB:30"`
+SourceOfUeActivityBehaviourInformation	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

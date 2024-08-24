@@ -1,9 +1,9 @@
 package ie
 
 type SliceOverloadList struct {
-	SliceOverloadItem *SliceOverloadItem
+SliceOverloadItem	SliceOverloadItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SliceOverloadItem struct {
-	SNssai *SNssai
+SNssai	SNssai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

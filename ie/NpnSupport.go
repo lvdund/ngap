@@ -1,13 +1,13 @@
 package ie
 
 type NpnSupport struct {
-	ChoiceNpnSupport *ChoiceNpnSupport
+ChoiceNpnSupport	ChoiceNpnSupport	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceNpnSupport struct {
-	Snpn *Snpn
+Snpn	Snpn	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type Snpn struct {
-	Nid *Nid
+Nid	Nid	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,6 +1,8 @@
 package ie
 
+import "ngap/aper"
+
 type PacketErrorRate struct {
-	Scalar   uint8 //`bitstring:"sizeLB:0,sizeUB:9"`
-	Exponent uint8 //`bitstring:"sizeLB:0,sizeUB:9"`
+Scalar	aper.Integer	//`Integer:"valueLB:0,valueUB:9"`
+Exponent	aper.Integer	//`Integer:"valueLB:0,valueUB:9"`
 }

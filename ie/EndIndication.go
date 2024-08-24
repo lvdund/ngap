@@ -1,5 +1,5 @@
 package ie
 
 type EndIndication struct {
-	EndIndication *[]byte
+EndIndication	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

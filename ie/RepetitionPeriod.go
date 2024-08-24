@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type RepetitionPeriod struct {
-	RepetitionPeriod uint16 //`bitstring:"sizeLB:0,sizeUB:65535"`
+RepetitionPeriod	aper.Integer	//`Integer:"valueLB:0,valueUB:65535"`
 }

@@ -1,12 +1,14 @@
 package ie
 
+import "ngap/aper"
+
 type EUtranRadioResourceStatus struct {
-	DlGbrPrbUsage             uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlGbrPrbUsage             uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	DlNonGbrPrbUsage          uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlNonGbrPrbUsage          uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	DlTotalPrbUsage           uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlTotalPrbUsage           uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	DlSchedulingPdcchCceUsage uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlSchedulingPdcchCceUsage uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
+DlGbrPrbUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlGbrPrbUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+DlNonGbrPrbUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlNonGbrPrbUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+DlTotalPrbUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlTotalPrbUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+DlSchedulingPdcchCceUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlSchedulingPdcchCceUsage	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
 }

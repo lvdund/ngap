@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type PacketLossRate struct {
-	PacketLossRate uint16 //`bitstring:"sizeLB:0,sizeUB:1000"`
+PacketLossRate	aper.Integer	//`Integer:"valueLB:0,valueUB:1000"`
 }

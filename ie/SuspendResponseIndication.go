@@ -1,5 +1,5 @@
 package ie
 
 type SuspendResponseIndication struct {
-	SuspendResponseIndication *[]byte
+SuspendResponseIndication	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

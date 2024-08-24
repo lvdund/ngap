@@ -1,11 +1,11 @@
 package ie
 
 type AssociatedQosFlowList struct {
-	AssociatedQosFlowItem *AssociatedQosFlowItem
+AssociatedQosFlowItem	AssociatedQosFlowItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type AssociatedQosFlowItem struct {
-	QosFlowIdentifier            *QosFlowIdentifier
-	QosFlowMappingIndication     *[]byte
-	CurrentQosParametersSetIndex *AlternativeQosParametersSetIndex
+QosFlowIdentifier	QosFlowIdentifier	//`bitstring:"sizeLB:0,sizeUB:150"`
+QosFlowMappingIndication	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+CurrentQosParametersSetIndex	AlternativeQosParametersSetIndex	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type EpsTac struct {
-	EpsTac []byte //`bitstring:"sizeLB:2,sizeUB:2"`
+EpsTac	aper.OctetString	//`octetstring:"sizeLB:2,sizeUB:2"`
 }

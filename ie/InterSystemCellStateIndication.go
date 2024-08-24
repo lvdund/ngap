@@ -1,10 +1,10 @@
 package ie
 
 type InterSystemCellStateIndication struct {
-	NotificationCellList *[]NotificationCellItem
+NotificationCellList	[]NotificationCellItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type NotificationCellItem struct {
-	NgRanCgi   *NgRanCgi
-	NotifyFlag *[]byte
+NgRanCgi	NgRanCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+NotifyFlag	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

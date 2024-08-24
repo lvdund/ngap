@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type EmergencyAreaId struct {
-	EmergencyAreaId []byte //`bitstring:"sizeLB:3,sizeUB:3"`
+EmergencyAreaId	aper.OctetString	//`octetstring:"sizeLB:3,sizeUB:3"`
 }

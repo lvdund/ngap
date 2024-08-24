@@ -1,5 +1,5 @@
 package ie
 
 type DapsRequestInformation struct {
-	DapsIndicator *[]byte
+DapsIndicator	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

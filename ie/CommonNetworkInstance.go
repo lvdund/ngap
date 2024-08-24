@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type CommonNetworkInstance struct {
-	CommonNetworkInstance *[]byte
+CommonNetworkInstance	aper.OctetString	//`octetstring:"sizeLB:0,sizeUB:150"`
 }

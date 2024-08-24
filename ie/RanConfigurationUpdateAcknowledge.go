@@ -1,6 +1,6 @@
 package ie
 
 type RanConfigurationUpdateAcknowledge struct {
-	MessageType            *MessageType
-	CriticalityDiagnostics *CriticalityDiagnostics
+MessageType	MessageType	//`bitstring:"sizeLB:0,sizeUB:150"`
+CriticalityDiagnostics	CriticalityDiagnostics	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

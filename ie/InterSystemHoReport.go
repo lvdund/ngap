@@ -1,41 +1,43 @@
 package ie
 
+import "ngap/aper"
+
 type InterSystemHoReport struct {
-	ChoiceHandoverReportType *ChoiceHandoverReportType
+ChoiceHandoverReportType	ChoiceHandoverReportType	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceHandoverReportType struct {
-	TooEarlyInterSystemHo    *TooEarlyInterSystemHo
-	InterSystemUnnecessaryHo *InterSystemUnnecessaryHo
+TooEarlyInterSystemHo	TooEarlyInterSystemHo	//`bitstring:"sizeLB:0,sizeUB:150"`
+InterSystemUnnecessaryHo	InterSystemUnnecessaryHo	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TooEarlyInterSystemHo struct {
-	SourceCellId         *EUtraCgi
-	FailureCellId        *NgRanCgi
-	UeRlfReportContainer *UeRlfReportContainer
+SourceCellId	EUtraCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+FailureCellId	NgRanCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+UeRlfReportContainer	UeRlfReportContainer	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type InterSystemUnnecessaryHo struct {
-	SourceCellCgi     *NgRanCgi
-	TargetCellCgi     *EUtraCgi
-	EarlyIratHo       *[]byte
-	CandidateCellList *[]CandidateCellItem
+SourceCellCgi	NgRanCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+TargetCellCgi	EUtraCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+EarlyIratHo	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+CandidateCellList	[]CandidateCellItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type CandidateCellItem struct {
-	ChoiceCandidateCellType *ChoiceCandidateCellType
+ChoiceCandidateCellType	ChoiceCandidateCellType	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceCandidateCellType struct {
-	CandidateCgi *CandidateCgi
-	CandidatePci *CandidatePci
+CandidateCgi	CandidateCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+CandidatePci	CandidatePci	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type CandidateCgi struct {
-	CandidateCellId *NrCgi
+CandidateCellId	NrCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type CandidatePci struct {
-	CandidatePci     uint16 //`bitstring:"sizeLB:0,sizeUB:1007"`
-	CandidateNrArfcn *int
+CandidatePci	aper.Integer	//`Integer:"valueLB:0,valueUB:1007"`
+CandidateNrArfcn	aper.Integer	//`Integer:"valueLB:0,valueUB:150"`
 }

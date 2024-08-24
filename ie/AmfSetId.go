@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type AmfSetId struct {
-	AmfSetId []byte //`bitstring:"sizeLB:10,sizeUB:10"`
+AmfSetId	aper.BitString	//`bitstring:"sizeLB:10,sizeUB:10"`
 }

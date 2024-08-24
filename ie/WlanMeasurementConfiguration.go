@@ -1,12 +1,14 @@
 package ie
 
+import "ngap/aper"
+
 type WlanMeasurementConfiguration struct {
-	WlanMeasurementConfiguration         *[]byte
-	WlanMeasurementConfigurationNameList *[]WlanMeasurementConfigurationNameItem
-	WlanRssi                             *[]byte
-	WlanRtt                              *[]byte
+WlanMeasurementConfiguration	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+WlanMeasurementConfigurationNameList	[]WlanMeasurementConfigurationNameItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+WlanRssi	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+WlanRtt	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type WlanMeasurementConfigurationNameItem struct {
-	WlanMeasurementConfigurationName *[]byte
+WlanMeasurementConfigurationName	aper.OctetString	//`octetstring:"sizeLB:0,sizeUB:150"`
 }

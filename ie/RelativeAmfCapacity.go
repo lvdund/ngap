@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type RelativeAmfCapacity struct {
-	RelativeAmfCapacity uint8 //`bitstring:"sizeLB:0,sizeUB:255"`
+RelativeAmfCapacity	aper.Integer	//`Integer:"valueLB:0,valueUB:255"`
 }

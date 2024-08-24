@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type EUtranCapacityValue struct {
-	CapacityValue uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
+CapacityValue	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
 }

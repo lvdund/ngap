@@ -1,14 +1,14 @@
 package ie
 
 type LocationReportingRequestType struct {
-	EventType                                 *[]byte
-	ReportArea                                *[]byte
-	AreaOfInterestList                        *[]AreaOfInterestItem
-	LocationReportingReferenceIdToBeCancelled *LocationReportingReferenceId
-	AdditionalLocationInformation             *[]byte
+EventType	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+ReportArea	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
+AreaOfInterestList	[]AreaOfInterestItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+LocationReportingReferenceIdToBeCancelled	LocationReportingReferenceId	//`bitstring:"sizeLB:0,sizeUB:150"`
+AdditionalLocationInformation	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type AreaOfInterestItem struct {
-	AreaOfInterest               *AreaOfInterest
-	LocationReportingReferenceId *LocationReportingReferenceId
+AreaOfInterest	AreaOfInterest	//`bitstring:"sizeLB:0,sizeUB:150"`
+LocationReportingReferenceId	LocationReportingReferenceId	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

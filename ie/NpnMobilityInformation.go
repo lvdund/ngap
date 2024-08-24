@@ -1,18 +1,18 @@
 package ie
 
 type NpnMobilityInformation struct {
-	ChoiceNpnMobilityInformation *ChoiceNpnMobilityInformation
+ChoiceNpnMobilityInformation	ChoiceNpnMobilityInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceNpnMobilityInformation struct {
-	SnpnMobilityInformation   *SnpnMobilityInformation
-	PniNpnMobilityInformation *PniNpnMobilityInformation
+SnpnMobilityInformation	SnpnMobilityInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+PniNpnMobilityInformation	PniNpnMobilityInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SnpnMobilityInformation struct {
-	ServingNid *Nid
+ServingNid	Nid	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type PniNpnMobilityInformation struct {
-	AllowedPniNpnList *AllowedPniNpnList
+AllowedPniNpnList	AllowedPniNpnList	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

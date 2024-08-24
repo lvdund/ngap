@@ -1,5 +1,5 @@
 package ie
 
 type NbIotDefaultPagingDrx struct {
-	NbIotDefaultPagingDrx *[]byte
+NbIotDefaultPagingDrx	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

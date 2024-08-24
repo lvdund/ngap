@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type CagId struct {
-	CagId []byte //`bitstring:"sizeLB:32,sizeUB:32"`
+CagId	aper.BitString	//`bitstring:"sizeLB:32,sizeUB:32"`
 }

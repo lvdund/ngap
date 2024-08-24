@@ -1,5 +1,5 @@
 package ie
 
 type PathSwitchRequestUnsuccessfulTransfer struct {
-	Cause *Cause
+Cause	Cause	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

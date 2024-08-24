@@ -1,5 +1,5 @@
 package ie
 
 type MicoModeIndication struct {
-	MicoModeIndication *[]byte
+MicoModeIndication	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

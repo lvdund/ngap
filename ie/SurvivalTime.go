@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type SurvivalTime struct {
-	SurvivalTime *int
+SurvivalTime	aper.Integer	//`Integer:"valueLB:0,valueUB:150"`
 }

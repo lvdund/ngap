@@ -1,6 +1,8 @@
 package ie
 
+import "ngap/aper"
+
 type PagingAssistanceDataForCeCapableUe struct {
-	GlobalCellId             *EUtraCgi
-	CoverageEnhancementLevel *[]byte
+GlobalCellId	EUtraCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+CoverageEnhancementLevel	aper.OctetString	//`octetstring:"sizeLB:0,sizeUB:150"`
 }

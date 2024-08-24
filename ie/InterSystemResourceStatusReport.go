@@ -1,34 +1,36 @@
 package ie
 
+import "ngap/aper"
+
 type InterSystemResourceStatusReport struct {
-	ChoiceReportingSystem *ChoiceReportingSystem
+ChoiceReportingSystem	ChoiceReportingSystem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceReportingSystem struct {
-	EUtran *EUtran
-	NgRan  *NgRan
+EUtran	EUtran	//`bitstring:"sizeLB:0,sizeUB:150"`
+NgRan	NgRan	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type EUtran struct {
-	EUtranCellReportList *[]EUtranCellReportItem
+EUtranCellReportList	[]EUtranCellReportItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type EUtranCellReportItem struct {
-	CellId                                *EUtraCgi
-	EUtranCompositeAvailableCapacityGroup *EUtranCompositeAvailableCapacityGroup
-	NumberOfActiveUes                     uint32 //`bitstring:"sizeLB:0,sizeUB:16777215"`
-	RrcConnections                        uint32 //`bitstring:"sizeLB:1,sizeUB:65536"`
-	EUtranRadioResourceStatus             *EUtranRadioResourceStatus
+CellId	EUtraCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+EUtranCompositeAvailableCapacityGroup	EUtranCompositeAvailableCapacityGroup	//`bitstring:"sizeLB:0,sizeUB:150"`
+NumberOfActiveUes	aper.Integer	//`Integer:"valueLB:0,valueUB:16777215"`
+RrcConnections	aper.Integer	//`Integer:"valueLB:1,valueUB:65536"`
+EUtranRadioResourceStatus	EUtranRadioResourceStatus	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type NgRan struct {
-	NgRanCellReportList *[]NgRanCellReportItem
+NgRanCellReportList	[]NgRanCellReportItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type NgRanCellReportItem struct {
-	CellId                            *NgRanCgi
-	NrCompositeAvailableCapacityGroup *EUtranCompositeAvailableCapacityGroup
-	NumberOfActiveUes                 uint32 //`bitstring:"sizeLB:0,sizeUB:16777215"`
-	RrcConnections                    uint32 //`bitstring:"sizeLB:1,sizeUB:65536"`
-	NrRadioResourceStatus             *NrRadioResourceStatus
+CellId	NgRanCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+NrCompositeAvailableCapacityGroup	EUtranCompositeAvailableCapacityGroup	//`bitstring:"sizeLB:0,sizeUB:150"`
+NumberOfActiveUes	aper.Integer	//`Integer:"valueLB:0,valueUB:16777215"`
+RrcConnections	aper.Integer	//`Integer:"valueLB:1,valueUB:65536"`
+NrRadioResourceStatus	NrRadioResourceStatus	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

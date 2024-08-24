@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type QosFlowIdentifier struct {
-	QosFlowIdentifier uint8 //`bitstring:"sizeLB:0,sizeUB:63"`
+QosFlowIdentifier	aper.Integer	//`Integer:"valueLB:0,valueUB:63"`
 }

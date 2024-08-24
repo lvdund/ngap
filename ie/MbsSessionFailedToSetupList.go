@@ -1,11 +1,11 @@
 package ie
 
 type MbsSessionFailedToSetupList struct {
-	MbsSessionFailedToSetupList *[]MbsSessionFailedToSetupItem
+MbsSessionFailedToSetupList	[]MbsSessionFailedToSetupItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type MbsSessionFailedToSetupItem struct {
-	MbsSessionId     *MbsSessionId
-	MbsAreaSessionId *MbsAreaSessionId
-	Cause            *Cause
+MbsSessionId	MbsSessionId	//`bitstring:"sizeLB:0,sizeUB:150"`
+MbsAreaSessionId	MbsAreaSessionId	//`bitstring:"sizeLB:0,sizeUB:150"`
+Cause	Cause	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

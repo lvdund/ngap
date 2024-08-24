@@ -1,7 +1,9 @@
 package ie
 
+import "ngap/aper"
+
 type PagingAttemptInformation struct {
-	PagingAttemptCount             uint8 //`bitstring:"sizeLB:1,sizeUB:16"`
-	IntendedNumberOfPagingAttempts uint8 //`bitstring:"sizeLB:1,sizeUB:16"`
-	NextPagingAreaScope            *[]byte
+PagingAttemptCount	aper.Integer	//`Integer:"valueLB:1,valueUB:16"`
+IntendedNumberOfPagingAttempts	aper.Integer	//`Integer:"valueLB:1,valueUB:16"`
+NextPagingAreaScope	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

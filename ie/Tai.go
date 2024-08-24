@@ -1,6 +1,6 @@
 package ie
 
 type Tai struct {
-	PlmnIdentity *PlmnIdentity
-	Tac          *Tac
+PlmnIdentity	PlmnIdentity	//`bitstring:"sizeLB:0,sizeUB:150"`
+Tac	Tac	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

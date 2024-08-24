@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type ExtendedUeIdentityIndexValue struct {
-	ExtendedUeIdentityIndexValue []byte //`bitstring:"sizeLB:16,sizeUB:16"`
+ExtendedUeIdentityIndexValue	aper.BitString	//`bitstring:"sizeLB:16,sizeUB:16"`
 }

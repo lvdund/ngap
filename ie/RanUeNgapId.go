@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type RanUeNgapId struct {
-	RanUeNgapId uint32 //`bitstring:"sizeLB:0,sizeUB:4294967295"`
+RanUeNgapId	aper.Integer	//`Integer:"valueLB:0,valueUB:4294967295"`
 }

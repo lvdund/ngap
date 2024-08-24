@@ -1,10 +1,12 @@
 package ie
 
+import "ngap/aper"
+
 type NrRadioResourceStatus struct {
-	DlGbrPrbUsageForMimo    uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlGbrPrbUsageForMimo    uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	DlNonGbrPrbUsageForMimo uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlNonGbrPrbUsageForMimo uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	DlTotalPrbUsageForMimo  uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
-	UlTotalPrbUsageForMimo  uint8 //`bitstring:"sizeLB:0,sizeUB:100"`
+DlGbrPrbUsageForMimo	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlGbrPrbUsageForMimo	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+DlNonGbrPrbUsageForMimo	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlNonGbrPrbUsageForMimo	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+DlTotalPrbUsageForMimo	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
+UlTotalPrbUsageForMimo	aper.Integer	//`Integer:"valueLB:0,valueUB:100"`
 }

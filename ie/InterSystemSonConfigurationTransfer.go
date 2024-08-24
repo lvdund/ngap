@@ -1,41 +1,41 @@
 package ie
 
 type InterSystemSonConfigurationTransfer struct {
-	ChoiceTransferType        *ChoiceTransferType
-	InterSystemSonInformation *InterSystemSonInformation
+ChoiceTransferType	ChoiceTransferType	//`bitstring:"sizeLB:0,sizeUB:150"`
+InterSystemSonInformation	InterSystemSonInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceTransferType struct {
-	FromEUtranToNgRan *FromEUtranToNgRan
-	FromNgRanToEUtran *FromNgRanToEUtran
+FromEUtranToNgRan	FromEUtranToNgRan	//`bitstring:"sizeLB:0,sizeUB:150"`
+FromNgRanToEUtran	FromNgRanToEUtran	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type FromEUtranToNgRan struct {
-	SourceEnbId       *SourceEnbId
-	TargetNgRanNodeId *TargetNgRanNodeId
+SourceEnbId	SourceEnbId	//`bitstring:"sizeLB:0,sizeUB:150"`
+TargetNgRanNodeId	TargetNgRanNodeId	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SourceEnbId struct {
-	GlobalEnbId    *GlobalEnbId
-	SelectedEpsTai *EpsTai
+GlobalEnbId	GlobalEnbId	//`bitstring:"sizeLB:0,sizeUB:150"`
+SelectedEpsTai	EpsTai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TargetNgRanNodeId struct {
-	GlobalRanNodeId *GlobalRanNodeId
-	SelectedTai     *Tai
+GlobalRanNodeId	GlobalRanNodeId	//`bitstring:"sizeLB:0,sizeUB:150"`
+SelectedTai	Tai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type FromNgRanToEUtran struct {
-	SourceNgRanNodeId *SourceNgRanNodeId
-	TargetEnbId       *TargetEnbId
+SourceNgRanNodeId	SourceNgRanNodeId	//`bitstring:"sizeLB:0,sizeUB:150"`
+TargetEnbId	TargetEnbId	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type SourceNgRanNodeId struct {
-	GlobalRanNodeId *GlobalRanNodeId
-	SelectedTai     *Tai
+GlobalRanNodeId	GlobalRanNodeId	//`bitstring:"sizeLB:0,sizeUB:150"`
+SelectedTai	Tai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type TargetEnbId struct {
-	GlobalEnbId    *GlobalEnbId
-	SelectedEpsTai *EpsTai
+GlobalEnbId	GlobalEnbId	//`bitstring:"sizeLB:0,sizeUB:150"`
+SelectedEpsTai	EpsTai	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

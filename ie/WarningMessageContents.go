@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type WarningMessageContents struct {
-	WarningMessageContents []byte //`bitstring:"sizeLB:1,sizeUB:9600"`
+WarningMessageContents	aper.OctetString	//`octetstring:"sizeLB:1,sizeUB:9600"`
 }

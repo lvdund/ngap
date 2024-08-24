@@ -1,10 +1,10 @@
 package ie
 
 type UpTransportLayerInformationPairList struct {
-	UpTransportLayerInformationPairItem *UpTransportLayerInformationPairItem
+UpTransportLayerInformationPairItem	UpTransportLayerInformationPairItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type UpTransportLayerInformationPairItem struct {
-	UlNgUUpTnlInformation *UpTransportLayerInformation
-	DlNgUUpTnlInformation *UpTransportLayerInformation
+UlNgUUpTnlInformation	UpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+DlNgUUpTnlInformation	UpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

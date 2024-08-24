@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type IndexToRatFrequencySelectionPriority struct {
-	IndexToRatFrequencySelectionPriority uint16 //`bitstring:"sizeLB:1,sizeUB:256"`
+IndexToRatFrequencySelectionPriority	aper.Integer	//`Integer:"valueLB:1,valueUB:256"`
 }

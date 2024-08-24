@@ -13,9 +13,11 @@ type BitString struct {
 	NumBits uint64
 }
 
-//type OctetString []byte
+type OctetString []byte
 
-//type Integer int64
+type Integer int64
+
+type Enumerated uint8
 
 type Constrain struct {
 	Lb int64

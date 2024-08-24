@@ -1,5 +1,5 @@
 package ie
 
 type CeModeBSupportIndicator struct {
-	CeModeBSupportIndicator *[]byte
+CeModeBSupportIndicator	[]byte	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

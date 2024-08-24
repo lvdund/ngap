@@ -1,25 +1,27 @@
 package ie
 
+import "ngap/aper"
+
 type TargetNgRanNodeToSourceNgRanNodeTransparentContainer struct {
-	RrcContainer                                  *[]byte
-	DapsResponseInformationList                   *[]DapsResponseInformationItem
-	DirectForwardingPathAvailability              *DirectForwardingPathAvailability
-	MbsActiveSessionInformationTargetToSourceList *[]MbsActiveSessionInformationTargetToSourceItem
-	NgapIeSupportInformationResponseList          *NgapIeSupportInformationResponseList
+RrcContainer	aper.OctetString	//`octetstring:"sizeLB:0,sizeUB:150"`
+DapsResponseInformationList	[]DapsResponseInformationItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+DirectForwardingPathAvailability	DirectForwardingPathAvailability	//`bitstring:"sizeLB:0,sizeUB:150"`
+MbsActiveSessionInformationTargetToSourceList	[]MbsActiveSessionInformationTargetToSourceItem	//`bitstring:"sizeLB:0,sizeUB:150"`
+NgapIeSupportInformationResponseList	NgapIeSupportInformationResponseList	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type DapsResponseInformationItem struct {
-	DrbId                   *DrbId
-	DapsResponseInformation *DapsResponseInformation
+DrbId	DrbId	//`bitstring:"sizeLB:0,sizeUB:150"`
+DapsResponseInformation	DapsResponseInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type MbsActiveSessionInformationTargetToSourceItem struct {
-	MbsSessionId                  *MbsSessionId
-	DataForwardingResponseMrbList *[]DataForwardingResponseMrbItem
+MbsSessionId	MbsSessionId	//`bitstring:"sizeLB:0,sizeUB:150"`
+DataForwardingResponseMrbList	[]DataForwardingResponseMrbItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type DataForwardingResponseMrbItem struct {
-	MrbId                        *MrbId
-	DlForwardingUpTnlInformation *UpTransportLayerInformation
-	MrbProgressInformation       *MrbProgressInformation
+MrbId	MrbId	//`bitstring:"sizeLB:0,sizeUB:150"`
+DlForwardingUpTnlInformation	UpTransportLayerInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
+MrbProgressInformation	MrbProgressInformation	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type PlmnIdentity struct {
-	PlmnIdentity []byte //`bitstring:"sizeLB:3,sizeUB:3"`
+PlmnIdentity	aper.OctetString	//`octetstring:"sizeLB:3,sizeUB:3"`
 }

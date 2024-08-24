@@ -1,6 +1,8 @@
 package ie
 
+import "ngap/aper"
+
 type Lai struct {
-	PlmnIdentity *PlmnIdentity
-	Lac          []byte //`bitstring:"sizeLB:2,sizeUB:2"`
+PlmnIdentity	PlmnIdentity	//`bitstring:"sizeLB:0,sizeUB:150"`
+Lac	aper.OctetString	//`octetstring:"sizeLB:2,sizeUB:2"`
 }

@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type AlternativeQosParametersSetNotifyIndex struct {
-	AlternativeQosParametersSetNotifyIndex uint8 //`bitstring:"sizeLB:0,sizeUB:8"`
+AlternativeQosParametersSetNotifyIndex	aper.Integer	//`Integer:"valueLB:0,valueUB:8"`
 }

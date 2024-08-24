@@ -1,18 +1,18 @@
 package ie
 
 type InterSystemSonInformationRequest struct {
-	ChoiceInterSystemSonInformationRequest *ChoiceInterSystemSonInformationRequest
+ChoiceInterSystemSonInformationRequest	ChoiceInterSystemSonInformationRequest	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceInterSystemSonInformationRequest struct {
-	NgRanCellActivation *NgRanCellActivation
-	ResourceStatus      *ResourceStatus
+NgRanCellActivation	NgRanCellActivation	//`bitstring:"sizeLB:0,sizeUB:150"`
+ResourceStatus	ResourceStatus	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type NgRanCellActivation struct {
-	InterSystemCellActivationRequest *InterSystemCellActivationRequest
+InterSystemCellActivationRequest	InterSystemCellActivationRequest	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ResourceStatus struct {
-	InterSystemResourceStatusRequest *InterSystemResourceStatusRequest
+InterSystemResourceStatusRequest	InterSystemResourceStatusRequest	//`bitstring:"sizeLB:0,sizeUB:150"`
 }

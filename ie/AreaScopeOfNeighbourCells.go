@@ -1,14 +1,16 @@
 package ie
 
+import "ngap/aper"
+
 type AreaScopeOfNeighbourCells struct {
-	AreaScopeOfNeighbourCellsItem *AreaScopeOfNeighbourCellsItem
+AreaScopeOfNeighbourCellsItem	AreaScopeOfNeighbourCellsItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type AreaScopeOfNeighbourCellsItem struct {
-	NrFrequencyInfo *NrFrequencyInfo
-	PciListForMdt   *PciListForMdt
+NrFrequencyInfo	NrFrequencyInfo	//`bitstring:"sizeLB:0,sizeUB:150"`
+PciListForMdt	PciListForMdt	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type PciListForMdt struct {
-	NrPci uint16 //`bitstring:"sizeLB:0,sizeUB:1007"`
+NrPci	aper.Integer	//`Integer:"valueLB:0,valueUB:1007"`
 }

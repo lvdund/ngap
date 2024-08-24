@@ -1,10 +1,12 @@
 package ie
 
+import "ngap/aper"
+
 type RecommendedCellsForPaging struct {
-	RecommendedCellList *[]RecommendedCellItem
+RecommendedCellList	[]RecommendedCellItem	//`bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type RecommendedCellItem struct {
-	NgRanCgi         *NgRanCgi
-	TimeStayedInCell uint16 //`bitstring:"sizeLB:0,sizeUB:4095"`
+NgRanCgi	NgRanCgi	//`bitstring:"sizeLB:0,sizeUB:150"`
+TimeStayedInCell	aper.Integer	//`Integer:"valueLB:0,valueUB:4095"`
 }

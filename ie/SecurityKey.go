@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type SecurityKey struct {
-	SecurityKey []byte //`bitstring:"sizeLB:256,sizeUB:256"`
+SecurityKey	aper.BitString	//`bitstring:"sizeLB:256,sizeUB:256"`
 }

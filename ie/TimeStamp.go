@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type TimeStamp struct {
-	TimeStamp []byte //`bitstring:"sizeLB:4,sizeUB:4"`
+TimeStamp	aper.OctetString	//`octetstring:"sizeLB:4,sizeUB:4"`
 }
