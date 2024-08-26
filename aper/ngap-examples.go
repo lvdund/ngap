@@ -9,7 +9,6 @@ type AmfId struct {
 	Pointer     []byte     //`bitstring:"sizeLB:6,sizeUB:6"`
 	BitStringEx *BitString //`bitstring:"sizeLB:1,sizeUB:120"`
 	ValueEx     *uint64    //`Integer:"valueLB:500,valueUB:1000`
-
 }
 
 func (id *AmfId) AperEncode(w AperWriter) (err error) {

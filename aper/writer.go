@@ -17,11 +17,11 @@ type AperWriter interface {
 	WriteBits([]byte, uint64) error
 	WriteOctetString([]byte, *Constrain, bool) error
 	WriteBitString([]byte, uint, *Constrain, bool) error
-	WriteInteger(uint64, *Constrain, bool) error
+	WriteInteger(uint64,*Constrain, bool) error
 }
 type aperWriter struct {
 	w     io.Writer
-	b     [1]byte
+	b     []byte
 	index uint8 //number o written bits in the buffer/index of the next bit to write [0:7]
 }
 
@@ -123,6 +123,8 @@ func (aw *aperWriter) WriteBits(content []byte, nbits uint) error {
 
 	aw.index = uint8((nbits + uint(aw.index)) & 0x07) //determine new aw.index
 	if aw.index == 0 {                                //flush all
+		//		pd.bytes = append(pd.bytes, bytes...)
+		//      pd.bitsOffset = (numBits & 0x7)
 		if _, err := aw.w.Write(buf); err != nil {
 			return aperError("writeBits", err)
 		}
@@ -221,95 +223,81 @@ func (aw *aperWriter) writeConstrainValue(r uint64, v uint64) error {
 	return aperError("writeConstrainValue", aw.writeValue(v, nbytes*8))
 }
 
-func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constrain, e bool) (err error) {
-	
-	// var sRange int64 = -1
-	// var lb, ub int64 = 0, 0
-	// if c != nil {
-	// 	lb = c.Lb
-	// 	if c.Ub >= c.Lb {
-	// 		ub = c.Ub
-	// 		if nbits <= uint64(c.Ub) {
-	// 			sRange = int64(c.Range())
-	// 		} else if !e {
-	// 			err = ErrInextensible
-	// 			return
-	// 		}
-	// 		if e {
-	// 			if sRange == -1 {
-	// 				if err = aw.WriteBool(One); err != nil {
-	// 					return
-	// 				}
-	// 				lb = 0
-	// 			} else {
-	// 				if err = aw.WriteBool(Zero); err != nil {
-	// 					return
-	// 				}
-	// 			}
-	// 		}
+func (aw *aperWriter) WriteBitString(content []byte, nbits uint64, c *Constrain, extensive bool) (err error) {
+	var sRange int64 = -1
+	if c != nil {
+		if c.Ub >= c.Lb {
+			if nbits <= uint64(c.Ub) {
+				sRange = int64(c.Range())
+			} else if !extensive {
+				err = ErrInextensible
+				return
+			}
+			if extensive {
+				if sRange == -1 {
+					if err = aw.WriteBool(One); err != nil {
+						return
+					}
+					c.Lb = 0
+				} else {
+					if err = aw.WriteBool(Zero); err != nil {
+						return
+					}
+				}
+			}
+		}
+	}
 
-	// 	}
-	// }
+	if c.Ub > 65535 {
+		sRange = -1
+	}
+	sizes := (nbits + 7) >> 3
+	shift := (8 - nbits&0x7)
+	if shift != 8 {
+		content[sizes-1] &= (0xff << shift)
+	}
+	if sRange == 1 {
+		if nbits != uint64(c.Ub) {
+			err = fmt.Errorf("bitString Length(%d) is not match fix-sized")
+		}
+		if sizes > 2 {
+			aw.align()
+			aw.b = append(aw.b, content...)
+			aw.index = uint8(c.Ub & 0x7)
+		} else {
+			err = aw.WriteBits(content, uint(nbits))
+		}
+		return
+	}
+	rawLength := nbits - uint64(c.Lb)
 
-	// if ub > 65535 {
-	// 	sRange = -1
-	// }
-	// sizes := (bitsLength + 7) >> 3
-	// shift := (8 - bitsLength&0x7)
-	// if shift != 8 {
-	// 	bytes[sizes-1] &= (0xff << shift)
-	// }
-
-	// if sizeRange == 1 {
-	// 	if bitsLength != uint64(ub) {
-	// 		err = fmt.Errorf("bitString Length(%d) is not match fix-sized : %d", bitsLength, ub)
-	// 	}
-	// 	log.Debugf("Encoding BIT STRING size %d", ub)
-	// 	if sizes > 2 {
-	// 		pd.appendAlignBits()
-	// 		pd.bytes = append(pd.bytes, bytes...)
-	// 		pd.bitsOffset = uint(ub & 0x7)
-	// 		log.Debugf("%s", perRawBitLog(bitsLength, len(pd.bytes), pd.bitsOffset, bytes))
-	// 	} else {
-	// 		err = pd.putBitString(bytes, uint(bitsLength))
-	// 	}
-	// 	log.Debugf("Encoded BIT STRING (length = %d): 0x%0x", bitsLength, bytes)
-	// 	return
-	// }
-	// rawLength := bitsLength - uint64(lb)
-
-	// var byteOffset, partOfRawLength uint64
-	// for {
-	// 	if rawLength > 65536 {
-	// 		partOfRawLength = 65536
-	// 	} else if rawLength >= 16384 {
-	// 		partOfRawLength = rawLength & 0xc000
-	// 	} else {
-	// 		partOfRawLength = rawLength
-	// 	}
-	// 	if err = pd.appendLength(sizeRange, partOfRawLength); err != nil {
-	// 		return
-	// 	}
-	// 	partOfRawLength += uint64(lb)
-	// 	sizes := (partOfRawLength + 7) >> 3
-	// 	log.Debugf("Encoding BIT STRING size %d", partOfRawLength)
-	// 	if partOfRawLength == 0 {
-	// 		return
-	// 	}
-	// 	pd.appendAlignBits()
-	// 	pd.bytes = append(pd.bytes, bytes[byteOffset:byteOffset+sizes]...)
-	// 	log.Debugf("%s", perRawBitLog(partOfRawLength, len(pd.bytes), pd.bitsOffset, bytes))
-	// 	log.Debugf("Encoded BIT STRING (length = %d): 0x%0x", partOfRawLength,
-	// 		bytes[byteOffset:byteOffset+sizes])
-	// 	rawLength -= (partOfRawLength - uint64(lb))
-	// 	if rawLength > 0 {
-	// 		byteOffset += sizes
-	// 	} else {
-	// 		pd.bitsOffset += uint(partOfRawLength & 0x7)
-	// 		// pd.appendAlignBits()
-	// 		break
-	// 	}
-	// }
+	var byteOffset, partOfRawLength uint64
+	for {
+		if rawLength > 65536 {
+			partOfRawLength = 65536
+		} else if rawLength >= 16384 {
+			partOfRawLength = rawLength & 0xc000
+		} else {
+			partOfRawLength = rawLength
+		}
+		if err = aw.writeLength(uint64(sRange), partOfRawLength); err != nil {
+			return
+		}
+		partOfRawLength += uint64(c.Lb)
+		sizes := (partOfRawLength + 7) >> 3
+		if partOfRawLength == 0 {
+			return
+		}
+		aw.align()
+		aw.b = append(aw.b, content[byteOffset:byteOffset+sizes]...)
+		rawLength -= (partOfRawLength - uint64(c.Lb))
+		if rawLength > 0 {
+			byteOffset += sizes
+		} else {
+			aw.index += uint8(partOfRawLength & 0x7)
+			break
+		}
+	}
 
 	//TODO:
 	return nil
@@ -350,16 +338,76 @@ func (aw *aperWriter) WriteEnumerate(v uint64, c Constrain, e bool) error {
 	return nil
 }
 
-func (aw *aperWriter) WriteInteger(v int64, c *Constrain, e bool) (err error) {
+func (aw *aperWriter) WriteInteger(v int64, c *Constrain, extensive bool) (err error) {
 	//TODO:
 	var  valueRange int64 = 0
-	if c.Lb != 0 && c.Ub != 0{
+	if &c.Lb != nil && &c.Ub != nil{
 		if v < c.Lb && v > c.Ub {
-			fmt.Errorf("The integer value is out of the allowed range.")
+			valueRange = int64(c.Range())
+			if !extensive{
+				fmt.Errorf("The integer value is out of the allowed range.")
+			}else{
+				if valueRange == 0{
+					valueRange = -1
+					if err := aw.WriteBool(One);err != nil {
+						fmt.Errorf("Encoding INTEGER with Unconstraint Value")
+					}
+				}else{
+					if err := aw.WriteBool(Zero);err != nil {
+						fmt.Errorf("Encoding INTEGER with Unconstraint Value")
+					}	
+				}
+			}
+		}else{
+			valueRange = int64(c.Range())
 		}
 	}else{
-		valueRange = c.Ub - c.Lb +1
+		valueRange = -1
 	}
 
+	unsignedValue := uint64(v)
+	var rawLength uint
+	if v < 0 {
+		x := v >> 63
+		unsignedValue = uint64(((v ^ x) - x)) - 1
+	}
+	if valueRange <= 0 {
+		unsignedValue >>= 7
+	} else if valueRange <= 65536 {
+		return aw.writeConstrainValue(uint64(valueRange), uint64(v-c.Lb))
+	} else {
+		unsignedValue >>= 8
+	}
+	for rawLength = 1; rawLength <= 127; rawLength++ {
+		if unsignedValue == 0 {
+			break
+		}
+		unsignedValue >>= 8
+	}
+	//putting length 
+	if valueRange <= 0 {
+		aw.align()
+		aw.b = append(aw.b, byte(rawLength))
+	}else{
+		var byteLen uint
+		uValueRange := uint64(valueRange-1)
+		for byteLen = 1; byteLen <= 127; byteLen++ {
+			uValueRange >>= 8
+			if uValueRange <= 1 {
+				break
+			}
+		}
+		var i, upper uint
+		// 1 ~ 8 bits
+		for i = 1; i <= 8; i++ {
+			upper = 1 << i
+			if upper >= byteLen {
+				break
+			}
+		}
+		if err := aw.writeValue(uint64(rawLength-1), i); err != nil {
+			return err
+		}
+	}
 	return nil
 }
