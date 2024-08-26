@@ -1,5 +1,5 @@
 package ie
 
 type ImsVoiceSupportIndicator struct {
-	ImsVoiceSupportIndicator []byte //`bitstring:"sizeLB:0,sizeUB:150"`
+	ImsVoiceSupportIndicator []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

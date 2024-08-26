@@ -1,7 +1,7 @@
 package ie
 
 type BroadcastSessionReleaseRequired struct {
-	MessageType  MessageType  //`bitstring:"sizeLB:0,sizeUB:150"`
-	MbsSessionId MbsSessionId //`bitstring:"sizeLB:0,sizeUB:150"`
-	Cause        Cause        //`bitstring:"sizeLB:0,sizeUB:150"`
+	MessageType  MessageType  `bitstring:"sizeLB:0,sizeUB:150"`
+	MbsSessionId MbsSessionId `bitstring:"sizeLB:0,sizeUB:150"`
+	Cause        Cause        `bitstring:"sizeLB:0,sizeUB:150"`
 }

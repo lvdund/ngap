@@ -1,5 +1,5 @@
 package ie
 
 type PduSessionResourceReleaseResponseTransfer struct {
-	SecondaryRatUsageInformation SecondaryRatUsageInformation //`bitstring:"sizeLB:0,sizeUB:150"`
+	SecondaryRatUsageInformation SecondaryRatUsageInformation `bitstring:"sizeLB:0,sizeUB:150"`
 }

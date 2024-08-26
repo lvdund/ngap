@@ -1,5 +1,5 @@
 package ie
 
 type PagingOrigin struct {
-	PagingOrigin []byte //`bitstring:"sizeLB:0,sizeUB:150"`
+	PagingOrigin []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

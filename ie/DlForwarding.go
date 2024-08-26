@@ -1,5 +1,5 @@
 package ie
 
 type DlForwarding struct {
-	DlForwarding []byte //`bitstring:"sizeLB:0,sizeUB:150"`
+	DlForwarding []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

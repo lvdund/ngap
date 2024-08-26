@@ -1,5 +1,5 @@
 package ie
 
 type OverloadAction struct {
-	OverloadAction []byte //`bitstring:"sizeLB:0,sizeUB:150"`
+	OverloadAction []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }
