@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type TargetToSourceFailureTransparentContainer struct {
-	TargetToSourceFailureTransparentContainer *[]byte
+	TargetToSourceFailureTransparentContainer aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
 }

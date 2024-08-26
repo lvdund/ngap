@@ -1,6 +1,6 @@
 package ie
 
 type EmergencyFallbackIndicator struct {
-	EmergencyFallbackRequestIndicator *[]byte
-	EmergencyServiceTargetCn          *[]byte
+	EmergencyFallbackRequestIndicator []byte `bitstring:"sizeLB:0,sizeUB:150"`
+	EmergencyServiceTargetCn          []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

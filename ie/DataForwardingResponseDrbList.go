@@ -1,11 +1,11 @@
 package ie
 
 type DataForwardingResponseDrbList struct {
-	DataForwardingResponseDrbItem *DataForwardingResponseDrbItem
+	DataForwardingResponseDrbItem DataForwardingResponseDrbItem `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type DataForwardingResponseDrbItem struct {
-	DrbId                        *DrbId
-	DlForwardingUpTnlInformation *UpTransportLayerInformation
-	UlForwardingUpTnlInformation *UpTransportLayerInformation
+	DrbId                        DrbId                       `bitstring:"sizeLB:0,sizeUB:150"`
+	DlForwardingUpTnlInformation UpTransportLayerInformation `bitstring:"sizeLB:0,sizeUB:150"`
+	UlForwardingUpTnlInformation UpTransportLayerInformation `bitstring:"sizeLB:0,sizeUB:150"`
 }

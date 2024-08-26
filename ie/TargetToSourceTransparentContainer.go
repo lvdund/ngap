@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type TargetToSourceTransparentContainer struct {
-	TargetToSourceTransparentContainer *[]byte
+	TargetToSourceTransparentContainer aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
 }

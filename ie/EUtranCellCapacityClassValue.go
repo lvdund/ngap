@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type EUtranCellCapacityClassValue struct {
-	CellCapacityClassValue uint8 //`bitstring:"sizeLB:1,sizeUB:100"`
+	CellCapacityClassValue aper.Integer `Integer:"valueLB:1,valueUB:100"`
 }

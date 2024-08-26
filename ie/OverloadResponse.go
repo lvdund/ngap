@@ -1,9 +1,9 @@
 package ie
 
 type OverloadResponse struct {
-	ChoiceOverloadResponse *ChoiceOverloadResponse
+	ChoiceOverloadResponse ChoiceOverloadResponse `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceOverloadResponse struct {
-	OverloadAction *OverloadAction
+	OverloadAction OverloadAction `bitstring:"sizeLB:0,sizeUB:150"`
 }

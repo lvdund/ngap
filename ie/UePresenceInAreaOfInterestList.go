@@ -1,10 +1,10 @@
 package ie
 
 type UePresenceInAreaOfInterestList struct {
-	UePresenceInAreaOfInterestItem *UePresenceInAreaOfInterestItem
+	UePresenceInAreaOfInterestItem UePresenceInAreaOfInterestItem `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type UePresenceInAreaOfInterestItem struct {
-	LocationReportingReferenceId *LocationReportingReferenceId
-	UePresence                   *[]byte
+	LocationReportingReferenceId LocationReportingReferenceId `bitstring:"sizeLB:0,sizeUB:150"`
+	UePresence                   []byte                       `bitstring:"sizeLB:0,sizeUB:150"`
 }

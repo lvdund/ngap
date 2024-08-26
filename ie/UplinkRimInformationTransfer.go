@@ -1,6 +1,6 @@
 package ie
 
 type UplinkRimInformationTransfer struct {
-	MessageType            *MessageType
-	RimInformationTransfer *RimInformationTransfer
+	MessageType            MessageType            `bitstring:"sizeLB:0,sizeUB:150"`
+	RimInformationTransfer RimInformationTransfer `bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,9 +1,11 @@
 package ie
 
+import "ngap/aper"
+
 type BroadcastSessionModificationFailure struct {
-	MessageType                           *MessageType
-	MbsSessionId                          *MbsSessionId
-	MbsSessionModificationFailureTransfer *[]byte
-	Cause                                 *Cause
-	CriticalityDiagnostics                *CriticalityDiagnostics
+	MessageType                           MessageType            `bitstring:"sizeLB:0,sizeUB:150"`
+	MbsSessionId                          MbsSessionId           `bitstring:"sizeLB:0,sizeUB:150"`
+	MbsSessionModificationFailureTransfer aper.OctetString       `octetstring:"sizeLB:0,sizeUB:150"`
+	Cause                                 Cause                  `bitstring:"sizeLB:0,sizeUB:150"`
+	CriticalityDiagnostics                CriticalityDiagnostics `bitstring:"sizeLB:0,sizeUB:150"`
 }

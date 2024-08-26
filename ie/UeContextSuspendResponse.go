@@ -1,9 +1,9 @@
 package ie
 
 type UeContextSuspendResponse struct {
-	MessageType            *MessageType
-	AmfUeNgapId            *AmfUeNgapId
-	RanUeNgapId            *RanUeNgapId
-	SecurityContext        *SecurityContext
-	CriticalityDiagnostics *CriticalityDiagnostics
+	MessageType            MessageType            `bitstring:"sizeLB:0,sizeUB:150"`
+	AmfUeNgapId            AmfUeNgapId            `bitstring:"sizeLB:0,sizeUB:150"`
+	RanUeNgapId            RanUeNgapId            `bitstring:"sizeLB:0,sizeUB:150"`
+	SecurityContext        SecurityContext        `bitstring:"sizeLB:0,sizeUB:150"`
+	CriticalityDiagnostics CriticalityDiagnostics `bitstring:"sizeLB:0,sizeUB:150"`
 }

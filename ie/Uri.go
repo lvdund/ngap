@@ -1,5 +1,5 @@
 package ie
 
 type Uri struct {
-	Uri *[]byte
+	Uri []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

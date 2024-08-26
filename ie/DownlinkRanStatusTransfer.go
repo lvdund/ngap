@@ -1,8 +1,8 @@
 package ie
 
 type DownlinkRanStatusTransfer struct {
-	MessageType                           *MessageType
-	AmfUeNgapId                           *AmfUeNgapId
-	RanUeNgapId                           *RanUeNgapId
-	RanStatusTransferTransparentContainer *RanStatusTransferTransparentContainer
+	MessageType                           MessageType                           `bitstring:"sizeLB:0,sizeUB:150"`
+	AmfUeNgapId                           AmfUeNgapId                           `bitstring:"sizeLB:0,sizeUB:150"`
+	RanUeNgapId                           RanUeNgapId                           `bitstring:"sizeLB:0,sizeUB:150"`
+	RanStatusTransferTransparentContainer RanStatusTransferTransparentContainer `bitstring:"sizeLB:0,sizeUB:150"`
 }

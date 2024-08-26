@@ -1,7 +1,9 @@
 package ie
 
+import "ngap/aper"
+
 type SourceToTargetAmfInformationReroute struct {
-	ConfiguredNssai     []byte //`bitstring:"sizeLB:128,sizeUB:128"`
-	RejectedNssaiInPlmn []byte //`bitstring:"sizeLB:32,sizeUB:32"`
-	RejectedNssaiInTa   []byte //`bitstring:"sizeLB:32,sizeUB:32"`
+	ConfiguredNssai     aper.OctetString `octetstring:"sizeLB:128,sizeUB:128"`
+	RejectedNssaiInPlmn aper.OctetString `octetstring:"sizeLB:32,sizeUB:32"`
+	RejectedNssaiInTa   aper.OctetString `octetstring:"sizeLB:32,sizeUB:32"`
 }

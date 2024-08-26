@@ -1,7 +1,9 @@
 package ie
 
+import "ngap/aper"
+
 type AllocationAndRetentionPriority struct {
-	PriorityLevel           uint8 //`bitstring:"sizeLB:1,sizeUB:15"`
-	PreEmptionCapability    *[]byte
-	PreEmptionVulnerability *[]byte
+	PriorityLevel           aper.Integer `Integer:"valueLB:1,valueUB:15"`
+	PreEmptionCapability    []byte       `bitstring:"sizeLB:0,sizeUB:150"`
+	PreEmptionVulnerability []byte       `bitstring:"sizeLB:0,sizeUB:150"`
 }

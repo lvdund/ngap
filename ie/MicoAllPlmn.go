@@ -1,5 +1,5 @@
 package ie
 
 type MicoAllPlmn struct {
-	MicoAllPlmn *[]byte
+	MicoAllPlmn []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

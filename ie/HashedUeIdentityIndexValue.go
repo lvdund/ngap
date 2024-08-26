@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type HashedUeIdentityIndexValue struct {
-	HashedUeIdentityIndexValue *[]byte
+	HashedUeIdentityIndexValue aper.BitString `bitstring:"sizeLB:0,sizeUB:150"`
 }

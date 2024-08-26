@@ -1,5 +1,5 @@
 package ie
 
 type UeCapabilityInfoRequest struct {
-	UeCapabilityInfoRequest *[]byte
+	UeCapabilityInfoRequest []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,6 +1,8 @@
 package ie
 
+import "ngap/aper"
+
 type EUtraCgi struct {
-	PlmnIdentity      *PlmnIdentity
-	EUtraCellIdentity []byte //`bitstring:"sizeLB:28,sizeUB:28"`
+	PlmnIdentity      PlmnIdentity   `bitstring:"sizeLB:0,sizeUB:150"`
+	EUtraCellIdentity aper.BitString `bitstring:"sizeLB:28,sizeUB:28"`
 }

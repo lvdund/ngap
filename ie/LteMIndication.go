@@ -1,5 +1,5 @@
 package ie
 
 type LteMIndication struct {
-	LteMIndication *[]byte
+	LteMIndication []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

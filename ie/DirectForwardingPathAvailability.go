@@ -1,5 +1,5 @@
 package ie
 
 type DirectForwardingPathAvailability struct {
-	DirectForwardingPathAvailability *[]byte
+	DirectForwardingPathAvailability []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type LocationReportingReferenceId struct {
-	LocationReportingReferenceId uint8 //`bitstring:"sizeLB:1,sizeUB:64"`
+	LocationReportingReferenceId aper.Integer `Integer:"valueLB:1,valueUB:64"`
 }

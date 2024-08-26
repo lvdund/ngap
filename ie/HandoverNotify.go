@@ -1,9 +1,9 @@
 package ie
 
 type HandoverNotify struct {
-	MessageType             *MessageType
-	AmfUeNgapId             *AmfUeNgapId
-	RanUeNgapId             *RanUeNgapId
-	UserLocationInformation *UserLocationInformation
-	NotifySourceNgRanNode   *[]byte
+	MessageType             MessageType             `bitstring:"sizeLB:0,sizeUB:150"`
+	AmfUeNgapId             AmfUeNgapId             `bitstring:"sizeLB:0,sizeUB:150"`
+	RanUeNgapId             RanUeNgapId             `bitstring:"sizeLB:0,sizeUB:150"`
+	UserLocationInformation UserLocationInformation `bitstring:"sizeLB:0,sizeUB:150"`
+	NotifySourceNgRanNode   []byte                  `bitstring:"sizeLB:0,sizeUB:150"`
 }

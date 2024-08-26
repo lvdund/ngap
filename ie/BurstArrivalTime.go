@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type BurstArrivalTime struct {
-	BurstArrivalTime *[]byte
+	BurstArrivalTime aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
 }

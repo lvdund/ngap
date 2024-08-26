@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type AveragingWindow struct {
-	AveragingWindow uint16 //`bitstring:"sizeLB:0,sizeUB:4095"`
+	AveragingWindow aper.Integer `Integer:"valueLB:0,valueUB:4095"`
 }

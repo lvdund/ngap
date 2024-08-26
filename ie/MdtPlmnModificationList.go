@@ -1,5 +1,5 @@
 package ie
 
 type MdtPlmnModificationList struct {
-	PlmnIdentity *PlmnIdentity
+	PlmnIdentity PlmnIdentity `bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,5 +1,5 @@
 package ie
 
 type TnlAssociationUsage struct {
-	TnlAssociationUsage *[]byte
+	TnlAssociationUsage []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

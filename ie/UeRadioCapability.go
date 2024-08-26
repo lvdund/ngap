@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type UeRadioCapability struct {
-	UeRadioCapability *[]byte
+	UeRadioCapability aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
 }

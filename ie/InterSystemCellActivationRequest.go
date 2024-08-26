@@ -1,10 +1,12 @@
 package ie
 
+import "ngap/aper"
+
 type InterSystemCellActivationRequest struct {
-	ActivationId        uint16 //`bitstring:"sizeLB:0,sizeUB:16384"`
-	CellsToActivateList *CellsToActivateList
+	ActivationId        aper.Integer        `Integer:"valueLB:0,valueUB:16384"`
+	CellsToActivateList CellsToActivateList `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type CellsToActivateList struct {
-	NgRanCgi *NgRanCgi
+	NgRanCgi NgRanCgi `bitstring:"sizeLB:0,sizeUB:150"`
 }

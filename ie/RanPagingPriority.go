@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type RanPagingPriority struct {
-	RanPagingPriority uint16 //`bitstring:"sizeLB:1,sizeUB:256"`
+	RanPagingPriority aper.Integer `Integer:"valueLB:1,valueUB:256"`
 }

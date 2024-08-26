@@ -1,7 +1,9 @@
 package ie
 
+import "ngap/aper"
+
 type UeRadioCapabilityForPaging struct {
-	UeRadioCapabilityForPagingOfNr    *[]byte
-	UeRadioCapabilityForPagingOfEUtra *[]byte
-	UeRadioCapabilityForPagingOfNbIot *[]byte
+	UeRadioCapabilityForPagingOfNr    aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
+	UeRadioCapabilityForPagingOfEUtra aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
+	UeRadioCapabilityForPagingOfNbIot aper.OctetString `octetstring:"sizeLB:0,sizeUB:150"`
 }

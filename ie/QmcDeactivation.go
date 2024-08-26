@@ -1,9 +1,11 @@
 package ie
 
+import "ngap/aper"
+
 type QmcDeactivation struct {
-	QoeReferenceList *QoeReferenceList
+	QoeReferenceList QoeReferenceList `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type QoeReferenceList struct {
-	QoeReference []byte //`bitstring:"sizeLB:6,sizeUB:6"`
+	QoeReference aper.OctetString `octetstring:"sizeLB:6,sizeUB:6"`
 }

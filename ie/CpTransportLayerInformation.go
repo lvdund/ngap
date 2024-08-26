@@ -1,19 +1,21 @@
 package ie
 
+import "ngap/aper"
+
 type CpTransportLayerInformation struct {
-	ChoiceCpTransportLayerInformation *ChoiceCpTransportLayerInformation
+	ChoiceCpTransportLayerInformation ChoiceCpTransportLayerInformation `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceCpTransportLayerInformation struct {
-	EndpointIpAddress        *EndpointIpAddress
-	EndpointIpAddressAndPort *EndpointIpAddressAndPort
+	EndpointIpAddress        EndpointIpAddress        `bitstring:"sizeLB:0,sizeUB:150"`
+	EndpointIpAddressAndPort EndpointIpAddressAndPort `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type EndpointIpAddress struct {
-	EndpointIpAddress *TransportLayerAddress
+	EndpointIpAddress TransportLayerAddress `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type EndpointIpAddressAndPort struct {
-	EndpointIpAddress *TransportLayerAddress
-	PortNumber        []byte //`bitstring:"sizeLB:2,sizeUB:2"`
+	EndpointIpAddress TransportLayerAddress `bitstring:"sizeLB:0,sizeUB:150"`
+	PortNumber        aper.OctetString      `octetstring:"sizeLB:2,sizeUB:2"`
 }

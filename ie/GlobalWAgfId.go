@@ -1,14 +1,16 @@
 package ie
 
+import "ngap/aper"
+
 type GlobalWAgfId struct {
-	PlmnIdentity *PlmnIdentity
-	ChoiceWAgfId *ChoiceWAgfId
+	PlmnIdentity PlmnIdentity `bitstring:"sizeLB:0,sizeUB:150"`
+	ChoiceWAgfId ChoiceWAgfId `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ChoiceWAgfId struct {
-	WAgfId *WAgfId
+	WAgfId WAgfId `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type WAgfId struct {
-	WAgfId *[]byte
+	WAgfId aper.BitString `bitstring:"sizeLB:0,sizeUB:150"`
 }

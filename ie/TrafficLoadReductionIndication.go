@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type TrafficLoadReductionIndication struct {
-	TrafficLoadReductionIndication uint8 //`bitstring:"sizeLB:1,sizeUB:99"`
+	TrafficLoadReductionIndication aper.Integer `Integer:"valueLB:1,valueUB:99"`
 }

@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type NgapProtocolIeId struct {
-	NgapProtocolIeId uint16 //`bitstring:"sizeLB:0,sizeUB:65535"`
+	NgapProtocolIeId aper.Integer `Integer:"valueLB:0,valueUB:65535"`
 }

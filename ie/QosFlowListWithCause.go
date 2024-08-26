@@ -1,10 +1,10 @@
 package ie
 
 type QosFlowListWithCause struct {
-	QosFlowItem *QosFlowItem
+	QosFlowItem QosFlowItem `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type QosFlowItem struct {
-	QosFlowIdentifier *QosFlowIdentifier
-	Cause             *Cause
+	QosFlowIdentifier QosFlowIdentifier `bitstring:"sizeLB:0,sizeUB:150"`
+	Cause             Cause             `bitstring:"sizeLB:0,sizeUB:150"`
 }

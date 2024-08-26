@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type SerialNumber struct {
-	SerialNumber []byte //`bitstring:"sizeLB:16,sizeUB:16"`
+	SerialNumber aper.BitString `bitstring:"sizeLB:16,sizeUB:16"`
 }

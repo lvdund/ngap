@@ -1,10 +1,10 @@
 package ie
 
 type MbsSessionTnlInformation5Gc struct {
-	ChoiceSessionType *ChoiceSessionType
+	ChoiceSessionType ChoiceSessionType `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type MbsSessionTnlInformation5GcItem struct {
-	MbsAreaSessionId                 *MbsAreaSessionId
-	SharedNgUMulticastTnlInformation *SharedNgUMulticastTnlInformation
+	MbsAreaSessionId                 MbsAreaSessionId                 `bitstring:"sizeLB:0,sizeUB:150"`
+	SharedNgUMulticastTnlInformation SharedNgUMulticastTnlInformation `bitstring:"sizeLB:0,sizeUB:150"`
 }

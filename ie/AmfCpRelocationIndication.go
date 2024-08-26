@@ -1,9 +1,9 @@
 package ie
 
 type AmfCpRelocationIndication struct {
-	MessageType  *MessageType
-	AmfUeNgapId  *AmfUeNgapId
-	RanUeNgapId  *RanUeNgapId
-	SNssai       *SNssai
-	AllowedNssai *AllowedNssai
+	MessageType  MessageType  `bitstring:"sizeLB:0,sizeUB:150"`
+	AmfUeNgapId  AmfUeNgapId  `bitstring:"sizeLB:0,sizeUB:150"`
+	RanUeNgapId  RanUeNgapId  `bitstring:"sizeLB:0,sizeUB:150"`
+	SNssai       SNssai       `bitstring:"sizeLB:0,sizeUB:150"`
+	AllowedNssai AllowedNssai `bitstring:"sizeLB:0,sizeUB:150"`
 }

@@ -1,5 +1,5 @@
 package ie
 
 type MaximumIntegrityProtectedDataRate struct {
-	MaximumIntegrityProtectedDataRate *[]byte
+	MaximumIntegrityProtectedDataRate []byte `bitstring:"sizeLB:0,sizeUB:150"`
 }

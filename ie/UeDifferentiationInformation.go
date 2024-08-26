@@ -1,16 +1,18 @@
 package ie
 
+import "ngap/aper"
+
 type UeDifferentiationInformation struct {
-	PeriodicCommunicationIndicator *[]byte
-	PeriodicTime                   uint16 //`bitstring:"sizeLB:1,sizeUB:3600"`
-	ScheduledCommunicationTime     *ScheduledCommunicationTime
-	StationaryIndication           *[]byte
-	TrafficProfile                 *[]byte
-	BatteryIndication              *[]byte
+	PeriodicCommunicationIndicator []byte                     `bitstring:"sizeLB:0,sizeUB:150"`
+	PeriodicTime                   aper.Integer               `Integer:"valueLB:1,valueUB:3600"`
+	ScheduledCommunicationTime     ScheduledCommunicationTime `bitstring:"sizeLB:0,sizeUB:150"`
+	StationaryIndication           []byte                     `bitstring:"sizeLB:0,sizeUB:150"`
+	TrafficProfile                 []byte                     `bitstring:"sizeLB:0,sizeUB:150"`
+	BatteryIndication              []byte                     `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type ScheduledCommunicationTime struct {
-	DayOfWeek      []byte //`bitstring:"sizeLB:7,sizeUB:7"`
-	TimeOfDayStart uint32 //`bitstring:"sizeLB:0,sizeUB:86399"`
-	TimeOfDayEnd   uint32 //`bitstring:"sizeLB:0,sizeUB:86399"`
+	DayOfWeek      aper.BitString `bitstring:"sizeLB:7,sizeUB:7"`
+	TimeOfDayStart aper.Integer   `Integer:"valueLB:0,valueUB:86399"`
+	TimeOfDayEnd   aper.Integer   `Integer:"valueLB:0,valueUB:86399"`
 }

@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type PriorityLevel struct {
-	PriorityLevel uint8 //`bitstring:"sizeLB:1,sizeUB:127"`
+	PriorityLevel aper.Integer `Integer:"valueLB:1,valueUB:127"`
 }

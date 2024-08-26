@@ -1,9 +1,9 @@
 package ie
 
 type QosFlowPerTnlInformationList struct {
-	QosFlowPerTnlInformationItem *QosFlowPerTnlInformationItem
+	QosFlowPerTnlInformationItem QosFlowPerTnlInformationItem `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
 type QosFlowPerTnlInformationItem struct {
-	QosFlowPerTnlInformation *QosFlowPerTnlInformation
+	QosFlowPerTnlInformation QosFlowPerTnlInformation `bitstring:"sizeLB:0,sizeUB:150"`
 }
