@@ -12,9 +12,9 @@ type AperReader interface {
 }
 
 type aperReader struct {
-	r     io.Reader
-	b     [1]byte //read buffer
-	index uint8   //number of read bits / index of the next bit to read [0:8]
+	r         io.Reader
+	b         [1]byte //read buffer
+	index     uint8   //number of read bits / index of the next bit to read [0:8]
 	byteIndex uint64
 }
 
@@ -103,83 +103,93 @@ func (ar *aperReader) ReadBits(nbits uint) (output []byte, err error) {
 	return
 }
 
-func (ar *aperReader) readAlignBits()error{
-	if (ar.index & 0x7) >0 {
-		alignBits  := 8 - (ar.index & 0x7)
-		if val, err := ar.getBitsValue(alignBits); err!= nil{
-			return aperError("writeBits", ErrUnderflow)
+func (ar *aperReader) readAlignBits() error {
+	/*
+		if (ar.index & 0x7) > 0 {
+			alignBits := 8 - (ar.index & 0x7)
+			if val, err := ar.getBitsValue(alignBits); err != nil {
+				return aperError("writeBits", ErrUnderflow)
+			}
+		} else if ar.index != 0 {
+			ar
 		}
-	}else if ar.index !=0 {
-		ar
-	}
+	*/
+	return nil
 }
 
 func (ar *aperReader) readConstraintValue(c *Constrain, e bool) (bs []byte, nbits uint, err error) {
 	//TODO:\
-	var bytes uint 
-	if valueRange <= 255{
+	/*
+		var bytes uint
+		if valueRange <= 255 {
 
-	}else if valueRange ==256{
-		bytes = 1
-	} else if valueRange <= 65536 {
-		bytes = 2
-	}else{
+		} else if valueRange == 256 {
+			bytes = 1
+		} else if valueRange <= 65536 {
+			bytes = 2
+		} else {
+			return value, err
+		}
+		if err = pd.parseAlignBits(); err != nil {
+			return value, err
+		}
+		value, err = pd.getBitsValue(bytes * 8)
 		return value, err
-	}
-	if err = pd.parseAlignBits(); err != nil {
-		return value, err
-	}
-	value, err = pd.getBitsValue(bytes * 8)
-	return value, err
-	
+	*/
+	return
 }
 
 func (ar *aperReader) readLength(sizeRange int64, repeat *bool) (value uint64, err error) {
-	*repeat = false
-	if sizeRange <= 65536 && sizeRange > 0 {
-		return ar.parseConstraintValue(sizeRange)
-	}
+	/*
+		*repeat = false
+		if sizeRange <= 65536 && sizeRange > 0 {
+			return ar.parseConstraintValue(sizeRange)
+		}
 
-	if err = pd.parseAlignBits(); err != nil {
-		return value, err
-	}
-	firstByte, err := pd.getBitsValue(8)
-	if err != nil {
-		return value, err
-	}
-	if (firstByte & 128) == 0 { // #10.9.3.6
-		value = firstByte & 0x7F
-		return value, err
-	} else if (firstByte & 64) == 0 { // #10.9.3.7
-		var secondByte uint64
-		if secondByte, err = pd.getBitsValue(8); err != nil {
+		if err = pd.parseAlignBits(); err != nil {
 			return value, err
 		}
-		value = ((firstByte & 63) << 8) | secondByte
+		firstByte, err := pd.getBitsValue(8)
+		if err != nil {
+			return value, err
+		}
+		if (firstByte & 128) == 0 { // #10.9.3.6
+			value = firstByte & 0x7F
+			return value, err
+		} else if (firstByte & 64) == 0 { // #10.9.3.7
+			var secondByte uint64
+			if secondByte, err = pd.getBitsValue(8); err != nil {
+				return value, err
+			}
+			value = ((firstByte & 63) << 8) | secondByte
+			return value, err
+		}
+		firstByte &= 63
+		if firstByte < 1 || firstByte > 4 {
+			err = fmt.Errorf("Parse Length Out of Constraint")
+			return value, err
+		}
+		*repeat = true
+		value = 16384 * firstByte
 		return value, err
-	}
-	firstByte &= 63
-	if firstByte < 1 || firstByte > 4 {
-		err = fmt.Errorf("Parse Length Out of Constraint")
-		return value, err
-	}
-	*repeat = true
-	value = 16384 * firstByte
-	return value, err
+	*/
+	return
 }
 
 func (ar *aperReader) ReadBitString(c *Constrain, e bool) (bs []byte, nbits uint, err error) {
 	//TODO:\
-	var sizeRange int64 = -1
-	if c.Ub > 65535 {
-		sizeRange = -1
-	}
-	bitString := BitString{[]byte{},0}
-	repeat := false
-	for {
-		var rawLength uint64
-		if length,err : = 
-	}
+	/*
+		var sizeRange int64 = -1
+		if c.Ub > 65535 {
+			sizeRange = -1
+		}
+		bitString := BitString{[]byte{}, 0}
+		repeat := false
+			for {
+				var rawLength uint64
+				if length,err : =
+			}
+	*/
 	return
 }
 

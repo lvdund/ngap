@@ -129,3 +129,125 @@ func (n AmfName) AperDecode(r AperReader) (err error) {
 	n = AmfName(string(octets))
 	return
 }
+
+type ExampleData struct {
+}
+
+func (d *ExampleData) AperEncode(w AperWriter) (err error) {
+	return
+}
+
+func (d *ExampleData) AperDecode(r AperReader) (err error) {
+	return
+}
+
+type ExampleMessage struct {
+	amfName AmfName
+	amfId   *AmfId
+	exData1 *BitString //`bitstring:"sizeLB:10,sizeUB:120"`
+	exData2 *ExampleData
+}
+
+func (m *ExampleMessage) AperEncode(w AperWriter) (err error) {
+	//TODO: write extensible bit if needed
+
+	//write option flags
+	flags := []byte{0}
+
+	if m.amfId != nil {
+		SetBit(flags, 0)
+	}
+	if m.exData1 != nil {
+		SetBit(flags, 1)
+	}
+	if m.exData2 != nil {
+		SetBit(flags, 2)
+	}
+	if err = w.WriteBits(flags, 3); err != nil {
+		return
+	}
+
+	//write AmfName
+	if err = m.amfName.AperEncode(w); err != nil {
+		err = aperError("Write AmfName", err)
+		return
+	}
+	//write AmfId
+	if m.amfId != nil {
+		if err = m.amfId.AperEncode(w); err != nil {
+			err = aperError("Write AmfId", err)
+			return
+		}
+	}
+	//write exData1
+	if m.exData1 != nil {
+		if err = w.WriteBitString(m.exData1.Bytes, uint(m.exData1.NumBits), &Constrain{
+			Lb: 10,
+			Ub: 120,
+		}, false); err != nil {
+			return
+		}
+	}
+
+	//write exData2
+	if m.exData2 != nil {
+		if err = m.exData2.AperEncode(w); err != nil {
+			err = aperError("Write exData2", err)
+			return
+		}
+	}
+
+	return
+}
+
+func (m *ExampleMessage) AperDecode(r AperReader) (err error) {
+	if m == nil {
+		m = &ExampleMessage{}
+	}
+	//TODO: read exensible bit if needed
+
+	//read option flag if needed
+	var flags []byte
+	if flags, err = r.ReadBits(3); err != nil {
+		return
+	}
+	//read AmfName
+	if err = m.amfName.AperDecode(r); err != nil {
+		err = aperError("Read AmfName", err)
+		return
+	}
+	//read AmfId
+	if IsBitSet(flags, 0) {
+		m.amfId = new(AmfId)
+		if err = m.amfId.AperDecode(r); err != nil {
+			err = aperError("Read AmfId", err)
+			return
+		}
+	}
+	//read exData1
+	if IsBitSet(flags, 1) {
+		var bitString []byte
+		var numBits uint
+		if bitString, numBits, err = r.ReadBitString(&Constrain{
+			Lb: 10,
+			Ub: 120,
+		}, false); err != nil {
+			err = aperError("Read exData1", err)
+			return
+		}
+		m.exData1 = &BitString{
+			Bytes:   bitString,
+			NumBits: uint64(numBits),
+		}
+	}
+	//read exData2
+	if IsBitSet(flags, 2) {
+		m.exData2 = new(ExampleData)
+		if err = m.exData2.AperDecode(r); err != nil {
+			err = aperError("Read exData2", err)
+			return
+		}
+	}
+
+	return
+}

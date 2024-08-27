@@ -17,7 +17,7 @@ type AperWriter interface {
 	WriteBits([]byte, uint64) error
 	WriteOctetString([]byte, *Constrain, bool) error
 	WriteBitString([]byte, uint, *Constrain, bool) error
-	WriteInteger(uint64,*Constrain, bool) error
+	WriteInteger(uint64, *Constrain, bool) error
 }
 type aperWriter struct {
 	w     io.Writer
@@ -137,6 +137,7 @@ func (aw *aperWriter) WriteBits(content []byte, nbits uint) error {
 	}
 	return nil
 }
+
 //putBitsValue
 func (aw *aperWriter) writeValue(v uint64, nbits uint) error {
 	if nbits > 64 {
@@ -258,7 +259,7 @@ func (aw *aperWriter) WriteBitString(content []byte, nbits uint64, c *Constrain,
 	}
 	if sRange == 1 {
 		if nbits != uint64(c.Ub) {
-			err = fmt.Errorf("bitString Length(%d) is not match fix-sized")
+			err = fmt.Errorf("bitString Length(%d) is not match fix-sized", nbits)
 		}
 		if sizes > 2 {
 			aw.align()
@@ -340,28 +341,28 @@ func (aw *aperWriter) WriteEnumerate(v uint64, c Constrain, e bool) error {
 
 func (aw *aperWriter) WriteInteger(v int64, c *Constrain, extensive bool) (err error) {
 	//TODO:
-	var  valueRange int64 = 0
-	if &c.Lb != nil && &c.Ub != nil{
+	var valueRange int64 = 0
+	if &c.Lb != nil && &c.Ub != nil {
 		if v < c.Lb && v > c.Ub {
 			valueRange = int64(c.Range())
-			if !extensive{
+			if !extensive {
 				fmt.Errorf("The integer value is out of the allowed range.")
-			}else{
-				if valueRange == 0{
+			} else {
+				if valueRange == 0 {
 					valueRange = -1
-					if err := aw.WriteBool(One);err != nil {
+					if err := aw.WriteBool(One); err != nil {
 						fmt.Errorf("Encoding INTEGER with Unconstraint Value")
 					}
-				}else{
-					if err := aw.WriteBool(Zero);err != nil {
+				} else {
+					if err := aw.WriteBool(Zero); err != nil {
 						fmt.Errorf("Encoding INTEGER with Unconstraint Value")
-					}	
+					}
 				}
 			}
-		}else{
+		} else {
 			valueRange = int64(c.Range())
 		}
-	}else{
+	} else {
 		valueRange = -1
 	}
 
@@ -384,13 +385,13 @@ func (aw *aperWriter) WriteInteger(v int64, c *Constrain, extensive bool) (err e
 		}
 		unsignedValue >>= 8
 	}
-	//putting length 
+	//putting length
 	if valueRange <= 0 {
 		aw.align()
 		aw.b = append(aw.b, byte(rawLength))
-	}else{
+	} else {
 		var byteLen uint
-		uValueRange := uint64(valueRange-1)
+		uValueRange := uint64(valueRange - 1)
 		for byteLen = 1; byteLen <= 127; byteLen++ {
 			uValueRange >>= 8
 			if uValueRange <= 1 {
