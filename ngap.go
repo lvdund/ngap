@@ -19,14 +19,38 @@ const (
 )
 
 type NgapIE interface {
-	Encode(aper.Writer) error
-	Decode(aper.Reader) error
+	Encode() ([]byte, error)
+	Decode([]byte) error
 }
 
 type NgapMessageIE struct {
 	Id          ProtocolIeId
 	Criticality Criticality
 	Value       NgapIE
+}
+
+func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
+	//TODO:
+	//1. encode protocol Ie Id
+	//2. encode criticality
+	//3. encode NgapIE
+	var buf []byte
+	if err, buf = ie.Value.Encode(w); err != nil {
+		return
+	}
+	//write buf to AperWriter as BitString or OctecString?
+	return
+}
+
+func (ie *NgapMessageIE) Decode(w aper.AperReader) (err error) {
+	//TODO:
+	//1. decode protocol Ie Id
+	//2. decode criticality
+	//3. decode NgapIE
+	//decode BitString (or OctetString) first
+	var buf []byte
+	//then decode NgapI
+	return
 }
 
 type NgapPdu struct {
