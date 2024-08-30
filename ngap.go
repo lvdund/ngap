@@ -36,7 +36,7 @@ type NgapMessageIE struct {
 
 func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	//TODO:
-	//1. TODOL: encode protocol Ie Id
+	//1. TODO: encode protocol Ie Id
 	//2. TODO: encode criticality
 	//3. encode NgapIE
 	//encode IE into a byte array first
@@ -49,24 +49,6 @@ func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	err = w.WriteOpenType(buf.Bytes)
 	return
 }
-
-/*
-func (ie *NgapMessageIE) Decode(w aper.AperReader) (err error) {
-	//TODO:
-	//1. TODO: decode protocol Ie Id
-	//2. TODO: decode criticality
-	//3. decode NgapIE
-	var buf []byte
-	//read IE byte array
-	if buf, err = r.ReadOpenType(); err != nil {
-		return
-	}
-	//then decode IE
-	ieReader := aper.NewReader(bytes.NewReader(buf))
-	err = ie.Value.Decode(ieReader)
-	return
-}
-*/
 
 //encode a sequence of Ngap message IE (IEs container)
 func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
