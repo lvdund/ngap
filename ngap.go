@@ -91,8 +91,14 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []IeDiagnost
 	//2. decode all IEs
 	ies := make([]NgapMessageIE, numIEs)
 	for i := 0; i < numIEs; i++ {
-
+		if ies, ieErr = msg.decodeIE(r); ieErr != nil {
+			//depending on error/criticality value, we may continue or abort (check spec again)
+		}
 	}
+
+	//NOTE: after decode all IEs, now let's assign them to the message fields.
+	//Alternatively, we can also assign the fields while decoding Ie in the previous
+	//step
 
 	//TODO:check presence (mandatory fields)
 	//TODO: check for duplicated IEs
