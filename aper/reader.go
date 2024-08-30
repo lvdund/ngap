@@ -9,6 +9,7 @@ type AperReader interface {
 	ReadBits(uint64) ([]byte, error)
 	ReadOctetString(*Constrain, bool) ([]byte, error)
 	ReadBitString(*Constrain, bool) ([]byte, uint, error)
+	ReadOpenType() ([]byte, error)
 }
 
 type aperReader struct {

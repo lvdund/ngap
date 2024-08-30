@@ -18,6 +18,7 @@ type AperWriter interface {
 	WriteOctetString([]byte, *Constrain, bool) error
 	WriteBitString([]byte, uint, *Constrain, bool) error
 	WriteInteger(uint64, *Constrain, bool) error
+	WriteOpenType([]byte) error
 }
 type aperWriter struct {
 	w     io.Writer

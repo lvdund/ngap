@@ -18,71 +18,76 @@ const (
 	CriticalityIgnore
 )
 
+type ProcedureCode uint8
+
+//add AperEncode/AperDecode method
+
 type NgapIE interface {
-	Encode() ([]byte, error)
-	Decode([]byte) error
+	Encode(aper.Writer) error
+	Decode(aper.Reader) error
 }
 
+//represent an IE in Ngap messages
 type NgapMessageIE struct {
-	Id          ProtocolIeId
+	Id          ProtocolIeId //protocol IE identity
 	Criticality Criticality
-	Value       NgapIE
+	Value       NgapIE //open type
 }
 
 func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	//TODO:
-	//1. encode protocol Ie Id
-	//2. encode criticality
+	//1. TODOL: encode protocol Ie Id
+	//2. TODO: encode criticality
 	//3. encode NgapIE
-	var buf []byte
-	if err, buf = ie.Value.Encode(w); err != nil {
+	//encode IE into a byte array first
+	var buf bytes.Buffer
+	ieW := aper.NewWriter(buf)
+	if err = ie.Value.Encode(ieW); err != nil {
 		return
 	}
-	//write buf to AperWriter as BitString or OctecString?
+	//then write the array as open type
+	err = w.WriteOpenType(buf.Bytes)
 	return
 }
 
+/*
 func (ie *NgapMessageIE) Decode(w aper.AperReader) (err error) {
 	//TODO:
-	//1. decode protocol Ie Id
-	//2. decode criticality
+	//1. TODO: decode protocol Ie Id
+	//2. TODO: decode criticality
 	//3. decode NgapIE
-	//decode BitString (or OctetString) first
 	var buf []byte
-	//then decode NgapI
+	//read IE byte array
+	if buf, err = r.ReadOpenType(); err != nil {
+		return
+	}
+	//then decode IE
+	ieReader := aper.NewReader(bytes.NewReader(buf))
+	err = ie.Value.Decode(ieReader)
+	return
+}
+*/
+
+//encode a sequence of Ngap message IE (IEs container)
+func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
+	var buf bytes.Buffer
+	w = aper.NewWriter(buf)
+	numItems := len(ies)
+	//1. TODO: write length of the list
+	w.WriteLength(numItems) //TODO: check AperWriter's APIs
+
+	//2. write every item on the list
+	for _, ie := range ies {
+		if err = ie.Encode(w); err != nil {
+			return
+		}
+	}
+	wire = buf.Bytes()
 	return
 }
 
-type NgapPdu struct {
-	Present uint8
-	Message NgapMessage
-}
-
-//represent InitiatingMessage, SuccessfulOutcome or UnsuccessfulOutcome
-type NgapMessage struct {
-	ProcedureCode ProcedureCode
-	Criticality   Criticality
-	Value         IeContainer //contain all IEs of an Ngap message
-}
-
-type IeContainer struct {
-	IEs []NgapMessageIE
-}
-
-//refer to free5gc's aper to know how to do encoding/decoding the list of IEs
-//it seems that the list is encoded first into a byte array, the array
-//is encode as a octetstring (or bitstring)
-func (c *IeContainer) Encode(w aper.AperWriter) (err error) {
-	//TODO:
-	return
-}
-
-func (c *IeContainer) Decode(w aper.AperReader) (err error) {
-	//TODO:
-	return
-}
-
-//and ngap example message
+//an ngap example message that implement MessageUnmarshaller and encoding
+//method
 type NGSetupRequest struct {
 	GlobalRanNodeId        ie.GlobalRanNodeId
 	RanNodeName            []byte
@@ -92,14 +97,54 @@ type NGSetupRequest struct {
 	NbIotDefaultPagingDrx  *ie.NbIotDefaultPagingDrx
 }
 
-//load message content from decoded IEs of an NgapPdu (code should be generated
-//from spec)
-//NOTE: criticality of IEs should be handled here, we may need to return a
-//CriticalityDianosis object to report to the method caller
-
-func (msg *NGSetupRequest) Load(ies []NgapMessageIE) (err error) {
+//implement MessageUnmarshaller (code should be generated from spec)
+func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []IeDiagnosticsItem) {
+	r = aper.NewReader(wire)
 	//fill data structure fields with IEs
-	//check presence (mandotory fields)
+	//1. get num of IEs
+	var numIEs int
+	if numIEs, err = r.ReadConstrainNumber(); err != nil { //TODO: check AperReader's APIs
+		return
+	}
+	//2. decode all IEs
+	ies := make([]NgapMessageIE, numIEs)
+	for i := 0; i < numIEs; i++ {
+
+	}
+
+	//TODO:check presence (mandatory fields)
+	//TODO: check for duplicated IEs
+	return
+}
+
+//decode a single IE in the message (code should be generated from spec
+func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (*NgapMessageIE, error) {
+	var ie NgapMessageIE
+	//1. decode protocol Ie Id
+	ie.Id = 0 //TODO: read from reader
+	//2. decode criticality
+	ie.Criticality = CriticalityReject //TODO: read from reader
+
+	//3. decode NgapIE
+	var buf []byte
+	//read IE byte array
+	if buf, err = r.ReadOpenType(); err != nil {
+		return
+	}
+	//prepare IE data structure for decoding
+	switch ie.Id { //list of cases are generated from spec
+	case ProtocolIdRanNodeName:
+		ie.Value = new(ie.RanNodeName) //prepare IE for decoding
+		//TODO: other cases
+	default:
+		//TODO: set an error
+		err = fmt.Errorf("temporary error")
+		return
+	}
+
+	//then decode IE
+	ieReader := aper.NewReader(bytes.NewReader(buf))
+	err = ie.Value.Decode(ieReader)
 	return
 }
 
@@ -118,85 +163,25 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 	return
 }
 
-//create NgapPdu for encoding (code should be generated from spec)
-func (msg *NGSetupRequest) toNgapPdu() (pdu NgapPdu) {
-	pdu = NgapPdu{
-		Present: NgapInitiatingMessage, //predefined from spec
-	}
-	pdu.Message = &NgapMessage{
-		ProcedureCode: NgapProcedureNGSetup,
-		Criticality:   CriticalityReject, //parse from spec
-		Value: NgapIeContainer{
-			IEs: msg.toIes(),
-		},
-	}
-	return
-}
-
-//API for decode NgapPdu
-//Note that after decoding, we must inspect the procedure code and message
-//present value to determine the embeding message. After that we should create
-//the message and load it content from IEs container in the decoded NgapPdu
-
-func NgapDecode(wire []byte) (pdu NgapPdu, err error) {
-	r := aper.NewReader(bytes.NewReader(wire))
-	//1. decode extention bit
-	//2. decode present
-	//3. decode procedure code
-	//4. decode criticality
-	//5. decode all IEs
-	err = pdu.Message.IEs.Decode(r)
-	return
-}
-
-//API for encode NgapPdu
-func NgapEncode(pdu *NgapPdu) (wire []byte, err error) {
-	var buf bytes.Buffer
-	w := aper.NewWriter(buf)
-	//1. write extention bit
-	//2. write present
-	//3. write procedure code
-	//4. write criticality
-	//5. write all IEs
-	if err = pdu.Message.IEs.Encode(w); err != nil {
+//write message to AperWriter (code should be generated from spec)
+func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
+	procedureCode := NgapProcedureNGSetup
+	criticality := CriticalityReject //parse from spec
+	present := NgapInitiatingMessage //predefined from spec
+	ies := msg.toIes()
+	//1. TODO: write present
+	//2. TODO:write procedure code
+	//3. TODO: write criticality
+	//4. write message content
+	var containerBytes []byte
+	//first encode message content into byte array
+	if err, containerBytes = encodeIes(ies); err != nil {
 		return
 	}
-	wire = w.Bytes()
-	return
-}
-
-//example how to handle a ngap message
-func HandleNgap(wire []byte) {
-	if pdu, err = NgapDecode(wire); err != nil {
+	//then write the byte array
+	if err = w.WriteOpenType(containerBytes); err != nil { //write OpenType bytes
 		return
 	}
-	switch pdu.Present {
-	case NgapPduInitiatingMessage:
-		handleInitiatingMessage(&pdu)
-	case NgapPduSuccessfulOutcome:
-		handleSuccessfulOutcome(&pdu)
-	case NgapPduUnsuccessfulOutcome:
-	}
-}
 
-func handleInitiatingMessage(pdu *NgapPdu) {
-	switch pdu.Message.ProcedureCode {
-	case NgapProcedureNGSetup: //NGSetupRequest
-		msg := new(NGSetupRequest)
-		_ = msg.Load(pdu) //load decoded NgapPdu into message data structure
-		//then handle the message
-	default:
-		//TODO:
-	}
-}
-
-func handleSuccessfulOutcome(pdu *NgapPdu) {
-	switch pdu.Message.ProcedureCode {
-	case NgapProcedureNGSetup: //NGSetupResponse
-		msg := new(NGSetupResponse)
-		_ = msg.Load(pdu) //load decoded NgapPdu into message data structure
-		//then handle the message
-	default:
-		//TODO:
-	}
+	return
 }
