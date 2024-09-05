@@ -171,58 +171,6 @@ func (ar *aperReader) parseLength(sizeRange int64, repeat *bool) (value uint64, 
 	}
 }
 
-func (ar *aperReader) readOctetString2(extensed bool, lowerBoundPtr *int64, upperBoundPtr *int64) (
-	OctetString, error,
-) {
-	lb, ub, sizeRange  := parseConstraint(extensed, lowerBoundPtr,upperBoundPtr)
-	octetString := OctetString("")
-	if sizeRange == 1 {
-		if uint64(ub) > 2 {
-			unsignedUB := uint64(ub)
-			if err := ar.parseAlignBits(); err != nil {
-				return octetString, err
-			}
-			if (ar.byteOffset + uint64(ub)) > uint64(len(ar.bytes)) {
-				err := aperError("PER data ",ErrRange)
-				return octetString, err
-			}
-			octetString = ar.bytes[ar.byteOffset : ar.byteOffset+unsignedUB]
-			ar.byteOffset += uint64(ub)
-		} else {
-			if octet, err := ar.getBitString(uint(ub * 8)); err != nil {
-				return octetString, err
-			} else {
-				octetString = octet
-			}
-		}
-		return octetString, nil
-	}
-	repeat := false
-	for {
-		rawLength, err := ar.parseLength(sizeRange, &repeat)
-		if err != nil {
-			return nil, err
-		}
-		rawLength += uint64(lb)
-		if rawLength == 0 {
-			return octetString, nil
-		} else if err := ar.parseAlignBits(); err != nil {
-			return octetString, err
-		}
-		var sizes uint64
-		sizes = rawLength
-		if (ar.byteOffset + sizes) > uint64(len(ar.bytes)) {
-			return nil, aperError("PER data", ErrRange)
-		}
-		octetString = appendBytes(octetString, ar.bytes[ar.byteOffset:ar.byteOffset+sizes])
-		ar.byteOffset += sizes
-		if !repeat {
-			break
-		}
-	}
-	return octetString, nil
-}
-
 func (ar *aperReader) parseString(
 	extensed bool,
 	lowerBoundPtr *int64,
@@ -719,7 +667,7 @@ func parseField(v reflect.Value, ar *aperReader, params fieldParameters) error {
 	return fmt.Errorf("unsupported: " + v.Type().String())
 }
 
-func Unmarshal(b []byte, value interface{}) error {
+func Decode(b []byte, value interface{}) error {
 	params := ""
 	v := reflect.ValueOf(value).Elem()
 	buf := new(bytes.Buffer)

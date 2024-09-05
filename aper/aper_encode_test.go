@@ -56,7 +56,7 @@ func TestDecodeStructBitString(t *testing.T) {
 	for i, test := range structBitStringTestData {
 		fmt.Print(1, fmt.Sprintf("[TEST %d]\n", i+1))
 		out := reflect.New(reflect.TypeOf(test.Out))
-		err := Unmarshal(test.in, out.Interface())
+		err := Decode(test.in, out.Interface())
 		fmt.Print(2, fmt.Sprintf("	in : %0x", test.in))
 
 		for j := 0; j < reflect.TypeOf(out.Elem().Interface()).NumField(); j++ {
@@ -205,7 +205,7 @@ var integerStructTestData = []testData{
 func DeccodeStructInteger(t *testing.T) {
 	for i, test := range integerTestData {
 		out := reflect.New(reflect.TypeOf(test.Out))
-		err := Unmarshal(test.in, out.Interface())
+		err := Decode(test.in, out.Interface())
 		for j := 0; j < reflect.TypeOf(out.Elem().Interface()).NumField(); j++ {
 		}
 		if err != nil {
@@ -219,7 +219,7 @@ func DeccodeStructInteger(t *testing.T) {
 func TestDeccodeStructInteger(t *testing.T) {
 	for i, test := range integerStructTestData {
 		out := reflect.New(reflect.TypeOf(test.Out))
-		err := Unmarshal(test.in, out.Interface())
+		err := Decode(test.in, out.Interface())
 		for j := 0; j < reflect.TypeOf(out.Elem().Interface()).NumField(); j++ {
 		}
 		if err != nil {
@@ -397,7 +397,7 @@ var singleOctetStringTestData = []testData{
 func TestDeocodeSingleOctetString(t *testing.T) {
 	for i, test := range singleOctetStringTestData {
 		out := reflect.New(reflect.TypeOf(test.Out))
-		err := Unmarshal(test.in, out.Interface())
+		err := Decode(test.in, out.Interface())
 		if err != nil {
 		} else if reflect.DeepEqual(test.Out, out.Elem().Interface()) {
 			continue
@@ -468,7 +468,7 @@ func TestMarshalStructOctetString(t *testing.T) {
 func TestDecodetructOctetString(t *testing.T) {
 	for i, test := range structOctetStringTestData {
 		out := reflect.New(reflect.TypeOf(test.Out))
-		err := Unmarshal(test.in, out.Interface())
+		err := Decode(test.in, out.Interface())
 
 		for j := 0; j < reflect.TypeOf(out.Elem().Interface()).NumField(); j++ {
 		}
