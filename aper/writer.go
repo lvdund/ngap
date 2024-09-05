@@ -581,9 +581,7 @@ func (aw *aperWriter) makeField(v reflect.Value, params fieldParameters) error {
 }
 
 func Encode(val interface{}) ([]byte, error) {
-	return MarshalWithParams(val, "")
-}
-func MarshalWithParams(val interface{}, params string) ([]byte, error) {
+	params := ""
 	buf := new(bytes.Buffer)
 	aw := NewWriter(buf)
 	err := aw.makeField(reflect.ValueOf(val), parseFieldParameters(params))
