@@ -1,0 +1,12 @@
+{
+    "editor.accessibilityPageSize": 5,
+    "workbench.editor.tabSizingFixedMaxWidth": 100,
+    "editor.minimap.size": "proportional",
+    "editor.inlineSuggest.showToolbar": "onHover",
+    "workbench.sideBar.location": "left",
+    "workbench.editor.titleScrollbarSizing": "default",
+    "explorer.openEditors.visible": 9,
+    "editor.scrollbar.horizontalScrollbarSize": 12,
+    "editor.scrollbar.verticalScrollbarSize": 14,
+    "editor.suggest.showStatusBar": false
+}

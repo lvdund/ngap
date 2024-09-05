@@ -7,10 +7,14 @@ import (
 var (
 	ErrCritical     error = fmt.Errorf("Critical")
 	ErrUnderflow    error = fmt.Errorf("Underflow")
-	ErrOverflow     error = fmt.Errorf("Underflow")
+	ErrOverflow     error = fmt.Errorf("Overflow")
 	ErrTail         error = fmt.Errorf("Junk tail")
 	ErrIncomplete   error = fmt.Errorf("Data truncated")
 	ErrInextensible error = fmt.Errorf("Junk tail")
+	ErrBound        error = fmt.Errorf("Over bound")
+	ErrConstrain    error = fmt.Errorf("Out of Constrain")
+	ErrRange        error = fmt.Errorf("Out of Range")
+	ErrValue 		error = fmt.Errorf("Invalid data") 
 )
 
 type AperError struct {
