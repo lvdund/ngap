@@ -467,7 +467,7 @@ func (ar *aperReader) parseOpenType(skip bool, v reflect.Value, params fieldPara
 		if (rawLength + ar.byteOffset) > uint64(len(ar.bytes)) {
 			return aperError("PER data ",ErrRange)
 		}
-		arOpenType.bytes = append(arOpenType.bytes, ar.bytes[ar.byteOffset:ar.byteOffset+rawLength]...)
+		arOpenType.bytes = appendBytes(arOpenType.bytes, ar.bytes[ar.byteOffset:ar.byteOffset+rawLength])
 		ar.byteOffset += rawLength
 
 		if !repeat {
