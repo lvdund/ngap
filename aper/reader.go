@@ -8,11 +8,25 @@ import (
 	"reflect"
 )
 
+type AperReader interface {
+	// ReadBool() (bool, error)
+	// ReadBits(uint64) ([]byte, error)
+	ReadOctetString(*Constrain,bool) (OctetString, error)
+	ReadBitString(*Constrain, bool) (BitString, uint, error)
+	ReadInteger(*Constrain, bool) (Integer, error)
+	ReadEnumerated(*Constrain, bool) (Enumerated, error)
+	ReadOpenType(*Constrain, bool) (interface{} , error)
+}
+
 type aperReader struct {
 	r     io.Reader
 	bytes      []byte
 	byteOffset uint64
 	index      uint
+}
+
+func (r *aperReader) ReadConstrainNumber() (uint, error) {
+	return 0, nil
 }
 
 func GetBitString(srcBytes []byte, index, numBits uint) ([]byte, error) {

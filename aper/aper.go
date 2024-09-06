@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// Integer
+type Integer int
+
 // BIT STRING
 
 // BitString is for an ASN.1 BIT STRING type, BitLength means the effective bits.

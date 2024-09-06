@@ -14,9 +14,19 @@ const (
 	One  bool = true
 )
 
+type AperWriter interface {
+	// WriteBool(bool) error
+	// WriteBits([]byte, uint64) error
+	WriteOctetString(OctetString, *Constrain, bool) error
+	WriteBitString(BitString, *Constrain, bool) error
+	WriteInteger(Integer, *Constrain, bool) error
+	WriteEnumerated(Enumerated, *Constrain, bool) error
+	WriteOpenType([]byte) error
+}
+
 type aperWriter struct {
 	w     io.Writer
-	bytes []byte
+	bytes [1]byte
 	index uint
 }
 
@@ -25,6 +35,10 @@ func NewWriter(w io.Writer) *aperWriter {
 		w:     w,
 		index: 0,
 	}
+}
+
+func (w *aperWriter) WriteLength(numItems int) {
+
 }
 
 func (aw *aperWriter) align() error {
@@ -231,7 +245,7 @@ func (aw *aperWriter) writeString(
 		rawLength -= partOfRawLength - uint64(lb)
 		if rawLength > 0 {
 			byteOffset += partOfRawLength
-		}else{
+		} else {
 			break
 		}
 		if isBitString {
@@ -260,9 +274,8 @@ func (aw *aperWriter) writeOctetString(
 	return aw.writeString(bytes, uint64(len(bytes)), extensive, lowerBoundPtr, upperBoundPtr, false)
 }
 
-
 func (aw *aperWriter) writeInteger(value int64, extensive bool, lowerBoundPtr *int64, upperBoundPtr *int64) error {
-	lb,_, valueRange, err := aw.handleConstraints(uint64(value), extensive, lowerBoundPtr, upperBoundPtr)
+	lb, _, valueRange, err := aw.handleConstraints(uint64(value), extensive, lowerBoundPtr, upperBoundPtr)
 	if err != nil {
 		return err
 	}
@@ -293,8 +306,8 @@ func (aw *aperWriter) writeInteger(value int64, extensive bool, lowerBoundPtr *i
 		aw.bytes = append(aw.bytes, byte(rawLength))
 	} else {
 		unsignedValueRange := uint64(valueRange - 1)
-		bitLength := bits.Len64(unsignedValueRange) 
-		byteLen := uint((bitLength + 7) / 8) 
+		bitLength := bits.Len64(unsignedValueRange)
+		byteLen := uint((bitLength + 7) / 8)
 		bitLen := bits.Len(uint(int(byteLen)))
 		if err := aw.putBitsValue(uint64(rawLength-1), uint(bitLen)); err != nil {
 			return err
@@ -350,39 +363,38 @@ func (aw *aperWriter) writeEnumerated(value uint64, extensive bool, lowerBoundPt
 }
 
 func (aw *aperWriter) writeSequenceOf(v reflect.Value, params fieldParameters) error {
-    var lb, ub, sizeRange int64 = 0, -1, -1
-    numElements := int64(v.Len())
-    if params.sizeLowerBound != nil && params.sizeUpperBound != nil {
-        if *params.sizeLowerBound < 65536 && *params.sizeUpperBound < 65536 {
-            lb, ub, sizeRange, _ = aw.handleConstraints(uint64(numElements), params.sizeExtensible, params.sizeLowerBound, params.sizeUpperBound)
-        }
-    }
-    if numElements < lb {
-        return fmt.Errorf("SEQUENCE OF Size is lower than lowerbound")
-    } else if sizeRange == 1 {
-        if numElements != ub {
-            return fmt.Errorf("Encoding Length %d != fix-size %d", numElements, ub)
-        }
-    } else if sizeRange > 0 {
-        if err := aw.writeConstraintValue(sizeRange, uint64(numElements-lb)); err != nil {
-            return err
-        }
-    } else {
-        aw.align()
-        aw.bytes = append(aw.bytes, byte(numElements&0xff))
-    }
-    params.sizeExtensible = false
-    params.sizeUpperBound = nil
-    params.sizeLowerBound = nil
+	var lb, ub, sizeRange int64 = 0, -1, -1
+	numElements := int64(v.Len())
+	if params.sizeLowerBound != nil && params.sizeUpperBound != nil {
+		if *params.sizeLowerBound < 65536 && *params.sizeUpperBound < 65536 {
+			lb, ub, sizeRange, _ = aw.handleConstraints(uint64(numElements), params.sizeExtensible, params.sizeLowerBound, params.sizeUpperBound)
+		}
+	}
+	if numElements < lb {
+		return fmt.Errorf("SEQUENCE OF Size is lower than lowerbound")
+	} else if sizeRange == 1 {
+		if numElements != ub {
+			return fmt.Errorf("Encoding Length %d != fix-size %d", numElements, ub)
+		}
+	} else if sizeRange > 0 {
+		if err := aw.writeConstraintValue(sizeRange, uint64(numElements-lb)); err != nil {
+			return err
+		}
+	} else {
+		aw.align()
+		aw.bytes = append(aw.bytes, byte(numElements&0xff))
+	}
+	params.sizeExtensible = false
+	params.sizeUpperBound = nil
+	params.sizeLowerBound = nil
 
-    for i := 0; i < v.Len(); i++ {
-        if err := aw.makeField(v.Index(i), params); err != nil {
-            return err
-        }
-    }
-    return nil
+	for i := 0; i < v.Len(); i++ {
+		if err := aw.makeField(v.Index(i), params); err != nil {
+			return err
+		}
+	}
+	return nil
 }
-
 
 func (aw *aperWriter) writeChoiceIndex(present int, extensive bool, upperBoundPtr *int64) error {
 	var ub int64

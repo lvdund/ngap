@@ -3,6 +3,7 @@ package ngap
 import (
 	"bytes"
 	"ngap/ie"
+	"ngap/aper"
 )
 
 const (
@@ -23,13 +24,13 @@ type ProcedureCode uint8
 //add AperEncode/AperDecode method
 
 type NgapIE interface {
-	Encode(aper.Writer) error
-	Decode(aper.Reader) error
+	Encode(aper.AperWriter) error
+	Decode(aper.AperReader) error
 }
 
 //represent an IE in Ngap messages
 type NgapMessageIE struct {
-	Id          ProtocolIeId //protocol IE identity
+	Id          ie.ProtocolIeId //protocol IE identity
 	Criticality Criticality
 	Value       NgapIE //open type
 }
@@ -47,13 +48,25 @@ func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	}
 	//then write the array as open type
 	err = w.WriteOpenType(buf.Bytes)
+
+
+	////////////////////////////////////////////
+
+	err = w.WriteOpenType(buf.Bytes)
+	luu vao w.(io.Writer)
+	byte dau tien = length
+	con lai chua encoded
+
+	////////////////////////////////////////////
+
+
 	return
 }
 
 //encode a sequence of Ngap message IE (IEs container)
 func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
 	var buf bytes.Buffer
-	w = aper.NewWriter(buf)
+	w := aper.NewWriter(buf)
 	numItems := len(ies)
 	//1. TODO: write length of the list
 	w.WriteLength(numItems) //TODO: check AperWriter's APIs
