@@ -48,18 +48,6 @@ func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	}
 	//then write the array as open type
 	err = w.WriteOpenType(buf.Bytes)
-
-
-	////////////////////////////////////////////
-
-	err = w.WriteOpenType(buf.Bytes)
-	luu vao w.(io.Writer)
-	byte dau tien = length
-	con lai chua encoded
-
-	////////////////////////////////////////////
-
-
 	return
 }
 

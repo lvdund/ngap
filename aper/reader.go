@@ -15,7 +15,7 @@ type AperReader interface {
 	ReadBitString(*Constrain, bool) (BitString, uint, error)
 	ReadInteger(*Constrain, bool) (Integer, error)
 	ReadEnumerated(*Constrain, bool) (Enumerated, error)
-	ReadOpenType(*Constrain, bool) (interface{} , error)
+	ReadOpenType() ([]byte, error)
 }
 
 type aperReader struct {
