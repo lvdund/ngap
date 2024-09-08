@@ -1,5 +1,7 @@
 package ie
 
+import "ngap/aper"
+
 type NgSetupRequest struct {
 	MessageType            MessageType            `bitstring:"sizeLB:0,sizeUB:150"`
 	GlobalRanNodeId        GlobalRanNodeId        `bitstring:"sizeLB:0,sizeUB:150"`
@@ -16,6 +18,16 @@ type SupportedTaItem struct {
 	BroadcastPlmnList       []BroadcastPlmnItem     `bitstring:"sizeLB:0,sizeUB:150"`
 	ConfiguredTacIndication ConfiguredTacIndication `bitstring:"sizeLB:0,sizeUB:150"`
 	RatInformation          RatInformation          `bitstring:"sizeLB:0,sizeUB:150"`
+}
+
+func (ie *SupportedTaItem) Decode(r aper.AperReader) error {
+
+	return nil
+}
+
+func (ie *SupportedTaItem) Encode(r aper.AperWriter) (err error) {
+
+	return nil
 }
 
 type BroadcastPlmnItem struct {

@@ -1,8 +1,13 @@
 package ngap
 
-//This is to describe how NGAP handler should be written
+import "ngap/ie"
+
+// This is to describe how NGAP handler should be written
 func HandleNgap(wire []byte) {
-	if pdu, err, diagnostics := NgapDecode(wire); err != nil {
+	var pdu NgapPdu
+	var err error
+	var diagnostics *ie.CriticalityDiagnostics
+	if pdu, err, diagnostics = NgapDecode(wire); err != nil {
 		return
 	} else {
 		if diagnostics != nil {
@@ -20,9 +25,9 @@ func HandleNgap(wire []byte) {
 }
 
 func handleInitiatingMessage(pdu *NgapPdu) {
-	switch pdu.Message.ProcedureCode {
-	case NgapProcedureNGSetup: //NGSetupRequest
-		msg := pdu.Message.Value.(*NGSetupRequest)
+	switch int64(pdu.Message.ProcedureCode) {
+	case ie.ProcedureCodeNGSetup: //NGSetupRequest
+		msg := pdu.Message.Msg.(*NGSetupRequest)
 		//then handle the message
 		handleNGSetupRequest(msg)
 	default:
@@ -31,11 +36,11 @@ func handleInitiatingMessage(pdu *NgapPdu) {
 }
 
 func handleSuccessfulOutcome(pdu *NgapPdu) {
-	switch pdu.Message.ProcedureCode {
-	case NgapProcedureNGSetup: //NGSetupResponse
-		msg := pdu.Message.Value(*NGSetupResponse)
+	switch int64(pdu.Message.ProcedureCode) {
+	case ie.ProcedureCodeNGSetup: //NGSetupResponse
+		// msg := pdu.Message.Msg(*NGSetupResponse)
 		//then handle the message
-		handleNGSetupResponse(msg)
+		// handleNGSetupResponse(msg)
 	default:
 		//TODO:
 	}
@@ -45,6 +50,6 @@ func handleNGSetupRequest(msg *NGSetupRequest) {
 	//TODO: add example code
 }
 
-func handleNGSetupResponse(msg *NGSetupResponse) {
-	//TODO: add example code
-}
+// func handleNGSetupResponse(msg *NGSetupResponse) {
+// 	//TODO: add example code
+// }

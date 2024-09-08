@@ -22,11 +22,12 @@ type AperWriter interface {
 	WriteInteger(Integer, *Constrain, bool) error
 	WriteEnumerated(Enumerated, *Constrain, bool) error
 	WriteOpenType([]byte) error
+	WriteLength(int)
 }
 
 type aperWriter struct {
 	w     io.Writer
-	bytes [1]byte
+	bytes []byte
 	index uint
 }
 

@@ -10,22 +10,32 @@ import (
 
 type AperReader interface {
 	// ReadBool() (bool, error)
-	// ReadBits(uint64) ([]byte, error)
-	ReadOctetString(*Constrain,bool) (OctetString, error)
+	ReadBits(uint64) ([]byte, error)
+	ReadOctetString(*Constrain, bool) (OctetString, error)
 	ReadBitString(*Constrain, bool) (BitString, uint, error)
 	ReadInteger(*Constrain, bool) (Integer, error)
 	ReadEnumerated(*Constrain, bool) (Enumerated, error)
 	ReadOpenType() ([]byte, error)
+	ReadConstrainNumber() (int, error)
 }
 
 type aperReader struct {
-	r     io.Reader
+	r          io.Reader
 	bytes      []byte
 	byteOffset uint64
 	index      uint
 }
 
-func (r *aperReader) ReadConstrainNumber() (uint, error) {
+func NewReader(r io.Reader) *aperReader {
+	return &aperReader{
+		r:     r,
+		bytes: []byte{},
+		byteOffset: 0,
+		index: 0,
+	}
+}
+
+func (r *aperReader) ReadConstrainNumber() (int, error) {
 	return 0, nil
 }
 
@@ -50,21 +60,24 @@ func GetBitString(srcBytes []byte, index, numBits uint) ([]byte, error) {
 	}
 	return dstBytes, nil
 }
-// update byteoffset and index 
+
+// update byteoffset and index
 func (ar *aperReader) bitCarry() {
 	ar.byteOffset += uint64(ar.index >> 3)
 	ar.index = ar.index & 0x07
 }
+
 // get bit string and update index +  byteoffset
 func (ar *aperReader) getBitString(numBits uint) (dstBytes []byte, err error) {
-	if dstBytes, err = GetBitString(ar.bytes[ar.byteOffset:], ar.index, numBits); err !=nil{
+	if dstBytes, err = GetBitString(ar.bytes[ar.byteOffset:], ar.index, numBits); err != nil {
 		return
 	}
 	ar.index += numBits
 	ar.bitCarry()
 	return
 }
-// get value and update index + byte off set 
+
+// get value and update index + byte off set
 func (ar *aperReader) getBitsValue(numBits uint) (value uint64, err error) {
 	var dstBytes []byte
 	if dstBytes, err = GetBitString(ar.bytes[ar.byteOffset:], ar.index, numBits); err != nil {
@@ -77,19 +90,19 @@ func (ar *aperReader) getBitsValue(numBits uint) (value uint64, err error) {
 	if extraBits := numBits & 0x7; extraBits != 0 {
 		shiftAmount := 8 - extraBits
 		lastByte := dstBytes[len(dstBytes)-1] >> shiftAmount
-		value >>= shiftAmount 
+		value >>= shiftAmount
 		value |= uint64(lastByte)
 	}
 	ar.index += numBits
-	ar.bitCarry() 
+	ar.bitCarry()
 	return value, nil
 }
 
 func (ar *aperReader) parseAlignBits() error {
 	if (ar.index & 0x7) > 0 {
 		alignBits := 8 - ((ar.index) & 0x7)
-		if val, err := ar.getBitsValue(alignBits); err != nil || val != 0   {
-			return aperError("alignBits is ",ErrValue)
+		if val, err := ar.getBitsValue(alignBits); err != nil || val != 0 {
+			return aperError("alignBits is ", ErrValue)
 		}
 	} else if ar.index != 0 {
 		ar.bitCarry()
@@ -100,7 +113,7 @@ func (ar *aperReader) parseAlignBits() error {
 func (ar *aperReader) parseConstraintValue(valueRange int64) (value uint64, err error) {
 	var bytes uint
 	if valueRange <= 255 {
-		value, err = ar.getBitsValue(uint(bits.Len64(uint64(valueRange-1))))
+		value, err = ar.getBitsValue(uint(bits.Len64(uint64(valueRange - 1))))
 		return value, err
 	} else if valueRange == 256 {
 		bytes = 1
@@ -160,7 +173,7 @@ func (ar *aperReader) parseLength(sizeRange int64, repeat *bool) (value uint64, 
 	if err = ar.parseAlignBits(); err != nil {
 		return 0, err
 	}
-	if firstByte, err = ar.getBitsValue(8); err!=nil{
+	if firstByte, err = ar.getBitsValue(8); err != nil {
 		return 0, err
 	}
 	switch {
@@ -177,7 +190,7 @@ func (ar *aperReader) parseLength(sizeRange int64, repeat *bool) (value uint64, 
 	default:
 		numMultiplier := firstByte & 0x3F
 		if numMultiplier < 1 || numMultiplier > 4 {
-			return 0, aperError("Parse Length ",ErrConstrain )
+			return 0, aperError("Parse Length ", ErrConstrain)
 		}
 		*repeat = true
 		value = 16384 * uint64(numMultiplier)
@@ -305,7 +318,7 @@ func (ar *aperReader) readBool() (value bool, err error) {
 }
 
 func (ar *aperReader) readInteger(extensed bool, lowerBoundPtr *int64, upperBoundPtr *int64) (int64, error) {
-	lb, ub, valueRange  := parseConstraint(extensed, lowerBoundPtr,upperBoundPtr)
+	lb, ub, valueRange := parseConstraint(extensed, lowerBoundPtr, upperBoundPtr)
 	var rawLength uint
 	if valueRange == 1 {
 		return ub, nil
@@ -314,7 +327,7 @@ func (ar *aperReader) readInteger(extensed bool, lowerBoundPtr *int64, upperBoun
 			return int64(0), err
 		}
 		if ar.byteOffset >= uint64(len(ar.bytes)) {
-			return int64(0), aperError("PER data ",ErrRange)
+			return int64(0), aperError("PER data ", ErrRange)
 		}
 		rawLength = uint(ar.bytes[ar.byteOffset])
 		ar.byteOffset++
@@ -327,8 +340,8 @@ func (ar *aperReader) readInteger(extensed bool, lowerBoundPtr *int64, upperBoun
 		}
 	} else {
 		unsignedValueRange := uint64(valueRange - 1)
-		bitLength := bits.Len64(unsignedValueRange) 
-		byteLen := uint((bitLength + 7) / 8) 
+		bitLength := bits.Len64(unsignedValueRange)
+		byteLen := uint((bitLength + 7) / 8)
 		bitLen := bits.Len(uint(int(byteLen)))
 		if tempLength, err := ar.getBitsValue(uint(bitLen)); err != nil {
 			return int64(0), err
@@ -387,7 +400,7 @@ func (ar *aperReader) parseSequenceOf(sizeExtensed bool, params fieldParameters,
 	var lb int64 = 0
 	var sizeRange int64
 	if *params.sizeLowerBound < 65536 && *params.sizeUpperBound < 65536 {
-		lb, _, sizeRange  = parseConstraint(sizeExtensed, params.sizeLowerBound,params.sizeUpperBound )
+		lb, _, sizeRange = parseConstraint(sizeExtensed, params.sizeLowerBound, params.sizeUpperBound)
 	}
 	var numElements uint64
 	if sizeRange > 1 {
@@ -403,7 +416,7 @@ func (ar *aperReader) parseSequenceOf(sizeExtensed bool, params fieldParameters,
 			return sliceContent, err
 		}
 		if ar.byteOffset >= uint64(len(ar.bytes)) {
-			err := aperError("PER data ",ErrRange)
+			err := aperError("PER data ", ErrRange)
 			return sliceContent, err
 		}
 		numElements = uint64(ar.bytes[ar.byteOffset])
@@ -464,7 +477,7 @@ func getReferenceFieldValue(v reflect.Value) (value int64, err error) {
 
 func (ar *aperReader) parseOpenType(skip bool, v reflect.Value, params fieldParameters) error {
 	buf := new(bytes.Buffer)
-	arOpenType := &aperReader{buf,[]byte(""), 0, 0}
+	arOpenType := &aperReader{buf, []byte(""), 0, 0}
 	repeat := false
 	for {
 		var rawLength uint64
@@ -479,7 +492,7 @@ func (ar *aperReader) parseOpenType(skip bool, v reflect.Value, params fieldPara
 			return err
 		}
 		if (rawLength + ar.byteOffset) > uint64(len(ar.bytes)) {
-			return aperError("PER data ",ErrRange)
+			return aperError("PER data ", ErrRange)
 		}
 		arOpenType.bytes = appendBytes(arOpenType.bytes, ar.bytes[ar.byteOffset:ar.byteOffset+rawLength])
 		ar.byteOffset += rawLength
@@ -685,7 +698,6 @@ func Decode(b []byte, value interface{}) error {
 	params := ""
 	v := reflect.ValueOf(value).Elem()
 	buf := new(bytes.Buffer)
-	ar := &aperReader{buf,b, 0, 0}
+	ar := &aperReader{buf, b, 0, 0}
 	return parseField(v, ar, parseFieldParameters(params))
 }
-

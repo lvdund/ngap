@@ -1,5 +1,18 @@
 package ie
 
+import "ngap/aper"
+
 type UeRetentionInformation struct {
-	UeRetentionInformation []byte `bitstring:"sizeLB:0,sizeUB:150"`
+	UeRetentionInformation aper.BitString `bitstring:"sizeLB:0,sizeUB:150"`
+}
+
+func (ie *UeRetentionInformation) Decode(r aper.AperReader) error {
+	return nil
+}
+
+func (ie *UeRetentionInformation) Encode(r aper.AperWriter) (err error) {
+	if err = r.WriteBitString(ie.UeRetentionInformation, &aper.Constrain{Lb: 0, Ub: 150}, true); err != nil {
+		return err
+	}
+	return nil
 }

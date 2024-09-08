@@ -1,7 +1,19 @@
 package ie
 
+import "ngap/aper"
+
 type GlobalRanNodeId struct {
 	ChoiceNgRanNode ChoiceNgRanNode `bitstring:"sizeLB:0,sizeUB:150"`
+}
+
+func (ie *GlobalRanNodeId) Decode(r aper.AperReader) error {
+
+	return nil
+}
+
+func (ie *GlobalRanNodeId) Encode(r aper.AperWriter) (err error) {
+
+	return nil
 }
 
 type ChoiceNgRanNode struct {

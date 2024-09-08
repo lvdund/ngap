@@ -1,5 +1,18 @@
 package ie
 
+import "ngap/aper"
+
 type NbIotDefaultPagingDrx struct {
-	NbIotDefaultPagingDrx []byte `bitstring:"sizeLB:0,sizeUB:150"`
+	NbIotDefaultPagingDrx aper.BitString `bitstring:"sizeLB:0,sizeUB:150"`
+}
+
+func (ie *NbIotDefaultPagingDrx) Decode(r aper.AperReader) error {
+	return nil
+}
+
+func (ie *NbIotDefaultPagingDrx) Encode(r aper.AperWriter) (err error) {
+	if err = r.WriteBitString(ie.NbIotDefaultPagingDrx, &aper.Constrain{Lb: 0, Ub: 150}, true); err != nil {
+		return err
+	}
+	return nil
 }
