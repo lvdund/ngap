@@ -236,3 +236,19 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 
 	return
 }
+
+func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {
+	if err = w.WriteInteger(aper.Integer(pdu.Present), &aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
+		return
+	}
+	if err = w.WriteInteger(aper.Integer(pdu.Message.ProcedureCode), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+		return
+	}
+	if err = pdu.Message.Criticality.Encode(w); err != nil {
+		return
+	}
+	if err = pdu.Message.Msg.Encode(w); err != nil {
+		return
+	}
+	return
+}
