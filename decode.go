@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"ngap/aper"
 	"ngap/ie"
-
-	"golang.org/x/tools/present"
 )
 
 // hold a decoded Ngap message
@@ -38,17 +36,17 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 
 	//2. decode present
 	var present uint8 //choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
-	if present, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil{
+	if present, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
 		return
 	}
 	//3. decode procedure code
 	var procedureCode ProcedureCode
-	if procedureCode, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, true); err != nil{
+	if procedureCode, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
 		return
 	}
 	//4. decode criticality
 	var criticality ie.Criticality //TODO: decode
-	if criticality.Value, err = r.ReadEnumerated(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil{
+	if criticality.Value, err = r.ReadEnumerated(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
 		return
 	}
 	//5. decode message content
