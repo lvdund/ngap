@@ -19,10 +19,12 @@ const (
 
 type AperWriter interface {
 	WriteBool(bool) error
-	WriteBits([]byte, uint64) error
+	WriteBits([]byte, uint) error
 	WriteOctetString([]byte, *Constrain, bool) error
 	WriteBitString([]byte, uint, *Constrain, bool) error
-	WriteInteger(uint64, *Constrain, bool) error
+	WriteInteger(int64, *Constrain, bool) error
+	WriteEnumerate(uint64, Constrain, bool) error
+	
 }
 type aperWriter struct {
 	w     io.Writer

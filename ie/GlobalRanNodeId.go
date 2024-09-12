@@ -12,7 +12,7 @@ func (ie *GlobalRanNodeId) Decode(r aper.AperReader) error {
 }
 
 func (ie *GlobalRanNodeId) Encode(r aper.AperWriter) (err error) {
-
+	
 	return nil
 }
 

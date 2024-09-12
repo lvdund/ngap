@@ -56,7 +56,7 @@ func (id *AmfId) AperEncode(w AperWriter) (err error) {
 		}
 	}
 	if id.ValueEx != nil {
-		if err = w.WriteInteger(*id.ValueEx, &Constrain{
+		if err = w.WriteInteger(int64(*id.ValueEx), &Constrain{
 			Lb: 500,
 			Ub: 1000,
 		}, false); err != nil {

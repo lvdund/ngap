@@ -11,7 +11,7 @@ func (ie *UeRetentionInformation) Decode(r aper.AperReader) error {
 }
 
 func (ie *UeRetentionInformation) Encode(r aper.AperWriter) (err error) {
-	if err = r.WriteBitString(ie.UeRetentionInformation, &aper.Constrain{Lb: 0, Ub: 150}, true); err != nil {
+	if err = r.WriteBitString(ie.UeRetentionInformation.Bytes, uint(ie.UeRetentionInformation.NumBits), &aper.Constrain{Lb: 0, Ub: 150}, true); err != nil {
 		return err
 	}
 	return nil

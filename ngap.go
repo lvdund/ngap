@@ -48,7 +48,8 @@ func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 		return
 	}
 	//then write the array as open type
-	err = w.WriteOpenType(buf.Bytes())
+	// err = w.WriteOpenType(buf.Bytes())
+	err = ie.Value.Encode(w)
 	return
 }
 
@@ -78,76 +79,80 @@ type NGSetupRequest struct {
 	SupportedTaList        []ie.SupportedTaItem
 	DefaultPagingDrx       *ie.PagingDrx
 	UeRetentionInformation *ie.UeRetentionInformation
-	NbIotDefaultPagingDrx  *ie.NbIotDefaultPagingDrx
+	// NbIotDefaultPagingDrx  *ie.NbIotDefaultPagingDrx
 }
 
 // implement MessageUnmarshaller (code should be generated from spec)
 func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.CriticalityDiagnostics) {
-	r := aper.NewReader(bytes.NewReader(wire))
-	//fill data structure fields with IEs
-	//1. get num of IEs
-	var numIEs int
-	if numIEs, err = r.ReadConstrainNumber(); err != nil { //TODO: check AperReader's APIs
-		return
-	}
-	//2. decode all IEs
-	// ies := make([]NgapMessageIE, numIEs)
-	for i := 0; i < numIEs; i++ {
-		if _, ieErr := msg.decodeIE(r); ieErr != nil {
-			//depending on error/criticality value, we may continue or abort (check spec again)
-		}
-	}
-	//NOTE: after decode all IEs, now let's assign them to the message fields.
-	//Alternatively, we can also assign the fields while decoding Ie in the previous
-	//step
+	// r := aper.NewReader(bytes.NewReader(wire))
+	// //fill data structure fields with IEs
+	// //1. get num of IEs
+	// var numIEs int
+	// if numIEs, err = r.ReadConstrainNumber(); err != nil { //TODO: check AperReader's APIs
+	// 	return
+	// }
+	// //2. decode all IEs
+	// // ies := make([]NgapMessageIE, numIEs)
+	// for i := 0; i < numIEs; i++ {
+	// 	if _, ieErr := msg.decodeIE(r); ieErr != nil {
+	// 		//depending on error/criticality value, we may continue or abort (check spec again)
+	// 	}
+	// }
+	// //NOTE: after decode all IEs, now let's assign them to the message fields.
+	// //Alternatively, we can also assign the fields while decoding Ie in the previous
+	// //step
 
-	//TODO:check presence (mandatory fields)
-	if msg.GlobalRanNodeId == nil || msg.SupportedTaList == nil || msg.DefaultPagingDrx == nil {
-		return
-	}
-	//TODO: check for duplicated IEs
+	// //TODO:check presence (mandatory fields)
+	// if msg.GlobalRanNodeId == nil || msg.SupportedTaList == nil || msg.DefaultPagingDrx == nil {
+	// 	return
+	// }
+	// //TODO: check for duplicated IEs
 	return
 }
 
 // decode a single IE in the message (code should be generated from spec
 func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, err error) {
 	//1. decode protocol Ie Id
-	if msgIe.Id.NgapProtocolIeId, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 65535}, true); err != nil {
+	id, err := r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 65535}, true)
+	if err != nil {
 		return
 	}
+	msgIe.Id.NgapProtocolIeId = aper.Integer(id)
 	//2. decode criticality
-	if msgIe.Criticality.Value, err = r.ReadEnumerated(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
+	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, true)
+	if err != nil {
 		return
 	}
+	msgIe.Criticality.Value = aper.Enumerated(c)
 	//3. decode NgapIE
-	var buf []byte
+	// var buf []byte
 	//read IE byte array
-	if buf, err = r.ReadOpenType(); err != nil {
-		return
-	}
-	iwR := aper.NewReader(bytes.NewReader(buf))
+	// if buf, err = r.ReadOpenType(); err != nil {
+	// 	return
+	// }
+	// r := aper.NewReader(bytes.NewReader(buf))
 	//prepare IE data structure for decoding
 	switch msgIe.Id.NgapProtocolIeId { //list of cases are generated from spec
 	case ie.ProtocolIEIDGlobalRANNodeID:
-		if err = msg.GlobalRanNodeId.Decode(iwR); err != nil {
+		if err = msg.GlobalRanNodeId.Decode(r); err != nil {
 			return
 		}
 	case ie.ProtocolIEIDRANNodeName:
-		msg.RanNodeName = buf
+		msg.RanNodeName, _ = r.ReadOctetString(&aper.Constrain{Lb: 1, Ub: 150}, true)
 	case ie.ProtocolIEIDSupportedTAList:
 		msg.SupportedTaList = append(msg.SupportedTaList, )
 	case ie.ProtocolIEIDDefaultPagingDRX:
-		if err = msg.DefaultPagingDrx.Decode(iwR); err != nil {
+		if err = msg.DefaultPagingDrx.Decode(r); err != nil {
 			return
 		}
 	case ie.ProtocolIEIDUERetentionInformation:
-		if err = msg.UeRetentionInformation.Decode(iwR); err != nil {
+		if err = msg.UeRetentionInformation.Decode(r); err != nil {
 			return
 		}
-	case 0:
-		if err = msg.NbIotDefaultPagingDrx.Decode(iwR); err != nil {
-			return
-		}
+	// case 0:
+	// 	if err = msg.NbIotDefaultPagingDrx.Decode(r); err != nil {
+	// 		return
+	// 	}
 	default:
 		err = fmt.Errorf("temporary error")
 		return
@@ -162,39 +167,49 @@ func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, er
 func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 	ies = []NgapMessageIE{}
 	//GlobalRanNodeId
-	ies = append(ies, NgapMessageIE{
-		Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDGlobalRANNodeID},
-		Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
-		Value:       msg.GlobalRanNodeId,
-	})
-	//RanNodeName
-	ies = append(ies, NgapMessageIE{
-		Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDRANNodeName},
-		Criticality: ie.Criticality{Value: ie.CriticalityPresentIgnore},
-		Value:       NewIE(msg.RanNodeName),
-	})
-	//SupportedTaList
-	var SupportedTaList []NgapIE
-	for _, ie := range msg.SupportedTaList {
-		SupportedTaList = append(SupportedTaList, &ie)
+	if msg.GlobalRanNodeId != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDGlobalRANNodeID},
+			Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
+			Value:       msg.GlobalRanNodeId,
+		})
 	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
-		Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
-		Value:       NewIEs(SupportedTaList),
-	})
+	//RanNodeName
+	if msg.RanNodeName != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDRANNodeName},
+			Criticality: ie.Criticality{Value: ie.CriticalityPresentIgnore},
+			Value:       NewIE(msg.RanNodeName),
+		})
+	}
+	//SupportedTaList
+	if msg.SupportedTaList != nil {
+		var SupportedTaList []NgapIE
+		for _, ie := range msg.SupportedTaList {
+			SupportedTaList = append(SupportedTaList, &ie)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
+			Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
+			Value:       NewIEs(SupportedTaList),
+		})
+	}
 	//DefaultPagingDrx
-	ies = append(ies, NgapMessageIE{
-		Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDDefaultPagingDRX},
-		Criticality: ie.Criticality{Value: ie.CriticalityPresentIgnore},
-		Value:       msg.DefaultPagingDrx,
-	})
+	if msg.DefaultPagingDrx != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDDefaultPagingDRX},
+			Criticality: ie.Criticality{Value: ie.CriticalityPresentIgnore},
+			Value:       msg.DefaultPagingDrx,
+		})
+	}
 	//UeRetentionInformation
-	ies = append(ies, NgapMessageIE{
-		Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDUERetentionInformation},
-		Criticality: ie.Criticality{Value: ie.CriticalityPresentIgnore},
-		Value:       msg.UeRetentionInformation,
-	})
+	if msg.UeRetentionInformation != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDUERetentionInformation},
+			Criticality: ie.Criticality{Value: ie.CriticalityPresentIgnore},
+			Value:       msg.UeRetentionInformation,
+		})
+	}
 	//NbIotDefaultPagingDrx
 	// ies = append(ies, NgapMessageIE{
 	// 	Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDDefaultPagingDRX},
@@ -211,17 +226,20 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	criticality := ie.CriticalityPresentReject           //parse from spec
 	present := ie.InitiatingMessagePresentNGSetupRequest //predefined from spec
 	ies := msg.toIes()
+	if ies == nil {
+		return fmt.Errorf("Cann not load NGSetupRequest")
+	}
 	//1. TODO: write present
 	//2. TODO:write procedure code
 	//3. TODO: write criticality
 	//4. write message content
-	if err = w.WriteInteger(aper.Integer(present), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+	if err = w.WriteInteger(int64(present), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
 		return
 	}
-	if err = w.WriteInteger(aper.Integer(procedureCode), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+	if err = w.WriteInteger(int64(procedureCode), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
 		return
 	}
-	if err = w.WriteEnumerated(criticality, &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+	if err = w.WriteEnumerate(uint64(criticality), aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
 		return
 	}
 	var containerBytes []byte
@@ -238,13 +256,7 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 }
 
 func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {
-	if err = w.WriteInteger(aper.Integer(pdu.Present), &aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
-		return
-	}
-	if err = w.WriteInteger(aper.Integer(pdu.Message.ProcedureCode), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
-		return
-	}
-	if err = pdu.Message.Criticality.Encode(w); err != nil {
+	if err = w.WriteInteger(int64(pdu.Present), &aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
 		return
 	}
 	if err = pdu.Message.Msg.Encode(w); err != nil {

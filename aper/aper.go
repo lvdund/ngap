@@ -20,7 +20,8 @@ type BitString struct {
 
 type OctetString []byte
 
-//type Integer int64
+type Integer int64
+type Enumerated int64
 
 type Constrain struct {
 	Lb int64

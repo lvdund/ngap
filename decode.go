@@ -24,6 +24,7 @@ type NgapMessage struct {
 // all message need to implement this interface
 type MessageUnmarshaller interface {
 	decode([]byte) (error, []ie.CriticalityDiagnostics)
+	Encode(aper.AperWriter) error
 }
 
 // API for decode NgapPdu
@@ -34,26 +35,29 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	// 	return
 	// }
 
-	//2. decode present
-	var present uint8 //choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
-	if present, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
+	//2. decode present		//choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
+	v, err := r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, true)
+	if err != nil {
 		return
 	}
+	var present uint8 = uint8(v)
 	//3. decode procedure code
-	var procedureCode ProcedureCode
-	if procedureCode, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+	v, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, true)
+	if err != nil {
 		return
 	}
+	var procedureCode ProcedureCode = ProcedureCode(v)
 	//4. decode criticality
-	var criticality ie.Criticality //TODO: decode
-	if criticality.Value, err = r.ReadEnumerated(&aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
+	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, true)
+	if err != nil {
 		return
 	}
+	var criticality ie.Criticality = ie.Criticality{Value: aper.Enumerated(c)}
 	//5. decode message content
-	var containerBytes []byte
-	if containerBytes, err = r.ReadOpenType(); err != nil {
-		return
-	}
+	// var containerBytes []byte
+	// if containerBytes, err = r.ReadOpenType(); err != nil {
+	// 	return
+	// }
 
 	//prepare message for decoding
 	message := createMessage(present, procedureCode)
@@ -64,9 +68,9 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 
 	var diagnosticsItems []ie.CriticalityDiagnostics
 	//decode all IEs within the message
-	if err, diagnosticsItems = message.decode(containerBytes); err != nil {
-		return
-	}
+	// if err, diagnosticsItems = message.decode(containerBytes); err != nil {
+	// 	return
+	// }
 	pdu = NgapPdu{
 		Present: present,
 		Message: NgapMessage{

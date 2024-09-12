@@ -6,9 +6,11 @@ import (
 
 type AperReader interface {
 	ReadBool() (bool, error)
-	ReadBits(uint64) ([]byte, error)
+	ReadBits(uint) ([]byte, error)
 	ReadOctetString(*Constrain, bool) ([]byte, error)
 	ReadBitString(*Constrain, bool) ([]byte, uint, error)
+	ReadEnumerate(*Constrain, bool) (uint64,  error)
+	ReadInteger(*Constrain, bool) (int64, error)
 }
 
 type aperReader struct {
