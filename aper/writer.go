@@ -24,6 +24,7 @@ type AperWriter interface {
 	WriteBitString([]byte, uint, *Constrain, bool) error
 	WriteInteger(int64, *Constrain, bool) error
 	WriteEnumerate(uint64, Constrain, bool) error
+	WriteBytes([]byte) error
 	
 }
 type aperWriter struct {
@@ -102,7 +103,7 @@ func (aw *aperWriter) writeByte(v byte) error {
 	return nil
 }
 
-func (aw *aperWriter) writeBytes(bytes []byte) error {
+func (aw *aperWriter) WriteBytes(bytes []byte) error {
 	err:=aw.WriteBits(bytes, uint(8*len(bytes)))
 	return err
 }
@@ -238,6 +239,7 @@ func (aw *aperWriter) writeConstrainValue(r uint64, v uint64) error {
 }
 
 func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constrain, e bool) (err error) {
+	// e - valueExtensible
 	aww,_ := aw.w.(*bytes.Buffer)
 	if aw.index != 0 {
 		aw.b[0] = aww.Bytes()[len(aww.Bytes())-1]

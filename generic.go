@@ -10,7 +10,7 @@ func NewIE(val []byte) *IE {
 	return &IE{
 		Value: aper.BitString{
 			Bytes:     val,
-			NumBits: uint64(len(val)),
+			NumBits: uint64(8*len(val)),
 		},
 	}
 }

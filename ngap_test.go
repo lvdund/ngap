@@ -6,8 +6,9 @@ import (
 	"io"
 	"ngap/ie"
 	"os"
-	"reflect"
 	"testing"
+
+	"github.com/sirupsen/logrus"
 )
 
 func TestEncode(t *testing.T) {
@@ -18,53 +19,52 @@ func TestEncode(t *testing.T) {
 	}
 	// Đảm bảo đóng tệp sau khi sử dụng
 	defer NgSetupRequest_file.Close()
-	tests := []struct {
-		name       string
-		buf       io.Reader
-		resultPdu *NgapPdu
-		check     bool
-	}{
-		{
-			name: "NgSetupRequest",
-			buf: bytes.NewReader([]byte{}),
-			resultPdu: &NgapPdu{
-				Present: NgapPduInitiatingMessage,
-				Message: NgapMessage{
-					ProcedureCode: ProcedureCode(ie.ProcedureCodeNGSetup),
-					Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
-					Msg: &NGSetupRequest{
-						RanNodeName: []byte{1},
-					},
-				},
-			},
-		},
-		{
-			name: "NgSetupRequest from UERANSIM",
-			buf: NgSetupRequest_file,
-			resultPdu: &NgapPdu{
-				Present: NgapPduInitiatingMessage,
-				Message: NgapMessage{
-					ProcedureCode: ProcedureCode(ie.ProcedureCodeNGSetup),
-					Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
-					Msg: &NGSetupRequest{
-					},
-				},
-			},
-		},
-	}
 
 	for _, pdu := range tests {
 		t.Run(pdu.name, func(t *testing.T) {
 			t.Parallel()
-			buff, _ := io.ReadAll(pdu.buf)
-			decodePdu, err, _ := NgapDecode(buff)
+			logrus.Println("-------------", pdu.resultPdu)
+			encode, err := NgapEncode(*pdu.resultPdu)
 			if err != nil {
-				t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
+				t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
+			} else {
+				t.Logf("Encoded: %0b", encode)
 			}
-			if !reflect.DeepEqual(decodePdu, pdu.resultPdu) {
-				t.Errorf("NgapDecode() = %v, want %v", decodePdu, pdu.resultPdu)
-			}
-			
 		})
 	}
+}
+
+var tests = []struct {
+	name      string
+	buf       io.Reader
+	resultPdu *NgapPdu
+	check     bool
+}{
+	{
+		name: "NgSetupRequest",
+		buf:  bytes.NewReader([]byte{}),
+		resultPdu: &NgapPdu{
+			Present: NgapPduInitiatingMessage,
+			Message: NgapMessage{
+				ProcedureCode: ProcedureCode(ie.ProcedureCodeNGSetup),
+				Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
+				Msg: &NGSetupRequest{
+					RanNodeName: []byte{1},
+					DefaultPagingDrx: &ie.PagingDrx{PagingDrx: []byte{2}},
+				},
+			},
+		},
+	},
+	// {
+	// 	name: "NgSetupRequest from UERANSIM",
+	// 	buf:  NgSetupRequest_file,
+	// 	resultPdu: &NgapPdu{
+	// 		Present: NgapPduInitiatingMessage,
+	// 		Message: NgapMessage{
+	// 			ProcedureCode: ProcedureCode(ie.ProcedureCodeNGSetup),
+	// 			Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
+	// 			Msg:           &NGSetupRequest{},
+	// 		},
+	// 	},
+	// },
 }

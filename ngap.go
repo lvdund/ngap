@@ -55,11 +55,11 @@ func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 
 // encode a sequence of Ngap message IE (IEs container)
 func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
-	var buf bytes.Buffer
-	w := aper.NewWriter(buf)
-	numItems := len(ies)
+	var buff bytes.Buffer
+	w := aper.NewWriter(&buff)
+	// numItems := len(ies)
 	//1. TODO: write length of the list
-	w.WriteLength(numItems) //TODO: check AperWriter's APIs
+	// w.WriteLength(numItems) //TODO: check AperWriter's APIs
 
 	//2. write every item on the list
 	for _, ie := range ies {
@@ -67,7 +67,7 @@ func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
 			return
 		}
 	}
-	wire = buf.Bytes()
+	wire = buff.Bytes()
 	return
 }
 
@@ -140,7 +140,7 @@ func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, er
 	case ie.ProtocolIEIDRANNodeName:
 		msg.RanNodeName, _ = r.ReadOctetString(&aper.Constrain{Lb: 1, Ub: 150}, true)
 	case ie.ProtocolIEIDSupportedTAList:
-		msg.SupportedTaList = append(msg.SupportedTaList, )
+		// msg.SupportedTaList = append(msg.SupportedTaList)
 	case ie.ProtocolIEIDDefaultPagingDRX:
 		if err = msg.DefaultPagingDrx.Decode(r); err != nil {
 			return
@@ -248,14 +248,17 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 		return
 	}
 	//then write the byte array
-	if err = w.WriteOpenType(containerBytes); err != nil { //write OpenType bytes
-		return
-	}
+	// if err = w.WriteOpenType(containerBytes); err != nil { //write OpenType bytes
+	// 	return
+	// }
+	err = w.WriteBytes(containerBytes)
 
 	return
 }
 
 func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {
+	var buff bytes.Buffer
+	w = aper.NewWriter(&buff)
 	if err = w.WriteInteger(int64(pdu.Present), &aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
 		return
 	}
