@@ -444,3 +444,58 @@ func TestReadBitStringGroups(t *testing.T) {
 		})
 	}
 }
+
+func TestReadInteger(t *testing.T) {
+	testGroups := []struct {
+		name     string
+		input    []byte // Input data for decoding
+		tests    []struct {
+			expected   int64 // Expected decoded value
+			constraint *Constrain
+			extensible bool
+		}
+	}{
+		{
+			name:  "Group 1",
+			input: []byte{0x58, 0x7B, 0x80, 0x02, 0x19, 0x2D},
+			tests: []struct {
+				expected   int64
+				constraint *Constrain
+				extensible bool
+			}{
+				{
+					expected:   45,
+					constraint: &Constrain{Lb: 1, Ub: 110},
+					extensible: false,
+				},
+				{
+					expected:   123,
+					constraint: &Constrain{Lb: 0, Ub: 255},
+					extensible: false,
+				},
+				// {
+				// 	expected:   6445,
+				// 	constraint: &Constrain{Lb: 0, Ub: 255},
+				// 	extensible: true,
+				// },
+			},
+		},
+	}
+
+	for _, group := range testGroups {
+		t.Run(group.name, func(t *testing.T) {
+			reader := NewReader(bytes.NewReader(group.input))
+			for _, tt := range group.tests {
+				t.Run(fmt.Sprintf("Expected=%d", tt.expected), func(t *testing.T) {
+					decoded, err := reader.ReadInteger(tt.constraint, tt.extensible)
+					if err != nil {
+						t.Errorf("Error decoding: %v", err)
+					}
+					if decoded != tt.expected {
+						t.Errorf("Decoded value = %d, want %d", decoded, tt.expected)
+					}
+				})
+			}
+		})
+	}
+}

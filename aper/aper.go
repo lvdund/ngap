@@ -33,38 +33,38 @@ func (c *Constrain) Range() uint64 {
 }
 
 func removeLastByte(aw *aperWriter) error {
-    buf, ok := aw.w.(*bytes.Buffer)
-    if !ok {
-        return fmt.Errorf("writer is not a *bytes.Buffer")
-    }
-    currentBytes := buf.Bytes()
-    if len(currentBytes) == 0 {
-        return fmt.Errorf("buffer is empty, nothing to remove")
-    }
-    currentBytes = currentBytes[:len(currentBytes)-1]
-    buf.Reset()
-    _, err := buf.Write(currentBytes)
-    if err != nil {
-        return fmt.Errorf("error writing to buffer: %v", err)
-    }
-    return nil
+	buf, ok := aw.w.(*bytes.Buffer)
+	if !ok {
+		return fmt.Errorf("writer is not a *bytes.Buffer")
+	}
+	currentBytes := buf.Bytes()
+	if len(currentBytes) == 0 {
+		return fmt.Errorf("buffer is empty, nothing to remove")
+	}
+	currentBytes = currentBytes[:len(currentBytes)-1]
+	buf.Reset()
+	_, err := buf.Write(currentBytes)
+	if err != nil {
+		return fmt.Errorf("error writing to buffer: %v", err)
+	}
+	return nil
 }
 func countSetBits(b byte) int {
 	count := 0
 	for b > 0 {
-		count += int(b & 1) 
-		b >>= 1             
+		count += int(b & 1)
+		b >>= 1
 	}
 	return count
 }
 
-func restartReaderPointer(r io.Reader) error {
+func resetReaderPointer(r io.Reader) error {
 	// var buffer bytes.Buffer
 	//tee := io.TeeReader(r, &buffer)
 
 	// if _, err := io.Copy(io.Discard, tee); err != nil {
 	// 	return err
-	// }	
+	// }
 	// fmt.Println("Reader contents:", buffer.Bytes())
 	// Reset reader to the start if needed (for further operations)
 	if seeker, ok := r.(io.Seeker); ok {
