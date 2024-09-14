@@ -338,3 +338,109 @@ func TestWriteInteger(t *testing.T) {
 	}
 }
 
+func TestReadBitStringGroups(t *testing.T) {
+	testGroups := []struct {
+		name     string
+		input    []byte // Input data for decoding
+		tests    []struct {
+			name       string
+			expected   []byte // Expected decoded value (bit string)
+			nbits      uint
+			constraint *Constrain
+			extensible bool
+		}
+	}{
+		{
+			name:  "Group 1",
+			input: []byte{0xA2, 0x00, 0xFE, 0x06, 0xEC, 0x00, 0x05, 0xD8},
+			tests: []struct {
+				name       string
+				expected   []byte
+				nbits      uint
+				constraint *Constrain
+				extensible bool
+			}{
+				{
+					expected:   []byte{0xa0}, // expected decoded result
+					nbits:      3,
+					constraint: &Constrain{Lb: 3, Ub: 3},
+				},
+				{
+					expected:   []byte{0xfe}, // expected decoded result
+					nbits:      8,
+					constraint: &Constrain{Lb: 0, Ub: 125},
+				},
+				{
+					expected:   []byte{0xec}, // expected decoded result
+					nbits:      6,
+					constraint: &Constrain{Lb: 0, Ub: 255},
+				},
+				{
+					expected:   []byte{0xd8}, // expected decoded result
+					nbits:      5,
+					constraint: &Constrain{Lb: 0, Ub: 555},
+				},
+			},
+		},
+		{
+			name:  "Group 2",
+			input: []byte{180},
+			tests: []struct {
+				name       string
+				expected   []byte
+				nbits      uint
+				constraint *Constrain
+				extensible bool
+			}{
+				{
+					expected:   []byte{0xa0},
+					nbits:      3,
+					constraint: &Constrain{Lb: 3, Ub: 3},
+				},
+				{
+					expected:   []byte{0xa0},
+					nbits:      3,
+					constraint: &Constrain{Lb: 3, Ub: 3},
+				},
+			},
+		},
+		{
+			name:  "Group 3",
+			input: []byte{182},
+			tests: []struct {
+				name       string
+				expected   []byte
+				nbits      uint
+				constraint *Constrain
+				extensible bool
+			}{
+				{
+					expected:   []byte{0xa0},
+					nbits:      3,
+					constraint: &Constrain{Lb: 3, Ub: 3},
+				},
+				{
+					expected:   []byte{0xb0},
+					nbits:      4,
+					constraint: &Constrain{Lb: 4, Ub: 4},
+				},
+			},
+		},
+	}
+	for _, group := range testGroups {
+		t.Run(group.name, func(t *testing.T) {
+			reader := NewReader(bytes.NewReader(group.input))
+			for _, tt := range group.tests {
+				t.Run(tt.name, func(t *testing.T) {
+					decoded, err := reader.ReadBitString(tt.constraint, tt.extensible)
+					if err != nil {
+						t.Errorf("Error decoding: %v", err)
+					}
+					if !bytes.Equal(decoded.Bytes, tt.expected) {
+						t.Errorf("Decoded bitstring = %v, want %v", decoded, tt.expected)
+					}
+				})
+			}
+		})
+	}
+}

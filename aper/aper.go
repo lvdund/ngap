@@ -3,6 +3,7 @@ package aper
 import (
 	"bytes"
 	"fmt"
+	"io"
 )
 
 type AperMarshaller interface {
@@ -20,8 +21,7 @@ type BitString struct {
 
 type OctetString []byte
 
-type Integer int64
-type Enumerated int64
+//type Integer int64
 
 type Constrain struct {
 	Lb int64
@@ -58,6 +58,22 @@ func countSetBits(b byte) int {
 	return count
 }
 
+func restartReaderPointer(r io.Reader) error {
+	// var buffer bytes.Buffer
+	//tee := io.TeeReader(r, &buffer)
+
+	// if _, err := io.Copy(io.Discard, tee); err != nil {
+	// 	return err
+	// }	
+	// fmt.Println("Reader contents:", buffer.Bytes())
+	// Reset reader to the start if needed (for further operations)
+	if seeker, ok := r.(io.Seeker); ok {
+		if _, err := seeker.Seek(0, io.SeekStart); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 // Unmarshal parses the APER-encoded ASN.1 data structure b
 // and uses the reflect package to fill in an arbitrary value pointed at by value.

@@ -5,10 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-
-	//	"math"
-
-	//	"math"
 	"math/bits"
 )
 
