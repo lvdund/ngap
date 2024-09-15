@@ -1,5 +1,7 @@
 package aper
 
+import "fmt"
+
 // shift byte array by a number of bits (positive for left, negative for right)
 func ShiftBytes(input []byte, k int) (output []byte) {
 	length := len(input)
@@ -46,4 +48,19 @@ func SetBit(content []byte, bitIndex uint) {
 func IsBitSet(content []byte, bitIndex uint) bool {
 	//TODO:
 	return false
+}
+
+func (w *aperWriter) WritePresent(present int, c *Constrain) error {
+	var ub int64
+	rawChoice := present - 1
+	if c.Ub == 0 {
+		return aperError("WritePresent", fmt.Errorf("The upper bound of Present is 0"))
+	} else if ub = c.Ub; ub < 0 {
+		return aperError("WritePresent", fmt.Errorf("The upper bound of Present is negative"))
+	}
+
+	if err := w.writeConstrainValue(uint64(ub+1), uint64(rawChoice)); err != nil {
+		return err
+	}
+	return nil
 }

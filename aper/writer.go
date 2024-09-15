@@ -16,6 +16,7 @@ const (
 type AperWriter interface {
 	WriteBool(bool) error
 	WriteBits([]byte, uint) error
+	WritePresent(int, *Constrain) error
 	WriteOctetString([]byte, *Constrain, bool) error
 	WriteBitString([]byte, uint, *Constrain, bool) error
 	WriteInteger(int64, *Constrain, bool) error

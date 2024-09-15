@@ -229,17 +229,19 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	if ies == nil {
 		return fmt.Errorf("Cann not load NGSetupRequest")
 	}
+	// Encoding Value Extensive Bit
+	w.WriteBool(aper.Zero)
 	//1. TODO: write present
 	//2. TODO:write procedure code
 	//3. TODO: write criticality
 	//4. write message content
-	if err = w.WriteInteger(int64(present), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+	if err = w.WritePresent(present, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
 		return
 	}
 	if err = w.WriteInteger(int64(procedureCode), &aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
 		return
 	}
-	if err = w.WriteEnumerate(uint64(criticality), aper.Constrain{Lb: 0, Ub: 255}, true); err != nil {
+	if err = w.WriteEnumerate(uint64(criticality), aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
 		return
 	}
 	var containerBytes []byte
@@ -259,9 +261,6 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {
 	var buff bytes.Buffer
 	w = aper.NewWriter(&buff)
-	if err = w.WriteInteger(int64(pdu.Present), &aper.Constrain{Lb: 0, Ub: 2}, true); err != nil {
-		return
-	}
 	if err = pdu.Message.Msg.Encode(w); err != nil {
 		return
 	}
