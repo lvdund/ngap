@@ -14,6 +14,7 @@ const (
 )
 
 type AperWriter interface {
+	GetBuf() []byte
 	WriteBool(bool) error
 	WriteBits([]byte, uint) error
 	WritePresent(int, *Constrain) error
@@ -37,6 +38,14 @@ func NewWriter(w io.Writer) *aperWriter {
 	}
 }
 
+func (w aperWriter) GetBuf() []byte {
+	buf, ok := w.w.(*bytes.Buffer)
+	if ok {
+		return buf.Bytes()
+	}
+	return []byte{}
+}
+
 // write buffer and reset
 func (aw *aperWriter) align() error {
 	if aw.index > 0 {
@@ -50,7 +59,6 @@ func (aw *aperWriter) align() error {
 }
 
 func (aw *aperWriter) flush() error {
-	fmt.Println("flush")
 	if aw.index == 0 { //already flushed, no more write
 		return nil
 	}
@@ -59,7 +67,6 @@ func (aw *aperWriter) flush() error {
 	}
 	aw.b[0] = 0
 	aw.index = 0
-	fmt.Println("=============================================================")
 	return nil
 }
 
@@ -320,7 +327,6 @@ func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constrain, e
 		} else {
 			aw.index += uint8(partOfRawLength & 0x7)
 			// aw.align()
-			fmt.Println(aw.index)
 			break
 		}
 	}
@@ -410,7 +416,6 @@ func (aw *aperWriter) WriteOctetString(content []byte, c *Constrain, e bool) (er
 			byteOffset += partOfRawLength
 		} else {
 			// aw.align()
-			fmt.Println("break")
 			break
 		}
 	}

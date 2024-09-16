@@ -15,7 +15,7 @@ type NgapPdu struct {
 
 // represent InitiatingMessage, SuccessfulOutcome or UnsuccessfulOutcome
 type NgapMessage struct {
-	ProcedureCode ProcedureCode
+	ProcedureCode ie.ProcedureCode
 	Criticality   ie.Criticality
 	Msg           MessageUnmarshaller //to be decoded message
 }
@@ -36,19 +36,19 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	// }
 
 	//2. decode present		//choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
-	v, err := r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, true)
+	v, err := r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
 	var present uint8 = uint8(v)
 	//3. decode procedure code
-	v, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, true)
+	v, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, false)
 	if err != nil {
 		return
 	}
-	var procedureCode ProcedureCode = ProcedureCode(v)
+	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Enumerated(v)}
 	//4. decode criticality
-	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, true)
+	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
@@ -87,23 +87,23 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 
 // create a message from Present value and ProcedureCode value to prepare for
 // decoding
-func createMessage(present uint8, procedureCode ProcedureCode) MessageUnmarshaller {
+func createMessage(present uint8, procedureCode ie.ProcedureCode) MessageUnmarshaller {
 	switch present {
 	case NgapPduInitiatingMessage:
-		switch int64(procedureCode) {
+		switch int64(procedureCode.Value) {
 		case ie.ProcedureCodeNGSetup:
 			return new(NGSetupRequest)
 		}
 
 	case NgapPduSuccessfulOutcome:
-		switch int64(procedureCode) {
+		switch int64(procedureCode.Value) {
 		case ie.ProcedureCodeNGSetup:
 			// return new(NGSetupResponse)
 			return nil
 		}
 
 	case NgapPduUnsuccessfulOutcome:
-		switch int64(procedureCode) {
+		switch int64(procedureCode.Value) {
 		case ie.ProcedureCodeNGSetup:
 			// return new(NGSetupFailure)
 			return nil
@@ -112,7 +112,7 @@ func createMessage(present uint8, procedureCode ProcedureCode) MessageUnmarshall
 	return nil
 }
 
-func buildDiagnostics(present uint8, procedureCode ProcedureCode, criticality ie.Criticality, diagnosticsItems []ie.CriticalityDiagnostics) (diagnostics *ie.CriticalityDiagnostics) {
+func buildDiagnostics(present uint8, procedureCode ie.ProcedureCode, criticality ie.Criticality, diagnosticsItems []ie.CriticalityDiagnostics) (diagnostics *ie.CriticalityDiagnostics) {
 	//TODO: build diagnostic content
 	return
 }

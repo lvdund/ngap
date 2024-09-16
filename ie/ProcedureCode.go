@@ -1,5 +1,23 @@
 package ie
 
+import "ngap/aper"
+
+type ProcedureCode struct {
+	Value aper.Enumerated `aper:"valueLB:0,valueUB:255"`
+}
+
+func (a *ProcedureCode) Decode(r aper.AperReader) error {
+
+	return nil
+}
+
+func (a *ProcedureCode) Encode(r aper.AperWriter) (err error) {
+	if err = r.WriteEnumerate(uint64(a.Value), aper.Constrain{Lb: 0, Ub: 255}, false); err != nil {
+		return err
+	}
+	return nil
+}
+
 const (
 	ProcedureCodeAMFConfigurationUpdate                int64 = 0
 	ProcedureCodeAMFStatusIndication                   int64 = 1

@@ -13,7 +13,7 @@ func (ie *PagingDrx) Decode(r aper.AperReader) error {
 
 func (ie *PagingDrx) Encode(r aper.AperWriter) (err error) {
 	bitLength := 8*len(ie.PagingDrx)
-	if err = r.WriteBitString(ie.PagingDrx, uint(bitLength), &aper.Constrain{Lb: 0, Ub: 150}, true); err != nil {
+	if err = r.WriteBitString(ie.PagingDrx, uint(bitLength), &aper.Constrain{Lb: 0, Ub: 150}, false); err != nil {
 		return err
 	}
 	return nil

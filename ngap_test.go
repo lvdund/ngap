@@ -1,57 +1,47 @@
 package ngap
 
 import (
-	"bytes"
 	"fmt"
-	"io"
+	"ngap/aper"
 	"ngap/ie"
-	"os"
+	"reflect"
 	"testing"
-
-	"github.com/sirupsen/logrus"
 )
 
 func TestEncode(t *testing.T) {
-	NgSetupRequest_file, err := os.Open("./test_msg/NgSetupRequest.bin")
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
-	}
-	// Đảm bảo đóng tệp sau khi sử dụng
-	defer NgSetupRequest_file.Close()
+	// NgSetupRequest_file, err := os.Open("./test_msg/NgSetupRequest.bin")
+	// if err != nil {
+	// 	fmt.Println("Error opening file:", err)
+	// 	return
+	// }
+	// defer NgSetupRequest_file.Close()
 
 	for _, pdu := range tests {
-		t.Run(pdu.name, func(t *testing.T) {
-			t.Parallel()
-			logrus.Println("-------------", pdu.resultPdu)
-			encode, err := NgapEncode(*pdu.resultPdu)
-			if err != nil {
-				t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
-			} else {
-				t.Logf("Encoded: %0b", encode)
-			}
-		})
+		encode, err := NgapEncode(*pdu.resultPdu)
+		if err != nil {
+			fmt.Printf("NgapEncode() NGSetupRequest fail = %v", err)
+			return
+		} else if !reflect.DeepEqual(encode.GetBuf(), pdu.buf) {
+			fmt.Printf("Encoded compare err: \n\thas: % X\n\twant: % X", encode.GetBuf(), pdu.buf)
+		}
 	}
 }
 
 var tests = []struct {
 	name      string
-	buf       io.Reader
+	buf       []byte
 	resultPdu *NgapPdu
 	check     bool
 }{
 	{
 		name: "NgSetupRequest",
-		buf:  bytes.NewReader([]byte{}),
+		buf:  []byte{0x00, 0x15, 0x00, 0x03, 0x00, 0x00, 0x00},
 		resultPdu: &NgapPdu{
 			Present: NgapPduInitiatingMessage,
 			Message: NgapMessage{
-				ProcedureCode: ProcedureCode(ie.ProcedureCodeNGSetup),
+				ProcedureCode: ie.ProcedureCode{Value: aper.Enumerated(ie.ProcedureCodeNGSetup)},
 				Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
-				Msg: &NGSetupRequest{
-					RanNodeName: []byte{1},
-					DefaultPagingDrx: &ie.PagingDrx{PagingDrx: []byte{2}},
-				},
+				Msg:           &NGSetupRequest{},
 			},
 		},
 	},

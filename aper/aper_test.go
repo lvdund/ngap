@@ -323,9 +323,9 @@ func TestWriteInteger(t *testing.T) {
 	}
 
 	for _, group := range testGroups {
+		buf := new(bytes.Buffer)
+		writer := NewWriter(buf)
 		t.Run(group.name, func(t *testing.T) {
-			buf := new(bytes.Buffer)
-			writer := NewWriter(buf)
 
 			for _, tt := range group.tests {
 				_ = writer.WriteInteger(tt.value, tt.constraint, tt.extensible)

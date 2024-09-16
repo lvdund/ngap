@@ -11,7 +11,7 @@ func (ie *NbIotDefaultPagingDrx) Decode(r aper.AperReader) error {
 }
 
 func (ie *NbIotDefaultPagingDrx) Encode(r aper.AperWriter) (err error) {
-	if err = r.WriteBitString(ie.NbIotDefaultPagingDrx.Bytes, uint(ie.NbIotDefaultPagingDrx.NumBits),&aper.Constrain{Lb: 0, Ub: 150}, true); err != nil {
+	if err = r.WriteBitString(ie.NbIotDefaultPagingDrx.Bytes, uint(ie.NbIotDefaultPagingDrx.NumBits),&aper.Constrain{Lb: 0, Ub: 150}, false); err != nil {
 		return err
 	}
 	return nil

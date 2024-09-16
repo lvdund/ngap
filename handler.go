@@ -25,7 +25,7 @@ func HandleNgap(wire []byte) {
 }
 
 func handleInitiatingMessage(pdu *NgapPdu) {
-	switch int64(pdu.Message.ProcedureCode) {
+	switch int64(pdu.Message.ProcedureCode.Value) {
 	case ie.ProcedureCodeNGSetup: //NGSetupRequest
 		msg := pdu.Message.Msg.(*NGSetupRequest)
 		//then handle the message
@@ -36,7 +36,7 @@ func handleInitiatingMessage(pdu *NgapPdu) {
 }
 
 func handleSuccessfulOutcome(pdu *NgapPdu) {
-	switch int64(pdu.Message.ProcedureCode) {
+	switch int64(pdu.Message.ProcedureCode.Value) {
 	case ie.ProcedureCodeNGSetup: //NGSetupResponse
 		// msg := pdu.Message.Msg(*NGSetupResponse)
 		//then handle the message
