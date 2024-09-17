@@ -60,14 +60,14 @@ func countSetBits(b byte) int {
 }
 
 func resetReaderPointer(r io.Reader) error {
-	// var buffer bytes.Buffer
-	//tee := io.TeeReader(r, &buffer)
+	var buffer bytes.Buffer
+	tee := io.TeeReader(r, &buffer)
 
-	// if _, err := io.Copy(io.Discard, tee); err != nil {
-	// 	return err
-	// }
-	// fmt.Println("Reader contents:", buffer.Bytes())
-	// Reset reader to the start if needed (for further operations)
+	if _, err := io.Copy(io.Discard, tee); err != nil {
+		return err
+	}
+	fmt.Println("Reader contents:", buffer.Bytes())
+	//Reset reader to the start if needed (for further operations)
 	if seeker, ok := r.(io.Seeker); ok {
 		if _, err := seeker.Seek(0, io.SeekStart); err != nil {
 			return err

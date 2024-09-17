@@ -199,6 +199,41 @@ func (ar *aperReader) ReadBits(nbits uint) (output []byte, err error) {
 	return
 }
 
+
+func (ar *aperReader) readSemiConstrainedWholeNumber(lb uint64) (value uint64, err error) {
+	var repeat bool
+	var length uint64
+	if length, err = ar.readLength(-1, &repeat); err != nil {
+		return
+	}
+	if length > 8 || repeat {
+		err = fmt.Errorf("Too long length: %d", length)
+		return
+	}
+	if value, err = ar.getValue(uint(length) * 8); err != nil {
+		return
+	}
+	value += lb
+	return
+}
+
+func (ar *aperReader) readNormallySmallNonNegativeWholeNumber() (value uint64, err error) {
+	var notSmallFlag uint64
+	if notSmallFlag, err = ar.getValue(1); err != nil {
+		return
+	}
+	if notSmallFlag == 1 {
+		if value, err = ar.readSemiConstrainedWholeNumber(0); err != nil {
+			return
+		}
+	} else {
+		if value, err = ar.getValue(6); err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (ar *aperReader) ReadBitString(c *Constrain, e bool) (bs BitString, err error) {
 	//TODO:
 	if ar.index == 8 {
@@ -279,11 +314,20 @@ func (ar *aperReader) ReadOctetString(c *Constrain, e bool) (octets []byte, err 
 
 func (ar *aperReader) ReadInteger(c *Constrain, e bool) (value int64, err error) {
 	//TODO:
+	fmt.Println("================read integer ==================")
+	var valueEx bool
 	if ar.index == 8{
 		ar.readAlignBits()
 	}
+	if e{
+		if bitsValue, err1 := ar.getValue(1); err1 != nil {
+			return 0,err1
+		} else if bitsValue != 0 {
+			valueEx = true
+		}
+	}
 	var sRange int64 = -1
-	if !e {
+	if !valueEx {
 		sRange = c.Ub - c.Lb + 1
 	}
 	if c.Ub > 65535 {
@@ -296,9 +340,11 @@ func (ar *aperReader) ReadInteger(c *Constrain, e bool) (value int64, err error)
 		if err := ar.readAlignBits(); err != nil {
 			return int64(0), err
 		}
-		length,_ := ar.getValue(uint(ar.byteOffset))
+		length := ar.b[0]
 		rawLength = uint(length)
-		ar.byteOffset++
+		if err := ar.readAlignBits(); err != nil {
+			return int64(0), err
+		}
 	} else if sRange <= 65536 {
 		rawValue, err := ar.readConstraintValue(sRange)
 		if err != nil {
@@ -329,14 +375,39 @@ func (ar *aperReader) ReadInteger(c *Constrain, e bool) (value int64, err error)
 		if rawValue&signedBitMask > 0 {
 			return int64((^rawValue)&valueMask+1) * -1, nil
 		}
-		return int64(rawValue) + c.Lb, nil
+		return int64(rawValue) + c.Lb, nil 
 	} else {
 		return int64(rawValue) + c.Lb, nil
 	}
 }
 
+
 func (ar *aperReader) ReadEnumerate(c *Constrain, e bool) (value uint64, err error) {
-	//TODO:
+	fmt.Println("================read enumerate ==================")
+	ar.readAlignBits()
+	var valueEx bool
+	if c.Lb < 0 || c.Lb > c.Ub {
+		err = fmt.Errorf("ENUMERATED value constraint is error")
+		return
+	}
+	if e{
+		if bitsValue, err1 := ar.getValue(1); err1 != nil {
+			return 0,err1
+		} else if bitsValue != 0 {
+			valueEx = true
+		}
+	}
+	if valueEx {
+		if value, err = ar.readNormallySmallNonNegativeWholeNumber(); err != nil {
+			return
+		}
+		value += uint64(c.Ub) + 1
+	} else {
+		sRange := c.Ub - c.Lb + 1
+		if sRange > 1 {
+			value, err = ar.readConstraintValue(sRange)
+		}
+	}
 	return
 }
 
