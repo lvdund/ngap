@@ -226,11 +226,9 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 
 // write message to AperWriter (code should be generated from spec)
 func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
-	procedureCode := ie.ProcedureCode{Value: aper.Enumerated(ie.ProcedureCodeNGSetup)}
-	criticality := ie.Criticality{Value: ie.CriticalityPresentReject} //parse from spec
 	present := ie.InitiatingMessagePresentNGSetupRequest              //predefined from spec
-	// Encoding Value Extensive Bit
-	w.WriteBool(aper.Zero)
+	procedureCode := ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)}
+	criticality := ie.Criticality{Value: ie.CriticalityPresentReject} //parse from spec
 	//1. TODO: write present
 	//2. TODO:write procedure code
 	//3. TODO: write criticality
@@ -238,13 +236,15 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	if err = w.WritePresent(present, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
 		return
 	}
+	fmt.Printf("Encoded present: % X\n", w.GetBuf())
 	if err = procedureCode.Encode(w); err != nil {
 		return
 	}
+	fmt.Printf("Encoded procedureCode: % X\n", w.GetBuf())
 	if err = criticality.Encode(w); err != nil {
 		return
 	}
-	fmt.Printf("Encode % X\n", w.GetBuf())
+	fmt.Printf("Encode criticality: % X\n", w.GetBuf())
 	ies := msg.toIes()
 	if len(ies) == 0 {
 		// return fmt.Errorf("Cann not load NGSetupRequest")
@@ -253,7 +253,7 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	}
 	// w.WriteBool(aper.Zero)
 	var containerBytes []byte
-	if err = w.WritePresent(present, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
+	if err = w.WritePresent(7, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
 		return
 	}
 	//first encode message content into byte array
@@ -272,6 +272,8 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {
 	var buff bytes.Buffer
 	w = aper.NewWriter(&buff)
+	// Encoding Value Extensive Bit
+	w.WriteBool(aper.Zero)
 	if err = pdu.Message.Msg.Encode(w); err != nil {
 		return
 	}

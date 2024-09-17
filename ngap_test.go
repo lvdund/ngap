@@ -23,6 +23,8 @@ func TestEncode(t *testing.T) {
 			return
 		} else if !reflect.DeepEqual(encode.GetBuf(), pdu.buf) {
 			fmt.Printf("Encoded compare err: \n\thas: % X\n\twant: % X", encode.GetBuf(), pdu.buf)
+		} else {
+			fmt.Println("Decode reflect")
 		}
 	}
 }
@@ -39,7 +41,7 @@ var tests = []struct {
 		resultPdu: &NgapPdu{
 			Present: NgapPduInitiatingMessage,
 			Message: NgapMessage{
-				ProcedureCode: ie.ProcedureCode{Value: aper.Enumerated(ie.ProcedureCodeNGSetup)},
+				ProcedureCode: ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)},
 				Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
 				Msg:           &NGSetupRequest{},
 			},

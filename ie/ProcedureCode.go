@@ -3,7 +3,7 @@ package ie
 import "ngap/aper"
 
 type ProcedureCode struct {
-	Value aper.Enumerated `aper:"valueLB:0,valueUB:255"`
+	Value aper.Integer `aper:"valueLB:0,valueUB:255"`
 }
 
 func (a *ProcedureCode) Decode(r aper.AperReader) error {
@@ -12,7 +12,7 @@ func (a *ProcedureCode) Decode(r aper.AperReader) error {
 }
 
 func (a *ProcedureCode) Encode(r aper.AperWriter) (err error) {
-	if err = r.WriteEnumerate(uint64(a.Value), aper.Constrain{Lb: 0, Ub: 255}, false); err != nil {
+	if err = r.WriteInteger(int64(a.Value), &aper.Constrain{Lb: 0, Ub: 255}, false); err != nil {
 		return err
 	}
 	return nil

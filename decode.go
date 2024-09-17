@@ -46,7 +46,7 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	if err != nil {
 		return
 	}
-	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Enumerated(v)}
+	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Integer(v)}
 	//4. decode criticality
 	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, false)
 	if err != nil {
