@@ -74,14 +74,18 @@ func (bs *bitstreamWriter) writeByte(v byte) error {
 }
 
 // write 'nbits' from 'content' byte array
-func (bs *bitstreamWriter) WriteBits(content []byte, nbits uint) error {
+func (bs *bitstreamWriter) WriteBits(content []byte, nbits uint) (err error) {
+	defer func() {
+		err = aperError("WriteBits", err)
+	}()
 
 	if nbits > uint(8*len(content)) {
-		return aperError("WriteBits", ErrUnderflow)
+		err = ErrUnderflow
+		return
 	}
 
 	if nbits == 0 { //write nothing
-		return nil
+		return
 	}
 
 	//truncate input
@@ -98,9 +102,9 @@ func (bs *bitstreamWriter) WriteBits(content []byte, nbits uint) error {
 		bs.b[0] |= (content[0] >> (8 - nbits)) << (8 - bs.index - uint8(nbits))
 		bs.index += uint8(nbits)
 		if bs.index == 8 {
-			return bs.flush()
+			err = bs.flush()
 		}
-		return nil
+		return
 	}
 
 	//b. need some writes
@@ -116,17 +120,17 @@ func (bs *bitstreamWriter) WriteBits(content []byte, nbits uint) error {
 
 	bs.index = uint8((nbits + uint(bs.index)) & 0x07) //determine new bs.index
 	if bs.index == 0 {                                //flush all
-		if _, err := bs.w.Write(buf); err != nil {
-			return aperError("WriteBits", err)
+		if _, err = bs.w.Write(buf); err != nil {
+			return
 		}
 		bs.b[0] = 0
 	} else { //flush all except the last byte which is move to the buffer
-		if _, err := bs.w.Write(buf[0 : nWriteBytes-1]); err != nil {
-			return aperError("WriteBits", err)
+		if _, err = bs.w.Write(buf[0 : nWriteBytes-1]); err != nil {
+			return
 		}
 		bs.b[0] = buf[nWriteBytes-1]
 	}
-	return nil
+	return
 }
 
 /********** BITSTREAM READER ***************/
@@ -158,9 +162,7 @@ func (bs *bitstreamReader) ReadBool() (bool, error) {
 
 func (bs *bitstreamReader) ReadBits(nbits uint) (output []byte, err error) {
 	defer func() {
-		if err != nil {
-			err = aperError("ReadBits", err)
-		}
+		err = aperError("ReadBits", err)
 	}()
 
 	if nbits == 0 { //read nothing
