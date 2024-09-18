@@ -226,7 +226,7 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 
 // write message to AperWriter (code should be generated from spec)
 func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
-	present := ie.InitiatingMessagePresentNGSetupRequest              //predefined from spec
+	present := ie.InitiatingMessagePresentNGSetupRequest //predefined from spec
 	procedureCode := ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)}
 	criticality := ie.Criticality{Value: ie.CriticalityPresentReject} //parse from spec
 	//1. TODO: write present
@@ -236,26 +236,23 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	if err = w.WritePresent(present, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
 		return
 	}
-	fmt.Printf("Encoded present: % X\n", w.GetBuf())
+	fmt.Printf("Encoded present: %0b\n", w.GetBuf())
 	if err = procedureCode.Encode(w); err != nil {
 		return
 	}
-	fmt.Printf("Encoded procedureCode: % X\n", w.GetBuf())
+	fmt.Printf("Encoded procedureCode: %0b\n", w.GetBuf())
 	if err = criticality.Encode(w); err != nil {
 		return
 	}
-	fmt.Printf("Encode criticality: % X\n", w.GetBuf())
+	fmt.Printf("Encode criticality: %0b\n", w.GetBuf())
 	ies := msg.toIes()
 	if len(ies) == 0 {
 		// return fmt.Errorf("Cann not load NGSetupRequest")
 		fmt.Println("Can not load NGSetupRequest")
 		return
 	}
-	// w.WriteBool(aper.Zero)
 	var containerBytes []byte
-	if err = w.WritePresent(7, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
-		return
-	}
+	// w.WriteBool(aper.Zero)
 	//first encode message content into byte array
 	if containerBytes, err = encodeIes(ies); err != nil {
 		return

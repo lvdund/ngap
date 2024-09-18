@@ -22,7 +22,7 @@ func TestEncode(t *testing.T) {
 			fmt.Printf("NgapEncode() NGSetupRequest fail = %v", err)
 			return
 		} else if !reflect.DeepEqual(encode.GetBuf(), pdu.buf) {
-			fmt.Printf("Encoded compare err: \n\thas: % X\n\twant: % X", encode.GetBuf(), pdu.buf)
+			fmt.Printf("Encoded compare err: \n\thas: %0b\n\twant: %0b", encode.GetBuf(), pdu.buf)
 		} else {
 			fmt.Println("Decode reflect")
 		}

@@ -51,15 +51,14 @@ func IsBitSet(content []byte, bitIndex uint) bool {
 }
 
 func (w *aperWriter) WritePresent(present int, c *Constrain) error {
-	var ub int64
-	rawChoice := present - 1
+	ub := c.Ub
 	if c.Ub == 0 {
 		return aperError("WritePresent", fmt.Errorf("The upper bound of Present is 0"))
-	} else if ub = c.Ub; ub < 0 {
+	} else if ub < 0 {
 		return aperError("WritePresent", fmt.Errorf("The upper bound of Present is negative"))
 	}
 
-	if err := w.writeConstrainValue(uint64(ub+1), uint64(rawChoice)); err != nil {
+	if err := w.writeConstrainValue(uint64(ub+1), uint64(present - 1)); err != nil {
 		return err
 	}
 	return nil

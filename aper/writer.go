@@ -168,6 +168,7 @@ func (aw *aperWriter) writeValue(v uint64, nbits uint) error {
 	var buf [8]byte
 	binary.BigEndian.PutUint64(buf[:], v)
 	err :=aw.WriteBits(buf[:], nbits)
+	fmt.Println("writevalue", v, nbits)
 	return err
 }
 
