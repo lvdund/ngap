@@ -28,7 +28,7 @@ type NgapMessageIE struct {
 	Value       NgapIE //open type
 }
 
-func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
+func (ie NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	//TODO:
 	//1. TODO: encode protocol Ie Id
 	//2. TODO: encode criticality
@@ -55,15 +55,12 @@ func (ie *NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
 	var buff bytes.Buffer
 	w := aper.NewWriter(&buff)
-	// numItems := len(ies)
-	//1. TODO: write length of the list
-	// w.WriteLength(numItems) //TODO: check AperWriter's APIs
 
-	//2. write every item on the list
-	for _, ie := range ies {
-		if err = ie.Encode(w); err != nil {
-			return
-		}
+	if err = aper.WriteSequenceOf[NgapMessageIE](ies, w, &aper.Constraint{
+		Lb: 0,
+		Ub: int64(aper.POW_16),
+	}, false); err != nil {
+		return
 	}
 	wire = buff.Bytes()
 	return
@@ -82,20 +79,19 @@ type NGSetupRequest struct {
 
 // implement MessageUnmarshaller (code should be generated from spec)
 func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.CriticalityDiagnostics) {
-	// r := aper.NewReader(bytes.NewReader(wire))
+
+	r := aper.NewReader(bytes.NewReader(wire))
+
 	// //fill data structure fields with IEs
-	// //1. get num of IEs
-	// var numIEs int
-	// if numIEs, err = r.ReadConstrainNumber(); err != nil { //TODO: check AperReader's APIs
-	// 	return
-	// }
-	// //2. decode all IEs
-	// // ies := make([]NgapMessageIE, numIEs)
-	// for i := 0; i < numIEs; i++ {
-	// 	if _, ieErr := msg.decodeIE(r); ieErr != nil {
-	// 		//depending on error/criticality value, we may continue or abort (check spec again)
-	// 	}
-	// }
+	var ies []*NgapMessageIE
+	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{
+		Lb: 0,
+		Ub: int64(aper.POW_16),
+	}, false); err != nil {
+		return
+	}
+	_ = ies
+
 	// //NOTE: after decode all IEs, now let's assign them to the message fields.
 	// //Alternatively, we can also assign the fields while decoding Ie in the previous
 	// //step
@@ -111,13 +107,13 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 // decode a single IE in the message (code should be generated from spec
 func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, err error) {
 	//1. decode protocol Ie Id
-	id, err := r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, false)
+	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err != nil {
 		return
 	}
 	msgIe.Id.NgapProtocolIeId = aper.Integer(id)
 	//2. decode criticality
-	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, false)
+	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
@@ -136,7 +132,7 @@ func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, er
 			return
 		}
 	case ie.ProtocolIEIDRANNodeName:
-		msg.RanNodeName, _ = r.ReadOctetString(&aper.Constrain{Lb: 1, Ub: 150}, false)
+		msg.RanNodeName, _ = r.ReadOctetString(&aper.Constraint{Lb: 1, Ub: 150}, false)
 	case ie.ProtocolIEIDSupportedTAList:
 		// msg.SupportedTaList = append(msg.SupportedTaList)
 	case ie.ProtocolIEIDDefaultPagingDRX:
@@ -226,25 +222,25 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 
 // write message to AperWriter (code should be generated from spec)
 func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
-	present := ie.InitiatingMessagePresentNGSetupRequest              //predefined from spec
+	present := ie.InitiatingMessagePresentNGSetupRequest //predefined from spec
 	procedureCode := ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)}
 	criticality := ie.Criticality{Value: ie.CriticalityPresentReject} //parse from spec
 	//1. TODO: write present
 	//2. TODO:write procedure code
 	//3. TODO: write criticality
 	//4. write message content
-	if err = w.WritePresent(present, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
+	if err = w.WriteChoice(uint64(present), 2, false); err != nil {
 		return
 	}
-	fmt.Printf("Encoded present: % X\n", w.GetBuf())
+	//fmt.Printf("Encoded present: % X\n", w.GetBuf())
 	if err = procedureCode.Encode(w); err != nil {
 		return
 	}
-	fmt.Printf("Encoded procedureCode: % X\n", w.GetBuf())
+	//fmt.Printf("Encoded procedureCode: % X\n", w.GetBuf())
 	if err = criticality.Encode(w); err != nil {
 		return
 	}
-	fmt.Printf("Encode criticality: % X\n", w.GetBuf())
+	//fmt.Printf("Encode criticality: % X\n", w.GetBuf())
 	ies := msg.toIes()
 	if len(ies) == 0 {
 		// return fmt.Errorf("Cann not load NGSetupRequest")
@@ -253,7 +249,7 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	}
 	// w.WriteBool(aper.Zero)
 	var containerBytes []byte
-	if err = w.WritePresent(7, &aper.Constrain{Lb: 0, Ub: 2}); err != nil {
+	if err = w.WriteChoice(7, 2, false); err != nil {
 		return
 	}
 	//first encode message content into byte array
@@ -264,7 +260,7 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	// if err = w.WriteOpenType(containerBytes); err != nil { //write OpenType bytes
 	// 	return
 	// }
-	err = w.WriteBytes(containerBytes)
+	err = w.WriteOpenType(containerBytes)
 
 	return
 }

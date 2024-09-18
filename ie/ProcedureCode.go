@@ -12,7 +12,7 @@ func (a *ProcedureCode) Decode(r aper.AperReader) error {
 }
 
 func (a *ProcedureCode) Encode(r aper.AperWriter) (err error) {
-	if err = r.WriteInteger(int64(a.Value), &aper.Constrain{Lb: 0, Ub: 255}, false); err != nil {
+	if err = r.WriteInteger(int64(a.Value), &aper.Constraint{Lb: 0, Ub: 255}, false); err != nil {
 		return err
 	}
 	return nil

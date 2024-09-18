@@ -3,7 +3,7 @@ package aper
 import (
 	"bytes"
 	"encoding/binary"
-	//	"fmt"
+	"fmt"
 	"io"
 	"math/bits"
 )
@@ -14,8 +14,9 @@ type AperWriter interface {
 	WriteOctetString([]byte, *Constraint, bool) error
 	WriteOpenType([]byte) error
 	WriteBitString([]byte, uint, *Constraint, bool) error
-	WriteInteger(uint64, *Constraint, bool) error
+	WriteInteger(int64, *Constraint, bool) error
 	WriteEnumerate(uint64, Constraint, bool) error
+	WriteChoice(uint64, uint64, bool) error
 	Close() error
 }
 
@@ -240,11 +241,6 @@ func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 	return
 }
 
-func (aw *aperWriter) WriteSequenceOf(items []AperMarshaller, c *Constraint, e bool) error {
-	//TODO:
-	return nil
-}
-
 // constrain must have Lb <= Ub
 func (aw *aperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error) {
 	defer func() {
@@ -459,4 +455,31 @@ func (aw *aperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 		return nil
 	*/
 	return
+}
+
+func (aw *aperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
+	defer func() {
+		err = aperError("WriteChoice", err)
+	}()
+	if v < 1 {
+		err = fmt.Errorf("Choice must be larger than 1")
+		return
+	}
+	v -= 1
+	if e {
+		if v > uBound {
+			err = fmt.Errorf("Choice extension not supported")
+			return
+		}
+		if err = aw.WriteBool(Zero); err != nil {
+			return
+		}
+	}
+	err = aw.writeConstraintValue(uBound+1, v)
+	return
+}
+
+func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, e bool) error {
+	//TODO:
+	return nil
 }

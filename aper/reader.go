@@ -360,9 +360,40 @@ func (ar *aperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) 
 	return
 }
 
-/*
-func (ar *aperReader) ReadSequenceOf(c *Constraint, e bool) (value uint64, err error) {
-	//TODO:
+func (ar *aperReader) ReadChoice(uBound uint64, e bool) (v uint64, err error) {
+	defer func() {
+		err = aperError("ReadChoice", err)
+	}()
+
+	if e {
+		var exBit bool
+		if exBit, err = ar.ReadBool(); err != nil {
+			return
+		}
+		if exBit {
+			err = fmt.Errorf("Choice extension not supported")
+			return
+		}
+	}
+	var tmp uint64
+	if tmp, err = ar.readConstraintValue(uBound + 1); err != nil {
+		return
+	}
+	v = tmp + 1
 	return
 }
-*/
+
+func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReader, c *Constraint, e bool) (items []*T, err error) {
+	//NOTE: decoder is a function that read from the input stream (AperReader) to decode
+	//a specific aper data structure
+	//1. read num elements
+	var numElems int = 10 //TODO: read from input
+	//2. read every elements
+	items = make([]*T, numElems)
+	for i := 0; i < numElems; i++ {
+		if items[i], err = decoder(ar); err != nil {
+			return
+		}
+	}
+	return
+}

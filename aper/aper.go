@@ -9,11 +9,11 @@ const (
 )
 
 type AperMarshaller interface {
-	AperEncode(w AperWriter) error
+	Encode(w AperWriter) error
 }
 
 type AperUnmarshaller interface {
-	AperDecode(w AperWriter) error
+	Decode(w AperReader) error
 }
 
 type BitString struct {

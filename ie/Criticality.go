@@ -20,7 +20,7 @@ func (ie *Criticality) Decode(r aper.AperReader) error {
 }
 
 func (ie *Criticality) Encode(r aper.AperWriter) (err error) {
-	if err = r.WriteEnumerate(uint64(ie.Value), aper.Constrain{Lb: 0, Ub: 2}, false); err != nil {
+	if err = r.WriteEnumerate(uint64(ie.Value), aper.Constraint{Lb: 0, Ub: 2}, false); err != nil {
 		return err
 	}
 	return nil

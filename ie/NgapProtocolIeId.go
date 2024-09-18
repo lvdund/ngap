@@ -12,7 +12,7 @@ func (ie *NgapProtocolIeId) Decode(r aper.AperReader) error {
 }
 
 func (ie *NgapProtocolIeId) Encode(r aper.AperWriter) (err error) {
-	if err = r.WriteInteger(int64(ie.NgapProtocolIeId), &aper.Constrain{Lb: 10, Ub: 10}, false); err != nil {
+	if err = r.WriteInteger(int64(ie.NgapProtocolIeId), &aper.Constraint{Lb: 10, Ub: 10}, false); err != nil {
 		return err
 	}
 	return nil

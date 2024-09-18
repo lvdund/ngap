@@ -66,6 +66,9 @@ func Test_Aper(t *testing.T) {
 	}, true); err != nil {
 		t.Fatalf("WriteEnumerate error %+v", err)
 	}
+	if err := w.WriteChoice(1, 2, false); err != nil {
+		t.Fatalf("WriteChoice error %+v", err)
+	}
 
 	if err := w.flush(); err != nil {
 		t.Fatalf("Flush error %+v", err)
@@ -149,6 +152,11 @@ func Test_Aper(t *testing.T) {
 		t.Fatalf("ReadEnumerate error %+v", err)
 	} else {
 		fmt.Printf("ReadEnumerate %d\n", v)
+	}
+	if v, err := r.ReadChoice(2, false); err != nil || v != 1 {
+		t.Fatalf("ReadChoice error %+v", err)
+	} else {
+		fmt.Printf("ReadChoice %d\n", v)
 	}
 
 }

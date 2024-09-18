@@ -36,19 +36,19 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	// }
 
 	//2. decode present		//choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
-	v, err := r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 2}, false)
+	v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
 	var present uint8 = uint8(v)
 	//3. decode procedure code
-	v, err = r.ReadInteger(&aper.Constrain{Lb: 0, Ub: 255}, false)
+	v, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err != nil {
 		return
 	}
 	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Integer(v)}
 	//4. decode criticality
-	c, err := r.ReadEnumerate(&aper.Constrain{Lb: 0, Ub: 2}, false)
+	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
