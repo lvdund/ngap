@@ -598,7 +598,7 @@ func TestReadInteger(t *testing.T) {
 }
 */
 func TestReadEnumerate(t *testing.T) {
-	fmt.Printf("TestReadEnumerate\n")
+	fmt.Printf("Test ReadEnumerate\n")
 	testGroups := []struct {
 		name  string
 		input []byte // Input data for decoding
@@ -676,7 +676,7 @@ func TestReadEnumerate(t *testing.T) {
 }
 
 func TestWriteEnumerate(t *testing.T) {
-	fmt.Printf("TestWriteEnumerate\n")
+	fmt.Printf("Test WriteEnumerate\n")
 	testGroups := []struct {
 		name  string
 		input []byte // Input data for decoding
@@ -747,5 +747,51 @@ func TestWriteEnumerate(t *testing.T) {
 			}
 
 		})
+	}
+}
+
+type TestItem struct {
+	id int64
+}
+
+func (item TestItem) Encode(aw AperWriter) (err error) {
+	err = aw.WriteInteger(item.id, nil, false)
+	return
+}
+
+func (item TestItem) Decode(aw AperReader) (err error) {
+	item.id, err = aw.ReadInteger(nil, false)
+	return
+}
+
+func Test_Sequence(t *testing.T) {
+	//@Duc: please improve this test
+
+	fmt.Printf("Test Write/Read sequence\n")
+	//1. encode sequences
+	var buf bytes.Buffer
+	writer := NewWriter(&buf)
+	items := []TestItem{TestItem{
+		id: 100,
+	},
+		TestItem{
+			id: 199,
+		}}
+	if err := WriteSequenceOf[TestItem](items, writer, nil, false); err != nil {
+		t.Errorf("Fail encoding: %+v", err)
+	}
+
+	//2. decode sequences
+	reader := NewReader(bytes.NewReader(buf.Bytes()))
+	if newItems, err := ReadSequenceOfEx[TestItem](reader, nil, false); err != nil {
+		t.Errorf("Fail decoding: %+v", err)
+	} else {
+		//3. compare
+		if len(newItems) != len(items) {
+			t.Errorf("size not match")
+		} else {
+			fmt.Printf("num items = %d\n", len(newItems))
+			//TODO: compare content
+		}
 	}
 }

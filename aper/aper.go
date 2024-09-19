@@ -31,6 +31,7 @@ type Constraint struct {
 	Ub int64
 }
 
+/*
 // check if value is in range
 func (c *Constraint) InRange(v int64) bool {
 	if v < c.Lb {
@@ -52,6 +53,7 @@ func (c *Constraint) IsUnconstrain(v int64) bool {
 	}
 	return false
 }
+*/
 func (c *Constraint) Range() uint64 {
 	if c.Lb > c.Ub {
 		return 0

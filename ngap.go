@@ -58,7 +58,7 @@ func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
 
 	if err = aper.WriteSequenceOf[NgapMessageIE](ies, w, &aper.Constraint{
 		Lb: 0,
-		Ub: int64(aper.POW_16),
+		Ub: int64(aper.POW_16 - 1),
 	}, false); err != nil {
 		return
 	}
@@ -83,10 +83,10 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 	r := aper.NewReader(bytes.NewReader(wire))
 
 	// //fill data structure fields with IEs
-	var ies []*NgapMessageIE
+	var ies []NgapMessageIE
 	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{
 		Lb: 0,
-		Ub: int64(aper.POW_16),
+		Ub: int64(aper.POW_16 - 1),
 	}, false); err != nil {
 		return
 	}
