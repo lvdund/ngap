@@ -44,7 +44,7 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, 
 		if err = aw.writeConstraintValue(sizeRange, uint64(numElems)-lowerBound); err != nil {
 			return
 		}
-	} else { //unconstraint
+	} else if sizeRange == 0 { //unconstraint
 		if err = aw.align(); err != nil {
 			return
 		}
