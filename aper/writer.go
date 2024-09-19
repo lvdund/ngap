@@ -282,9 +282,14 @@ func (aw *aperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error)
 }
 
 func (aw *aperWriter) WriteOpenType(content []byte) (err error) {
-	//it is just link writing an OctetString without a constraint and
+	//it is just like writing an OctetString without a constraint and
 	//extension bit
-	return aw.WriteOctetString(content, nil, false)
+	if err = aw.WriteOctetString(content, nil, false); err != nil {
+		return
+	}
+	//NOTE: @Duc, please check if we need alignment at the end
+	err = aw.align()
+	return
 }
 
 func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {

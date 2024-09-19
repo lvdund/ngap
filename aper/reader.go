@@ -244,6 +244,7 @@ func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 }
 
 func (ar *aperReader) ReadOpenType() (octets []byte, err error) {
+	ar.align() //NOTE: @Duc, please make sure if alignment is neccesary
 	octets, err = ar.ReadOctetString(nil, false)
 	return
 }
