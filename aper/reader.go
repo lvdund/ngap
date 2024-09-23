@@ -9,6 +9,7 @@ import (
 )
 
 type AperReader interface {
+	//public APIs
 	ReadBool() (bool, error)
 	ReadBits(uint) ([]byte, error)
 	ReadOctetString(*Constraint, bool) ([]byte, error)
@@ -17,6 +18,11 @@ type AperReader interface {
 
 	ReadEnumerate(Constraint, bool) (uint64, error)
 	ReadInteger(*Constraint, bool) (int64, error)
+
+	//private APIs
+	align()
+	readValue(uint) (uint64, error)
+	readConstraintValue(uint64) (uint64, error)
 }
 
 type aperReader struct {
@@ -238,6 +244,7 @@ func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 }
 
 func (ar *aperReader) ReadOpenType() (octets []byte, err error) {
+	ar.align() //NOTE: @Duc, please make sure if alignment is neccesary
 	octets, err = ar.ReadOctetString(nil, false)
 	return
 }
@@ -429,20 +436,5 @@ func (ar *aperReader) ReadChoice(uBound uint64, e bool) (v uint64, err error) {
 		return
 	}
 	v = tmp + 1
-	return
-}
-
-func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReader, c *Constraint, e bool) (items []*T, err error) {
-	//NOTE: decoder is a function that read from the input stream (AperReader) to decode
-	//a specific aper data structure
-	//1. read num elements
-	var numElems int = 10 //TODO: read from input
-	//2. read every elements
-	items = make([]*T, numElems)
-	for i := 0; i < numElems; i++ {
-		if items[i], err = decoder(ar); err != nil {
-			return
-		}
-	}
 	return
 }

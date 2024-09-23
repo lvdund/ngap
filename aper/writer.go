@@ -9,6 +9,7 @@ import (
 )
 
 type AperWriter interface {
+	//public APIs
 	WriteBool(bool) error
 	WriteBits([]byte, uint) error
 	WriteOctetString([]byte, *Constraint, bool) error
@@ -18,6 +19,11 @@ type AperWriter interface {
 	WriteEnumerate(uint64, Constraint, bool) error
 	WriteChoice(uint64, uint64, bool) error
 	Close() error
+
+	//private APIs
+	writeValue(uint64, uint) error
+	writeConstraintValue(uint64, uint64) error
+	align() error
 }
 
 type aperWriter struct {
@@ -274,9 +280,14 @@ func (aw *aperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error)
 }
 
 func (aw *aperWriter) WriteOpenType(content []byte) (err error) {
-	//it is just link writing an OctetString without a constraint and
+	//it is just like writing an OctetString without a constraint and
 	//extension bit
-	return aw.WriteOctetString(content, nil, false)
+	if err = aw.WriteOctetString(content, nil, false); err != nil {
+		return
+	}
+	//NOTE: @Duc, please check if we need alignment at the end
+	err = aw.align()
+	return
 }
 
 func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
@@ -464,20 +475,16 @@ func (aw *aperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
 		return
 	}
 	v -= 1
+	if v > uBound {
+		err = fmt.Errorf("Choice extension not supported")
+		return
+	}
+
 	if e {
-		if v > uBound {
-			err = fmt.Errorf("Choice extension not supported")
-			return
-		}
 		if err = aw.WriteBool(Zero); err != nil {
 			return
 		}
 	}
 	err = aw.writeConstraintValue(uBound+1, v)
 	return
-}
-
-func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, e bool) error {
-	//TODO:
-	return nil
 }
