@@ -244,10 +244,75 @@ func (ar *aperReader) ReadOpenType() (octets []byte, err error) {
 
 func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err error) {
 	//TODO:
-	defer func() {
-		err = aperError("ReadOctetString", err)
-	}()
+	// defer func() {
+	// 	err = aperError("ReadOctetString", err)
+	// }()
+	// var exBit bool = false
+	// if e { //read extension bit
+	// 	if exBit, err = ar.ReadBool(); err != nil {
+	// 		return
+	// 	}
+	// }
 
+	// var lRange uint64 = 0    //length range
+	// var lowerBound int64 = 0 //length lower bound, default=0
+	// if c != nil {
+	// 	if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
+	// 		err = ErrConstraint
+	// 		return
+	// 	}
+	// 	if lRange = c.Range(); lRange == 0 && exBit {
+	// 		err = ErrInextensible //get a true extension bit while the range is unconstraint
+	// 		return
+	// 	}
+	// }
+	// if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at least 16 bits then set as semi-constrain
+	// 	lRange = 0
+	// }
+
+	// if lRange == 1 { //constrained with fixed length
+	// 	nbits := uint(c.Lb)
+	// 	numBytes := (nbits + 7) >> 3
+	// 	if numBytes > 2 { //if more than 2 bytes, need align byte first
+	// 		ar.align()
+	// 	}
+	// 	octets, err = ar.ReadBits(nbits)
+	// 	return
+	// }
+
+	// var buf bytes.Buffer
+	// var tmpBytes []byte
+	// partWriter := NewBitStreamWriter(&buf) //a bitstream writer to write parts of content
+	// more := true                           //more part to read
+	// var partLen uint64                     //length of a part to read
+
+	// for more {
+	// 	//read part length first
+	// 	if partLen, more, err = ar.readLength(lRange); err != nil {
+	// 		return
+	// 	}
+
+	// 	ar.align()
+
+	// 	partLen += uint64(lowerBound)
+	// 	if partLen == 0 {
+	// 		//last part has zeros length, skip reading
+	// 		break
+	// 	}
+
+	// 	//then read the  part content
+	// 	if tmpBytes, err = ar.ReadBits(uint(partLen)); err != nil {
+	// 		return
+	// 	}
+	// 	//concat the part to the output bitstream
+	// 	if err = partWriter.WriteBits(tmpBytes, uint(partLen)); err != nil {
+	// 		fmt.Printf("Fail to write: %+v", err)
+	// 		return
+	// 	}
+	// 	nbits += uint(partLen)
+	// }
+	// partWriter.flush()    //flush the buffer
+	// octets = buf.Bytes() //return the concatenated output
 	return
 }
 
@@ -256,75 +321,59 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
+	fmt.Println("================read integer ==================")
+	var valueEx bool
+	if e{
+		if bitsValue, err1 := ar.readValue(1); err1 != nil {
+			return 0,err1
+		} else if bitsValue != 0 {
+			valueEx = true
+		}
+	}
+	var sRange int64 = -1
+	if !valueEx {
+		sRange = c.Ub - c.Lb + 1
+	}
+	if uint64(c.Ub) > POW_16 {
+		sRange = -1
+	}
+	var rawLength uint
 
-	/*
-		fmt.Println("================read integer ==================")
-		var valueEx bool
-		if ar.index == 8{
-			ar.readAlignBits()
-		}
-		if e{
-			if bitsValue, err1 := ar.getValue(1); err1 != nil {
-				return 0,err1
-			} else if bitsValue != 0 {
-				valueEx = true
-			}
-		}
-		var sRange int64 = -1
-		if !valueEx {
-			sRange = c.Ub - c.Lb + 1
-		}
-		if c.Ub > 65535 {
-			sRange = -1
-		}
-		var rawLength uint
-		if sRange == 1 {
-			return c.Ub, nil
-		} else if sRange <= 0 {
-			if err := ar.readAlignBits(); err != nil {
-				return int64(0), err
-			}
-			length := ar.b[0]
-			rawLength = uint(length)
-			if err := ar.readAlignBits(); err != nil {
-				return int64(0), err
-			}
-		} else if sRange <= 65536 {
-			rawValue, err := ar.readConstraintValue(sRange)
-			if err != nil {
-				return int64(0), err
-			} else {
-				return int64(rawValue) + c.Lb, nil
-			}
-		} else {
-			unsignedValueRange := uint64(sRange - 1)
-			bitLength := bits.Len64(unsignedValueRange)
-			byteLen := uint((bitLength + 7) / 8)
-			bitLen := bits.Len(uint(int(byteLen)))
-			if tempLength, err := ar.getValue(uint(bitLen)); err != nil {
-				return int64(0), err
-			} else {
-				rawLength = uint(tempLength)
-			}
-			rawLength++
-			if err := ar.readAlignBits(); err != nil {
-				return int64(0), err
-			}
-		}
-		if rawValue, err := ar.getValue(rawLength * 8); err != nil {
+	switch {
+	case sRange == 1:
+		return c.Ub, nil
+	case sRange <= 0:
+		ar.align()
+		buff, _ := ar.readByte()
+		rawLength = uint(buff)
+	case uint64(sRange) <= POW_16:
+		rawValue, err := ar.readConstraintValue(uint64(sRange))
+		if err != nil {
 			return int64(0), err
-		} else if sRange < 0 {
-			signedBitMask := uint64(1 << (rawLength*8 - 1))
-			valueMask := signedBitMask - 1
-			if rawValue&signedBitMask > 0 {
-				return int64((^rawValue)&valueMask+1) * -1, nil
-			}
-			return int64(rawValue) + c.Lb, nil
-		} else {
-			return int64(rawValue) + c.Lb, nil
 		}
-	*/
-	return
+		return int64(rawValue) + c.Lb, nil
+	default:
+		unsignedValueRange := uint64(sRange - 1)
+		bitLength := bits.Len64(unsignedValueRange)
+		tempLength, err := ar.readValue(uint(bitLength))
+		if err != nil {
+			return int64(0), err
+		}
+		rawLength = uint(tempLength) + 1 
+		ar.align()
+	}
+	if rawValue, err := ar.readValue(rawLength * 8); err != nil {
+		return int64(0), err
+	} else if sRange < 0 {
+		signedBitMask := uint64(1 << (rawLength*8 - 1))
+		valueMask := signedBitMask - 1
+		if rawValue&signedBitMask > 0 {
+			return int64((^rawValue)&valueMask+1) * -1, nil
+		}
+		return int64(rawValue) + c.Lb, nil 
+	} else {
+		return int64(rawValue) + c.Lb, nil
+	}
 }
 
 // constrain must have Lb <= Ub
