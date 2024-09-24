@@ -1,5 +1,8 @@
 package aper
 
+import (
+)
+
 const (
 	POW_16 uint64 = 65536
 	POW_14 uint64 = 16384
