@@ -1,10 +1,11 @@
 package ngap
 
 import (
-	"fmt"
+	"bytes"
 	"ngap/aper"
 	"ngap/ie"
-	"reflect"
+
+	//"reflect"
 	"testing"
 )
 
@@ -18,15 +19,15 @@ func TestEncode(t *testing.T) {
 
 	for _, pdu := range tests {
 		encode, err := NgapEncode(*pdu.resultPdu)
+		_ = encode
 		if err != nil {
-			fmt.Printf("NgapEncode() NGSetupRequest fail = %v", err)
+			t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
 			return
-		} else if !reflect.DeepEqual(encode.GetBuf(), pdu.buf) {
-			fmt.Printf("Encoded compare err: \n\thas: %0b\n\twant: %0b", encode.GetBuf(), pdu.buf)
-		} else {
-			fmt.Println("Decode reflect")
+		} else if !bytes.Equal(encode.GetBuf(), pdu.buf) {
+			t.Errorf("Final buffer = %v, want %v", encode.GetBuf(), pdu.buf)
 		}
 	}
+	// now: err when encode octetstring - RanNodeName
 }
 
 var tests = []struct {
@@ -37,13 +38,15 @@ var tests = []struct {
 }{
 	{
 		name: "NgSetupRequest",
-		buf:  []byte{0x00, 0x15, 0x00, 0x03, 0x00, 0x00, 0x00},
+		buf:  []byte{0x00, 0x15, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x00, 0x52, 0x40, 0x03, 0x00, 0x00, 0x61},
 		resultPdu: &NgapPdu{
 			Present: NgapPduInitiatingMessage,
 			Message: NgapMessage{
 				ProcedureCode: ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)},
 				Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
-				Msg:           &NGSetupRequest{},
+				Msg: &NGSetupRequest{
+					RanNodeName: &ie.RANNodeName{Value: "a"},
+				},
 			},
 		},
 	},
