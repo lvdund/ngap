@@ -378,8 +378,8 @@ func TestReadBitStringGroups(t *testing.T) {
 
 func TestWriteReadBitStringGroups(t *testing.T) {
 	testGroups := []struct {
-		name      string
-		tests     []struct {
+		name  string
+		tests []struct {
 			name       string
 			content    []byte
 			nbits      uint
@@ -499,7 +499,6 @@ func TestWriteReadBitStringGroups(t *testing.T) {
 	}
 }
 
-
 func TestWriteOctetStringGroup(t *testing.T) {
 	testGroups := []struct {
 		name  string
@@ -612,9 +611,9 @@ func TestWriteOctetStringGroup(t *testing.T) {
 }
 func TestReadOctetStringGroup(t *testing.T) {
 	testGroups := []struct {
-		name     string
-		input    []byte // Encoded input to decode
-		tests    []struct {
+		name  string
+		input []byte // Encoded input to decode
+		tests []struct {
 			name       string
 			constraint *Constraint
 			extensible bool
@@ -718,7 +717,6 @@ func TestReadOctetStringGroup(t *testing.T) {
 		})
 	}
 }
-
 
 func TestWriteInteger(t *testing.T) {
 	testGroups := []struct {
@@ -983,7 +981,8 @@ func TestWriteEnumerate(t *testing.T) {
 }
 
 type TestItem struct {
-	id int64
+	id  int64
+	msg IE
 }
 
 func (item TestItem) Encode(aw AperWriter) (err error) {
@@ -1003,12 +1002,16 @@ func Test_Sequence(t *testing.T) {
 	//1. encode sequences
 	var buf bytes.Buffer
 	writer := NewWriter(&buf)
-	items := []TestItem{TestItem{
-		id: 100,
-	},
+	items := []TestItem{
+		TestItem{
+			id: 100,
+			msg: &AmfId{},
+		},
 		TestItem{
 			id: 199,
-		}}
+			msg: AmfName("aa"),
+		},
+	}
 	if err := WriteSequenceOf[TestItem](items, writer, nil, false); err != nil {
 		t.Errorf("Fail encoding: %+v", err)
 	}
@@ -1026,4 +1029,5 @@ func Test_Sequence(t *testing.T) {
 			//TODO: compare content
 		}
 	}
+
 }

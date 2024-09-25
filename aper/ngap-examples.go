@@ -2,6 +2,11 @@ package aper
 
 //NGAP types should be auto-generated using following templates
 
+type IE interface {
+	Encode(AperWriter) error
+	Decode(AperReader) error
+}
+
 // AmfId
 type AmfId struct {
 	Region      []byte     //`bitstring:"sizeLB:8,sizeUB:8"`
