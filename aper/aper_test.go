@@ -981,53 +981,66 @@ func TestWriteEnumerate(t *testing.T) {
 }
 
 type TestItem struct {
-	id  int64
-	msg IE
+	id int64
 }
 
-func (item TestItem) Encode(aw AperWriter) (err error) {
-	err = aw.WriteInteger(item.id, nil, false)
-	return
+func (item *TestItem) Encode(aw AperWriter) error {
+	err := aw.WriteInteger(item.id, nil, false)
+	return err
+}
+func (item *TestItem) Decode(aw AperReader) error {
+	if item == nil {
+		item = &TestItem{}
+	}
+    id, err := aw.ReadInteger(nil, false)
+    if err != nil {
+        return err
+    }
+    item.id = id 
+    fmt.Println("item.id  : ", item.id)
+    return nil
 }
 
-func (item TestItem) Decode(aw AperReader) (err error) {
-	item.id, err = aw.ReadInteger(nil, false)
-	return
-}
 
 func Test_Sequence(t *testing.T) {
-	//@Duc: please improve this test
+    fmt.Printf("Test Write/Read sequence\n")
+    
+    // 1. encode sequences
+    var buf bytes.Buffer
+    writer := NewWriter(&buf)
+    item1 := TestItem{id: 100}
+    item2 := TestItem{id: 199}
+    items := make([]*TestItem, 2)
+    items[0] = &item1
+    items[1] = &item2
 
-	fmt.Printf("Test Write/Read sequence\n")
-	//1. encode sequences
-	var buf bytes.Buffer
-	writer := NewWriter(&buf)
-	items := []TestItem{
-		TestItem{
-			id: 100,
-			msg: &AmfId{},
-		},
-		TestItem{
-			id: 199,
-			msg: AmfName("aa"),
-		},
-	}
-	if err := WriteSequenceOf[TestItem](items, writer, nil, false); err != nil {
-		t.Errorf("Fail encoding: %+v", err)
-	}
+    fmt.Println("items before encoding: ", items)
+    if err := WriteSequenceOf[*TestItem](items, writer, nil, false); err != nil {
+        t.Errorf("Fail encoding: %+v", err)
+    }
 
-	//2. decode sequences
-	reader := NewReader(bytes.NewReader(buf.Bytes()))
-	if newItems, err := ReadSequenceOfEx[TestItem](reader, nil, false); err != nil {
-		t.Errorf("Fail decoding: %+v", err)
-	} else {
-		//3. compare
-		if len(newItems) != len(items) {
-			t.Errorf("size not match")
-		} else {
-			fmt.Printf("num items = %d\n", len(newItems))
-			//TODO: compare content
-		}
-	}
+    // 2. decode sequences
+    reader := NewReader(bytes.NewReader(buf.Bytes()))
+    newItems, err := ReadSequenceOfEx[*TestItem](reader, nil, false)
+    if err != nil {
+        t.Errorf("Fail decoding: %+v", err)
+    }
 
+    for i := range newItems {
+        if newItems[i] == nil {
+            newItems[i] = &TestItem{} 
+        }
+    }
+    // 3. compare
+    if len(newItems) != len(items) {
+        t.Errorf("size not match")
+    } else {
+        for i := range newItems {
+            if newItems[i].id != items[i].id {
+                t.Errorf("item %d does not match, expected %d, got %d", i, items[i].id, newItems[i].id)
+            } else {
+                fmt.Printf("Item %d matches: %d\n", i, newItems[i].id)
+            }
+        }
+    }
 }

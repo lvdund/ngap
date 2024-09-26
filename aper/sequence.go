@@ -49,6 +49,7 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, 
 			return
 		}
 		//NOTE @Duc: why the numElems is encoded as a single byte (<=255)?
+		fmt.Println("num element: ",uint64(numElems&0xff))
 		if err = aw.writeValue(uint64(numElems&0xff), 8); err != nil {
 			return
 		}
@@ -110,7 +111,6 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 			return
 		}
 	}
-
 	//4. fianly read every elements
 	items = make([]T, numElems)
 	var tmpItem *T

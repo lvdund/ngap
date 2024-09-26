@@ -314,29 +314,30 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 	octets = buf.Bytes() //return the concatenated output
 	return
 }
-
 func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error) {
 	//TODO:@Duc check it again
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
+	fmt.Println("=============read integer===============")
 	var valueEx bool
-	if e{
-		if bitsValue, err1 := ar.readValue(1); err1 != nil {
-			return 0,err1
-		} else if bitsValue != 0 {
-			valueEx = true
+	var lb int64 = 0
+	if e { //read extension bit
+		if valueEx, err = ar.ReadBool(); err != nil {
+			return
 		}
 	}
 	var sRange int64 = -1
 	if !valueEx {
-		sRange = c.Ub - c.Lb + 1
+		if c == nil{
+			sRange = -1
+		}else{
+			lb = c.Lb
+			sRange = int64(c.Range())
+		}
 	}
-	if uint64(c.Ub) > POW_16 {
-		sRange = -1
-	}
+	
 	var rawLength uint
-
 	switch {
 	case sRange == 1:
 		return c.Ub, nil
@@ -372,9 +373,10 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 			}
 		}	 
 	} 	
-	return int64(rawValue) + c.Lb, nil
-}
+	fmt.Println("===============end read integer ==================")
 
+	return int64(rawValue) + lb, nil
+}
 // constrain must have Lb <= Ub
 func (ar *aperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) {
 	defer func() {
