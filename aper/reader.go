@@ -129,7 +129,6 @@ func (ar *aperReader) readLength(lRange uint64) (value uint64, more bool, err er
 	more = false
 	if lRange <= POW_16 && lRange > 0 { //range exist, read a contrained value
 		if value, err = ar.readConstraintValue(lRange); err != nil {
-			fmt.Printf("readLength with range=%d\n", lRange)
 		}
 		return
 	}
@@ -217,19 +216,18 @@ func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 		if partLen, more, err = ar.readLength(lRange); err != nil {
 			return
 		}
+		partLen += uint64(lowerBound)
 		if partLen == 0 {
 			//last part has zeros length, skip reading
 			break
 		}
 		ar.align()
-		partLen += uint64(lowerBound)
 		//then read the  part content
 		if tmpBytes, err = ar.ReadBits(uint(partLen)); err != nil {
 			return
 		}
 		//concat the part to the output bitstream
 		if err = partWriter.WriteBits(tmpBytes, uint(partLen)); err != nil {
-			fmt.Printf("Fail to write: %+v", err)
 			return
 		}
 		nbits += uint(partLen)
@@ -270,15 +268,16 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 			return
 		}
 	}
-	if lRange > 0 && uint64(c.Ub) >= POW_16 { 
+	if lRange > 0 && uint64(c.Ub) >= POW_16 {
 		lRange = 0
 	}
+
 	if lRange == 1 { //constrained with fixed length
 		numBytes := uint(c.Lb)
-		if numBytes > 2 { 
+		if numBytes > 2 {
 			ar.align()
 		}
-		octets, err = ar.ReadBits(numBytes*8)
+		octets, err = ar.ReadBits(numBytes * 8)
 		return
 	}
 
@@ -293,24 +292,23 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 		if partLen, more, err = ar.readLength(lRange); err != nil {
 			return
 		}
+		partLen += uint64(lowerBound)
 		if partLen == 0 {
 			//last part has zeros length, skip reading
 			break
 		}
 		ar.align()
-		partLen += uint64(lowerBound)
 		//then read the  part content
-		if tmpBytes, err = ar.ReadBits(uint(partLen*8)); err != nil {
+		if tmpBytes, err = ar.ReadBits(uint(partLen * 8)); err != nil {
 			return
 		}
 		//concat the part to the output bitstream
 		if err = partWriter.WriteBits(tmpBytes, uint(partLen*8)); err != nil {
-			fmt.Printf("Fail to write: %+v", err)
 			return
 		}
 		nBytes += partLen
 	}
-	partWriter.flush()    //flush the buffer
+	partWriter.flush()   //flush the buffer
 	octets = buf.Bytes() //return the concatenated output
 	return
 }
@@ -329,14 +327,14 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 	}
 	var sRange int64 = -1
 	if !valueEx {
-		if c == nil{
+		if c == nil {
 			sRange = -1
-		}else{
+		} else {
 			lb = c.Lb
 			sRange = int64(c.Range())
 		}
 	}
-	
+
 	var rawLength uint
 	switch {
 	case sRange == 1:
@@ -358,7 +356,7 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 		if err != nil {
 			return int64(0), err
 		}
-		rawLength = uint(tempLength) + 1 
+		rawLength = uint(tempLength) + 1
 		ar.align()
 	}
 	var rawValue uint64
@@ -371,12 +369,13 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 			if rawValue&signedBitMask > 0 {
 				return int64((^rawValue)&valueMask+1) * -1, nil
 			}
-		}	 
-	} 	
+		}
+	}
 	fmt.Println("===============end read integer ==================")
 
 	return int64(rawValue) + lb, nil
 }
+
 // constrain must have Lb <= Ub
 func (ar *aperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) {
 	defer func() {

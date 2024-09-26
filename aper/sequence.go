@@ -49,7 +49,7 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, 
 			return
 		}
 		//NOTE @Duc: why the numElems is encoded as a single byte (<=255)?
-		fmt.Println("num element: ",uint64(numElems&0xff))
+		fmt.Println("num element: ", uint64(numElems&0xff))
 		if err = aw.writeValue(uint64(numElems&0xff), 8); err != nil {
 			return
 		}
