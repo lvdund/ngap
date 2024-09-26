@@ -94,6 +94,7 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 
 	//3. read num elements
 	var numElems uint64
+	fmt.Println("Msg - sizeRange:", sizeRange)
 	if sizeRange == 1 {
 		numElems = lowerBound
 	} else if sizeRange > 1 {
@@ -104,11 +105,13 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 			err = fmt.Errorf("Inconsistent extension bit")
 			return
 		}
+		fmt.Println("1. Msg - numElems:", numElems)
 	} else { //no constraint
 		ar.align()
 		if numElems, err = ar.readValue(8); err != nil {
 			return
 		}
+		fmt.Println("2. Msg - numElems:", numElems)
 	}
 
 	//4. fianly read every elements
