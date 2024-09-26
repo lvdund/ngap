@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"ngap/aper"
 	"ngap/ie"
+
+	"github.com/sirupsen/logrus"
 )
 
 // hold a decoded Ngap message
@@ -34,30 +36,39 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	// if _, err := r.ReadBit(); err != nil { //extenstion bit is useless for now
 	// 	return
 	// }
-
+	var b bool
+	if b, err = r.ReadBool(); err != nil {
+		return
+	}
+	fmt.Println("extenstion bit:", b)
 	//2. decode present		//choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
-	v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 2}, false)
+	// v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 2}, false)
+	c, err := r.ReadChoice(2, false)
 	if err != nil {
 		return
 	}
-	var present uint8 = uint8(v)
+	present := uint8(c)
+	fmt.Println("present:", present)
 	//3. decode procedure code
-	v, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
+	v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err != nil {
 		return
 	}
+	fmt.Println("procedureCode:", v)
 	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Integer(v)}
 	//4. decode criticality
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
+	e, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
-	var criticality ie.Criticality = ie.Criticality{Value: aper.Enumerated(c)}
+	var criticality ie.Criticality = ie.Criticality{Value: aper.Enumerated(e)}
+	fmt.Println("criticality:", e)
 	//5. decode message content
-	// var containerBytes []byte
-	// if containerBytes, err = r.ReadOpenType(); err != nil {
-	// 	return
-	// }
+	var containerBytes []byte
+	if containerBytes, err = r.ReadOpenType(); err != nil {
+		return
+	}
+	fmt.Println("exten - containerBytes readopen type:", b, containerBytes)
 
 	//prepare message for decoding
 	message := createMessage(present, procedureCode)
@@ -68,9 +79,10 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 
 	var diagnosticsItems []ie.CriticalityDiagnostics
 	//decode all IEs within the message
-	// if err, diagnosticsItems = message.decode(containerBytes); err != nil {
-	// 	return
-	// }
+	if err, diagnosticsItems = message.decode(containerBytes); err != nil {
+		return
+	}
+	logrus.Infoln("message body:", message)
 	pdu = NgapPdu{
 		Present: present,
 		Message: NgapMessage{
