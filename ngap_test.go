@@ -2,6 +2,7 @@ package ngap
 
 import (
 	"bytes"
+	"fmt"
 	"ngap/aper"
 	"ngap/ie"
 
@@ -30,12 +31,25 @@ func TestEncode(t *testing.T) {
 	// now: err when encode octetstring - RanNodeName
 }
 
+func TestDecode(t *testing.T) {
+	for _, pdu := range tests {
+		// decode, err, _ := NgapDecode(pdu.buf)
+		decode, err := HandleNgap(pdu.buf)
+		if err != nil {
+			t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
+		} else {
+			fmt.Println(decode)
+		}
+	}
+}
+
 var tests = []struct {
 	name      string
 	buf       []byte
 	resultPdu *NgapPdu
 	check     bool
 }{
+	// buf - NgSetupRequest from UERANSIM with RanNodeName == "a"
 	{
 		name: "NgSetupRequest",
 		buf:  []byte{0x00, 0x15, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x00, 0x52, 0x40, 0x03, 0x00, 0x00, 0x61},

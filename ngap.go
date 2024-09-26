@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"ngap/aper"
 	"ngap/ie"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -40,14 +42,14 @@ func (ie NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	}
 	//3. encode NgapIE
 	//encode IE into a byte array first
-	// var buf bytes.Buffer
-	// ieW := aper.NewWriter(&buf)
-	// if err = ie.Value.Encode(ieW); err != nil {
-	// 	return
-	// }
+	var buf bytes.Buffer
+	ieW := aper.NewWriter(&buf)
+	if err = ie.Value.Encode(ieW); err != nil {
+		return
+	}
 	//then write the array as open type
-	// err = w.WriteOpenType(buf.Bytes())
-	err = ie.Value.Encode(w)
+	err = w.WriteOpenType(buf.Bytes())
+	// err = ie.Value.Encode(w)
 	return
 }
 
@@ -107,6 +109,7 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 
 // decode a single IE in the message (code should be generated from spec
 func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, err error) {
+	logrus.Infoln("Decode IE - NGSetupRequest msg========")
 	//1. decode protocol Ie Id
 	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err != nil {
@@ -136,6 +139,7 @@ func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, er
 		if err = msg.RanNodeName.Decode(r); err != nil {
 			return
 		}
+		fmt.Println("=decode RanNodeName:", msg.RanNodeName.Value)
 	case ie.ProtocolIEIDSupportedTAList:
 		// msg.SupportedTaList = append(msg.SupportedTaList)
 	case ie.ProtocolIEIDDefaultPagingDRX:
