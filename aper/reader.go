@@ -270,15 +270,15 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 			return
 		}
 	}
-	if lRange > 0 && uint64(c.Ub) >= POW_16 { 
+	if lRange > 0 && uint64(c.Ub) >= POW_16 {
 		lRange = 0
 	}
 	if lRange == 1 { //constrained with fixed length
 		numBytes := uint(c.Lb)
-		if numBytes > 2 { 
+		if numBytes > 2 {
 			ar.align()
 		}
-		octets, err = ar.ReadBits(numBytes*8)
+		octets, err = ar.ReadBits(numBytes * 8)
 		return
 	}
 
@@ -300,7 +300,7 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 		ar.align()
 		partLen += uint64(lowerBound)
 		//then read the  part content
-		if tmpBytes, err = ar.ReadBits(uint(partLen*8)); err != nil {
+		if tmpBytes, err = ar.ReadBits(uint(partLen * 8)); err != nil {
 			return
 		}
 		//concat the part to the output bitstream
@@ -310,7 +310,7 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 		}
 		nBytes += partLen
 	}
-	partWriter.flush()    //flush the buffer
+	partWriter.flush()   //flush the buffer
 	octets = buf.Bytes() //return the concatenated output
 	return
 }
@@ -321,58 +321,71 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 		err = aperError("ReadInteger", err)
 	}()
 	var valueEx bool
-	if e{
-		if bitsValue, err1 := ar.readValue(1); err1 != nil {
-			return 0,err1
-		} else if bitsValue != 0 {
-			valueEx = true
+	if e {
+		if valueEx, err = ar.ReadBool(); err != nil {
+			return
 		}
 	}
-	var sRange int64 = -1
-	if !valueEx {
-		sRange = c.Ub - c.Lb + 1
+	var sRange uint64 = 0
+	if c != nil {
+		if !valueEx {
+			sRange = c.Range()
+		}
+		if uint64(c.Ub) > POW_16 {
+			sRange = 0
+		}
+
 	}
-	if uint64(c.Ub) > POW_16 {
-		sRange = -1
-	}
+
 	var rawLength uint
 
 	switch {
 	case sRange == 1:
-		return c.Ub, nil
-	case sRange <= 0:
+		value = c.Lb
+		return
+	case sRange == 0:
 		ar.align()
-		buff, _ := ar.readByte()
-		rawLength = uint(buff)
-	case uint64(sRange) <= POW_16:
-		rawValue, err := ar.readConstraintValue(uint64(sRange))
-		if err != nil {
-			return int64(0), err
+		var tmp byte
+		if tmp, err = ar.readByte(); err != nil {
+			return
 		}
-		return int64(rawValue) + c.Lb, nil
+		rawLength = uint(tmp)
+
+	case sRange <= POW_16:
+		var tmp uint64
+		if tmp, err = ar.readConstraintValue(sRange); err != nil {
+			return
+		}
+		value = int64(tmp) + c.Lb
+		return
+
 	default:
-		unsignedValueRange := uint64(sRange - 1)
+		unsignedValueRange := sRange - 1
 		bitLength := bits.Len64(unsignedValueRange)
-		tempLength, err := ar.readValue(uint(bitLength))
-		if err != nil {
-			return int64(0), err
+		var tmp uint64
+		if tmp, err = ar.readValue(uint(bitLength)); err != nil {
+			return
 		}
-		rawLength = uint(tempLength) + 1 
+		rawLength = uint(tmp) + 1
 		ar.align()
 	}
+
 	var rawValue uint64
 	if rawValue, err = ar.readValue(rawLength * 8); err != nil {
-		return int64(0), err
-	} else {
-		if sRange < 0 {
-			signedBitMask := uint64(1 << (rawLength*8 - 1))
-			valueMask := signedBitMask - 1
-			if rawValue&signedBitMask > 0 {
-				return int64((^rawValue)&valueMask+1) * -1, nil
-			}
-		}	 
-	} 	
-	return int64(rawValue) + c.Lb, nil
+		return
+	}
+	if sRange == 0 { //unconstraint
+		signedBitMask := uint64(1 << (rawLength*8 - 1))
+		valueMask := signedBitMask - 1
+		if rawValue&signedBitMask > 0 {
+			value = int64((^rawValue)&valueMask+1) * -1
+		} else {
+			value = int64(rawValue)
+		}
+	} else { //with constraint
+		value = int64(rawValue) + c.Lb //c is non-nil
+	}
+	return
 }
 
 // constrain must have Lb <= Ub

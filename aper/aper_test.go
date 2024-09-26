@@ -76,7 +76,7 @@ func Test_Aper(t *testing.T) {
 
 	//fmt.Printf("%.8b\n", buf.Bytes())
 
-	r := NewReader(bytes.NewBuffer(buf.Bytes()))
+	r := NewReader(buf)
 	if v, err := r.readValue(12); err != nil || v != 100 {
 		t.Fatalf("readValue error: %+v", err)
 	} else {
@@ -986,7 +986,12 @@ type TestItem struct {
 }
 
 func (item TestItem) Encode(aw AperWriter) (err error) {
-	err = aw.WriteInteger(item.id, nil, false)
+	if err = aw.WriteInteger(item.id, nil, false); err != nil {
+		return
+	}
+	if err = item.msg.Encode(aw); err != nil {
+		return
+	}
 	return
 }
 
@@ -1004,20 +1009,20 @@ func Test_Sequence(t *testing.T) {
 	writer := NewWriter(&buf)
 	items := []TestItem{
 		TestItem{
-			id: 100,
+			id:  100,
 			msg: &AmfId{},
 		},
 		TestItem{
-			id: 199,
+			id:  199,
 			msg: AmfName("aa"),
 		},
 	}
 	if err := WriteSequenceOf[TestItem](items, writer, nil, false); err != nil {
 		t.Errorf("Fail encoding: %+v", err)
 	}
-
+	writer.Close()
 	//2. decode sequences
-	reader := NewReader(bytes.NewReader(buf.Bytes()))
+	reader := NewReader(&buf)
 	if newItems, err := ReadSequenceOfEx[TestItem](reader, nil, false); err != nil {
 		t.Errorf("Fail decoding: %+v", err)
 	} else {
