@@ -8,38 +8,21 @@ import (
 	"math/bits"
 )
 
-type AperReader interface {
-	//public APIs
-	ReadBool() (bool, error)
-	ReadBits(uint) ([]byte, error)
-	ReadOctetString(*Constraint, bool) ([]byte, error)
-	ReadOpenType() ([]byte, error)
-	ReadBitString(*Constraint, bool) ([]byte, uint, error)
-
-	ReadEnumerate(Constraint, bool) (uint64, error)
-	ReadInteger(*Constraint, bool) (int64, error)
-
-	//private APIs
-	align()
-	readValue(uint) (uint64, error)
-	readConstraintValue(uint64) (uint64, error)
-}
-
-type aperReader struct {
+type AperReader struct {
 	*bitstreamReader
 }
 
-func NewReader(r io.Reader) *aperReader {
-	return &aperReader{
+func NewReader(r io.Reader) *AperReader {
+	return &AperReader{
 		bitstreamReader: NewBitStreamReader(r),
 	}
 }
 
-func (ar *aperReader) readBytes(nbytes uint) (output []byte, err error) {
+func (ar *AperReader) readBytes(nbytes uint) (output []byte, err error) {
 	return ar.ReadBits(nbytes * 8)
 }
 
-func (ar *aperReader) readValue(nbits uint) (v uint64, err error) {
+func (ar *AperReader) readValue(nbits uint) (v uint64, err error) {
 	defer func() {
 		if err != nil {
 			err = aperError("readValue", err)
@@ -61,7 +44,7 @@ func (ar *aperReader) readValue(nbits uint) (v uint64, err error) {
 	return
 }
 
-func (ar *aperReader) readConstraintValue(r uint64) (v uint64, err error) {
+func (ar *AperReader) readConstraintValue(r uint64) (v uint64, err error) {
 	defer func() {
 		err = aperError("readConstraintValue", err)
 	}()
@@ -85,7 +68,7 @@ func (ar *aperReader) readConstraintValue(r uint64) (v uint64, err error) {
 	return
 }
 
-func (ar *aperReader) readSemiConstraintWholeNumber(lb uint64) (v uint64, err error) {
+func (ar *AperReader) readSemiConstraintWholeNumber(lb uint64) (v uint64, err error) {
 	defer func() {
 		err = aperError("readSemiConstraintWholeNumber", err)
 	}()
@@ -103,7 +86,7 @@ func (ar *aperReader) readSemiConstraintWholeNumber(lb uint64) (v uint64, err er
 	return
 }
 
-func (ar *aperReader) readNormallySmallNonNegativeValue() (v uint64, err error) {
+func (ar *AperReader) readNormallySmallNonNegativeValue() (v uint64, err error) {
 	defer func() {
 		err = aperError("readNormallySmallNonNegativeValue", err)
 	}()
@@ -121,7 +104,7 @@ func (ar *aperReader) readNormallySmallNonNegativeValue() (v uint64, err error) 
 }
 
 // decode length of a data part in a multiple-parts content
-func (ar *aperReader) readLength(lRange uint64) (value uint64, more bool, err error) {
+func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err error) {
 	defer func() {
 		err = aperError("readLength", err)
 	}()
@@ -168,7 +151,7 @@ func (ar *aperReader) readLength(lRange uint64) (value uint64, more bool, err er
 	return
 }
 
-func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint, err error) {
+func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint, err error) {
 	defer func() {
 		err = aperError("ReadBitString", err)
 	}()
@@ -237,13 +220,13 @@ func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 	return
 }
 
-func (ar *aperReader) ReadOpenType() (octets []byte, err error) {
+func (ar *AperReader) ReadOpenType() (octets []byte, err error) {
 	octets, err = ar.ReadOctetString(nil, false)
 	ar.align() //NOTE: @Duc, please make sure if alignment is neccesary
 	return
 }
 
-func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err error) {
+func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err error) {
 	//TODO:
 	defer func() {
 		err = aperError("ReadOctetString", err)
@@ -312,7 +295,7 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 	octets = buf.Bytes() //return the concatenated output
 	return
 }
-func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error) {
+func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error) {
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
@@ -385,7 +368,7 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 }
 
 // constrain must have Lb <= Ub
-func (ar *aperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) {
+func (ar *AperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) {
 	defer func() {
 		err = aperError("ReadEnumerate", err)
 	}()
@@ -417,7 +400,7 @@ func (ar *aperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) 
 	return
 }
 
-func (ar *aperReader) ReadChoice(uBound uint64, e bool) (v uint64, err error) {
+func (ar *AperReader) ReadChoice(uBound uint64, e bool) (v uint64, err error) {
 	defer func() {
 		err = aperError("ReadChoice", err)
 	}()

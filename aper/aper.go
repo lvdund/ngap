@@ -1,7 +1,6 @@
 package aper
 
-import (
-)
+import ()
 
 const (
 	POW_16 uint64 = 65536
@@ -12,11 +11,11 @@ const (
 )
 
 type AperMarshaller interface {
-	Encode(w AperWriter) error
+	Encode(*AperWriter) error
 }
 
 type AperUnmarshaller interface {
-	Decode(w AperReader) error
+	Decode(*AperReader) error
 }
 
 type BitString struct {

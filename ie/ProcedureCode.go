@@ -6,12 +6,12 @@ type ProcedureCode struct {
 	Value aper.Integer `aper:"valueLB:0,valueUB:255"`
 }
 
-func (a *ProcedureCode) Decode(r aper.AperReader) error {
+func (a *ProcedureCode) Decode(r *aper.AperReader) error {
 
 	return nil
 }
 
-func (a *ProcedureCode) Encode(r aper.AperWriter) (err error) {
+func (a *ProcedureCode) Encode(r *aper.AperWriter) (err error) {
 	if err = r.WriteInteger(int64(a.Value), &aper.Constraint{Lb: 0, Ub: 255}, false); err != nil {
 		return err
 	}

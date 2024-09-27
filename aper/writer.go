@@ -8,45 +8,25 @@ import (
 	"math/bits"
 )
 
-type AperWriter interface {
-	//public APIs
-	GetBuf() []byte
-	WriteFlush() error
-	WriteBool(bool) error
-	WriteBits([]byte, uint) error
-	WriteOctetString([]byte, *Constraint, bool) error
-	WriteOpenType([]byte) error
-	WriteBitString([]byte, uint, *Constraint, bool) error
-	WriteInteger(int64, *Constraint, bool) error
-	WriteEnumerate(uint64, Constraint, bool) error
-	WriteChoice(uint64, uint64, bool) error
-	Close() error
-
-	//private APIs
-	writeValue(uint64, uint) error
-	writeConstraintValue(uint64, uint64) error
-	align() error
-}
-
-type aperWriter struct {
+type AperWriter struct {
 	*bitstreamWriter
 }
 
-func NewWriter(w io.Writer) *aperWriter {
-	return &aperWriter{
+func NewWriter(w io.Writer) *AperWriter {
+	return &AperWriter{
 		bitstreamWriter: NewBitStreamWriter(w),
 	}
 }
 
-func (aw *aperWriter) Close() error {
+func (aw *AperWriter) Close() error {
 	return aw.flush()
 }
 
-func (aw *aperWriter) writeBytes(bytes []byte) error {
+func (aw *AperWriter) writeBytes(bytes []byte) error {
 	return aw.WriteBits(bytes, uint(8*len(bytes)))
 }
 
-func (aw *aperWriter) writeValue(v uint64, nbits uint) (err error) {
+func (aw *AperWriter) writeValue(v uint64, nbits uint) (err error) {
 	defer func() {
 		err = aperError("writeValue", err)
 	}()
@@ -62,7 +42,7 @@ func (aw *aperWriter) writeValue(v uint64, nbits uint) (err error) {
 	return
 }
 
-func (aw *aperWriter) writeSemiConstraintWholeNumber(v uint64, lb uint64) (err error) {
+func (aw *AperWriter) writeSemiConstraintWholeNumber(v uint64, lb uint64) (err error) {
 	defer func() {
 		err = aperError("writeSemiContrainWholeNumber", err)
 	}()
@@ -85,7 +65,7 @@ func (aw *aperWriter) writeSemiConstraintWholeNumber(v uint64, lb uint64) (err e
 	return
 }
 
-func (aw *aperWriter) writeNormallySmallNonNegativeValue(v uint64) (err error) {
+func (aw *AperWriter) writeNormallySmallNonNegativeValue(v uint64) (err error) {
 	defer func() {
 		err = aperError("writeNormallySmallNonNegativeValue", err)
 	}()
@@ -105,7 +85,7 @@ func (aw *aperWriter) writeNormallySmallNonNegativeValue(v uint64) (err error) {
 	return
 }
 
-func (aw *aperWriter) writeLength(r uint64, v uint64) (err error) {
+func (aw *AperWriter) writeLength(r uint64, v uint64) (err error) {
 	defer func() {
 		err = aperError("writeLength", err)
 	}()
@@ -134,7 +114,7 @@ func (aw *aperWriter) writeLength(r uint64, v uint64) (err error) {
 	return
 }
 
-func (aw *aperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
+func (aw *AperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
 	defer func() {
 		err = aperError("writeConstraintValue", err)
 	}()
@@ -157,7 +137,7 @@ func (aw *aperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
 	return
 }
 
-func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, e bool) (err error) {
+func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteBitString", err)
 	}()
@@ -253,7 +233,7 @@ func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 }
 
 // constrain must have Lb <= Ub
-func (aw *aperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error) {
+func (aw *AperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteEnumerate", err)
 	}()
@@ -286,7 +266,7 @@ func (aw *aperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error)
 	return
 }
 
-func (aw *aperWriter) WriteOpenType(content []byte) (err error) {
+func (aw *AperWriter) WriteOpenType(content []byte) (err error) {
 	//it is just like writing an OctetString without a constraint and
 	//extension bit
 	if err = aw.WriteOctetString(content, nil, false); err != nil {
@@ -297,7 +277,7 @@ func (aw *aperWriter) WriteOpenType(content []byte) (err error) {
 	return
 }
 
-func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
+func (aw *AperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteOctetString", err)
 	}()
@@ -391,7 +371,7 @@ func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (e
 	return
 }
 
-func (aw *aperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
+func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	//TODO: @Duc: please check again
 	defer func() {
 		err = aperError("WriteInteger", err)
@@ -468,7 +448,7 @@ func (aw *aperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	}
 }
 
-func (aw *aperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
+func (aw *AperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteChoice", err)
 	}()

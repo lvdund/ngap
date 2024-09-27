@@ -984,11 +984,11 @@ type TestItem struct {
 	id int64
 }
 
-func (item *TestItem) Encode(aw AperWriter) (err error) {
+func (item *TestItem) Encode(aw *AperWriter) (err error) {
 	err = aw.WriteInteger(item.id, nil, false)
 	return
 }
-func (item *TestItem) Decode(aw AperReader) (err error) {
+func (item *TestItem) Decode(aw *AperReader) (err error) {
 	if item.id, err = aw.ReadInteger(nil, false); err != nil {
 		return
 	}
@@ -1018,7 +1018,7 @@ func Test_Sequence(t *testing.T) {
 	/*
 		//decode using ReadSequenceOf, output is []TestItem (list of item
 		//objects)
-			itemDecoder := func(ar AperReader) (*TestItem, error) {
+			itemDecoder := func(ar *AperReader) (*TestItem, error) {
 				item := new(TestItem)
 				if err := item.Decode(ar); err != nil {
 					return nil, err

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, e bool) (err error) {
+func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteSequenceOf", err)
 	}()
@@ -62,8 +62,8 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw AperWriter, c *Constraint, 
 	return
 }
 
-func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReader, c *Constraint, e bool) (items []T, err error) {
-	//NOTE: decoder is a function that read from the input stream (AperReader) to decode
+func ReadSequenceOf[T any](decoder func(ar *AperReader) (*T, error), ar *AperReader, c *Constraint, e bool) (items []T, err error) {
+	//NOTE: decoder is a function that read from the input stream (*AperReader) to decode
 	//a specific aper data structure
 
 	//1. determine lower bound and size range (contraintness)
@@ -122,8 +122,8 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 	return
 }
 
-func ReadSequenceOfEx[T AperUnmarshaller](fn func() T, ar AperReader, c *Constraint, e bool) (items []T, err error) {
-	decoder := func(ar AperReader) (*T, error) {
+func ReadSequenceOfEx[T AperUnmarshaller](fn func() T, ar *AperReader, c *Constraint, e bool) (items []T, err error) {
+	decoder := func(ar *AperReader) (*T, error) {
 		item := fn()
 		if err := item.Decode(ar); err != nil {
 			return nil, err

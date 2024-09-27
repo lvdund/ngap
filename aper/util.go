@@ -1,9 +1,5 @@
 package aper
 
-import (
-	"bytes"
-)
-
 // shift byte array by a number of bits (positive for left, negative for right)
 func ShiftBytes(input []byte, k int) (output []byte) {
 	length := len(input)
@@ -52,14 +48,16 @@ func IsBitSet(content []byte, bitIndex uint) bool {
 	return false
 }
 
-func (aw *aperWriter) WriteFlush() error {
+/*
+func (aw *AperWriter) WriteFlush() error {
 	return aw.flush()
 }
 
-func (w aperWriter) GetBuf() []byte {
+func (w AperWriter) GetBuf() []byte {
 	buf, ok := w.w.(*bytes.Buffer)
 	if ok {
 		return buf.Bytes()
 	}
 	return []byte("")
 }
+*/

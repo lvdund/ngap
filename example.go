@@ -56,7 +56,7 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 }
 
 // decode a single IE in the message (code should be generated from spec
-func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, err error) {
+func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
 	logrus.Infoln("Decode IE - NGSetupRequest msg========")
 	//1. decode protocol Ie Id
 	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)

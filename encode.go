@@ -19,7 +19,7 @@ type NgapMessageIE struct {
 	Value       aper.AperMarshaller //open type
 }
 
-func (ie NgapMessageIE) Encode(w aper.AperWriter) (err error) {
+func (ie NgapMessageIE) Encode(w *aper.AperWriter) (err error) {
 	//1. encode protocol Ie Id
 	if err = ie.Id.Encode(w); err != nil {
 		return

@@ -27,7 +27,6 @@ type NgapMessage struct {
 // all message need to implement this interface
 type MessageUnmarshaller interface {
 	decode([]byte) (error, []ie.CriticalityDiagnostics)
-	//	Encode(aper.AperWriter) error
 }
 
 // decode a Ngap message from a byte array

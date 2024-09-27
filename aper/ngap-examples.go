@@ -3,8 +3,8 @@ package aper
 //NGAP types should be auto-generated using following templates
 
 type IE interface {
-	Encode(AperWriter) error
-	Decode(AperReader) error
+	Encode(*AperWriter) error
+	Decode(*AperReader) error
 }
 
 // AmfId
@@ -17,7 +17,7 @@ type AmfId struct {
 
 }
 
-func (id *AmfId) Encode(w AperWriter) (err error) {
+func (id *AmfId) Encode(w *AperWriter) (err error) {
 	//write extensible bit if needed
 
 	//write option flags
@@ -73,7 +73,7 @@ func (id *AmfId) Encode(w AperWriter) (err error) {
 	return nil
 }
 
-func (id *AmfId) Decode(r AperReader) (err error) {
+func (id *AmfId) Decode(r *AperReader) (err error) {
 	if id == nil {
 		id = &AmfId{}
 	}
@@ -117,14 +117,14 @@ func (id *AmfId) Decode(r AperReader) (err error) {
 // AmfName
 type AmfName string // `aper:"sizeExt,sizeLB:1,sizeUB:150"`
 
-func (n AmfName) Encode(w AperWriter) (err error) {
+func (n AmfName) Encode(w *AperWriter) (err error) {
 	return w.WriteOctetString([]byte(n), &Constraint{
 		Lb: 1,
 		Ub: 150,
 	}, true)
 }
 
-func (n AmfName) Decode(r AperReader) (err error) {
+func (n AmfName) Decode(r *AperReader) (err error) {
 	var octets []byte
 	if octets, err = r.ReadOctetString(&Constraint{
 		Lb: 1,
