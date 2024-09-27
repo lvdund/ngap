@@ -981,58 +981,74 @@ func TestWriteEnumerate(t *testing.T) {
 }
 
 type TestItem struct {
-	id  int64
-	msg IE
+	id int64
 }
 
-func (item TestItem) Encode(aw AperWriter) (err error) {
-	if err = aw.WriteInteger(item.id, nil, false); err != nil {
-		return
-	}
-	if err = item.msg.Encode(aw); err != nil {
-		return
-	}
+func (item *TestItem) Encode(aw AperWriter) (err error) {
+	err = aw.WriteInteger(item.id, nil, false)
 	return
 }
-
-func (item TestItem) Decode(aw AperReader) (err error) {
-	item.id, err = aw.ReadInteger(nil, false)
+func (item *TestItem) Decode(aw AperReader) (err error) {
+	if item.id, err = aw.ReadInteger(nil, false); err != nil {
+		return
+	}
+	fmt.Println("item.id  : ", item.id)
 	return
 }
 
 func Test_Sequence(t *testing.T) {
-	//@Duc: please improve this test
-
 	fmt.Printf("Test Write/Read sequence\n")
-	//1. encode sequences
+
+	// 1. encode sequences
 	var buf bytes.Buffer
 	writer := NewWriter(&buf)
-	items := []TestItem{
-		TestItem{
-			id:  100,
-			msg: &AmfId{},
-		},
-		TestItem{
-			id:  199,
-			msg: AmfName("aa"),
-		},
-	}
-	if err := WriteSequenceOf[TestItem](items, writer, nil, false); err != nil {
+
+	item1 := TestItem{id: 100}
+	item2 := TestItem{id: 199}
+	items := make([]*TestItem, 2)
+	items[0] = &item1
+	items[1] = &item2
+
+	if err := WriteSequenceOf[*TestItem](items, writer, nil, false); err != nil {
 		t.Errorf("Fail encoding: %+v", err)
 	}
-	writer.Close()
-	//2. decode sequences
-	reader := NewReader(&buf)
-	if newItems, err := ReadSequenceOfEx[TestItem](reader, nil, false); err != nil {
+
+	// 2. decode sequences
+	reader := NewReader(bytes.NewReader(buf.Bytes()))
+	/*
+		//decode using ReadSequenceOf, output is []TestItem (list of item
+		//objects)
+			itemDecoder := func(ar AperReader) (*TestItem, error) {
+				item := new(TestItem)
+				if err := item.Decode(ar); err != nil {
+					return nil, err
+				}
+				return item, nil
+			}
+
+			newItems, err := ReadSequenceOf[TestItem](itemDecoder, reader, nil, false)
+	*/
+
+	//decode using ReadSequenceOfEx, output is []*TestItem (list of item
+	//pointers)
+	newItems, err := ReadSequenceOfEx[*TestItem](func() *TestItem {
+		return new(TestItem)
+	}, reader, nil, false)
+
+	if err != nil {
 		t.Errorf("Fail decoding: %+v", err)
-	} else {
-		//3. compare
-		if len(newItems) != len(items) {
-			t.Errorf("size not match")
-		} else {
-			fmt.Printf("num items = %d\n", len(newItems))
-			//TODO: compare content
-		}
 	}
 
+	// 3. compare
+	if len(newItems) != len(items) {
+		t.Errorf("size not match")
+	} else {
+		for i := range newItems {
+			if newItems[i].id != items[i].id {
+				t.Errorf("item %d does not match, expected %d, got %d", i, items[i].id, newItems[i].id)
+			} else {
+				fmt.Printf("Item %d matches: %d\n", i, newItems[i].id)
+			}
+		}
+	}
 }

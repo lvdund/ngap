@@ -25,7 +25,7 @@ func TestEncode(t *testing.T) {
 			t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
 			return
 		} else if !bytes.Equal(encode.GetBuf(), pdu.buf) {
-			t.Errorf("Final buffer = %v, want %v", encode.GetBuf(), pdu.buf)
+			t.Errorf("Final buffer = %.8b\n, want %.8b\n", encode.GetBuf(), pdu.buf)
 		}
 	}
 	// now: err when encode octetstring - RanNodeName

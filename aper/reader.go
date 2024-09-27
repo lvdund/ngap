@@ -129,7 +129,6 @@ func (ar *aperReader) readLength(lRange uint64) (value uint64, more bool, err er
 	more = false
 	if lRange <= POW_16 && lRange > 0 { //range exist, read a contrained value
 		if value, err = ar.readConstraintValue(lRange); err != nil {
-			fmt.Printf("readLength with range=%d\n", lRange)
 		}
 		return
 	}
@@ -217,19 +216,18 @@ func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 		if partLen, more, err = ar.readLength(lRange); err != nil {
 			return
 		}
+		partLen += uint64(lowerBound)
 		if partLen == 0 {
 			//last part has zeros length, skip reading
 			break
 		}
 		ar.align()
-		partLen += uint64(lowerBound)
 		//then read the  part content
 		if tmpBytes, err = ar.ReadBits(uint(partLen)); err != nil {
 			return
 		}
 		//concat the part to the output bitstream
 		if err = partWriter.WriteBits(tmpBytes, uint(partLen)); err != nil {
-			fmt.Printf("Fail to write: %+v", err)
 			return
 		}
 		nbits += uint(partLen)
@@ -273,6 +271,7 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 	if lRange > 0 && uint64(c.Ub) >= POW_16 {
 		lRange = 0
 	}
+
 	if lRange == 1 { //constrained with fixed length
 		numBytes := uint(c.Lb)
 		if numBytes > 2 {
@@ -293,20 +292,18 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 		if partLen, more, err = ar.readLength(lRange); err != nil {
 			return
 		}
-		fmt.Printf("part len = %d, more = %v\n", partLen, more)
+		partLen += uint64(lowerBound)
 		if partLen == 0 {
 			//last part has zeros length, skip reading
 			break
 		}
 		ar.align()
-		partLen += uint64(lowerBound)
 		//then read the  part content
 		if tmpBytes, err = ar.ReadBits(uint(partLen * 8)); err != nil {
 			return
 		}
 		//concat the part to the output bitstream
 		if err = partWriter.WriteBits(tmpBytes, uint(partLen*8)); err != nil {
-			fmt.Printf("Fail to write: %+v", err)
 			return
 		}
 		nBytes += partLen
@@ -315,12 +312,11 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 	octets = buf.Bytes() //return the concatenated output
 	return
 }
-
 func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error) {
-	//TODO:@Duc check it again
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
+
 	var valueEx bool
 	if e {
 		if valueEx, err = ar.ReadBool(); err != nil {
@@ -339,7 +335,6 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 	}
 
 	var rawLength uint
-
 	switch {
 	case sRange == 1:
 		value = c.Lb
@@ -357,10 +352,10 @@ func (ar *aperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 		if tmp, err = ar.readConstraintValue(sRange); err != nil {
 			return
 		}
-		value = int64(tmp) + c.Lb
+		value = int64(tmp) + c.Lb //c is non-nil
 		return
 
-	default:
+	default: //sRange > POW_16, c is non-nil
 		unsignedValueRange := sRange - 1
 		bitLength := bits.Len64(unsignedValueRange)
 		var tmp uint64

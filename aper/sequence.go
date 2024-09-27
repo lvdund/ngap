@@ -94,7 +94,6 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 
 	//3. read num elements
 	var numElems uint64
-	fmt.Println("Msg - sizeRange:", sizeRange)
 	if sizeRange == 1 {
 		numElems = lowerBound
 	} else if sizeRange > 1 {
@@ -105,15 +104,12 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 			err = fmt.Errorf("Inconsistent extension bit")
 			return
 		}
-		fmt.Println("1. Msg - numElems:", numElems)
 	} else { //no constraint
 		ar.align()
 		if numElems, err = ar.readValue(8); err != nil {
 			return
 		}
-		fmt.Println("2. Msg - numElems:", numElems)
 	}
-
 	//4. fianly read every elements
 	items = make([]T, numElems)
 	var tmpItem *T
@@ -126,9 +122,9 @@ func ReadSequenceOf[T any](decoder func(ar AperReader) (*T, error), ar AperReade
 	return
 }
 
-func ReadSequenceOfEx[T AperUnmarshaller](ar AperReader, c *Constraint, e bool) (items []T, err error) {
+func ReadSequenceOfEx[T AperUnmarshaller](fn func() T, ar AperReader, c *Constraint, e bool) (items []T, err error) {
 	decoder := func(ar AperReader) (*T, error) {
-		var item T
+		item := fn()
 		if err := item.Decode(ar); err != nil {
 			return nil, err
 		}

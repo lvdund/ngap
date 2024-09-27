@@ -84,7 +84,8 @@ type NGSetupRequest struct {
 func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.CriticalityDiagnostics) {
 
 	r := aper.NewReader(bytes.NewReader(wire))
-
+	r.ReadBool()
+	fmt.Printf("msg content = %.8b\n", wire)
 	// //fill data structure fields with IEs
 	var ies []NgapMessageIE
 	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{
@@ -113,43 +114,50 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 func (msg *NGSetupRequest) decodeIE(r aper.AperReader) (msgIe *NgapMessageIE, err error) {
 	logrus.Infoln("Decode IE - NGSetupRequest msg========")
 	//1. decode protocol Ie Id
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
+	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
 	if err != nil {
 		return
 	}
+	fmt.Printf("IeID=%v-%.8b\n", id, id)
+	msgIe = new(NgapMessageIE)
 	msgIe.Id.NgapProtocolIeId = aper.Integer(id)
 	//2. decode criticality
 	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
 	if err != nil {
 		return
 	}
+
+	fmt.Printf("Criticality=%v\n", c)
 	msgIe.Criticality.Value = aper.Enumerated(c)
 	//3. decode NgapIE
-	// var buf []byte
+	var buf []byte
 	//read IE byte array
-	// if buf, err = r.ReadOpenType(); err != nil {
-	// 	return
-	// }
-	// r := aper.NewReader(bytes.NewReader(buf))
+	if buf, err = r.ReadOpenType(); err != nil {
+		return
+	}
+	fmt.Printf("IE=%.8b\n", buf)
+	ieR := aper.NewReader(bytes.NewReader(buf))
 	//prepare IE data structure for decoding
 	switch msgIe.Id.NgapProtocolIeId { //list of cases are generated from spec
 	case ie.ProtocolIEIDGlobalRANNodeID:
-		if err = msg.GlobalRanNodeId.Decode(r); err != nil {
+		if err = msg.GlobalRanNodeId.Decode(ieR); err != nil {
 			return
 		}
 	case ie.ProtocolIEIDRANNodeName:
-		if err = msg.RanNodeName.Decode(r); err != nil {
+		var tmp ie.RANNodeName
+		if err = tmp.Decode(ieR); err != nil {
 			return
 		}
-		fmt.Println("=decode RanNodeName:", msg.RanNodeName.Value)
+		msg.RanNodeName = &tmp
+		fmt.Printf("=decode RanNodeName:%s-%.8b\n", msg.RanNodeName.Value, []byte{'a'})
 	case ie.ProtocolIEIDSupportedTAList:
 		// msg.SupportedTaList = append(msg.SupportedTaList)
 	case ie.ProtocolIEIDDefaultPagingDRX:
-		if err = msg.DefaultPagingDrx.Decode(r); err != nil {
+		if err = msg.DefaultPagingDrx.Decode(ieR); err != nil {
 			return
 		}
 	case ie.ProtocolIEIDUERetentionInformation:
-		if err = msg.UeRetentionInformation.Decode(r); err != nil {
+		if err = msg.UeRetentionInformation.Decode(ieR); err != nil {
 			return
 		}
 	// case 0:
@@ -271,6 +279,9 @@ func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
 	err = w.WriteOpenType(containerBytes)
 
 	return
+}
+
+func encodeNgapMessageHeader() {
 }
 
 func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {

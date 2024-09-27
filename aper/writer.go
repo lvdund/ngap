@@ -228,12 +228,17 @@ func (aw *aperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 			return
 		}
 
+		//write content part
+		partLen += uint64(lowerBound)
+		if partLen == 0 {
+			return
+		}
+
 		//align last byte
 		if err = aw.align(); err != nil {
 			return
 		}
-		//write content part
-		partLen += uint64(lowerBound)
+
 		if partBytes, err = partReader.ReadBits(uint(partLen)); err != nil { //get a content part to write
 			return
 		}
@@ -293,14 +298,13 @@ func (aw *aperWriter) WriteOpenType(content []byte) (err error) {
 }
 
 func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
-	//TODO: @Duc: It is very similar to WriteBitString
 	defer func() {
 		err = aperError("WriteOctetString", err)
 	}()
 	byteLen := uint64(len(content))
 	var lRange uint64 = 0    //length range
 	var lowerBound int64 = 0 //length lower bound, default=0
-	//var upBound int64 = 0 
+	//var upBound int64 = 0
 	//write extension bit
 	exBit := false
 	if c != nil {
@@ -331,14 +335,14 @@ func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (e
 			err = ErrFixedLength
 			return
 		}
-    
+
 		if byteLen > 2 { //if more than 2 bytes, align first
 			if err = aw.align(); err != nil {
 				return
 			}
 		}
 		//then write content
-		err = aw.WriteBits(content, uint(byteLen*8)) 
+		err = aw.WriteBits(content, uint(byteLen*8))
 		return
 	}
 
@@ -364,21 +368,22 @@ func (aw *aperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (e
 		if err = aw.writeLength(lRange, partLen); err != nil {
 			return
 		}
-		if partLen == 0{
+		partLen += uint64(lowerBound)
+		if partLen == 0 {
 			return
 		}
+
 		//align last byte
 		if err = aw.align(); err != nil {
 			return
 		}
-		partLen += uint64(lowerBound)
-		if partBytes, err = partReader.ReadBits(uint(partLen*8)); err != nil { //get a content part to write
+		if partBytes, err = partReader.ReadBits(uint(partLen * 8)); err != nil { //get a content part to write
 			return
 		}
 		if err = aw.WriteBits(partBytes, uint(partLen*8)); err != nil { //write the part
 			return
 		}
-        
+
 		if completed {
 			break
 		}
@@ -391,76 +396,76 @@ func (aw *aperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteInteger", err)
 	}()
-		var lb, sRange int64 = 0, -1
-		if c != nil {
-			lb = c.Lb
-			if c.Ub >= c.Lb {
-				if int64(v) <=c.Ub {
-					sRange = int64(c.Range())
-				} else if !e {
-					err = ErrInextensible
-					return
-				}
-				if e {
-					if sRange == -1 {
-						if err = aw.WriteBool(One); err != nil {
-							return
-						}
-						lb = 0
-					} else {
-						if err = aw.WriteBool(Zero); err != nil {
-							return
-						}
+	var lb, sRange int64 = 0, -1
+	if c != nil {
+		lb = c.Lb
+		if c.Ub >= c.Lb {
+			if int64(v) <= c.Ub {
+				sRange = int64(c.Range())
+			} else if !e {
+				err = ErrInextensible
+				return
+			}
+			if e {
+				if sRange == -1 {
+					if err = aw.WriteBool(One); err != nil {
+						return
+					}
+					lb = 0
+				} else {
+					if err = aw.WriteBool(Zero); err != nil {
+						return
 					}
 				}
-
 			}
-		}
 
-		unsignedValue := uint64(v)
-		var rawLength uint
-		if sRange == 1 {
-			return nil
 		}
+	}
 
-		if v < 0 {
-			y := v >> 63
-			unsignedValue = uint64(((v ^ y) - y)) - 1
-		}
-		if sRange <= 0 {
-			unsignedValue >>= 7
-		} else if sRange <= 65536 {
-			return aw.writeConstraintValue(uint64(sRange),uint64(v-lb))
-		} else {
-			unsignedValue >>= 8
-		}
+	unsignedValue := uint64(v)
+	var rawLength uint
+	if sRange == 1 {
+		return nil
+	}
 
-		for rawLength = 1; rawLength <= 127; rawLength++ {
-			if unsignedValue == 0 {
-				break
-			}
-			unsignedValue >>= 8
+	if v < 0 {
+		y := v >> 63
+		unsignedValue = uint64(((v ^ y) - y)) - 1
+	}
+	if sRange <= 0 {
+		unsignedValue >>= 7
+	} else if sRange <= 65536 {
+		return aw.writeConstraintValue(uint64(sRange), uint64(v-lb))
+	} else {
+		unsignedValue >>= 8
+	}
+
+	for rawLength = 1; rawLength <= 127; rawLength++ {
+		if unsignedValue == 0 {
+			break
 		}
-		// write length
-		if sRange <= 0 {
-			aw.align()
-			_= aw.writeBytes([]byte{byte(rawLength)})
-		} else {
-			unsignedValueRange := uint64(sRange - 1)
-			bitLen := bits.Len64(unsignedValueRange)
-			if err := aw.writeValue(uint64(rawLength-1), uint(bitLen)); err != nil {
-				return err
-			}
-		}
-		rawLength *= 8
+		unsignedValue >>= 8
+	}
+	// write length
+	if sRange <= 0 {
 		aw.align()
-		if sRange < 0 {
-			mask := int64(1<<rawLength - 1)
-			return aw.writeValue(uint64(v&mask), rawLength)
-		} else {
-			v -= lb
-			return aw.writeValue(uint64(v), rawLength)
+		_ = aw.writeBytes([]byte{byte(rawLength)})
+	} else {
+		unsignedValueRange := uint64(sRange - 1)
+		bitLen := bits.Len64(unsignedValueRange)
+		if err := aw.writeValue(uint64(rawLength-1), uint(bitLen)); err != nil {
+			return err
 		}
+	}
+	rawLength *= 8
+	aw.align()
+	if sRange < 0 {
+		mask := int64(1<<rawLength - 1)
+		return aw.writeValue(uint64(v&mask), rawLength)
+	} else {
+		v -= lb
+		return aw.writeValue(uint64(v), rawLength)
+	}
 }
 
 func (aw *aperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
