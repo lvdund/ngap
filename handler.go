@@ -9,7 +9,7 @@ import (
 // This is to describe how NGAP handler should be written
 func HandleNgap(wire []byte) (pdu NgapPdu, err error) {
 	var diagnostics *ie.CriticalityDiagnostics
-	if pdu, err, diagnostics = NgapDecode(wire); err != nil {
+	if pdu, err, diagnostics = NgapDecodeBytes(wire); err != nil {
 		return
 	} else {
 		if diagnostics != nil {
@@ -53,7 +53,7 @@ func handleSuccessfulOutcome(pdu *NgapPdu) {
 func handleNGSetupRequest(msg *NGSetupRequest) {
 	logrus.Infoln("handleNGSetupRequest")
 	//TODO: add example code
-	
+
 }
 
 // func handleNGSetupResponse(msg *NGSetupResponse) {

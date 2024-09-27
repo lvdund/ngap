@@ -26,6 +26,7 @@ func (ie *IE) Encode(r aper.AperWriter) (err error) {
 	return nil
 }
 
+/*
 type IEs struct {
 	ies []NgapIE
 }
@@ -44,3 +45,4 @@ func (ies *IEs) Encode(r aper.AperWriter) (err error) {
 	// TODO: encode
 	return nil
 }
+*/

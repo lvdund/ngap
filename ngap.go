@@ -3,6 +3,7 @@ package ngap
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"ngap/aper"
 	"ngap/ie"
 
@@ -16,27 +17,23 @@ const (
 	NgapPduUnsuccessfulOutcome
 )
 
-//add AperEncode/AperDecode method
-
-type NgapIE interface {
-	Encode(aper.AperWriter) error
-	Decode(aper.AperReader) error
+type NgapMessageEncoder interface {
+	Encode(io.Writer) error
 }
 
 // represent an IE in Ngap messages
 type NgapMessageIE struct {
 	Id          ie.NgapProtocolIeId //protocol IE identity
 	Criticality ie.Criticality
-	Value       NgapIE //open type
+	Value       aper.AperMarshaller //open type
 }
 
 func (ie NgapMessageIE) Encode(w aper.AperWriter) (err error) {
-	//TODO:
-	//1. TODO: encode protocol Ie Id
-	//2. TODO: encode criticality
+	//1. encode protocol Ie Id
 	if err = ie.Id.Encode(w); err != nil {
 		return
 	}
+	//2. encode criticality
 	if err = ie.Criticality.Encode(w); err != nil {
 		return
 	}
@@ -49,23 +46,6 @@ func (ie NgapMessageIE) Encode(w aper.AperWriter) (err error) {
 	}
 	//then write the array as open type
 	err = w.WriteOpenType(buf.Bytes())
-	// err = ie.Value.Encode(w)
-	return
-}
-
-// encode a sequence of Ngap message IE (IEs container)
-func encodeIes(ies []NgapMessageIE) (wire []byte, err error) {
-	var buff bytes.Buffer
-	w := aper.NewWriter(&buff)
-	// Encoding Value Extensive Bit
-	w.WriteBool(aper.Zero)
-	if err = aper.WriteSequenceOf[NgapMessageIE](ies, w, &aper.Constraint{
-		Lb: 0,
-		Ub: int64(aper.POW_16 - 1),
-	}, true); err != nil {
-		return
-	}
-	wire = buff.Bytes()
 	return
 }
 
@@ -81,10 +61,14 @@ type NGSetupRequest struct {
 }
 
 // implement MessageUnmarshaller (code should be generated from spec)
+//it decodes the list of IEs for an Ngap message
 func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.CriticalityDiagnostics) {
-
 	r := aper.NewReader(bytes.NewReader(wire))
+
+	//1. container of IE list have an extension bit
 	r.ReadBool()
+
+	//2. decode the inner IE list
 	fmt.Printf("msg content = %.8b\n", wire)
 	// //fill data structure fields with IEs
 	var ies []NgapMessageIE
@@ -197,15 +181,19 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 	}
 	//SupportedTaList
 	if len(msg.SupportedTaList) > 0 {
-		var SupportedTaList []NgapIE
-		for _, ie := range msg.SupportedTaList {
-			SupportedTaList = append(SupportedTaList, &ie)
-		}
-		ies = append(ies, NgapMessageIE{
-			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
-			Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
-			Value:       NewIEs(SupportedTaList),
-		})
+		/*
+			@DUNG: should we use WriteSequenceOf ? using NgapMessageIE does not seem right to me (inner Item does not need protocol IeId and criticality), pls check the specs
+
+				var SupportedTaList []NgapIE
+				for _, ie := range msg.SupportedTaList {
+					SupportedTaList = append(SupportedTaList, &ie)
+				}
+				ies = append(ies, NgapMessageIE{
+					Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
+					Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
+					Value:       NewIEs(SupportedTaList),
+				})
+		*/
 		fmt.Println("SupportedTaList")
 	}
 	//DefaultPagingDrx
@@ -237,62 +225,73 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 }
 
 // write message to AperWriter (code should be generated from spec)
-func (msg *NGSetupRequest) Encode(w aper.AperWriter) (err error) {
-	present := NgapPduInitiatingMessage //predefined from spec
-	procedureCode := ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)}
-	criticality := ie.Criticality{Value: ie.CriticalityPresentReject} //parse from spec
-	//1. TODO: write present
-	//2. TODO:write procedure code
-	//3. TODO: write criticality
+func (msg *NGSetupRequest) Encode(w io.Writer) (err error) {
+	return encodeMessage(w, NgapPduInitiatingMessage, ie.ProcedureCodeNGSetup, ie.CriticalityPresentReject, msg.toIes())
+}
+
+func encodeMessage(w io.Writer, present uint8, procedureCode int64, criticality aper.Enumerated, ies []NgapMessageIE) (err error) {
+	aw := aper.NewWriter(w)
+	//0. write extension bit
+	if err = aw.WriteBool(aper.Zero); err != nil {
+		return
+	}
+	//1. write present
+	if err = aw.WriteChoice(uint64(present), 2, true); err != nil {
+		return
+	}
+
+	//2. write procedure code
+	pCode := ie.ProcedureCode{
+		Value: aper.Integer(procedureCode),
+	}
+
+	if err = pCode.Encode(aw); err != nil {
+		return
+	}
+
+	//3. write criticality
+	cr := ie.Criticality{
+		Value: criticality,
+	}
+	if err = cr.Encode(aw); err != nil {
+		return
+	}
+
 	//4. write message content
-	if err = w.WriteChoice(uint64(present), 2, true); err != nil {
-		return
-	}
-	if err = procedureCode.Encode(w); err != nil {
-		return
-	}
-	if err = criticality.Encode(w); err != nil {
-		return
-	}
-
-	ies := msg.toIes()
 	if len(ies) == 0 {
-		fmt.Println("Can not load NGSetupRequest")
+		err = fmt.Errorf("empty message")
 		return
 	}
-	var containerBytes []byte
-	// buf := bytes.NewBuffer(containerBytes)
-	// msgBytes := aper.NewWriter(buf)
-	// // Encoding Value Extensive Bit
-	// msgBytes.WriteBool(aper.Zero)
-	// if err = w.WriteChoice(7, 2, false); err != nil {
-	// 	return
-	// }
-	//first encode message content into byte array
-	if containerBytes, err = encodeIes(ies); err != nil {
-		return
-	}
-	//then write the byte array
-	// if err = w.WriteOpenType(containerBytes); err != nil { //write OpenType bytes
-	// 	return
-	// }
-	err = w.WriteOpenType(containerBytes)
 
+	var buf bytes.Buffer
+	cW := aper.NewWriter(&buf) //container writer
+
+	//4.1 container has an extension bit
+	cW.WriteBool(aper.Zero)
+	//4.2 encode all IEs
+	if err = aper.WriteSequenceOf[NgapMessageIE](ies, cW, &aper.Constraint{
+		Lb: 0,
+		Ub: int64(aper.POW_16 - 1),
+	}, false); err != nil {
+		return
+	}
+
+	if err = cW.Close(); err != nil {
+		return
+	}
+	// 4.3 write the container
+	if err = aw.WriteOpenType(buf.Bytes()); err != nil {
+		return
+	}
+	//5. flush buffer
+	err = aw.Close()
 	return
 }
 
-func encodeNgapMessageHeader() {
-}
-
-func NgapEncode(pdu NgapPdu) (w aper.AperWriter, err error) {
-	var buff bytes.Buffer
-	w = aper.NewWriter(&buff)
-	// Encoding Value Extensive Bit
-	w.WriteBool(aper.Zero)
-	if err = pdu.Message.Msg.Encode(w); err != nil {
-		return
+func NgapEncode(msg NgapMessageEncoder) (wire []byte, err error) {
+	var buf bytes.Buffer
+	if err = msg.Encode(&buf); err == nil {
+		wire = buf.Bytes()
 	}
-	w.WriteFlush()
-	// fmt.Printf("\n\tEncoded: %v", w.GetBuf())
 	return
 }

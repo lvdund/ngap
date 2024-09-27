@@ -3,6 +3,7 @@ package ngap
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"ngap/aper"
 	"ngap/ie"
 
@@ -26,13 +27,18 @@ type NgapMessage struct {
 // all message need to implement this interface
 type MessageUnmarshaller interface {
 	decode([]byte) (error, []ie.CriticalityDiagnostics)
-	Encode(aper.AperWriter) error
+	//	Encode(aper.AperWriter) error
 }
 
-// API for decode NgapPdu
-func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.CriticalityDiagnostics) {
+// decode a Ngap message from a byte array
+func NgapDecodeBytes(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.CriticalityDiagnostics) {
 	fmt.Printf("pdu=%.8b\n", wire)
-	r := aper.NewReader(bytes.NewReader(wire))
+	return NgapDecode(bytes.NewReader(wire))
+}
+
+// decode a Ngap message from io.Reader
+func NgapDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ie.CriticalityDiagnostics) {
+	r := aper.NewReader(ioR)
 	//1. decode extention bit
 	var b bool
 	if b, err = r.ReadBool(); err != nil {

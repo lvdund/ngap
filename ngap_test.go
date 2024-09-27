@@ -18,14 +18,13 @@ func TestEncode(t *testing.T) {
 	// }
 	// defer NgSetupRequest_file.Close()
 
-	for _, pdu := range tests {
-		encode, err := NgapEncode(*pdu.resultPdu)
-		_ = encode
-		if err != nil {
+	for _, testCase := range tests {
+		msg, _ := testCase.resultPdu.Message.Msg.(NgapMessageEncoder)
+		if encoded, err := NgapEncode(msg); err != nil {
 			t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
 			return
-		} else if !bytes.Equal(encode.GetBuf(), pdu.buf) {
-			t.Errorf("Final buffer = %.8b\n, want %.8b\n", encode.GetBuf(), pdu.buf)
+		} else if !bytes.Equal(encoded, testCase.buf) {
+			t.Errorf("Final buffer = %.8b\n, want %.8b\n", encoded, testCase.buf)
 		}
 	}
 	// now: err when encode octetstring - RanNodeName
