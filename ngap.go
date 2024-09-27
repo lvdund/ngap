@@ -93,6 +93,8 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 	}, false); err != nil {
 		return
 	}
+
+	logrus.Infoln("seems fine", len(ies))
 	_ = ies
 
 	// //NOTE: after decode all IEs, now let's assign them to the message fields.

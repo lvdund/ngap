@@ -2,8 +2,8 @@ package aper
 
 import (
 	"bytes"
-	"fmt"
-	"io"
+	//	"fmt"
+	//	"io"
 )
 
 // shift byte array by a number of bits (positive for left, negative for right)

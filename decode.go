@@ -31,11 +31,9 @@ type MessageUnmarshaller interface {
 
 // API for decode NgapPdu
 func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.CriticalityDiagnostics) {
+	fmt.Printf("pdu=%.8b\n", wire)
 	r := aper.NewReader(bytes.NewReader(wire))
 	//1. decode extention bit
-	// if _, err := r.ReadBit(); err != nil { //extenstion bit is useless for now
-	// 	return
-	// }
 	var b bool
 	if b, err = r.ReadBool(); err != nil {
 		return
@@ -54,7 +52,7 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	if err != nil {
 		return
 	}
-	fmt.Println("procedureCode:", v)
+	fmt.Printf("procedureCode:%d-%.8b\n", v, v)
 	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Integer(v)}
 	//4. decode criticality
 	e, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
@@ -68,7 +66,7 @@ func NgapDecode(wire []byte) (pdu NgapPdu, err error, diagnostics *ie.Criticalit
 	if containerBytes, err = r.ReadOpenType(); err != nil {
 		return
 	}
-	fmt.Println("exten - containerBytes readopen type:", b, containerBytes)
+	fmt.Printf("exten=%v - containerBytes readopen type= %.8b\n", b, containerBytes)
 
 	//prepare message for decoding
 	message := createMessage(present, procedureCode)

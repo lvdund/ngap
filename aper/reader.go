@@ -240,8 +240,8 @@ func (ar *aperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 }
 
 func (ar *aperReader) ReadOpenType() (octets []byte, err error) {
-	ar.align() //NOTE: @Duc, please make sure if alignment is neccesary
 	octets, err = ar.ReadOctetString(nil, false)
+	ar.align() //NOTE: @Duc, please make sure if alignment is neccesary
 	return
 }
 
@@ -293,6 +293,7 @@ func (ar *aperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 		if partLen, more, err = ar.readLength(lRange); err != nil {
 			return
 		}
+		fmt.Printf("part len = %d, more = %v\n", partLen, more)
 		if partLen == 0 {
 			//last part has zeros length, skip reading
 			break
