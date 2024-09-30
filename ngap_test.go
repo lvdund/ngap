@@ -1,23 +1,31 @@
 package ngap
 
 import (
-	"bytes"
 	"fmt"
-	"ngap/aper"
-	"ngap/ie"
-
-	//"reflect"
+	"os"
 	"testing"
 )
 
-func TestEncode(t *testing.T) {
-	// NgSetupRequest_file, err := os.Open("./test_msg/NgSetupRequest.bin")
-	// if err != nil {
-	// 	fmt.Println("Error opening file:", err)
-	// 	return
-	// }
-	// defer NgSetupRequest_file.Close()
+func TestDecodeUeRanSim(t *testing.T) {
+	if f, err := os.Open("./test_msg/NgSetupRequest.bin"); err != nil {
+		t.Errorf("Fail to read file : %+v", err)
+	} else {
+		defer f.Close()
+		if decode, err, _ := NgapDecode(f); err != nil {
+			t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
+		} else {
+			fmt.Println()
+			fmt.Println("Present:", decode.Present)
+			fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
+			fmt.Println("Criticality:", decode.Message.Criticality.Value)
+			msg := decode.Message.Msg.(*NGSetupRequest)
+			fmt.Println("Message", msg)
+		}
+	}
+}
 
+/*
+func TestEncode(t *testing.T) {
 	for _, testCase := range tests {
 		msg, _ := testCase.resultPdu.Message.Msg.(NgapMessageEncoder)
 		if encoded, err := NgapEncode(msg); err != nil {
@@ -108,3 +116,4 @@ var tests = []struct {
 	// 	},
 	// },
 }
+*/

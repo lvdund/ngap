@@ -55,7 +55,7 @@ func NgapDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ie.Critical
 	if err != nil {
 		return
 	}
-	fmt.Printf("procedureCode:%d-%.8b\n", v, v)
+	fmt.Printf("procedureCode:%d\n", v)
 	var procedureCode ie.ProcedureCode = ie.ProcedureCode{Value: aper.Integer(v)}
 	//4. decode criticality
 	e, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
@@ -69,7 +69,7 @@ func NgapDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ie.Critical
 	if containerBytes, err = r.ReadOpenType(); err != nil {
 		return
 	}
-	fmt.Printf("exten=%v - containerBytes readopen type= %.8b\n", b, containerBytes)
+	//fmt.Printf("exten=%v - containerBytes readopen type= %.8b\n", b, containerBytes)
 
 	//prepare message for decoding
 	message := createMessage(present, procedureCode)
