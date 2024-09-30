@@ -37,11 +37,16 @@ func TestDecode(t *testing.T) {
 		if err != nil {
 			t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
 		} else {
-			fmt.Println(decode)
+			fmt.Println()
+			fmt.Println("Present:", decode.Present)
+			fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
+			fmt.Println("Criticality:", decode.Message.Criticality.Value)
+			fmt.Println("Message", decode.Message.Msg)
 		}
 	}
 }
 
+var str = "a"
 var tests = []struct {
 	name      string
 	buf       []byte

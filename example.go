@@ -6,8 +6,6 @@ import (
 	"io"
 	"ngap/aper"
 	"ngap/ie"
-
-	"github.com/sirupsen/logrus"
 )
 
 // an ngap example message that implement MessageUnmarshaller and encoding
@@ -22,7 +20,7 @@ type NGSetupRequest struct {
 }
 
 // implement MessageUnmarshaller (code should be generated from spec)
-//it decodes the list of IEs for an Ngap message
+// it decodes the list of IEs for an Ngap message
 func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.CriticalityDiagnostics) {
 	r := aper.NewReader(bytes.NewReader(wire))
 
@@ -40,8 +38,8 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 		return
 	}
 
-	logrus.Infoln("seems fine", len(ies))
 	_ = ies
+	fmt.Printf("ie 0: %d %d %v -> %p", ies[0].Id.NgapProtocolIeId, ies[0].Criticality.Value, ies[0].Value, ies)
 
 	// //NOTE: after decode all IEs, now let's assign them to the message fields.
 	// //Alternatively, we can also assign the fields while decoding Ie in the previous
@@ -57,13 +55,12 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 
 // decode a single IE in the message (code should be generated from spec
 func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	logrus.Infoln("Decode IE - NGSetupRequest msg========")
 	//1. decode protocol Ie Id
 	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
 	if err != nil {
 		return
 	}
-	fmt.Printf("IeID=%v-%.8b\n", id, id)
+	// fmt.Printf("IeID=%v-%.8b\n", id, id)
 	msgIe = new(NgapMessageIE)
 	msgIe.Id.NgapProtocolIeId = aper.Integer(id)
 	//2. decode criticality
@@ -72,7 +69,7 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 		return
 	}
 
-	fmt.Printf("Criticality=%v\n", c)
+	// fmt.Printf("Criticality=%v\n", c)
 	msgIe.Criticality.Value = aper.Enumerated(c)
 	//3. decode NgapIE
 	var buf []byte
@@ -80,7 +77,7 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
-	fmt.Printf("IE=%.8b\n", buf)
+	// fmt.Printf("IE=%.8b\n", buf)
 	ieR := aper.NewReader(bytes.NewReader(buf))
 	//prepare IE data structure for decoding
 	switch msgIe.Id.NgapProtocolIeId { //list of cases are generated from spec
@@ -94,7 +91,7 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 			return
 		}
 		msg.RanNodeName = &tmp
-		fmt.Printf("=decode RanNodeName:%s-%.8b\n", msg.RanNodeName.Value, []byte{'a'})
+		// fmt.Printf("=decode RanNodeName:%s-%.8b\n", msg.RanNodeName.Value, []byte{'a'})
 	case ie.ProtocolIEIDSupportedTAList:
 		// msg.SupportedTaList = append(msg.SupportedTaList)
 	case ie.ProtocolIEIDDefaultPagingDRX:
@@ -113,6 +110,8 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 		err = fmt.Errorf("temporary error")
 		return
 	}
+
+	fmt.Printf("Msg decoded - RanNodeName: %s\n", msg.RanNodeName.Value)
 
 	//then decode IE
 	// err = msgIe.Value.Decode(ieReader)

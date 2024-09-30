@@ -2,8 +2,6 @@ package ngap
 
 import (
 	"ngap/ie"
-
-	"github.com/sirupsen/logrus"
 )
 
 // This is to describe how NGAP handler should be written
@@ -28,7 +26,6 @@ func HandleNgap(wire []byte) (pdu NgapPdu, err error) {
 }
 
 func handleInitiatingMessage(pdu *NgapPdu) {
-	logrus.Infoln("handleInitiatingMessage -", pdu.Message.ProcedureCode.Value)
 	switch int64(pdu.Message.ProcedureCode.Value) {
 	case ie.ProcedureCodeNGSetup: //NGSetupRequest
 		msg := pdu.Message.Msg.(*NGSetupRequest)
@@ -51,7 +48,6 @@ func handleSuccessfulOutcome(pdu *NgapPdu) {
 }
 
 func handleNGSetupRequest(msg *NGSetupRequest) {
-	logrus.Infoln("handleNGSetupRequest")
 	//TODO: add example code
 
 }

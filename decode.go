@@ -6,8 +6,6 @@ import (
 	"io"
 	"ngap/aper"
 	"ngap/ie"
-
-	"github.com/sirupsen/logrus"
 )
 
 // hold a decoded Ngap message
@@ -85,7 +83,7 @@ func NgapDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ie.Critical
 	if err, diagnosticsItems = message.decode(containerBytes); err != nil {
 		return
 	}
-	logrus.Infoln("message body:", message)
+
 	pdu = NgapPdu{
 		Present: present,
 		Message: NgapMessage{
