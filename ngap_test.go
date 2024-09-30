@@ -24,7 +24,7 @@ func TestEncode(t *testing.T) {
 			t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
 			return
 		} else if !bytes.Equal(encoded, testCase.buf) {
-			t.Errorf("Final buffer = %.8b\n, want %.8b\n", encoded, testCase.buf)
+			t.Errorf("Final buffer = % X\n, want %.8b\n", encoded, testCase.buf)
 		}
 	}
 	// now: err when encode octetstring - RanNodeName
@@ -41,12 +41,12 @@ func TestDecode(t *testing.T) {
 			fmt.Println("Present:", decode.Present)
 			fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
 			fmt.Println("Criticality:", decode.Message.Criticality.Value)
-			fmt.Println("Message", decode.Message.Msg)
+			msg := decode.Message.Msg.(*NGSetupRequest)
+			fmt.Println("Message", msg)
 		}
 	}
 }
 
-var str = "a"
 var tests = []struct {
 	name      string
 	buf       []byte
@@ -64,6 +64,33 @@ var tests = []struct {
 				Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
 				Msg: &NGSetupRequest{
 					RanNodeName: &ie.RANNodeName{Value: "a"},
+				},
+			},
+		},
+	},
+	{
+		name: "NgSetupRequest",
+		buf:  []byte{0x00, 0x15, 0x00, 0x0F, 0x00, 0x00, 0x01, 0x00, 0x66, 0x00, 0x08, 0x00, 0x02, 0x02, 0xF8, 0x39, 0x02, 0xF8, 0x39},
+		resultPdu: &NgapPdu{
+			Present: NgapPduInitiatingMessage,
+			Message: NgapMessage{
+				ProcedureCode: ie.ProcedureCode{Value: aper.Integer(ie.ProcedureCodeNGSetup)},
+				Criticality:   ie.Criticality{Value: ie.CriticalityPresentReject},
+				Msg: &NGSetupRequest{
+					SupportedTaList: &ie.SupportedTAList{
+						List: []*ie.SupportedTaItem{
+							&ie.SupportedTaItem{
+								Tac: ie.Tac{Tac: aper.OctetString{
+									0x02, 0xf8, 0x39,
+								}},
+							},
+							&ie.SupportedTaItem{
+								Tac: ie.Tac{Tac: aper.OctetString{
+									0x02, 0xf8, 0x39,
+								}},
+							},
+						},
+					},
 				},
 			},
 		},

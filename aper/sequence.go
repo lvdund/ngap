@@ -59,6 +59,10 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint,
 			return
 		}
 	}
+
+	// with case up_bound = low_bound
+	err = aw.flush()
+
 	return
 }
 

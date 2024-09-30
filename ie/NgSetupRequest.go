@@ -20,13 +20,22 @@ type SupportedTaItem struct {
 	RatInformation          RatInformation          `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
-func (ie *SupportedTaItem) Decode(r aper.AperReader) error {
+func (ie *SupportedTaItem) Decode(r *aper.AperReader) error {
+	// var octets []byte
+	// if octets, err = r.ReadOctetString(&aper.Constraint{
+	// 	Lb: 3,
+	// 	Ub: 3,
+	// }, true); err != nil {
+	// 	return
+	// }
 
-	return nil
+	// t.Tac = octets
+	err := ie.Tac.Decode(r)
+	return err
 }
 
-func (ie *SupportedTaItem) Encode(r aper.AperWriter) (err error) {
-
+func (ie *SupportedTaItem) Encode(r *aper.AperWriter) (err error) {
+	err = ie.Tac.Encode(r)
 	return nil
 }
 

@@ -13,7 +13,7 @@ import (
 type NGSetupRequest struct {
 	GlobalRanNodeId        *ie.GlobalRanNodeId
 	RanNodeName            *ie.RANNodeName
-	SupportedTaList        []ie.SupportedTaItem
+	SupportedTaList        *ie.SupportedTAList
 	DefaultPagingDrx       *ie.PagingDrx
 	UeRetentionInformation *ie.UeRetentionInformation
 	// NbIotDefaultPagingDrx  *ie.NbIotDefaultPagingDrx
@@ -93,7 +93,11 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 		msg.RanNodeName = &tmp
 		// fmt.Printf("=decode RanNodeName:%s-%.8b\n", msg.RanNodeName.Value, []byte{'a'})
 	case ie.ProtocolIEIDSupportedTAList:
-		// msg.SupportedTaList = append(msg.SupportedTaList)
+		var tmp ie.SupportedTAList
+		if err = tmp.Decode(ieR); err != nil {
+			return
+		}
+		msg.SupportedTaList = &tmp
 	case ie.ProtocolIEIDDefaultPagingDRX:
 		if err = msg.DefaultPagingDrx.Decode(ieR); err != nil {
 			return
@@ -111,7 +115,7 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 		return
 	}
 
-	fmt.Printf("Msg decoded - RanNodeName: %s\n", msg.RanNodeName.Value)
+	// fmt.Printf("Msg decoded - RanNodeName: %s\n", msg.RanNodeName.Value)
 
 	//then decode IE
 	// err = msgIe.Value.Decode(ieReader)
@@ -140,20 +144,28 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 		fmt.Println("RanNodeName")
 	}
 	//SupportedTaList
-	if len(msg.SupportedTaList) > 0 {
-		/*
-			@DUNG: should we use WriteSequenceOf ? using NgapMessageIE does not seem right to me (inner Item does not need protocol IeId and criticality), pls check the specs
+	// if len(msg.SupportedTaList) > 0 {
+	/*
+		@DUNG: should we use WriteSequenceOf ? using NgapMessageIE does not seem right to me (inner Item does not need protocol IeId and criticality), pls check the specs
 
-				var SupportedTaList []NgapIE
-				for _, ie := range msg.SupportedTaList {
-					SupportedTaList = append(SupportedTaList, &ie)
-				}
-				ies = append(ies, NgapMessageIE{
-					Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
-					Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
-					Value:       NewIEs(SupportedTaList),
-				})
-		*/
+			var SupportedTaList []NgapIE
+			for _, ie := range msg.SupportedTaList {
+				SupportedTaList = append(SupportedTaList, &ie)
+			}
+			ies = append(ies, NgapMessageIE{
+				Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
+				Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
+				Value:       NewIEs(SupportedTaList),
+			})
+	*/
+	// 	fmt.Println("SupportedTaList")
+	// }
+	if msg.SupportedTaList != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
+			Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
+			Value:       msg.SupportedTaList,
+		})
 		fmt.Println("SupportedTaList")
 	}
 	//DefaultPagingDrx
