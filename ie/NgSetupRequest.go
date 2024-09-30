@@ -1,6 +1,9 @@
 package ie
 
-import "ngap/aper"
+import (
+	"fmt"
+	"ngap/aper"
+)
 
 type NgSetupRequest struct {
 	MessageType            MessageType            `bitstring:"sizeLB:0,sizeUB:150"`
@@ -15,12 +18,12 @@ type NgSetupRequest struct {
 
 type SupportedTaItem struct {
 	Tac                     Tac                     `bitstring:"sizeLB:0,sizeUB:150"`
-	BroadcastPlmnList       []BroadcastPlmnItem     `bitstring:"sizeLB:0,sizeUB:150"`
+	BroadcastPlmnList       []*BroadcastPlmnItem    `bitstring:"sizeLB:0,sizeUB:150"`
 	ConfiguredTacIndication ConfiguredTacIndication `bitstring:"sizeLB:0,sizeUB:150"`
 	RatInformation          RatInformation          `bitstring:"sizeLB:0,sizeUB:150"`
 }
 
-func (ie *SupportedTaItem) Decode(r *aper.AperReader) error {
+func (ie *SupportedTaItem) Decode(r *aper.AperReader) (err error) {
 	// var octets []byte
 	// if octets, err = r.ReadOctetString(&aper.Constraint{
 	// 	Lb: 3,
@@ -30,8 +33,18 @@ func (ie *SupportedTaItem) Decode(r *aper.AperReader) error {
 	// }
 
 	// t.Tac = octets
-	err := ie.Tac.Decode(r)
-	return err
+	if err = ie.Tac.Decode(r); err != nil {
+		return
+	}
+	if ie.BroadcastPlmnList, err = aper.ReadSequenceOfEx[*BroadcastPlmnItem](func() *BroadcastPlmnItem {
+		return new(BroadcastPlmnItem)
+	}, r, &aper.Constraint{
+		Lb: 1,
+		Ub: 12,
+	}, true); err != nil {
+		return
+	}
+	return
 }
 
 func (ie *SupportedTaItem) Encode(r *aper.AperWriter) (err error) {
@@ -45,4 +58,12 @@ type BroadcastPlmnItem struct {
 	NpnSupport                  NpnSupport               `bitstring:"sizeLB:0,sizeUB:150"`
 	ExtendedTaiSliceSupportList ExtendedSliceSupportList `bitstring:"sizeLB:0,sizeUB:150"`
 	TaiNsagSupportList          TaiNsagSupportList       `bitstring:"sizeLB:0,sizeUB:150"`
+}
+
+func (ie *BroadcastPlmnItem) Decode(r *aper.AperReader) (err error) {
+	fmt.Printf("decode Broadcast Plmn Item \n")
+	if err = ie.PlmnIdentity.Decode(r); err != nil {
+		return
+	}
+	return
 }
