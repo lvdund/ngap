@@ -7,7 +7,7 @@ import (
 )
 
 func TestDecodeUeRanSim(t *testing.T) {
-	if f, err := os.Open("./test_msg/NgSetupRequest.bin"); err != nil {
+	if f, err := os.Open("./test_msg/ngsetuprequest.bin"); err != nil {
 		t.Errorf("Fail to read file : %+v", err)
 	} else {
 		defer f.Close()

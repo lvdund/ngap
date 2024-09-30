@@ -29,7 +29,7 @@ func (e *PlmnIdentity) Decode(r *aper.AperReader) (err error) {
 
 	e.PlmnIdentity = octets
 	mcc, mnc := MccMnc(octets)
-	fmt.Printf("Decoded PlmnId: %s-%s\n", mcc, mnc)
+	fmt.Printf("Decoded PlmnId: %s-%s[%.8b]\n", mcc, mnc, octets)
 	return
 }
 

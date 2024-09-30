@@ -69,9 +69,9 @@ func (ie *SupportedTaItem) Encode(r *aper.AperWriter) (err error) {
 type BroadcastPlmnItem struct {
 	PlmnIdentity                PlmnIdentity
 	TaiSliceSupportList         []*SliceSupportItem
-	NpnSupport                  NpnSupport
-	ExtendedTaiSliceSupportList ExtendedSliceSupportList
-	TaiNsagSupportList          TaiNsagSupportList
+	NpnSupport                  *NpnSupport
+	ExtendedTaiSliceSupportList *ExtendedSliceSupportList
+	TaiNsagSupportList          *TaiNsagSupportList
 }
 
 func (ie *BroadcastPlmnItem) Decode(r *aper.AperReader) (err error) {

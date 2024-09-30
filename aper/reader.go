@@ -231,7 +231,6 @@ func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 	defer func() {
 		err = aperError("ReadOctetString", err)
 	}()
-	octets = OctetString("")
 	var exBit bool = false
 	if e { //read extension bit
 		if exBit, err = ar.ReadBool(); err != nil {
@@ -412,7 +411,7 @@ func (ar *AperReader) ReadChoice(uBound uint64, e bool) (v uint64, err error) {
 		}
 		if exBit {
 			err = fmt.Errorf("Choice extension not supported")
-			return
+			return  
 		}
 	}
 	var tmp uint64

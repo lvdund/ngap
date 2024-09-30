@@ -82,10 +82,12 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 	//prepare IE data structure for decoding
 	switch msgIe.Id.NgapProtocolIeId { //list of cases are generated from spec
 	case ie.ProtocolIEIDGlobalRANNodeID:
+		var tmp ie.GlobalRanNodeId
 		fmt.Printf("decode RanNodeId: %.8b\n", buf)
-		if err = msg.GlobalRanNodeId.Decode(ieR); err != nil {
+		if err = tmp.Decode(ieR); err != nil {
 			return
 		}
+		msg.GlobalRanNodeId = &tmp
 	case ie.ProtocolIEIDRANNodeName:
 		var tmp ie.RANNodeName
 		fmt.Printf("decode RanNodeName: %.8b\n", buf)
