@@ -6,33 +6,40 @@ import (
 )
 
 type NgSetupRequest struct {
-	MessageType            MessageType            `bitstring:"sizeLB:0,sizeUB:150"`
-	GlobalRanNodeId        GlobalRanNodeId        `bitstring:"sizeLB:0,sizeUB:150"`
-	RanNodeName            []byte                 `bitstring:"sizeLB:1,sizeUB:150"`
-	SupportedTaList        []SupportedTaItem      `bitstring:"sizeLB:0,sizeUB:150"`
-	DefaultPagingDrx       PagingDrx              `bitstring:"sizeLB:0,sizeUB:150"`
-	UeRetentionInformation UeRetentionInformation `bitstring:"sizeLB:0,sizeUB:150"`
-	NbIotDefaultPagingDrx  NbIotDefaultPagingDrx  `bitstring:"sizeLB:0,sizeUB:150"`
-	ExtendedRanNodeName    ExtendedRanNodeName    `bitstring:"sizeLB:0,sizeUB:150"`
+	MessageType            MessageType
+	GlobalRanNodeId        GlobalRanNodeId
+	RanNodeName            []byte
+	SupportedTaList        []SupportedTaItem
+	DefaultPagingDrx       PagingDrx
+	UeRetentionInformation UeRetentionInformation
+	NbIotDefaultPagingDrx  NbIotDefaultPagingDrx
+	ExtendedRanNodeName    ExtendedRanNodeName
 }
-
 type SupportedTaItem struct {
-	Tac                     Tac                     `bitstring:"sizeLB:0,sizeUB:150"`
-	BroadcastPlmnList       []*BroadcastPlmnItem    `bitstring:"sizeLB:0,sizeUB:150"`
-	ConfiguredTacIndication ConfiguredTacIndication `bitstring:"sizeLB:0,sizeUB:150"`
-	RatInformation          RatInformation          `bitstring:"sizeLB:0,sizeUB:150"`
+	Tac                     Tac                      //mandatory
+	BroadcastPlmnList       []*BroadcastPlmnItem     //mandatory
+	ConfiguredTacIndication *ConfiguredTacIndication //optional
+	RatInformation          *RatInformation          //optional
 }
 
 func (ie *SupportedTaItem) Decode(r *aper.AperReader) (err error) {
-	// var octets []byte
-	// if octets, err = r.ReadOctetString(&aper.Constraint{
-	// 	Lb: 3,
-	// 	Ub: 3,
-	// }, true); err != nil {
-	// 	return
-	// }
+	//SupportedTaItem has an extension bit (see free5gc SupportTaList which has
+	//a ValueEx tag indicating inner items are extensible)
+	var exBit bool
+	if exBit, err = r.ReadBool(); err != nil {
+		return
+	}
+	fmt.Printf("exBit=%v\n", exBit)
 
-	// t.Tac = octets
+	//The structure has two optional fields, we need to read two bits to know
+	//if these optional fields are set
+	var optionals []byte
+	if optionals, err = r.ReadBits(2); err != nil {
+		return
+	}
+
+	fmt.Printf("optionals=%.8b\n", optionals)
+
 	if err = ie.Tac.Decode(r); err != nil {
 		return
 	}
@@ -41,9 +48,16 @@ func (ie *SupportedTaItem) Decode(r *aper.AperReader) (err error) {
 	}, r, &aper.Constraint{
 		Lb: 1,
 		Ub: 12,
-	}, true); err != nil {
+	}, false); err != nil {
 		return
 	}
+
+	//TODO: now read optional fields
+	if aper.IsBitSet(optionals, 0) {
+	}
+	if aper.IsBitSet(optionals, 1) {
+	}
+
 	return
 }
 
@@ -53,17 +67,55 @@ func (ie *SupportedTaItem) Encode(r *aper.AperWriter) (err error) {
 }
 
 type BroadcastPlmnItem struct {
-	PlmnIdentity                PlmnIdentity             `bitstring:"sizeLB:0,sizeUB:150"`
-	TaiSliceSupportList         SliceSupportList         `bitstring:"sizeLB:0,sizeUB:150"`
-	NpnSupport                  NpnSupport               `bitstring:"sizeLB:0,sizeUB:150"`
-	ExtendedTaiSliceSupportList ExtendedSliceSupportList `bitstring:"sizeLB:0,sizeUB:150"`
-	TaiNsagSupportList          TaiNsagSupportList       `bitstring:"sizeLB:0,sizeUB:150"`
+	PlmnIdentity                PlmnIdentity
+	TaiSliceSupportList         []*SliceSupportItem
+	NpnSupport                  NpnSupport
+	ExtendedTaiSliceSupportList ExtendedSliceSupportList
+	TaiNsagSupportList          TaiNsagSupportList
 }
 
 func (ie *BroadcastPlmnItem) Decode(r *aper.AperReader) (err error) {
 	fmt.Printf("decode Broadcast Plmn Item \n")
+
+	//BroadcastPlmnItem has an extension bit (see free5gc BroadcastPlmnList which has
+	//a ValueEx tag indicating inner items are extensible)
+	var exBit bool
+	if exBit, err = r.ReadBool(); err != nil {
+		return
+	}
+	fmt.Printf("exBit=%v\n", exBit)
+
+	//The structure has two optional fields, we need to read three bits to know
+	//if these optional fields are set
+	var optionals []byte
+	if optionals, err = r.ReadBits(3); err != nil {
+		return
+	}
+
 	if err = ie.PlmnIdentity.Decode(r); err != nil {
 		return
 	}
+
+	fmt.Printf("decode TaiSliceSupportList \n")
+	if ie.TaiSliceSupportList, err = aper.ReadSequenceOfEx[*SliceSupportItem](func() *SliceSupportItem {
+		return new(SliceSupportItem)
+	}, r, &aper.Constraint{
+		Lb: 1,
+		Ub: 1024,
+	}, false); err != nil {
+		return
+	} else {
+		fmt.Printf("Number of slices: %d\n", len(ie.TaiSliceSupportList))
+	}
+
+	//TODO: other optional fields
+
+	if aper.IsBitSet(optionals, 0) {
+	}
+	if aper.IsBitSet(optionals, 1) {
+	}
+	if aper.IsBitSet(optionals, 2) {
+	}
+
 	return
 }

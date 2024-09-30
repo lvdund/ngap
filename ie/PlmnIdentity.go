@@ -1,8 +1,9 @@
 package ie
 
 import (
-	"ngap/aper"
+	"encoding/hex"
 	"fmt"
+	"ngap/aper"
 )
 
 type PlmnIdentity struct {
@@ -27,7 +28,29 @@ func (e *PlmnIdentity) Decode(r *aper.AperReader) (err error) {
 	}
 
 	e.PlmnIdentity = octets
+	mcc, mnc := MccMnc(octets)
+	fmt.Printf("Decoded PlmnId: %s-%s\n", mcc, mnc)
+	return
+}
 
-	fmt.Printf("Decoded PlmnId: %x[len=%d]\n", octets, len(octets))
+func MccMnc(id []byte) (mcc, mnc string) {
+	//decode from string here
+	mccDigit1 := id[0] & 0x0f
+	mccDigit2 := (id[0] & 0xf0) >> 4
+	mccDigit3 := (id[1] & 0x0f)
+
+	mncDigit1 := (id[2] & 0x0f)
+	mncDigit2 := (id[2] & 0xf0) >> 4
+	mncDigit3 := (id[1] & 0xf0) >> 4
+
+	plmnIdBytes := []byte{(mccDigit1 << 4) | mccDigit2, (mccDigit3 << 4) | mncDigit1, (mncDigit2 << 4) | mncDigit3}
+	plmnId := hex.EncodeToString(plmnIdBytes)
+	mcc = plmnId[0:3]
+	if plmnId[5] == 'f' {
+		mnc = plmnId[3:5]
+	} else {
+		mnc = plmnId[3:6]
+	}
+
 	return
 }

@@ -99,7 +99,7 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 		var ies []*ie.SupportedTaItem
 		if ies, err = aper.ReadSequenceOfEx[*ie.SupportedTaItem](func() *ie.SupportedTaItem {
 			return new(ie.SupportedTaItem)
-		}, ieR, &aper.Constraint{Lb: 1, Ub: 256}, true); err != nil {
+		}, ieR, &aper.Constraint{Lb: 1, Ub: 256}, false); err != nil {
 			return
 		} else {
 			fmt.Printf("Number of SupportedTaItem: %d\n", len(ies))
