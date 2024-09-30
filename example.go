@@ -103,6 +103,7 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 			return
 		} else {
 			fmt.Printf("Number of SupportedTaItem: %d\n", len(ies))
+			msg.SupportedTaList = ies
 		}
 
 	case ie.ProtocolIEIDDefaultPagingDRX:
