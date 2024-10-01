@@ -48,7 +48,6 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint,
 		if err = aw.align(); err != nil {
 			return
 		}
-		//NOTE @Duc: why the numElems is encoded as a single byte (<=255)?
 		if err = aw.writeValue(uint64(numElems&0xff), 8); err != nil {
 			return
 		}
@@ -59,7 +58,10 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint,
 			return
 		}
 	}
-	aw.flush()
+
+	// with case up_bound = low_bound
+	err = aw.flush()
+
 	return
 }
 
@@ -115,11 +117,15 @@ func ReadSequenceOf[T any](decoder func(ar *AperReader) (*T, error), ar *AperRea
 	items = make([]T, numElems)
 	var tmpItem *T
 	for i := 0; i < int(numElems); i++ {
+		fmt.Println("SequenceOf", i)
 		if tmpItem, err = decoder(ar); err != nil {
+			fmt.Println("\terr")
 			return
 		}
+		fmt.Printf("----------: %v", *tmpItem)
 		items[i] = *tmpItem
 	}
+	fmt.Printf(" -> %p\n", tmpItem)
 	return
 }
 
