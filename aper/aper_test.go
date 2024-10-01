@@ -3,6 +3,7 @@ package aper
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -827,6 +828,7 @@ func TestReadInteger(t *testing.T) {
 	}
 }
 
+
 func TestReadEnumerate(t *testing.T) {
 	fmt.Printf("Test ReadEnumerate\n")
 	testGroups := []struct {
@@ -981,33 +983,64 @@ func TestWriteEnumerate(t *testing.T) {
 }
 
 type TestItem struct {
-	id int64
+	id     int64
+	region []byte 
+	item2  TestItem2
 }
 
-func (item *TestItem) Encode(aw *AperWriter) (err error) {
-	err = aw.WriteInteger(item.id, nil, false)
-	return
+type TestItem2 struct {
+	id     int64
+	region []byte 
 }
-func (item *TestItem) Decode(aw *AperReader) (err error) {
-	if item.id, err = aw.ReadInteger(nil, false); err != nil {
-		return
+
+func (item *TestItem) Encode(aw *AperWriter) error {
+	if err := aw.WriteInteger(item.id, nil, false); err != nil {
+		return err
 	}
-	fmt.Println("item.id  : ", item.id)
-	return
+
+	if err := aw.WriteBitString(item.region, 8, &Constraint{Lb: 0, Ub: 125}, false); err != nil {
+		return err
+	}
+
+	if err := aw.WriteInteger(item.item2.id, nil, false); err != nil {
+		return err
+	}
+
+	return aw.WriteBitString(item.item2.region, 3, &Constraint{Lb: 3, Ub: 3}, false)
+}
+
+func (item *TestItem) Decode(aw *AperReader) error {
+	var err error
+	item.id, err = aw.ReadInteger(nil, false)
+	if err != nil {
+		return err
+	}
+
+	item.region, _, err = aw.ReadBitString(&Constraint{Lb: 0, Ub: 125}, false)
+	if err != nil {
+		return err
+	}
+
+	item.item2.id, err = aw.ReadInteger(nil, false)
+	if err != nil {
+		return err
+	}
+
+	item.item2.region, _, err = aw.ReadBitString(&Constraint{Lb: 3, Ub: 3}, false)
+	return err
 }
 
 func Test_Sequence(t *testing.T) {
 	fmt.Printf("Test Write/Read sequence\n")
-
 	// 1. encode sequences
 	var buf bytes.Buffer
 	writer := NewWriter(&buf)
-
-	item1 := TestItem{id: 100}
-	item2 := TestItem{id: 199}
-	items := make([]*TestItem, 2)
-	items[0] = &item1
-	items[1] = &item2
+	items := []*TestItem{
+		{id: 100, region: []byte{0xfa}, item2: TestItem2{id: 169, region: []byte{0xa0}}},
+		{id: 199, region: []byte{0xfb}, item2: TestItem2{id: 170, region: []byte{0xa0}}},
+		{id: 100, region: []byte{0xfc}, item2: TestItem2{id: 171, region: []byte{0xa0}}},
+		{id: 201, region: []byte{0xfe}, item2: TestItem2{id: 172, region: []byte{0xa0}}},
+	}
 
 	if err := WriteSequenceOf[*TestItem](items, writer, nil, false); err != nil {
 		t.Errorf("Fail encoding: %+v", err)
@@ -1015,22 +1048,7 @@ func Test_Sequence(t *testing.T) {
 
 	// 2. decode sequences
 	reader := NewReader(bytes.NewReader(buf.Bytes()))
-	/*
-		//decode using ReadSequenceOf, output is []TestItem (list of item
-		//objects)
-			itemDecoder := func(ar *AperReader) (*TestItem, error) {
-				item := new(TestItem)
-				if err := item.Decode(ar); err != nil {
-					return nil, err
-				}
-				return item, nil
-			}
 
-			newItems, err := ReadSequenceOf[TestItem](itemDecoder, reader, nil, false)
-	*/
-
-	//decode using ReadSequenceOfEx, output is []*TestItem (list of item
-	//pointers)
 	newItems, err := ReadSequenceOfEx[*TestItem](func() *TestItem {
 		return new(TestItem)
 	}, reader, nil, false)
@@ -1041,13 +1059,13 @@ func Test_Sequence(t *testing.T) {
 
 	// 3. compare
 	if len(newItems) != len(items) {
-		t.Errorf("size not match")
+		t.Errorf("Size mismatch: expected %d, got %d", len(items), len(newItems))
 	} else {
 		for i := range newItems {
-			if newItems[i].id != items[i].id {
-				t.Errorf("item %d does not match, expected %d, got %d", i, items[i].id, newItems[i].id)
+			if !reflect.DeepEqual(newItems[i], items[i]) {
+				t.Errorf("Item %d does not match: expected %+v, got %+v", i, items[i], newItems[i])
 			} else {
-				fmt.Printf("Item %d matches: %d\n", i, newItems[i].id)
+				fmt.Printf("Item %d matches: %+v\n", i, newItems[i])
 			}
 		}
 	}

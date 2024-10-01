@@ -155,25 +155,31 @@ func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 	defer func() {
 		err = aperError("ReadBitString", err)
 	}()
-	var exBit bool = false
-	if e { //read extension bit
-		if exBit, err = ar.ReadBool(); err != nil {
-			return
-		}
+	// var exBit bool = false
+	// if e { //read extension bit
+	// 	if exBit, err = ar.ReadBool(); err != nil {
+	// 		return
+	// 	}
+	// }
+
+	// var lRange uint64 = 0    //length range
+	// var lowerBound int64 = 0 //length lower bound, default=0
+	// if c != nil {
+	// 	if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
+	// 		err = ErrConstraint
+	// 		return
+	// 	}
+	// 	if lRange = c.Range(); lRange == 0 && exBit {
+	// 		err = ErrInextensible //get a true extension bit while the range is unconstraint
+	// 		return
+	// 	}
+	// }
+	
+	lRange,lowerBound,err :=ar.readExBit(c,e)
+	if err != nil {
+		return nil,0,err
 	}
 
-	var lRange uint64 = 0    //length range
-	var lowerBound int64 = 0 //length lower bound, default=0
-	if c != nil {
-		if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
-			err = ErrConstraint
-			return
-		}
-		if lRange = c.Range(); lRange == 0 && exBit {
-			err = ErrInextensible //get a true extension bit while the range is unconstraint
-			return
-		}
-	}
 	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at least 16 bits then set as semi-constrain
 		lRange = 0
 	}
@@ -227,30 +233,14 @@ func (ar *AperReader) ReadOpenType() (octets []byte, err error) {
 }
 
 func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err error) {
-	//TODO:
 	defer func() {
 		err = aperError("ReadOctetString", err)
 	}()
-	octets = OctetString("")
-	var exBit bool = false
-	if e { //read extension bit
-		if exBit, err = ar.ReadBool(); err != nil {
-			return
-		}
+	lRange,lowerBound,err :=ar.readExBit(c,e)
+	if err != nil {
+		return nil,err
 	}
 
-	var lRange uint64 = 0    //length range
-	var lowerBound int64 = 0 //length lower bound, default=0
-	if c != nil {
-		if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
-			err = ErrConstraint
-			return
-		}
-		if lRange = c.Range(); lRange == 0 && exBit {
-			err = ErrInextensible //get a true extension bit while the range is unconstraint
-			return
-		}
-	}
 	if lRange > 0 && uint64(c.Ub) >= POW_16 {
 		lRange = 0
 	}
@@ -295,28 +285,33 @@ func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 	octets = buf.Bytes() //return the concatenated output
 	return
 }
+
 func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error) {
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
 
-	var valueEx bool
-	if e {
-		if valueEx, err = ar.ReadBool(); err != nil {
-			return
-		}
-	}
-	var sRange uint64 = 0
-	if c != nil {
-		if !valueEx {
-			sRange = c.Range()
-		}
-		if uint64(c.Ub) > POW_16 {
-			sRange = 0
-		}
+	// var exBit bool = false
+	// if e {
+	// 	if exBit, err = ar.ReadBool(); err != nil {
+	// 		return
+	// 	}
+	// }
 
+	// var sRange uint64 = 0
+	// if c != nil {
+	// 	if !exBit {
+	// 		sRange = c.Range()
+	// 	}
+	// 	if uint64(c.Ub) > POW_16 {
+	// 		sRange = 0
+	// 	}
+	// }
+	
+	sRange,_,err :=ar.readExBit(c,e)
+	if err != nil {
+		return 0,err
 	}
-
 	var rawLength uint
 	switch {
 	case sRange == 1:

@@ -137,58 +137,37 @@ func (aw *AperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
 	return
 }
 
-func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, e bool) (err error) {
-	defer func() {
-		err = aperError("WriteBitString", err)
-	}()
-	var lRange uint64 = 0    //length range
-	var lowerBound int64 = 0 //length lower bound, default=0
-
-	//write extension bit
-	exBit := false
-	if c != nil {
-		if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
-			err = ErrConstraint
-			return
-		}
-		if lRange = c.Range(); lRange > 0 && uint(c.Ub) < nbits { //unconstraint
-			if !e { //unconstraint not supported
-				err = ErrInextensible
-				return
-			} else {
-				exBit = true
-			}
-		}
-	}
-	if e {
-		if err = aw.WriteBool(exBit); err != nil {
-			return
-		}
-	}
+func (aw *AperWriter) WriteString(content []byte, len uint64, c *Constraint, e bool, isBitstring bool) (err error) {
+	lowerBound,lRange,_:=aw.writeExtBit(len,e,c)
 	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at lest 16bits then set as semi-constrain
 		lRange = 0
 	}
-
 	if lRange == 1 { //constrain with fixed length; both bounds have the same value
-		if int64(nbits) != lowerBound {
+		if int64(len) != lowerBound {
 			err = ErrFixedLength
 			return
 		}
-
-		if numBytes := (nbits + 7) >> 3; numBytes > 2 { //if more than 2 bytes, align first
+		var numByte ,nbits uint64
+		if isBitstring{
+			numByte = len + 7 >> 3;
+			nbits = len
+		}else{
+			numByte = len
+			nbits = len * 8
+		}
+		if numByte > 2 { //if more than 2 bytes, align first
 			if err = aw.align(); err != nil {
 				return
 			}
 		}
 		//then write content
-		err = aw.WriteBits(content, nbits)
+		err = aw.WriteBits(content, uint(nbits))
 		return
 	}
 	partReader := NewBitStreamReader(bytes.NewReader(content)) //for reading parts of content for writing
-	totalLen := uint64(nbits) - uint64(lowerBound)
+	totalLen := uint64(len) - uint64(lowerBound)
 	var partLen uint64
 	var partBytes []byte
-
 	completed := false
 	for {
 		if totalLen > POW_16 {
@@ -204,7 +183,7 @@ func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 		totalLen -= partLen //reduce total length
 
 		//encode length
-		if err = aw.writeLength(lRange, partLen); err != nil {
+		if err = aw.writeLength(uint64(lRange), partLen); err != nil {
 			return
 		}
 
@@ -218,17 +197,39 @@ func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 		if err = aw.align(); err != nil {
 			return
 		}
-
-		if partBytes, err = partReader.ReadBits(uint(partLen)); err != nil { //get a content part to write
+		var partLenBits uint
+		if !isBitstring{
+			partLenBits = uint(partLen*8)
+		}else{
+			partLenBits = uint(partLen)
+		}
+		if partBytes, err = partReader.ReadBits(partLenBits); err != nil { //get a content part to write
 			return
 		}
-		if err = aw.WriteBits(partBytes, uint(partLen)); err != nil { //write the part
+		if err = aw.WriteBits(partBytes, partLenBits); err != nil { //write the part
 			return
 		}
 		if completed {
 			break
 		}
 	}
+	return
+}
+
+func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, e bool) (err error) {
+	defer func() {
+		err = aperError("WriteBitString", err)
+	}()
+	err = aw.WriteString(content, uint64(nbits),c,e,true)
+	return
+}
+
+func (aw *AperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
+	defer func() {
+		err = aperError("WriteOctetString", err)
+	}()
+	byteLen := uint64(len(content))
+	err = aw.WriteString(content, byteLen,c, e, false)
 	return
 }
 
@@ -272,136 +273,17 @@ func (aw *AperWriter) WriteOpenType(content []byte) (err error) {
 	if err = aw.WriteOctetString(content, nil, false); err != nil {
 		return
 	}
-	//NOTE: @Duc, please check if we need alignment at the end
 	err = aw.align()
 	return
 }
 
-func (aw *AperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
-	defer func() {
-		err = aperError("WriteOctetString", err)
-	}()
-	byteLen := uint64(len(content))
-	var lRange uint64 = 0    //length range
-	var lowerBound int64 = 0 //length lower bound, default=0
-	//var upBound int64 = 0
-	//write extension bit
-	exBit := false
-	if c != nil {
-		if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
-			err = ErrConstraint
-			return
-		}
-		if lRange = c.Range(); lRange > 0 && uint64(c.Ub) < byteLen { //unconstraint
-			if !e { //unconstraint not supported
-				err = ErrInextensible
-				return
-			} else {
-				exBit = true
-			}
-		}
-	}
-	if e {
-		if err = aw.WriteBool(exBit); err != nil {
-			return
-		}
-	}
 
-	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at lest 16bits then set as semi-constrain
-		lRange = 0
-	}
-	if lRange == 1 { //constrain with fixed length; both bounds have the same value
-		if int64(byteLen) != lowerBound {
-			err = ErrFixedLength
-			return
-		}
-
-		if byteLen > 2 { //if more than 2 bytes, align first
-			if err = aw.align(); err != nil {
-				return
-			}
-		}
-		//then write content
-		err = aw.WriteBits(content, uint(byteLen*8))
-		return
-	}
-
-	partReader := NewBitStreamReader(bytes.NewReader(content)) //for reading parts of content for writing
-	totalLen := uint64(byteLen) - uint64(lowerBound)
-	var partLen uint64
-	var partBytes []byte
-	completed := false
-	for {
-		if totalLen > POW_16 {
-			partLen = POW_16
-		} else if totalLen >= POW_14 {
-			partLen = totalLen & 0xc000 //strip last 14 bits, keep bit 14,15.
-		} else {
-			partLen = totalLen
-			completed = true //last part to write
-			//Last part can have zero length, still it must be encoded to tell
-			//reader (decoder) to stop
-		}
-		totalLen -= partLen //reduce total length
-
-		//encode length
-		if err = aw.writeLength(lRange, partLen); err != nil {
-			return
-		}
-		partLen += uint64(lowerBound)
-		if partLen == 0 {
-			return
-		}
-
-		//align last byte
-		if err = aw.align(); err != nil {
-			return
-		}
-		if partBytes, err = partReader.ReadBits(uint(partLen * 8)); err != nil { //get a content part to write
-			return
-		}
-		if err = aw.WriteBits(partBytes, uint(partLen*8)); err != nil { //write the part
-			return
-		}
-
-		if completed {
-			break
-		}
-	}
-	return
-}
 
 func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
-	//TODO: @Duc: please check again
 	defer func() {
 		err = aperError("WriteInteger", err)
 	}()
-	var lb, sRange int64 = 0, -1
-	if c != nil {
-		lb = c.Lb
-		if c.Ub >= c.Lb {
-			if int64(v) <= c.Ub {
-				sRange = int64(c.Range())
-			} else if !e {
-				err = ErrInextensible
-				return
-			}
-			if e {
-				if sRange == -1 {
-					if err = aw.WriteBool(One); err != nil {
-						return
-					}
-					lb = 0
-				} else {
-					if err = aw.WriteBool(Zero); err != nil {
-						return
-					}
-				}
-			}
-
-		}
-	}
-
+	lb,sRange,_ := aw.writeExtBit(uint64(v),e,c)
 	unsignedValue := uint64(v)
 	var rawLength uint
 	if sRange == 1 {
