@@ -25,13 +25,14 @@ func (ie *GlobalGnbId) Decode(r *aper.AperReader) (err error) {
 	}
 	fmt.Printf("Gnb ID choice = %d\n", choice)
 	var gnbId []byte
-	if gnbId, _, err = r.ReadBitString(&aper.Constraint{
+	var nbits uint
+	if gnbId, nbits, err = r.ReadBitString(&aper.Constraint{
 		Lb: 22,
 		Ub: 32,
 	}, false); err != nil {
 		return
 	}
-	fmt.Printf("gnb id= %x\n", gnbId)
+	fmt.Printf("gnb id= %.8b[%d]\n", gnbId, nbits)
 	return
 }
 
