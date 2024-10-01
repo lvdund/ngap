@@ -151,95 +151,39 @@ func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err er
 	return
 }
 
-func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint, err error) {
-	defer func() {
-		err = aperError("ReadBitString", err)
-	}()	
-	lRange,lowerBound,err :=ar.readExBit(c,e)
-	if err != nil {
-		return nil,0,err
-	}
-
-	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at least 16 bits then set as semi-constrain
-		lRange = 0
-	}
-
-	if lRange == 1 { //constrained with fixed length
-		nbits = uint(c.Lb)
-		numBytes := (nbits + 7) >> 3
-		if numBytes > 2 { //if more than 2 bytes, need align byte first
-			ar.align()
-		}
-		content, err = ar.ReadBits(nbits)
-		return
-	}
-
-	var buf bytes.Buffer
-	var tmpBytes []byte
-	partWriter := NewBitStreamWriter(&buf) //a bitstream writer to write parts of content
-	more := true                           //more part to read
-	var partLen uint64                     //length of a part to read
-
-	for more {
-		//read part length first
-		if partLen, more, err = ar.readLength(lRange); err != nil {
-			return
-		}
-		partLen += uint64(lowerBound)
-		if partLen == 0 {
-			//last part has zeros length, skip reading
-			break
-		}
-		ar.align()
-		//then read the  part content
-		if tmpBytes, err = ar.ReadBits(uint(partLen)); err != nil {
-			return
-		}
-		//concat the part to the output bitstream
-		if err = partWriter.WriteBits(tmpBytes, uint(partLen)); err != nil {
-			return
-		}
-		nbits += uint(partLen)
-	}
-	partWriter.flush()    //flush the buffer
-	content = buf.Bytes() //return the concatenated output
-	return
-}
-
-func (ar *AperReader) ReadOpenType() (octets []byte, err error) {
-	octets, err = ar.ReadOctetString(nil, false)
-	ar.align() //NOTE: @Duc, please make sure if alignment is neccesary
-	return
-}
-
-func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err error) {
+func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (content []byte, err error) {
 	defer func() {
 		err = aperError("ReadOctetString", err)
 	}()
 	lRange,lowerBound,err :=ar.readExBit(c,e)
 	if err != nil {
 		return nil,err
-	}
-
-	if lRange > 0 && uint64(c.Ub) >= POW_16 {
+	}	
+	
+	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at least 16 bits then set as semi-constrain
 		lRange = 0
 	}
 
 	if lRange == 1 { //constrained with fixed length
-		numBytes := uint(c.Lb)
-		if numBytes > 2 {
+		var numBytes, nbits uint
+		if isBitstring{
+			nbits = uint(c.Lb)
+			numBytes = (nbits + 7) >> 3
+		}else{
+			numBytes = uint(c.Lb)
+			nbits = numBytes * 8
+		}
+		if numBytes > 2 { //if more than 2 bytes, need align byte first
 			ar.align()
 		}
-		octets, err = ar.ReadBits(numBytes * 8)
+		content, err = ar.ReadBits(nbits)
 		return
 	}
-
 	var buf bytes.Buffer
 	var tmpBytes []byte
 	partWriter := NewBitStreamWriter(&buf) //a bitstream writer to write parts of content
 	more := true                           //more part to read
 	var partLen uint64                     //length of a part to read
-	var nBytes uint64
 	for more {
 		//read part length first
 		if partLen, more, err = ar.readLength(lRange); err != nil {
@@ -252,17 +196,50 @@ func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (octets []byte, err
 		}
 		ar.align()
 		//then read the  part content
-		if tmpBytes, err = ar.ReadBits(uint(partLen * 8)); err != nil {
+		var partLenBits uint64
+		if isBitstring{
+			partLenBits = partLen
+		}else{
+			partLenBits = partLen * 8
+		}
+		if tmpBytes, err = ar.ReadBits(uint(partLenBits)); err != nil {
 			return
 		}
 		//concat the part to the output bitstream
-		if err = partWriter.WriteBits(tmpBytes, uint(partLen*8)); err != nil {
+		if err = partWriter.WriteBits(tmpBytes, uint(partLenBits)); err != nil {
 			return
 		}
-		nBytes += partLen
+		//nbits += uint(partLen)
 	}
-	partWriter.flush()   //flush the buffer
-	octets = buf.Bytes() //return the concatenated output
+	partWriter.flush()    //flush the buffer
+	content = buf.Bytes() //return the concatenated output
+	return
+}
+
+func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint,err error) {
+	defer func() {
+		err = aperError("ReadBitString", err)
+	}()	
+	content,err = ar.ReadString(c,e,true)
+	if err != nil {
+		return
+	}
+	return content,0,nil
+}	
+func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (content []byte, err error) {
+	defer func() {
+		err = aperError("ReadOctetString", err)
+	}()
+	content,err = ar.ReadString(c,e,false)
+	if err != nil {
+		return
+	}
+	return content,nil
+}
+
+func (ar *AperReader) ReadOpenType() (octets []byte, err error) {
+	octets, err = ar.ReadOctetString(nil, false)
+	ar.align() 
 	return
 }
 
