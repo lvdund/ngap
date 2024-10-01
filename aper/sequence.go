@@ -53,12 +53,13 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint,
 			return
 		}
 	}
-	//finally, write all items
+	//finally, write all itemst
 	for _, item := range items {
 		if err = item.Encode(aw); err != nil {
 			return
 		}
 	}
+	aw.flush()
 	return
 }
 
