@@ -73,14 +73,16 @@ func (aw *AperWriter) writeExtBit(bitsLength uint64, e bool,c *Constraint) (int6
 		if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
 			return 0,0,ErrConstraint
 		}
-		if lRange = c.Range(); lRange > 0 && uint64(c.Ub) < bitsLength { //unconstraint
-			if !e { //unconstraint not supported
-				return 0,0,ErrInextensible
-			} else {
-				exBit = true
-			}
+		if int64(bitsLength) <=c.Ub {
+			lRange = (c.Range())
+		} else if !e {
+			//err = ErrInextensible
+			return 0,0,ErrInextensible
+		}else{
+			exBit = true
 		}
 	}
+	
 	if e {
 		if err := aw.WriteBool(exBit); err != nil {
 			return 0,0,nil
@@ -101,9 +103,8 @@ func (ar *AperReader) readExBit(c *Constraint, e bool) (lRange uint64,lowerBound
 		if lowerBound = c.Lb; lowerBound < 0 { //make sure lower bound is not negative
 			return 0, 0, ErrConstraint 
 		}
-		if lRange = c.Range(); lRange == 0 && exBit {
-			err = ErrInextensible //get a true extension bit while the range is unconstraint
-			return 0,0,err
+		if !exBit {
+			lRange = c.Range()
 		}
 		if uint64(c.Ub) > POW_16 {
 			lRange = 0

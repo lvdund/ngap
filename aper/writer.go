@@ -149,7 +149,7 @@ func (aw *AperWriter) WriteString(content []byte, len uint64, c *Constraint, e b
 		}
 		var numByte ,nbits uint64
 		if isBitstring{
-			numByte = len + 7 >> 3;
+			numByte = (len + 7) >> 3;
 			nbits = len
 		}else{
 			numByte = len
@@ -276,8 +276,6 @@ func (aw *AperWriter) WriteOpenType(content []byte) (err error) {
 	err = aw.align()
 	return
 }
-
-
 
 func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	defer func() {
