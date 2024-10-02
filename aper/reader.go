@@ -247,7 +247,9 @@ func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
+	
 	sRange,_,err :=ar.readExBit(c,e)
+
 	if err != nil {
 		return 0,err
 	}
@@ -264,16 +266,16 @@ func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 		}
 		rawLength = uint(tmp)
 
-	case sRange <= POW_16:
+	case uint64(sRange) <= POW_16:
 		var tmp uint64
-		if tmp, err = ar.readConstraintValue(sRange); err != nil {
+		if tmp, err = ar.readConstraintValue(uint64(sRange)); err != nil {
 			return
 		}
 		value = int64(tmp) + c.Lb //c is non-nil
 		return
 
 	default: //sRange > POW_16, c is non-nil
-		unsignedValueRange := sRange - 1
+		unsignedValueRange := uint64(sRange - 1)
 		bitLength := bits.Len64(unsignedValueRange)
 		var tmp uint64
 		if tmp, err = ar.readValue(uint(bitLength)); err != nil {
