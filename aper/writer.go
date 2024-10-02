@@ -121,7 +121,7 @@ func (aw *AperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
 
 	var nBytes uint
 	if r < POW_8 { //range is smaller that one byte, write value bits, no alignment
-		return aw.writeValue(v, uint(bits.Len64(r)))
+		return aw.writeValue(v, uint(bits.Len64(r-1)))
 	} else if r == POW_8 {
 		nBytes = 1
 	} else if r <= POW_16 {

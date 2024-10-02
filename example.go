@@ -13,7 +13,7 @@ import (
 type NGSetupRequest struct {
 	GlobalRanNodeId        *ie.GlobalRanNodeId
 	RanNodeName            *ie.RANNodeName
-	SupportedTaList        *ie.SupportedTAList
+	SupportedTaList        []*ie.SupportedTaItem
 	DefaultPagingDrx       *ie.PagingDrx
 	UeRetentionInformation *ie.UeRetentionInformation
 	// NbIotDefaultPagingDrx  *ie.NbIotDefaultPagingDrx
@@ -39,7 +39,7 @@ func (msg *NGSetupRequest) decode(wire []byte) (err error, diagList []ie.Critica
 	}
 
 	_ = ies
-	fmt.Printf("ie 0: %d %d %v -> %p", ies[0].Id.NgapProtocolIeId, ies[0].Criticality.Value, ies[0].Value, ies)
+	//	fmt.Printf("ie 0: %d %d %v -> %p", ies[0].Id.NgapProtocolIeId, ies[0].Criticality.Value, ies[0].Value, ies)
 
 	// //NOTE: after decode all IEs, now let's assign them to the message fields.
 	// //Alternatively, we can also assign the fields while decoding Ie in the previous
@@ -82,27 +82,39 @@ func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, e
 	//prepare IE data structure for decoding
 	switch msgIe.Id.NgapProtocolIeId { //list of cases are generated from spec
 	case ie.ProtocolIEIDGlobalRANNodeID:
-		if err = msg.GlobalRanNodeId.Decode(ieR); err != nil {
+		var tmp ie.GlobalRanNodeId
+		fmt.Printf("decode RanNodeId: %.8b\n", buf)
+		if err = tmp.Decode(ieR); err != nil {
 			return
 		}
+		msg.GlobalRanNodeId = &tmp
 	case ie.ProtocolIEIDRANNodeName:
 		var tmp ie.RANNodeName
+		fmt.Printf("decode RanNodeName: %.8b\n", buf)
 		if err = tmp.Decode(ieR); err != nil {
 			return
 		}
 		msg.RanNodeName = &tmp
 		// fmt.Printf("=decode RanNodeName:%s-%.8b\n", msg.RanNodeName.Value, []byte{'a'})
 	case ie.ProtocolIEIDSupportedTAList:
-		var tmp ie.SupportedTAList
-		if err = tmp.Decode(ieR); err != nil {
+		fmt.Printf("decode SupportedTAList: %.8b\n", buf)
+		var ies []*ie.SupportedTaItem
+		if ies, err = aper.ReadSequenceOfEx[*ie.SupportedTaItem](func() *ie.SupportedTaItem {
+			return new(ie.SupportedTaItem)
+		}, ieR, &aper.Constraint{Lb: 1, Ub: 256}, false); err != nil {
 			return
+		} else {
+			fmt.Printf("Number of SupportedTaItem: %d\n", len(ies))
+			msg.SupportedTaList = ies
 		}
-		msg.SupportedTaList = &tmp
+
 	case ie.ProtocolIEIDDefaultPagingDRX:
+		fmt.Printf("decode PagingDrx: %.8b\n", buf)
 		if err = msg.DefaultPagingDrx.Decode(ieR); err != nil {
 			return
 		}
 	case ie.ProtocolIEIDUERetentionInformation:
+		fmt.Printf("decode UeRetentionInfo: %.8b\n", buf)
 		if err = msg.UeRetentionInformation.Decode(ieR); err != nil {
 			return
 		}
@@ -144,27 +156,14 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 		fmt.Println("RanNodeName")
 	}
 	//SupportedTaList
-	// if len(msg.SupportedTaList) > 0 {
-	/*
-		@DUNG: should we use WriteSequenceOf ? using NgapMessageIE does not seem right to me (inner Item does not need protocol IeId and criticality), pls check the specs
-
-			var SupportedTaList []NgapIE
-			for _, ie := range msg.SupportedTaList {
-				SupportedTaList = append(SupportedTaList, &ie)
-			}
-			ies = append(ies, NgapMessageIE{
-				Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
-				Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
-				Value:       NewIEs(SupportedTaList),
-			})
-	*/
-	// 	fmt.Println("SupportedTaList")
-	// }
-	if msg.SupportedTaList != nil {
+	if len(msg.SupportedTaList) > 0 {
 		ies = append(ies, NgapMessageIE{
 			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDSupportedTAList},
 			Criticality: ie.Criticality{Value: ie.CriticalityPresentReject},
-			Value:       msg.SupportedTaList,
+			Value: aper.NewListContainer[*ie.SupportedTaItem](msg.SupportedTaList, &aper.Constraint{
+				Lb: 1,
+				Ub: 256,
+			}, true),
 		})
 		fmt.Println("SupportedTaList")
 	}
@@ -177,7 +176,7 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 		})
 		fmt.Println("DefaultPagingDrx")
 	}
-	//UeRetentionInformation
+	//UeRete
 	if msg.UeRetentionInformation != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ie.NgapProtocolIeId{NgapProtocolIeId: ie.ProtocolIEIDUERetentionInformation},

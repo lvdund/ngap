@@ -1,6 +1,9 @@
 package ie
 
-import "ngap/aper"
+import (
+	"ngap/aper"
+	"fmt"
+)
 
 type Tac struct {
 	Tac aper.OctetString `octetstring:"sizeLB:3,sizeUB:3"`
@@ -22,8 +25,7 @@ func (t *Tac) Decode(r *aper.AperReader) (err error) {
 	}, false); err != nil {
 		return
 	}
-
+	fmt.Printf("TAC=%x\n", octets)
 	t.Tac = octets
-
-	return
+	return 
 }

@@ -1,14 +1,42 @@
 package ie
 
-import "ngap/aper"
+import (
+	"fmt"
+	"ngap/aper"
+)
+
+const (
+	RAN_NODE_ID_GNB uint64 = iota + 1
+	RAN_NODE_ID_NGENB
+	//add more, should be generated
+)
 
 type GlobalRanNodeId struct {
-	ChoiceNgRanNode ChoiceNgRanNode `bitstring:"sizeLB:0,sizeUB:150"`
+	Choice uint64
+
+	GlobalGnbId *GlobalGnbId
+	NgEnb       *NgEnb
+	//generate more choices
 }
 
-func (ie *GlobalRanNodeId) Decode(r *aper.AperReader) error {
+func (e *GlobalRanNodeId) Decode(r *aper.AperReader) (err error) {
+	if e.Choice, err = r.ReadChoice(6, false); err != nil {
+		return
+	}
+	fmt.Printf("Choice for RanId is: %d\n", e.Choice)
+	switch e.Choice {
+	case RAN_NODE_ID_GNB:
+		var tmp GlobalGnbId
+		if err = tmp.Decode(r); err != nil {
+			return
+		}
+		e.GlobalGnbId = &tmp
+	case RAN_NODE_ID_NGENB:
+		//TODO:
+		//generate more cases
+	}
 
-	return nil
+	return
 }
 
 func (ie *GlobalRanNodeId) Encode(r *aper.AperWriter) (err error) {
