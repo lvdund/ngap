@@ -1,6 +1,7 @@
 package ie
 
 import (
+	"fmt"
 	"ngap/aper"
 )
 
@@ -27,6 +28,6 @@ func (e *RANNodeName) Decode(r *aper.AperReader) (err error) {
 
 	e.Value = string(octets)
 
-	// fmt.Printf("Decoded RANNodeName:%s[%d]\n", e.Value, len(octets))
+	fmt.Printf("Decoded RANNodeName:%s[%d]\n", e.Value, len(octets))
 	return
 }

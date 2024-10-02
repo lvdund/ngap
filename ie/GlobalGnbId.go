@@ -1,14 +1,44 @@
 package ie
 
-import "ngap/aper"
+import (
+	"fmt"
+	"ngap/aper"
+)
 
 type GlobalGnbId struct {
-	PlmnIdentity PlmnIdentity `bitstring:"sizeLB:0,sizeUB:150"`
-	ChoiceGnbId  ChoiceGnbId  `bitstring:"sizeLB:0,sizeUB:150"`
+	PlmnIdentity PlmnIdentity
+	ChoiceGnbId  ChoiceGnbId
+}
+
+func (ie *GlobalGnbId) Decode(r *aper.AperReader) (err error) {
+	var exBit bool
+	if exBit, err = r.ReadBool(); err != nil {
+		return
+	}
+	_ = exBit
+	if ie.PlmnIdentity.Decode(r); err != nil {
+		return
+	}
+	var choice uint64
+	if choice, err = r.ReadChoice(1, false); err != nil {
+		return
+	}
+	fmt.Printf("Gnb ID choice = %d\n", choice)
+	var gnbId []byte
+	var nbits uint
+	if gnbId, nbits, err = r.ReadBitString(&aper.Constraint{
+		Lb: 22,
+		Ub: 32,
+	}, false); err != nil {
+		return
+	}
+	fmt.Printf("gnb id= %.8b[%d]\n", gnbId, nbits)
+	return
 }
 
 type ChoiceGnbId struct {
-	GnbId GnbId `bitstring:"sizeLB:0,sizeUB:150"`
+	Choice uint64
+	GnbId  GnbId
 }
 
 type GnbId struct {
