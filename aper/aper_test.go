@@ -161,221 +161,6 @@ func Test_Aper(t *testing.T) {
 	}
 
 }
-func TestWriteBitStringGroups(t *testing.T) {
-	fmt.Printf("Test WriteBiString\n")
-	testGroups := []struct {
-		name  string
-		tests []struct {
-			name       string
-			content    []byte
-			nbits      uint
-			constraint *Constraint
-			extensible bool
-		}
-		expected []byte // Expected value after writing all tests in the group
-	}{
-		{
-			name: "Group 1",
-			tests: []struct {
-				name       string
-				content    []byte
-				nbits      uint
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					content:    []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-				{
-					content:    []byte{0xfe},
-					nbits:      8,
-					constraint: &Constraint{Lb: 0, Ub: 125},
-				},
-				{
-					content:    []byte{0xec},
-					nbits:      6,
-					constraint: &Constraint{Lb: 0, Ub: 255},
-				},
-				{
-					content:    []byte{0xd8},
-					nbits:      5,
-					constraint: &Constraint{Lb: 0, Ub: 555},
-				},
-			},
-			expected: []byte{0xA2, 0x00, 0xFE, 0x06, 0xEC, 0x00, 0x05, 0xD8},
-		},
-		{
-			name: "Group 2",
-			tests: []struct {
-				name       string
-				content    []byte
-				nbits      uint
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					content:    []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-				{
-					content:    []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-			},
-			expected: []byte{180},
-		},
-		{
-			name: "Group 3",
-			tests: []struct {
-				name       string
-				content    []byte
-				nbits      uint
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					content:    []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-				{
-					content:    []byte{0xb0},
-					nbits:      4,
-					constraint: &Constraint{Lb: 4, Ub: 4},
-				},
-			},
-			expected: []byte{182},
-		},
-	}
-
-	for _, group := range testGroups {
-		t.Run(group.name, func(t *testing.T) {
-			buf := new(bytes.Buffer)
-			writer := NewWriter(buf)
-			for _, tt := range group.tests {
-				t.Run(tt.name, func(t *testing.T) {
-					_ = writer.WriteBitString(tt.content, tt.nbits, tt.constraint, tt.extensible)
-				})
-			}
-			writer.flush()
-			if !bytes.Equal(buf.Bytes(), group.expected) {
-				t.Errorf("Final buffer = %v, want %v", buf.Bytes(), group.expected)
-			}
-		})
-	}
-}
-
-func TestReadBitStringGroups(t *testing.T) {
-	fmt.Printf("Test ReadBiString\n")
-	testGroups := []struct {
-		name  string
-		input []byte // Input data for decoding
-		tests []struct {
-			name       string
-			expected   []byte // Expected decoded value (bit string)
-			nbits      uint
-			constraint *Constraint
-			extensible bool
-		}
-	}{
-		{
-			name:  "Group 1",
-			input: []byte{0xA2, 0x00, 0xFE, 0x06, 0xEC, 0x00, 0x05, 0xD8},
-			tests: []struct {
-				name       string
-				expected   []byte
-				nbits      uint
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					expected:   []byte{0xa0}, // expected decoded result
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-				{
-					expected:   []byte{0xfe}, // expected decoded result
-					nbits:      8,
-					constraint: &Constraint{Lb: 0, Ub: 125},
-				},
-				{
-					expected:   []byte{0xec}, // expected decoded result
-					nbits:      6,
-					constraint: &Constraint{Lb: 0, Ub: 255},
-				},
-				{
-					expected:   []byte{0xd8}, // expected decoded result
-					nbits:      5,
-					constraint: &Constraint{Lb: 0, Ub: 555},
-				},
-			},
-		},
-		{
-			name:  "Group 2",
-			input: []byte{180},
-			tests: []struct {
-				name       string
-				expected   []byte
-				nbits      uint
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					expected:   []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-				{
-					expected:   []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-			},
-		},
-		{
-			name:  "Group 3",
-			input: []byte{182},
-			tests: []struct {
-				name       string
-				expected   []byte
-				nbits      uint
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					expected:   []byte{0xa0},
-					nbits:      3,
-					constraint: &Constraint{Lb: 3, Ub: 3},
-				},
-				{
-					expected:   []byte{0xb0},
-					nbits:      4,
-					constraint: &Constraint{Lb: 4, Ub: 4},
-				},
-			},
-		},
-	}
-	for _, group := range testGroups {
-		t.Run(group.name, func(t *testing.T) {
-			reader := NewReader(bytes.NewReader(group.input))
-			for _, tt := range group.tests {
-				t.Run(tt.name, func(t *testing.T) {
-					decodedBytes, _, err := reader.ReadBitString(tt.constraint, tt.extensible)
-					if err != nil {
-						t.Errorf("Error decoding: %v", err)
-					}
-					if !bytes.Equal(decodedBytes, tt.expected) {
-						t.Errorf("Decoded bitstring = %v, want %v", decodedBytes, tt.expected)
-					}
-				})
-			}
-		})
-	}
-}
 
 func TestWriteReadBitStringGroups(t *testing.T) {
 	testGroups := []struct {
@@ -500,16 +285,17 @@ func TestWriteReadBitStringGroups(t *testing.T) {
 	}
 }
 
-func TestWriteOctetStringGroup(t *testing.T) {
+func TestOctetStringEncodeDecode(t *testing.T) {
 	testGroups := []struct {
-		name  string
-		tests []struct {
+		name         string
+		tests        []struct {
 			name       string
 			content    []byte
 			constraint *Constraint
 			extensible bool
+			expected   []byte
 		}
-		expected []byte // Expected value after writing all tests in the group
+		expectedBytes []byte // Expected value after encoding
 	}{
 		{
 			name: "Group 1",
@@ -518,24 +304,28 @@ func TestWriteOctetStringGroup(t *testing.T) {
 				content    []byte
 				constraint *Constraint
 				extensible bool
+				expected   []byte
 			}{
 				{
-					content:    OctetString("a"),
+					content:    []byte("a"),
 					constraint: &Constraint{Lb: 1, Ub: 1},
 					extensible: true,
+					expected:   []byte("a"),
 				},
 				{
-					content:    OctetString("bcd"),
+					content:    []byte("bcd"),
 					constraint: &Constraint{Lb: 0, Ub: 20},
 					extensible: false,
+					expected:   []byte("bcd"),
 				},
 				{
-					content:    OctetString("ef"),
+					content:    []byte("ef"),
 					constraint: &Constraint{Lb: 2, Ub: 2},
 					extensible: false,
+					expected:   []byte("ef"),
 				},
 			},
-			expected: []byte("\x30\x8Cbcdef"),
+			expectedBytes: []byte("\x30\x8Cbcdef"),
 		},
 		{
 			name: "Group 2",
@@ -544,26 +334,29 @@ func TestWriteOctetStringGroup(t *testing.T) {
 				content    []byte
 				constraint *Constraint
 				extensible bool
+				expected   []byte
 			}{
 				{
 					content:    []byte("a"),
 					constraint: &Constraint{Lb: 1, Ub: 1},
 					extensible: true,
+					expected:   []byte("a"),
 				},
 				{
 					content:    []byte("abcdefgh"),
 					constraint: &Constraint{Lb: 0, Ub: 20},
 					extensible: false,
+					expected:   []byte("abcdefgh"),
 				},
 				{
 					content:    []byte("ij"),
 					constraint: &Constraint{Lb: 2, Ub: 2},
 					extensible: false,
+					expected:   []byte("ij"),
 				},
 			},
-			expected: []byte("\x30\xA0abcdefghij"),
+			expectedBytes: []byte("\x30\xA0abcdefghij"),
 		},
-
 		{
 			name: "Group 3",
 			tests: []struct {
@@ -571,28 +364,34 @@ func TestWriteOctetStringGroup(t *testing.T) {
 				content    []byte
 				constraint *Constraint
 				extensible bool
+				expected   []byte
 			}{
 				{
 					content:    []byte("a"),
 					constraint: &Constraint{Lb: 1, Ub: 1},
 					extensible: true,
+					expected:   []byte("a"),
 				},
 				{
 					content:    []byte(""),
 					constraint: &Constraint{Lb: 0, Ub: 20},
 					extensible: false,
+					expected:   []byte(""),
 				},
 				{
 					content:    []byte("bc"),
 					constraint: &Constraint{Lb: 2, Ub: 2},
 					extensible: false,
+					expected:   []byte("bc"),
 				},
 			},
-			expected: []byte("\x30\x81\x89\x8C"),
+			expectedBytes: []byte("\x30\x81\x89\x8C"),
 		},
 	}
+
 	for _, group := range testGroups {
 		t.Run(group.name, func(t *testing.T) {
+			// 1. Encode octet strings
 			buf := new(bytes.Buffer)
 			writer := NewWriter(buf)
 			for _, tt := range group.tests {
@@ -604,106 +403,14 @@ func TestWriteOctetStringGroup(t *testing.T) {
 				})
 			}
 			writer.flush()
-			if !bytes.Equal(buf.Bytes(), group.expected) {
-				t.Errorf("Final buffer = %v, want %v", buf.Bytes(), group.expected)
-			}
-		})
-	}
-}
-func TestReadOctetStringGroup(t *testing.T) {
-	testGroups := []struct {
-		name  string
-		input []byte // Encoded input to decode
-		tests []struct {
-			name       string
-			constraint *Constraint
-			extensible bool
-			expected   []byte // Expected decoded octet string
-		}
-	}{
-		{
-			name:  "Group 1",
-			input: []byte("\x30\x8Cbcdef"),
-			tests: []struct {
-				name       string
-				constraint *Constraint
-				extensible bool
-				expected   []byte
-			}{
-				{
-					constraint: &Constraint{Lb: 1, Ub: 1},
-					extensible: true,
-					expected:   []byte("a"),
-				},
-				{
-					constraint: &Constraint{Lb: 0, Ub: 20},
-					extensible: false,
-					expected:   []byte("bcd"),
-				},
-				{
-					constraint: &Constraint{Lb: 2, Ub: 2},
-					extensible: false,
-					expected:   []byte("ef"),
-				},
-			},
-		},
-		{
-			name:  "Group 2",
-			input: []byte("\x30\xA0abcdefghij"),
-			tests: []struct {
-				name       string
-				constraint *Constraint
-				extensible bool
-				expected   []byte
-			}{
-				{
-					constraint: &Constraint{Lb: 1, Ub: 1},
-					extensible: true,
-					expected:   []byte("a"),
-				},
-				{
-					constraint: &Constraint{Lb: 0, Ub: 20},
-					extensible: false,
-					expected:   []byte("abcdefgh"),
-				},
-				{
-					constraint: &Constraint{Lb: 2, Ub: 2},
-					extensible: false,
-					expected:   []byte("ij"),
-				},
-			},
-		},
-		{
-			name:  "Group 3",
-			input: []byte("\x30\x81\x89\x8C"),
-			tests: []struct {
-				name       string
-				constraint *Constraint
-				extensible bool
-				expected   []byte
-			}{
-				{
-					constraint: &Constraint{Lb: 1, Ub: 1},
-					extensible: true,
-					expected:   []byte("a"),
-				},
-				{
-					constraint: &Constraint{Lb: 0, Ub: 20},
-					extensible: false,
-					expected:   []byte(""),
-				},
-				{
-					constraint: &Constraint{Lb: 2, Ub: 2},
-					extensible: false,
-					expected:   []byte("bc"),
-				},
-			},
-		},
-	}
 
-	for _, group := range testGroups {
-		t.Run(group.name, func(t *testing.T) {
-			reader := NewReader(bytes.NewReader(group.input))
+			// 2. Verify the encoded result
+			if !bytes.Equal(buf.Bytes(), group.expectedBytes) {
+				t.Errorf("Encoded buffer = %v, want %v", buf.Bytes(), group.expectedBytes)
+			}
+
+			// 3. Decode and compare with expected values
+			reader := NewReader(bytes.NewReader(buf.Bytes()))
 			for _, tt := range group.tests {
 				t.Run(tt.name, func(t *testing.T) {
 					decoded, err := reader.ReadOctetString(tt.constraint, tt.extensible)
@@ -719,15 +426,17 @@ func TestReadOctetStringGroup(t *testing.T) {
 	}
 }
 
-func TestWriteInteger(t *testing.T) {
+
+func TestIntegerEncodeDecode(t *testing.T) {
 	testGroups := []struct {
-		name  string
-		tests []struct {
+		name         string
+		tests        []struct {
 			value      int64
 			constraint *Constraint
 			extensible bool
+			expected   int64
 		}
-		expected []byte // Expected value after writing all tests in the group
+		expectedBytes []byte // Expected bytes after encoding all tests in the group
 	}{
 		{
 			name: "Group 1",
@@ -735,89 +444,58 @@ func TestWriteInteger(t *testing.T) {
 				value      int64
 				constraint *Constraint
 				extensible bool
+				expected   int64
 			}{
 				{
 					value:      45,
 					constraint: &Constraint{Lb: 1, Ub: 110},
 					extensible: false,
+					expected:   45,
 				},
 				{
 					value:      123,
 					constraint: &Constraint{Lb: 0, Ub: 255},
 					extensible: false,
+					expected:   123,
 				},
 				{
 					value:      6445,
 					constraint: &Constraint{Lb: 0, Ub: 255},
 					extensible: true,
+					expected:   6445,
 				},
 			},
-			expected: []byte{0x58, 0x7B, 0x80, 0x02, 0x19, 0x2D},
+			expectedBytes: []byte{0x58, 0x7B, 0x80, 0x02, 0x19, 0x2D},
 		},
 	}
 
 	for _, group := range testGroups {
-		buf := new(bytes.Buffer)
-		writer := NewWriter(buf)
 		t.Run(group.name, func(t *testing.T) {
-
+			// 1. Encode integers
+			buf := new(bytes.Buffer)
+			writer := NewWriter(buf)
 			for _, tt := range group.tests {
-				_ = writer.WriteInteger(tt.value, tt.constraint, tt.extensible)
-
+				t.Run(fmt.Sprintf("Value=%d", tt.value), func(t *testing.T) {
+					err := writer.WriteInteger(tt.value, tt.constraint, tt.extensible)
+					if err != nil {
+						t.Errorf("WriteInteger() error = %v", err)
+					}
+				})
 			}
 			writer.flush()
-			if !bytes.Equal(buf.Bytes(), group.expected) {
-				t.Errorf("Final buffer = %v, want %v", buf.Bytes(), group.expected)
+
+			// 2. Verify the encoded result
+			if !bytes.Equal(buf.Bytes(), group.expectedBytes) {
+				t.Errorf("Encoded buffer = %v, want %v", buf.Bytes(), group.expectedBytes)
 			}
-		})
-	}
-}
 
-func TestReadInteger(t *testing.T) {
-	testGroups := []struct {
-		name  string
-		input []byte // Input data for decoding
-		tests []struct {
-			expected   int64 // Expected decoded value
-			constraint *Constraint
-			extensible bool
-		}
-	}{
-		{
-			name:  "Group 1",
-			input: []byte{0x58, 0x7B, 0x80, 0x02, 0x19, 0x2D},
-			tests: []struct {
-				expected   int64
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					expected:   45,
-					constraint: &Constraint{Lb: 1, Ub: 110},
-					extensible: false,
-				},
-				{
-					expected:   123,
-					constraint: &Constraint{Lb: 0, Ub: 255},
-					extensible: false,
-				},
-				{
-					expected:   6445,
-					constraint: &Constraint{Lb: 0, Ub: 255},
-					extensible: true,
-				},
-			},
-		},
-	}
-
-	for _, group := range testGroups {
-		t.Run(group.name, func(t *testing.T) {
-			reader := NewReader(bytes.NewReader(group.input))
+			// 3. Decode and compare with expected values
+			reader := NewReader(bytes.NewReader(buf.Bytes()))
 			for _, tt := range group.tests {
 				t.Run(fmt.Sprintf("Expected=%d", tt.expected), func(t *testing.T) {
 					decoded, err := reader.ReadInteger(tt.constraint, tt.extensible)
 					if err != nil {
-						t.Errorf("Error decoding: %v", err)
+						t.Errorf("ReadInteger() error = %v", err)
 					}
 					if decoded != tt.expected {
 						t.Errorf("Decoded value = %d, want %d", decoded, tt.expected)
@@ -827,160 +505,102 @@ func TestReadInteger(t *testing.T) {
 		})
 	}
 }
-
-
-func TestReadEnumerate(t *testing.T) {
-	fmt.Printf("Test ReadEnumerate\n")
+func TestEnumerateEncodeDecode(t *testing.T) {
 	testGroups := []struct {
-		name  string
-		input []byte // Input data for decoding
-		tests []struct {
-			expected   uint64 // Expected decoded value
+		name         string
+		tests        []struct {
+			value      uint64
 			constraint *Constraint
 			extensible bool
+			expected   uint64
 		}
+		expectedBytes []byte // Expected bytes after encoding all tests in the group
 	}{
 		{
 			name: "Group 1 - Definite Range",
-			//input: []byte{0x00, 0x40}, // Input data for enumTest1
-			//NOTE:the above input is composed from the two inputs of the 2 test
-			//cases in free5gc and it is not correct becuase enumerate value
-			//may take a few bits (<8)
-			input: []byte{4}, // Input data for enumTest1
 			tests: []struct {
-				expected   uint64
+				value      uint64
 				constraint *Constraint
 				extensible bool
+				expected   uint64
 			}{
 				{
-					expected:   0,
+					value:      0,
 					constraint: &Constraint{Lb: 0, Ub: 3},
 					extensible: false,
+					expected:   0,
 				},
 				{
-					expected:   1,
+					value:      1,
 					constraint: &Constraint{Lb: 0, Ub: 3},
 					extensible: false,
+					expected:   1,
 				},
 			},
+			expectedBytes: []byte{4},
 		},
 		{
 			name: "Group 2 - With Extension",
-			//input: []byte{0x10, 0x20}, // Input data for enumTest2
-			//NOTE: similarly, the above input is not correct
-
-			input: []byte{18}, // Input data for enumTest2
 			tests: []struct {
-				expected   uint64
+				value      uint64
 				constraint *Constraint
 				extensible bool
+				expected   uint64
 			}{
 				{
-					expected:   1,
+					value:      1,
 					constraint: &Constraint{Lb: 0, Ub: 4},
 					extensible: true,
+					expected:   1,
 				},
 				{
-					expected:   2,
+					value:      2,
 					constraint: &Constraint{Lb: 0, Ub: 4},
 					extensible: true,
+					expected:   2,
 				},
 			},
+			expectedBytes: []byte{18},
 		},
 	}
 
 	for _, group := range testGroups {
 		t.Run(group.name, func(t *testing.T) {
-			reader := NewReader(bytes.NewReader(group.input))
+			// 1. Encode enumerate values
+			buf := new(bytes.Buffer)
+			writer := NewWriter(buf)
 			for _, tt := range group.tests {
-				t.Run(fmt.Sprintf("Expected=%d", tt.expected), func(t *testing.T) {
-					decoded, err := reader.ReadEnumerate(*tt.constraint, tt.extensible)
-					if err != nil {
-						t.Errorf("Error decoding: %v", err)
-					}
-					if decoded != tt.expected {
-						t.Errorf("Decoded value = %d, want %d", decoded, tt.expected)
-					}
-				})
-			}
-		})
-	}
-}
-
-func TestWriteEnumerate(t *testing.T) {
-	fmt.Printf("Test WriteEnumerate\n")
-	testGroups := []struct {
-		name  string
-		input []byte // Input data for decoding
-		tests []struct {
-			expected   uint64 // Expected decoded value
-			constraint *Constraint
-			extensible bool
-		}
-	}{
-		{
-			name: "Group 1 - Definite Range",
-			//input: []byte{0x00, 0x40}, // Input data for enumTest1
-			input: []byte{4}, // Input data for enumTest1
-			tests: []struct {
-				expected   uint64
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					expected:   0,
-					constraint: &Constraint{Lb: 0, Ub: 3},
-					extensible: false,
-				},
-				{
-					expected:   1,
-					constraint: &Constraint{Lb: 0, Ub: 3},
-					extensible: false,
-				},
-			},
-		},
-		{
-			name: "Group 2 - With Extension",
-			//input: []byte{0x10, 0x20}, // Input data for enumTest2
-			input: []byte{18}, // Input data for enumTest2
-			tests: []struct {
-				expected   uint64
-				constraint *Constraint
-				extensible bool
-			}{
-				{
-					expected:   1,
-					constraint: &Constraint{Lb: 0, Ub: 4},
-					extensible: true,
-				},
-				{
-					expected:   2,
-					constraint: &Constraint{Lb: 0, Ub: 4},
-					extensible: true,
-				},
-			},
-		},
-	}
-
-	for _, group := range testGroups {
-		t.Run(group.name, func(t *testing.T) {
-			var buf bytes.Buffer
-			writer := NewWriter(&buf)
-			for _, tt := range group.tests {
-				t.Run(fmt.Sprintf("Expected=%d", tt.expected), func(t *testing.T) {
-					if err := writer.WriteEnumerate(tt.expected, *tt.constraint, tt.extensible); err != nil {
-						t.Errorf("Error encoding: %v", err)
+				t.Run(fmt.Sprintf("Value=%d", tt.value), func(t *testing.T) {
+					if err := writer.WriteEnumerate(tt.value, *tt.constraint, tt.extensible); err != nil {
+						t.Errorf("WriteEnumerate() error = %v", err)
 					}
 				})
 			}
 			writer.Close()
-			if !bytes.Equal(buf.Bytes(), group.input) {
-				t.Errorf("ouput = %v, want %v", buf.Bytes(), group.input)
+
+			// 2. Verify the encoded result
+			if !bytes.Equal(buf.Bytes(), group.expectedBytes) {
+				t.Errorf("Encoded buffer = %v, want %v", buf.Bytes(), group.expectedBytes)
 			}
 
+			// 3. Decode and compare with expected values
+			reader := NewReader(bytes.NewReader(buf.Bytes()))
+			for _, tt := range group.tests {
+				t.Run(fmt.Sprintf("Expected=%d", tt.expected), func(t *testing.T) {
+					decoded, err := reader.ReadEnumerate(*tt.constraint, tt.extensible)
+					if err != nil {
+						t.Errorf("ReadEnumerate() error = %v", err)
+					}
+					if decoded != tt.expected {
+						t.Errorf("Decoded value = %d, want %d", decoded, tt.expected)
+					}
+				})
+			}
 		})
 	}
 }
+
+
 
 type TestItem struct {
 	id     int64
@@ -993,20 +613,40 @@ type TestItem2 struct {
 	region []byte 
 }
 
+func (item *TestItem2) Encode(aw *AperWriter) error {
+	if err := aw.WriteInteger(item.id, nil, false); err != nil {
+		return err
+	}
+	if err := aw.WriteBitString(item.region, 3, &Constraint{Lb: 3, Ub: 3}, false); err != nil {
+		return err
+	}
+	return  nil
+}
+
+func (item *TestItem2) Decode(aw *AperReader) error {
+	id, err := aw.ReadInteger(nil, false)
+	if err != nil {
+		return err
+	}else{
+		item.id = id
+	}
+
+	item.region, _, err = aw.ReadBitString(&Constraint{Lb: 3, Ub: 3}, false)
+	if err != nil {
+		return err
+	}
+	return  nil
+}
+
 func (item *TestItem) Encode(aw *AperWriter) error {
 	if err := aw.WriteInteger(item.id, nil, false); err != nil {
 		return err
 	}
-
 	if err := aw.WriteBitString(item.region, 8, &Constraint{Lb: 0, Ub: 125}, false); err != nil {
 		return err
 	}
-
-	if err := aw.WriteInteger(item.item2.id, nil, false); err != nil {
-		return err
-	}
-
-	return aw.WriteBitString(item.item2.region, 3, &Constraint{Lb: 3, Ub: 3}, false)
+	item.item2.Encode(aw)
+	return  nil
 }
 
 func (item *TestItem) Decode(aw *AperReader) error {
@@ -1015,18 +655,11 @@ func (item *TestItem) Decode(aw *AperReader) error {
 	if err != nil {
 		return err
 	}
-
 	item.region, _, err = aw.ReadBitString(&Constraint{Lb: 0, Ub: 125}, false)
 	if err != nil {
 		return err
 	}
-
-	item.item2.id, err = aw.ReadInteger(nil, false)
-	if err != nil {
-		return err
-	}
-
-	item.item2.region, _, err = aw.ReadBitString(&Constraint{Lb: 3, Ub: 3}, false)
+	item.item2.Decode(aw)
 	return err
 }
 
