@@ -1,0 +1,351 @@
+
+
+-- **************************************************************
+--
+-- Interface Elementary Procedures
+--
+-- **************************************************************
+
+aMFConfigurationUpdate NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE AMFConfigurationUpdate
+ SUCCESSFULOUTCOME AMFConfigurationUpdateAcknowledge
+ UNSUCCESSFULOUTCOME AMFConfigurationUpdateFailure
+ PROCEDURECODE id-AMFConfigurationUpdate
+ CRITICALITY reject
+}
+
+aMFStatusIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE AMFStatusIndication
+ PROCEDURECODE id-AMFStatusIndication
+ CRITICALITY ignore
+}
+
+cellTrafficTrace NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE CellTrafficTrace
+ PROCEDURECODE id-CellTrafficTrace
+ CRITICALITY ignore
+}
+
+deactivateTrace NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE DeactivateTrace
+ PROCEDURECODE id-DeactivateTrace
+ CRITICALITY ignore
+}
+
+downlinkNASTransport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE DownlinkNASTransport
+ PROCEDURECODE id-DownlinkNASTransport
+ CRITICALITY ignore
+}
+
+downlinkNonUEAssociatedNRPPaTransport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE DownlinkNonUEAssociatedNRPPaTransport
+ PROCEDURECODE id-DownlinkNonUEAssociatedNRPPaTransport
+ CRITICALITY ignore
+}
+
+downlinkRANConfigurationTransfer NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE DownlinkRANConfigurationTransfer
+ PROCEDURECODE id-DownlinkRANConfigurationTransfer
+ CRITICALITY ignore
+}
+
+downlinkRANStatusTransfer NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE DownlinkRANStatusTransfer
+ PROCEDURECODE id-DownlinkRANStatusTransfer
+ CRITICALITY ignore
+}
+
+downlinkUEAssociatedNRPPaTransport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE DownlinkUEAssociatedNRPPaTransport
+ PROCEDURECODE id-DownlinkUEAssociatedNRPPaTransport
+ CRITICALITY ignore
+}
+
+errorIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE ErrorIndication
+ PROCEDURECODE id-ErrorIndication
+ CRITICALITY ignore
+}
+
+handoverCancel NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE HandoverCancel
+ SUCCESSFULOUTCOME HandoverCancelAcknowledge
+ PROCEDURECODE id-HandoverCancel
+ CRITICALITY reject
+}
+
+handoverNotification NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE HandoverNotify
+ PROCEDURECODE id-HandoverNotification
+ CRITICALITY ignore
+}
+
+handoverPreparation NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE HandoverRequired
+ SUCCESSFULOUTCOME HandoverCommand
+ UNSUCCESSFULOUTCOME HandoverPreparationFailure
+ PROCEDURECODE id-HandoverPreparation
+ CRITICALITY reject
+}
+
+handoverResourceAllocation NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE HandoverRequest
+ SUCCESSFULOUTCOME HandoverRequestAcknowledge
+ UNSUCCESSFULOUTCOME HandoverFailure
+ PROCEDURECODE id-HandoverResourceAllocation
+ CRITICALITY reject
+}
+
+initialContextSetup NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE InitialContextSetupRequest
+ SUCCESSFULOUTCOME InitialContextSetupResponse
+ UNSUCCESSFULOUTCOME InitialContextSetupFailure
+ PROCEDURECODE id-InitialContextSetup
+ CRITICALITY reject
+}
+
+initialUEMessage NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE InitialUEMessage
+ PROCEDURECODE id-InitialUEMessage
+ CRITICALITY ignore
+}
+
+locationReport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE LocationReport
+ PROCEDURECODE id-LocationReport
+ CRITICALITY ignore
+}
+
+locationReportingControl NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE LocationReportingControl
+ PROCEDURECODE id-LocationReportingControl
+ CRITICALITY ignore
+}
+
+locationReportingFailureIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE LocationReportingFailureIndication
+ PROCEDURECODE id-LocationReportingFailureIndication
+ CRITICALITY ignore
+}
+
+nASNonDeliveryIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE NASNonDeliveryIndication
+ PROCEDURECODE id-NASNonDeliveryIndication
+ CRITICALITY ignore
+}
+
+nGReset NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE NGReset
+ SUCCESSFULOUTCOME NGResetAcknowledge
+ PROCEDURECODE id-NGReset
+ CRITICALITY reject
+}
+
+nGSetup NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE NGSetupRequest
+ SUCCESSFULOUTCOME NGSetupResponse
+ UNSUCCESSFULOUTCOME NGSetupFailure
+ PROCEDURECODE id-NGSetup
+ CRITICALITY reject
+}
+
+overloadStart NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE OverloadStart
+ PROCEDURECODE id-OverloadStart
+ CRITICALITY ignore
+}
+
+overloadStop NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE OverloadStop
+ PROCEDURECODE id-OverloadStop
+ CRITICALITY reject
+}
+
+paging NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE Paging
+ PROCEDURECODE id-Paging
+ CRITICALITY ignore
+}
+
+pathSwitchRequest NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PathSwitchRequest
+ SUCCESSFULOUTCOME PathSwitchRequestAcknowledge
+ UNSUCCESSFULOUTCOME PathSwitchRequestFailure
+ PROCEDURECODE id-PathSwitchRequest
+ CRITICALITY reject
+}
+
+pDUSessionResourceModify NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PDUSessionResourceModifyRequest
+ SUCCESSFULOUTCOME PDUSessionResourceModifyResponse
+ PROCEDURECODE id-PDUSessionResourceModify
+ CRITICALITY reject
+}
+
+pDUSessionResourceModifyIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PDUSessionResourceModifyIndication
+ SUCCESSFULOUTCOME PDUSessionResourceModifyConfirm
+ PROCEDURECODE id-PDUSessionResourceModifyIndication
+ CRITICALITY reject
+}
+
+pDUSessionResourceNotify NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PDUSessionResourceNotify
+ PROCEDURECODE id-PDUSessionResourceNotify
+ CRITICALITY ignore
+}
+
+pDUSessionResourceRelease NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PDUSessionResourceReleaseCommand
+ SUCCESSFULOUTCOME PDUSessionResourceReleaseResponse
+ PROCEDURECODE id-PDUSessionResourceRelease
+ CRITICALITY reject
+}
+
+pDUSessionResourceSetup NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PDUSessionResourceSetupRequest
+ SUCCESSFULOUTCOME PDUSessionResourceSetupResponse
+ PROCEDURECODE id-PDUSessionResourceSetup
+ CRITICALITY reject
+}
+
+privateMessage NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PrivateMessage
+ PROCEDURECODE id-PrivateMessage
+ CRITICALITY ignore
+}
+
+pWSCancel NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PWSCancelRequest
+ SUCCESSFULOUTCOME PWSCancelResponse
+ PROCEDURECODE id-PWSCancel
+ CRITICALITY reject
+}
+
+pWSFailureIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PWSFailureIndication
+ PROCEDURECODE id-PWSFailureIndication
+ CRITICALITY ignore
+}
+
+pWSRestartIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE PWSRestartIndication
+ PROCEDURECODE id-PWSRestartIndication
+ CRITICALITY ignore
+}
+
+rANConfigurationUpdate NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE RANConfigurationUpdate
+ SUCCESSFULOUTCOME RANConfigurationUpdateAcknowledge
+ UNSUCCESSFULOUTCOME RANConfigurationUpdateFailure
+ PROCEDURECODE id-RANConfigurationUpdate
+ CRITICALITY reject
+}
+
+rerouteNASRequest NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE RerouteNASRequest
+ PROCEDURECODE id-RerouteNASRequest
+ CRITICALITY reject
+}
+
+rRCInactiveTransitionReport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE RRCInactiveTransitionReport
+ PROCEDURECODE id-RRCInactiveTransitionReport
+ CRITICALITY ignore
+}
+
+secondaryRATDataUsageReport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE SecondaryRATDataUsageReport
+ PROCEDURECODE id-SecondaryRATDataUsageReport
+ CRITICALITY ignore
+}
+
+traceFailureIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE TraceFailureIndication
+ PROCEDURECODE id-TraceFailureIndication
+ CRITICALITY ignore
+}
+
+traceStart NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE TraceStart
+ PROCEDURECODE id-TraceStart
+ CRITICALITY ignore
+}
+
+uEContextModification NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UEContextModificationRequest
+ SUCCESSFULOUTCOME UEContextModificationResponse
+ UNSUCCESSFULOUTCOME UEContextModificationFailure
+ PROCEDURECODE id-UEContextModification
+ CRITICALITY reject
+}
+
+uEContextRelease NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UEContextReleaseCommand
+ SUCCESSFULOUTCOME UEContextReleaseComplete
+ PROCEDURECODE id-UEContextRelease
+ CRITICALITY reject
+}
+
+uEContextReleaseRequest NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UEContextReleaseRequest
+ PROCEDURECODE id-UEContextReleaseRequest
+ CRITICALITY ignore
+}
+
+uERadioCapabilityCheck NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UERadioCapabilityCheckRequest
+ SUCCESSFULOUTCOME UERadioCapabilityCheckResponse
+ PROCEDURECODE id-UERadioCapabilityCheck
+ CRITICALITY reject
+}
+
+uERadioCapabilityInfoIndication NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UERadioCapabilityInfoIndication
+ PROCEDURECODE id-UERadioCapabilityInfoIndication
+ CRITICALITY ignore
+}
+
+uETNLABindingRelease NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UETNLABindingReleaseRequest
+ PROCEDURECODE id-UETNLABindingRelease
+ CRITICALITY ignore
+}
+
+uplinkNASTransport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UplinkNASTransport
+ PROCEDURECODE id-UplinkNASTransport
+ CRITICALITY ignore
+}
+
+uplinkNonUEAssociatedNRPPaTransport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UplinkNonUEAssociatedNRPPaTransport
+ PROCEDURECODE id-UplinkNonUEAssociatedNRPPaTransport
+ CRITICALITY ignore
+}
+
+uplinkRANConfigurationTransfer NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UplinkRANConfigurationTransfer
+ PROCEDURECODE id-UplinkRANConfigurationTransfer
+ CRITICALITY ignore
+}
+
+uplinkRANStatusTransfer NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UplinkRANStatusTransfer
+ PROCEDURECODE id-UplinkRANStatusTransfer
+ CRITICALITY ignore
+}
+
+uplinkUEAssociatedNRPPaTransport NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE UplinkUEAssociatedNRPPaTransport
+ PROCEDURECODE id-UplinkUEAssociatedNRPPaTransport
+ CRITICALITY ignore
+}
+
+writeReplaceWarning NGAP-ELEMENTARY-PROCEDURE ::= {
+ INITIATINGMESSAGE WriteReplaceWarningRequest
+ SUCCESSFULOUTCOME WriteReplaceWarningResponse
+ PROCEDURECODE id-WriteReplaceWarning
+ CRITICALITY reject
+}
