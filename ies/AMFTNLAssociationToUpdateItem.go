@@ -1,0 +1,66 @@
+package ies
+
+import "github.com/lvdund/ngap/aper"
+
+type AMFTNLAssociationToUpdateItem struct {
+	AMFTNLAssociationAddress *CPTransportLayerInformation `False,`
+	TNLAssociationUsage      *TNLAssociationUsage         `False,OPTIONAL`
+	TNLAddressWeightFactor   *TNLAddressWeightFactor      `False,OPTIONAL`
+	// IEExtensions AMFTNLAssociationToUpdateItemExtIEs `False,OPTIONAL`
+}
+
+func (ie *AMFTNLAssociationToUpdateItem) Encode(w *aper.AperWriter) (err error) {
+	if err = w.WriteBool(aper.One); err != nil {
+		return
+	}
+	optionals := []byte{0x0}
+	if ie.TNLAssociationUsage != nil {
+		aper.SetBit(optionals, 1)
+	}
+	if ie.TNLAddressWeightFactor != nil {
+		aper.SetBit(optionals, 2)
+	}
+	w.WriteBits(optionals, 3)
+	if ie.AMFTNLAssociationAddress != nil {
+		if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
+			return
+		}
+	}
+	if ie.TNLAssociationUsage != nil {
+		if err = ie.TNLAssociationUsage.Encode(w); err != nil {
+			return
+		}
+	}
+	if ie.TNLAddressWeightFactor != nil {
+		if err = ie.TNLAddressWeightFactor.Encode(w); err != nil {
+			return
+		}
+	}
+	return
+}
+func (ie *AMFTNLAssociationToUpdateItem) Decode(r *aper.AperReader) (err error) {
+	if _, err = r.ReadBool(); err != nil {
+		return
+	}
+	var optionals []byte
+	if optionals, err = r.ReadBits(3); err != nil {
+		return
+	}
+	ie.AMFTNLAssociationAddress = new(CPTransportLayerInformation)
+	ie.TNLAssociationUsage = new(TNLAssociationUsage)
+	ie.TNLAddressWeightFactor = new(TNLAddressWeightFactor)
+	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
+		return
+	}
+	if aper.IsBitSet(optionals, 2) {
+		if err = ie.TNLAssociationUsage.Decode(r); err != nil {
+			return
+		}
+	}
+	if aper.IsBitSet(optionals, 3) {
+		if err = ie.TNLAddressWeightFactor.Decode(r); err != nil {
+			return
+		}
+	}
+	return
+}
