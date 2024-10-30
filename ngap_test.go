@@ -8,6 +8,7 @@ import (
 
 	"github.com/lvdund/ngap/aper"
 	"github.com/lvdund/ngap/ies"
+	"github.com/lvdund/ngap/utils"
 )
 
 func TestDecodeUeRanSim(t *testing.T) {
@@ -25,7 +26,7 @@ func TestDecodeUeRanSim(t *testing.T) {
 			msg := decode.Message.Msg.(*ies.NGSetupRequest)
 			fmt.Printf("Message rannodename %s\n", msg.RANNodeName.Value)
 			fmt.Println("Message GlobalRanNodeId:", msg.GlobalRANNodeID)
-			mcc, mnc := ies.PlmnidToMccMnc(msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+			mcc, mnc := utils.PlmnidToMccMnc(msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
 			fmt.Println("Message PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
 		}
 	}
