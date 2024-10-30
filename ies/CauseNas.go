@@ -2,6 +2,13 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	CauseNasPresentNormalRelease         aper.Enumerated = 0
+	CauseNasPresentAuthenticationFailure aper.Enumerated = 1
+	CauseNasPresentDeregister            aper.Enumerated = 2
+	CauseNasPresentUnspecified           aper.Enumerated = 3
+)
+
 type CauseNas struct {
 	Value aper.Enumerated `True,0,4`
 }

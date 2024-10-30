@@ -2,6 +2,11 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	CauseTransportPresentTransportResourceUnavailable aper.Enumerated = 0
+	CauseTransportPresentUnspecified                  aper.Enumerated = 1
+)
+
 type CauseTransport struct {
 	Value aper.Enumerated `True,0,2`
 }

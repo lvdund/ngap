@@ -2,6 +2,16 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	CausePresentNothing int = iota /* No components present */
+	CausePresentRadioNetwork
+	CausePresentTransport
+	CausePresentNas
+	CausePresentProtocol
+	CausePresentMisc
+	CausePresentChoiceExtensions
+)
+
 type Cause struct {
 	Choice       uint64
 	RadioNetwork *CauseRadioNetwork `False,,,`
