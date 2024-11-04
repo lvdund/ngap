@@ -7,6 +7,25 @@ import (
 	"testing"
 )
 
+func Test_Choice(t *testing.T) {
+	buf := new(bytes.Buffer)
+	w := NewWriter(buf)
+	if err := w.WriteChoice(7, 7, false); err != nil {
+		t.Fatalf("WriteChoice error %+v", err)
+		return
+	}
+	if err := w.flush(); err != nil {
+		t.Fatalf("Flush error %+v", err)
+	}
+	fmt.Printf("== %.8b %v\n", buf.Bytes(), buf.Bytes())
+	r := NewReader(buf)
+	if c, err := r.ReadChoice(7, false); err != nil {
+		t.Fatalf("ReadChoice error %+v", err)
+	} else {
+		fmt.Println(c)
+	}
+}
+
 func Test_WriteInteger(t *testing.T) {
 	buf := new(bytes.Buffer)
 	w := NewWriter(buf)
@@ -312,8 +331,8 @@ func TestWriteReadBitStringGroups(t *testing.T) {
 
 func TestOctetStringEncodeDecode(t *testing.T) {
 	testGroups := []struct {
-		name         string
-		tests        []struct {
+		name  string
+		tests []struct {
 			name       string
 			content    []byte
 			constraint *Constraint
@@ -451,11 +470,10 @@ func TestOctetStringEncodeDecode(t *testing.T) {
 	}
 }
 
-
 func TestIntegerEncodeDecode(t *testing.T) {
 	testGroups := []struct {
-		name         string
-		tests        []struct {
+		name  string
+		tests []struct {
 			value      int64
 			constraint *Constraint
 			extensible bool
@@ -532,8 +550,8 @@ func TestIntegerEncodeDecode(t *testing.T) {
 }
 func TestEnumerateEncodeDecode(t *testing.T) {
 	testGroups := []struct {
-		name         string
-		tests        []struct {
+		name  string
+		tests []struct {
 			value      uint64
 			constraint *Constraint
 			extensible bool
@@ -625,17 +643,15 @@ func TestEnumerateEncodeDecode(t *testing.T) {
 	}
 }
 
-
-
 type TestItem struct {
 	id     int64
-	region []byte 
+	region []byte
 	item2  TestItem2
 }
 
 type TestItem2 struct {
 	id     int64
-	region []byte 
+	region []byte
 }
 
 func (item *TestItem2) Encode(aw *AperWriter) error {
@@ -645,14 +661,14 @@ func (item *TestItem2) Encode(aw *AperWriter) error {
 	if err := aw.WriteBitString(item.region, 3, &Constraint{Lb: 3, Ub: 3}, false); err != nil {
 		return err
 	}
-	return  nil
+	return nil
 }
 
 func (item *TestItem2) Decode(aw *AperReader) error {
 	id, err := aw.ReadInteger(nil, false)
 	if err != nil {
 		return err
-	}else{
+	} else {
 		item.id = id
 	}
 
@@ -660,7 +676,7 @@ func (item *TestItem2) Decode(aw *AperReader) error {
 	if err != nil {
 		return err
 	}
-	return  nil
+	return nil
 }
 
 func (item *TestItem) Encode(aw *AperWriter) error {
@@ -671,7 +687,7 @@ func (item *TestItem) Encode(aw *AperWriter) error {
 		return err
 	}
 	item.item2.Encode(aw)
-	return  nil
+	return nil
 }
 
 func (item *TestItem) Decode(aw *AperReader) error {

@@ -2,6 +2,12 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	UEPagingIdentityPresentNothing uint64 = iota /* No components present */
+	UEPagingIdentityPresentFiveGSTMSI
+	UEPagingIdentityPresentChoiceExtensions
+)
+
 type UEPagingIdentity struct {
 	Choice     uint64
 	FiveGSTMSI *FiveGSTMSI `True,,,`
@@ -9,21 +15,21 @@ type UEPagingIdentity struct {
 }
 
 func (ie *UEPagingIdentity) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case UEPagingIdentityPresentFiveGSTMSI:
 		err = ie.FiveGSTMSI.Encode(w)
 	}
 	return
 }
 func (ie *UEPagingIdentity) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case UEPagingIdentityPresentFiveGSTMSI:
 		var tmp FiveGSTMSI
 		if err = tmp.Decode(r); err != nil {
 			return

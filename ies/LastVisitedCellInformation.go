@@ -2,6 +2,15 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	LastVisitedCellInformationPresentNothing uint64 = iota /* No components present */
+	LastVisitedCellInformationPresentNGRANCell
+	LastVisitedCellInformationPresentEUTRANCell
+	LastVisitedCellInformationPresentUTRANCell
+	LastVisitedCellInformationPresentGERANCell
+	LastVisitedCellInformationPresentChoiceExtensions
+)
+
 type LastVisitedCellInformation struct {
 	Choice     uint64
 	NGRANCell  *LastVisitedNGRANCellInformation  `False,,,`
@@ -12,45 +21,45 @@ type LastVisitedCellInformation struct {
 }
 
 func (ie *LastVisitedCellInformation) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 5, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case LastVisitedCellInformationPresentNGRANCell:
 		err = ie.NGRANCell.Encode(w)
-	case 2:
+	case LastVisitedCellInformationPresentEUTRANCell:
 		err = ie.EUTRANCell.Encode(w)
-	case 3:
+	case LastVisitedCellInformationPresentUTRANCell:
 		err = ie.UTRANCell.Encode(w)
-	case 4:
+	case LastVisitedCellInformationPresentGERANCell:
 		err = ie.GERANCell.Encode(w)
 	}
 	return
 }
 func (ie *LastVisitedCellInformation) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(5, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case LastVisitedCellInformationPresentNGRANCell:
 		var tmp LastVisitedNGRANCellInformation
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NGRANCell = &tmp
-	case 2:
+	case LastVisitedCellInformationPresentEUTRANCell:
 		var tmp LastVisitedEUTRANCellInformation
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.EUTRANCell = &tmp
-	case 3:
+	case LastVisitedCellInformationPresentUTRANCell:
 		var tmp LastVisitedUTRANCellInformation
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.UTRANCell = &tmp
-	case 4:
+	case LastVisitedCellInformationPresentGERANCell:
 		var tmp LastVisitedGERANCellInformation
 		if err = tmp.Decode(r); err != nil {
 			return

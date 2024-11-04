@@ -1,6 +1,8 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+)
 
 type GlobalN3IWFID struct {
 	PLMNIdentity *PLMNIdentity `False,`

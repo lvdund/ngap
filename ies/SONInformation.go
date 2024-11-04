@@ -2,6 +2,13 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	SONInformationPresentNothing uint64 = iota /* No components present */
+	SONInformationPresentSONInformationRequest
+	SONInformationPresentSONInformationReply
+	SONInformationPresentChoiceExtensions
+)
+
 type SONInformation struct {
 	Choice                uint64
 	SONInformationRequest *SONInformationRequest `False,,,`
@@ -10,29 +17,29 @@ type SONInformation struct {
 }
 
 func (ie *SONInformation) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case SONInformationPresentSONInformationRequest:
 		err = ie.SONInformationRequest.Encode(w)
-	case 2:
+	case SONInformationPresentSONInformationReply:
 		err = ie.SONInformationReply.Encode(w)
 	}
 	return
 }
 func (ie *SONInformation) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case SONInformationPresentSONInformationRequest:
 		var tmp SONInformationRequest
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.SONInformationRequest = &tmp
-	case 2:
+	case SONInformationPresentSONInformationReply:
 		var tmp SONInformationReply
 		if err = tmp.Decode(r); err != nil {
 			return

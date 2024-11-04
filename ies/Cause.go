@@ -3,7 +3,7 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	CausePresentNothing int = iota /* No components present */
+	CausePresentNothing uint64 = iota /* No components present */
 	CausePresentRadioNetwork
 	CausePresentTransport
 	CausePresentNas
@@ -23,53 +23,53 @@ type Cause struct {
 }
 
 func (ie *Cause) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 6, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case CausePresentRadioNetwork:
 		err = ie.RadioNetwork.Encode(w)
-	case 2:
+	case CausePresentTransport:
 		err = ie.Transport.Encode(w)
-	case 3:
+	case CausePresentNas:
 		err = ie.Nas.Encode(w)
-	case 4:
+	case CausePresentProtocol:
 		err = ie.Protocol.Encode(w)
-	case 5:
+	case CausePresentMisc:
 		err = ie.Misc.Encode(w)
 	}
 	return
 }
 func (ie *Cause) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(6, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case CausePresentRadioNetwork:
 		var tmp CauseRadioNetwork
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.RadioNetwork = &tmp
-	case 2:
+	case CausePresentTransport:
 		var tmp CauseTransport
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.Transport = &tmp
-	case 3:
+	case CausePresentNas:
 		var tmp CauseNas
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.Nas = &tmp
-	case 4:
+	case CausePresentProtocol:
 		var tmp CauseProtocol
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.Protocol = &tmp
-	case 5:
+	case CausePresentMisc:
 		var tmp CauseMisc
 		if err = tmp.Decode(r); err != nil {
 			return

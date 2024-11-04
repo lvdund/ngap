@@ -123,7 +123,7 @@ func ReadSequenceOf[T any](decoder func(ar *AperReader) (*T, error), ar *AperRea
 	for i := 0; i < int(numElems); i++ {
 		//fmt.Println("SequenceOf", i)
 		if tmpItem, err = decoder(ar); err != nil {
-			fmt.Println("\terr")
+			fmt.Println("\terr", err)
 			return
 		}
 		//fmt.Printf("----------: %v", *tmpItem)

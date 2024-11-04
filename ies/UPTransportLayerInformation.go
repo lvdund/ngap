@@ -2,6 +2,12 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	UPTransportLayerInformationPresentNothing uint64 = iota /* No components present */
+	UPTransportLayerInformationPresentGTPTunnel
+	UPTransportLayerInformationPresentChoiceExtensions
+)
+
 type UPTransportLayerInformation struct {
 	Choice    uint64
 	GTPTunnel *GTPTunnel `True,,,`
@@ -9,21 +15,21 @@ type UPTransportLayerInformation struct {
 }
 
 func (ie *UPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case UPTransportLayerInformationPresentGTPTunnel:
 		err = ie.GTPTunnel.Encode(w)
 	}
 	return
 }
 func (ie *UPTransportLayerInformation) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case UPTransportLayerInformationPresentGTPTunnel:
 		var tmp GTPTunnel
 		if err = tmp.Decode(r); err != nil {
 			return

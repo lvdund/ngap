@@ -25,7 +25,7 @@ type GNbId struct {
 func RanIdToModels(ranNodeId ies.GlobalRANNodeID) (ranId GlobalRanNodeId) {
 	present := ranNodeId.Choice
 	switch present {
-	case 1:
+	case ies.GlobalRANNodeIDPresentGlobalGNBID:
 		ranId.GNbId = new(GNbId)
 		gnbId := ranId.GNbId
 		ngapGnbId := ranNodeId.GlobalGNBID
@@ -36,7 +36,7 @@ func RanIdToModels(ranNodeId ies.GlobalRANNodeID) (ranId GlobalRanNodeId) {
 			gnbId.BitLength = int32(choiceGnbId.NumBits)
 			gnbId.GNBValue = BitStringToHex(choiceGnbId)
 		}
-	case 2:
+	case ies.GlobalRANNodeIDPresentGlobalNgENBID:
 		ngapNgENBID := ranNodeId.GlobalNgENBID
 		plmnid := PlmnIdToModels(*ngapNgENBID.PLMNIdentity)
 		ranId.PlmnId = &plmnid
@@ -50,7 +50,7 @@ func RanIdToModels(ranNodeId ies.GlobalRANNodeID) (ranId GlobalRanNodeId) {
 			longMacroNgENBID := ngapNgENBID.NgENBID.LongMacroNgENBID
 			ranId.NgeNbId = "LMacroNGeNB-" + BitStringToHex(longMacroNgENBID)
 		}
-	case 3:
+	case ies.GlobalRANNodeIDPresentGlobalN3IWFID:
 		ngapN3IWFID := ranNodeId.GlobalN3IWFID
 		plmnid := PlmnIdToModels(*ngapN3IWFID.PLMNIdentity)
 		ranId.PlmnId = &plmnid
@@ -94,17 +94,17 @@ func RanIDToNgap(modelsRanNodeId GlobalRanNodeId) ies.GlobalRANNodeID {
 	var ngapRanNodeId ies.GlobalRANNodeID
 
 	if modelsRanNodeId.GNbId.BitLength != 0 {
-		ngapRanNodeId.Choice = 1
+		ngapRanNodeId.Choice = ies.GlobalRANNodeIDPresentGlobalGNBID
 		ngapRanNodeId.GlobalGNBID = new(ies.GlobalGNBID)
 		globalGNBID := ngapRanNodeId.GlobalGNBID
 
 		plmnid := PlmnIdToNgap(*modelsRanNodeId.PlmnId)
 		globalGNBID.PLMNIdentity = &plmnid
-		globalGNBID.GNBID.Choice = 1
+		globalGNBID.GNBID.Choice = ies.GNBIDPresentGNBID
 		globalGNBID.GNBID.GNBID = new(aper.BitString)
 		*globalGNBID.GNBID.GNBID = HexToBitString(modelsRanNodeId.GNbId.GNBValue, int(modelsRanNodeId.GNbId.BitLength))
 	} else if modelsRanNodeId.NgeNbId != "" {
-		ngapRanNodeId.Choice = 2
+		ngapRanNodeId.Choice = ies.GlobalRANNodeIDPresentGlobalNgENBID
 		ngapRanNodeId.GlobalNgENBID = new(ies.GlobalNgENBID)
 		globalNgENBID := ngapRanNodeId.GlobalNgENBID
 
@@ -112,26 +112,26 @@ func RanIDToNgap(modelsRanNodeId GlobalRanNodeId) ies.GlobalRANNodeID {
 		globalNgENBID.PLMNIdentity = &plmnid
 		ngENBID := globalNgENBID.NgENBID
 		if modelsRanNodeId.NgeNbId[:11] == "MacroNGeNB-" {
-			ngENBID.Choice = 1
+			ngENBID.Choice = ies.NgENBIDPresentMacroNgENBID
 			ngENBID.MacroNgENBID = new(aper.BitString)
 			b := HexToBitString(modelsRanNodeId.NgeNbId[11:], 18)
 			ngENBID.MacroNgENBID = &b
 		} else if modelsRanNodeId.NgeNbId[:12] == "SMacroNGeNB-" {
-			ngENBID.Choice = 2
+			ngENBID.Choice = ies.NgENBIDPresentShortMacroNgENBID
 			ngENBID.ShortMacroNgENBID = new(aper.BitString)
 			*ngENBID.ShortMacroNgENBID = HexToBitString(modelsRanNodeId.NgeNbId[12:], 20)
 		} else if modelsRanNodeId.NgeNbId[:12] == "LMacroNGeNB-" {
-			ngENBID.Choice = 3
+			ngENBID.Choice = ies.NgENBIDPresentLongMacroNgENBID
 			ngENBID.LongMacroNgENBID = new(aper.BitString)
 			*ngENBID.LongMacroNgENBID = HexToBitString(modelsRanNodeId.NgeNbId[12:], 21)
 		}
 	} else if modelsRanNodeId.N3IwfId != "" {
-		ngapRanNodeId.Choice = 3
+		ngapRanNodeId.Choice = ies.GlobalRANNodeIDPresentGlobalN3IWFID
 		ngapRanNodeId.GlobalN3IWFID = new(ies.GlobalN3IWFID)
 		globalN3IWFID := ngapRanNodeId.GlobalN3IWFID
 
 		*globalN3IWFID.PLMNIdentity = PlmnIdToNgap(*modelsRanNodeId.PlmnId)
-		globalN3IWFID.N3IWFID.Choice = 1
+		globalN3IWFID.N3IWFID.Choice = ies.N3IWFIDPresentN3IWFID
 		globalN3IWFID.N3IWFID.N3IWFID = new(aper.BitString)
 		*globalN3IWFID.N3IWFID.N3IWFID = HexToBitString(modelsRanNodeId.N3IwfId, len(modelsRanNodeId.N3IwfId)*4)
 	}

@@ -1,6 +1,14 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+)
+
+const (
+	N3IWFIDPresentNothing uint64 = iota /* No components present */
+	N3IWFIDPresentN3IWFID
+	N3IWFIDPresentChoiceExtensions
+)
 
 type N3IWFID struct {
 	Choice  uint64
@@ -9,21 +17,21 @@ type N3IWFID struct {
 }
 
 func (ie *N3IWFID) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case N3IWFIDPresentN3IWFID:
 		err = w.WriteBitString(ie.N3IWFID.Bytes, uint(ie.N3IWFID.NumBits), &aper.Constraint{Lb: 16, Ub: 16}, false)
 	}
 	return
 }
 func (ie *N3IWFID) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case N3IWFIDPresentN3IWFID:
 		var b []byte
 		var n uint
 		if b, n, err = r.ReadBitString(&aper.Constraint{Lb: 16, Ub: 16}, false); err != nil {

@@ -2,6 +2,13 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	NGRANCGIPresentNothing uint64 = iota /* No components present */
+	NGRANCGIPresentNRCGI
+	NGRANCGIPresentEUTRACGI
+	NGRANCGIPresentChoiceExtensions
+)
+
 type NGRANCGI struct {
 	Choice   uint64
 	NRCGI    *NRCGI    `True,,,`
@@ -10,29 +17,29 @@ type NGRANCGI struct {
 }
 
 func (ie *NGRANCGI) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case NGRANCGIPresentNRCGI:
 		err = ie.NRCGI.Encode(w)
-	case 2:
+	case NGRANCGIPresentEUTRACGI:
 		err = ie.EUTRACGI.Encode(w)
 	}
 	return
 }
 func (ie *NGRANCGI) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case NGRANCGIPresentNRCGI:
 		var tmp NRCGI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NRCGI = &tmp
-	case 2:
+	case NGRANCGIPresentEUTRACGI:
 		var tmp EUTRACGI
 		if err = tmp.Decode(r); err != nil {
 			return

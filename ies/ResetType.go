@@ -2,6 +2,13 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	ResetTypePresentNothing uint64 = iota /* No components present */
+	ResetTypePresentNGInterface
+	ResetTypePresentPartOfNGInterface
+	ResetTypePresentChoiceExtensions
+)
+
 type ResetType struct {
 	Choice            uint64
 	NGInterface       *ResetAll                            `False,,,`
@@ -10,29 +17,29 @@ type ResetType struct {
 }
 
 func (ie *ResetType) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case ResetTypePresentNGInterface:
 		err = ie.NGInterface.Encode(w)
-	case 2:
+	case ResetTypePresentPartOfNGInterface:
 		err = ie.PartOfNGInterface.Encode(w)
 	}
 	return
 }
 func (ie *ResetType) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case ResetTypePresentNGInterface:
 		var tmp ResetAll
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NGInterface = &tmp
-	case 2:
+	case ResetTypePresentPartOfNGInterface:
 		var tmp UEassociatedLogicalNGconnectionList
 		if err = tmp.Decode(r); err != nil {
 			return

@@ -2,6 +2,18 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	PDUSessionResourceSetupRequestTransferIEsPresentNothing uint64 = iota /* No components present */
+	PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionAggregateMaximumBitRate
+	PDUSessionResourceSetupRequestTransferIEsPresentULNGUUPTNLInformation
+	PDUSessionResourceSetupRequestTransferIEsPresentAdditionalULNGUUPTNLInformation
+	PDUSessionResourceSetupRequestTransferIEsPresentDataForwardingNotPossible
+	PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionType
+	PDUSessionResourceSetupRequestTransferIEsPresentSecurityIndication
+	PDUSessionResourceSetupRequestTransferIEsPresentNetworkInstance
+	PDUSessionResourceSetupRequestTransferIEsPresentQosFlowSetupRequestList
+)
+
 type PDUSessionResourceSetupRequestTransfer struct {
 	Choice                            uint64
 	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate
@@ -15,25 +27,25 @@ type PDUSessionResourceSetupRequestTransfer struct {
 }
 
 func (ie *PDUSessionResourceSetupRequestTransfer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 8, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionAggregateMaximumBitRate:
 		err = ie.PDUSessionAggregateMaximumBitRate.Encode(w)
-	case 2:
+	case PDUSessionResourceSetupRequestTransferIEsPresentULNGUUPTNLInformation:
 		err = ie.ULNGUUPTNLInformation.Encode(w)
-	case 3:
+	case PDUSessionResourceSetupRequestTransferIEsPresentAdditionalULNGUUPTNLInformation:
 		err = ie.AdditionalULNGUUPTNLInformation.Encode(w)
-	case 4:
+	case PDUSessionResourceSetupRequestTransferIEsPresentDataForwardingNotPossible:
 		err = ie.DataForwardingNotPossible.Encode(w)
-	case 5:
+	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionType:
 		err = ie.PDUSessionType.Encode(w)
-	case 6:
+	case PDUSessionResourceSetupRequestTransferIEsPresentSecurityIndication:
 		err = ie.SecurityIndication.Encode(w)
-	case 7:
+	case PDUSessionResourceSetupRequestTransferIEsPresentNetworkInstance:
 		err = ie.NetworkInstance.Encode(w)
-	case 8:
+	case PDUSessionResourceSetupRequestTransferIEsPresentQosFlowSetupRequestList:
 		err = ie.QosFlowSetupRequestList.Encode(w)
 	}
 	return
@@ -43,49 +55,49 @@ func (ie *PDUSessionResourceSetupRequestTransfer) Decode(r *aper.AperReader) (er
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionAggregateMaximumBitRate:
 		var tmp PDUSessionAggregateMaximumBitRate
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.PDUSessionAggregateMaximumBitRate = &tmp
-	case 2:
+	case PDUSessionResourceSetupRequestTransferIEsPresentULNGUUPTNLInformation:
 		var tmp UPTransportLayerInformation
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.ULNGUUPTNLInformation = &tmp
-	case 3:
+	case PDUSessionResourceSetupRequestTransferIEsPresentAdditionalULNGUUPTNLInformation:
 		var tmp UPTransportLayerInformationList
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.AdditionalULNGUUPTNLInformation = &tmp
-	case 4:
+	case PDUSessionResourceSetupRequestTransferIEsPresentDataForwardingNotPossible:
 		var tmp DataForwardingNotPossible
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.DataForwardingNotPossible = &tmp
-	case 5:
+	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionType:
 		var tmp PDUSessionType
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.PDUSessionType = &tmp
-	case 6:
+	case PDUSessionResourceSetupRequestTransferIEsPresentSecurityIndication:
 		var tmp SecurityIndication
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.SecurityIndication = &tmp
-	case 7:
+	case PDUSessionResourceSetupRequestTransferIEsPresentNetworkInstance:
 		var tmp NetworkInstance
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NetworkInstance = &tmp
-	case 8:
+	case PDUSessionResourceSetupRequestTransferIEsPresentQosFlowSetupRequestList:
 		var tmp QosFlowSetupRequestList
 		if err = tmp.Decode(r); err != nil {
 			return

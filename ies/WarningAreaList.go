@@ -2,6 +2,15 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	WarningAreaListPresentNothing uint64 = iota /* No components present */
+	WarningAreaListPresentEUTRACGIListForWarning
+	WarningAreaListPresentNRCGIListForWarning
+	WarningAreaListPresentTAIListForWarning
+	WarningAreaListPresentEmergencyAreaIDList
+	WarningAreaListPresentChoiceExtensions
+)
+
 type WarningAreaList struct {
 	Choice                 uint64
 	EUTRACGIListForWarning *EUTRACGIListForWarning `False,,,`
@@ -12,45 +21,45 @@ type WarningAreaList struct {
 }
 
 func (ie *WarningAreaList) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 5, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case WarningAreaListPresentEUTRACGIListForWarning:
 		err = ie.EUTRACGIListForWarning.Encode(w)
-	case 2:
+	case WarningAreaListPresentNRCGIListForWarning:
 		err = ie.NRCGIListForWarning.Encode(w)
-	case 3:
+	case WarningAreaListPresentTAIListForWarning:
 		err = ie.TAIListForWarning.Encode(w)
-	case 4:
+	case WarningAreaListPresentEmergencyAreaIDList:
 		err = ie.EmergencyAreaIDList.Encode(w)
 	}
 	return
 }
 func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(5, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case WarningAreaListPresentEUTRACGIListForWarning:
 		var tmp EUTRACGIListForWarning
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.EUTRACGIListForWarning = &tmp
-	case 2:
+	case WarningAreaListPresentNRCGIListForWarning:
 		var tmp NRCGIListForWarning
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NRCGIListForWarning = &tmp
-	case 3:
+	case WarningAreaListPresentTAIListForWarning:
 		var tmp TAIListForWarning
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.TAIListForWarning = &tmp
-	case 4:
+	case WarningAreaListPresentEmergencyAreaIDList:
 		var tmp EmergencyAreaIDList
 		if err = tmp.Decode(r); err != nil {
 			return

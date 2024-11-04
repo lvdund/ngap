@@ -2,6 +2,13 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	UENGAPIDsPresentNothing uint64 = iota /* No components present */
+	UENGAPIDsPresentUENGAPIDPair
+	UENGAPIDsPresentAMFUENGAPID
+	UENGAPIDsPresentChoiceExtensions
+)
+
 type UENGAPIDs struct {
 	Choice       uint64
 	UENGAPIDpair *UENGAPIDpair `True,,,`
@@ -10,29 +17,29 @@ type UENGAPIDs struct {
 }
 
 func (ie *UENGAPIDs) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case UENGAPIDsPresentUENGAPIDPair:
 		err = ie.UENGAPIDpair.Encode(w)
-	case 2:
+	case UENGAPIDsPresentAMFUENGAPID:
 		err = ie.AMFUENGAPID.Encode(w)
 	}
 	return
 }
 func (ie *UENGAPIDs) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case UENGAPIDsPresentUENGAPIDPair:
 		var tmp UENGAPIDpair
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.UENGAPIDpair = &tmp
-	case 2:
+	case UENGAPIDsPresentAMFUENGAPID:
 		var tmp AMFUENGAPID
 		if err = tmp.Decode(r); err != nil {
 			return

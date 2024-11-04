@@ -2,6 +2,13 @@ package ies
 
 import "github.com/lvdund/ngap/aper"
 
+const (
+	TargetIDPresentNothing uint64 = iota /* No components present */
+	TargetIDPresentTargetRANNodeID
+	TargetIDPresentTargeteNBID
+	TargetIDPresentChoiceExtensions
+)
+
 type TargetID struct {
 	Choice          uint64
 	TargetRANNodeID *TargetRANNodeID `True,,,`
@@ -10,29 +17,29 @@ type TargetID struct {
 }
 
 func (ie *TargetID) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 0, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case TargetIDPresentTargetRANNodeID:
 		err = ie.TargetRANNodeID.Encode(w)
-	case 2:
+	case TargetIDPresentTargeteNBID:
 		err = ie.TargeteNBID.Encode(w)
 	}
 	return
 }
 func (ie *TargetID) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(0, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case 1:
+	case TargetIDPresentTargetRANNodeID:
 		var tmp TargetRANNodeID
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.TargetRANNodeID = &tmp
-	case 2:
+	case TargetIDPresentTargeteNBID:
 		var tmp TargeteNBID
 		if err = tmp.Decode(r); err != nil {
 			return

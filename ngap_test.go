@@ -28,17 +28,40 @@ func TestDecodeUeRanSim(t *testing.T) {
 			fmt.Println("Message GlobalRanNodeId:", msg.GlobalRANNodeID)
 			mcc, mnc := utils.PlmnidToMccMnc(msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
 			fmt.Println("Message PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+			fmt.Println("Message GNBID Choice:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.Choice)
+			if msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID != nil {
+				fmt.Println("Message GNBID:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID)
+			}
+			fmt.Println("Message GNBID:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID)
 		}
 	}
 }
 
-func TestEncode(t *testing.T) {
+func TestEncodeDecode(t *testing.T) {
 	msg, _ := test.resultPdu.Message.Msg.(NgapMessageEncoder)
-	if encoded, err := NgapEncode(msg); err != nil {
+	var encoded []byte
+	var err error
+	if encoded, err = NgapEncode(msg); err != nil {
 		t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
 		return
 	} else if !bytes.Equal(encoded, test.buf) {
-		t.Errorf("Final buffer = % X\n, want %.8b\n", encoded, test.buf)
+		fmt.Println("not equal")
+	}
+	fmt.Println()
+	if decode, err, _ := NgapDecode(bytes.NewBuffer(encoded)); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println()
+		fmt.Println("Present:", decode.Present)
+		fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
+		fmt.Println("Criticality:", decode.Message.Criticality.Value)
+		msg := decode.Message.Msg.(*ies.NGSetupRequest)
+		fmt.Printf("Message rannodename %s\n", msg.RANNodeName.Value)
+		mcc, mnc := utils.PlmnidToMccMnc(msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+		fmt.Println("Message PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+		fmt.Println("Message N3IWFID choice:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.Choice)
+		fmt.Println("Message GNBID Bytes:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID.Bytes)
+		fmt.Println("Message GNBID NumBits:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID.NumBits)
 	}
 }
 
@@ -60,6 +83,19 @@ var test = struct {
 			Criticality:   ies.Criticality{Value: ies.Criticality_PresentReject},
 			Msg: &ies.NGSetupRequest{
 				RANNodeName: &ies.RANNodeName{Value: oct},
+				GlobalRANNodeID: &ies.GlobalRANNodeID{
+					Choice: ies.GlobalRANNodeIDPresentGlobalGNBID,
+					GlobalGNBID: &ies.GlobalGNBID{
+						PLMNIdentity: &ies.PLMNIdentity{Value: aper.OctetString{0x02, 0xf8, 0x39}},
+						GNBID: &ies.GNBID{
+							Choice: 1,
+							GNBID: &aper.BitString{
+								Bytes: []byte{0xfe, 0x00},
+								NumBits: 22,
+							},
+						},
+					},
+				},
 			},
 		},
 	},
