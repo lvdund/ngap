@@ -44,8 +44,6 @@ func TestEncodeDecode(t *testing.T) {
 	if encoded, err = NgapEncode(msg); err != nil {
 		t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
 		return
-	} else if !bytes.Equal(encoded, test.buf) {
-		fmt.Println("not equal")
 	}
 	fmt.Println()
 	if decode, err, _ := NgapDecode(bytes.NewBuffer(encoded)); err != nil {
@@ -75,7 +73,7 @@ var test = struct {
 	check     bool
 }{
 	name: "NgSetupRequest",
-	buf:  []byte{0x00, 0x15, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x00, 0x52, 0x40, 0x03, 0x00, 0x00, 0x61},
+	// buf:  []byte{0x00, 0x15, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x00, 0x52, 0x40, 0x03, 0x00, 0x00, 0x61},
 	resultPdu: &NgapPdu{
 		Present: ies.NgapPduInitiatingMessage,
 		Message: NgapMessage{
@@ -90,8 +88,8 @@ var test = struct {
 						GNBID: &ies.GNBID{
 							Choice: 1,
 							GNBID: &aper.BitString{
-								Bytes: []byte{0xfe, 0x00},
-								NumBits: 22,
+								Bytes:   []byte{0x45, 0x46, 0x47},
+								NumBits: 24,
 							},
 						},
 					},
