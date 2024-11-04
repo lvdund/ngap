@@ -3,7 +3,7 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	UEContextRequestPresentRequested aper.Enumerated = 0
+	UEContextRequestRequested aper.Enumerated = 0
 )
 
 type UEContextRequest struct {
