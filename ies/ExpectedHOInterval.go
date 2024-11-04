@@ -9,6 +9,7 @@ const (
 	ExpectedHOIntervalSec90  aper.Enumerated = 3
 	ExpectedHOIntervalSec120 aper.Enumerated = 4
 	ExpectedHOIntervalSec180 aper.Enumerated = 5
+	ExpectedHOIntervalLongTime aper.Enumerated = 6
 )
 
 type ExpectedHOInterval struct {

@@ -53,7 +53,7 @@ const (
 )
 
 type CauseRadioNetwork struct {
-	Value aper.Enumerated `True,0,44`
+	Value aper.Enumerated `True,0,46`
 }
 
 func (ie *CauseRadioNetwork) Encode(w *aper.AperWriter) (err error) {
