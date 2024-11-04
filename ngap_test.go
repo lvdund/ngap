@@ -37,6 +37,12 @@ func TestDecodeUeRanSim(t *testing.T) {
 	}
 }
 
+func TestNil(t *testing.T) {
+	msg := ies.AMFConfigurationUpdateAcknowledge{}
+	o, err := NgapEncode(&msg)
+	fmt.Println(o, err)
+}
+
 func TestEncodeDecode(t *testing.T) {
 	msg, _ := test.resultPdu.Message.Msg.(NgapMessageEncoder)
 	var encoded []byte
