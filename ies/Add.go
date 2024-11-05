@@ -1,22 +1,7 @@
 package ies
 
 import (
-	"bytes"
-	"fmt"
-
 	"github.com/lvdund/ngap/aper"
-)
-
-const (
-	PDUSessionResourceSetupRequestTransferIEsPresentNothing uint64 = iota /* No components present */
-	PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionAggregateMaximumBitRate
-	PDUSessionResourceSetupRequestTransferIEsPresentULNGUUPTNLInformation
-	PDUSessionResourceSetupRequestTransferIEsPresentAdditionalULNGUUPTNLInformation
-	PDUSessionResourceSetupRequestTransferIEsPresentDataForwardingNotPossible
-	PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionType
-	PDUSessionResourceSetupRequestTransferIEsPresentSecurityIndication
-	PDUSessionResourceSetupRequestTransferIEsPresentNetworkInstance
-	PDUSessionResourceSetupRequestTransferIEsPresentQosFlowSetupRequestList
 )
 
 type PDUSessionResourceSetupRequestTransfer struct {
@@ -29,251 +14,135 @@ type PDUSessionResourceSetupRequestTransfer struct {
 	SecurityIndication                *SecurityIndication
 	NetworkInstance                   *NetworkInstance
 	QosFlowSetupRequestList           *QosFlowSetupRequestList
+	CommonNetworkInstance             *CommonNetworkInstance
 }
 
-func (msg *PDUSessionResourceSetupRequestTransfer) Encode() (wire []byte, err error) {
-	var buf bytes.Buffer
-	aw := aper.NewWriter(&buf)
-	if err = aw.WriteBool(aper.Zero); err != nil {
+func (ie *PDUSessionResourceSetupRequestTransfer) Encode(w *aper.AperWriter) (err error) {
+	if err = w.WriteBool(aper.One); err != nil {
 		return
 	}
-	ies := msg.toIes()
-	if len(ies) == 0 {
-		err = fmt.Errorf("empty message")
-		return
+	optionals := []byte{0x0}
+	if ie.PDUSessionAggregateMaximumBitRate != nil {
+		aper.SetBit(optionals, 1)
 	}
-
-	var subbuf bytes.Buffer
-	cW := aper.NewWriter(&subbuf) //container writer
-	if err = aper.WriteSequenceOf[NgapMessageIE](ies, cW, &aper.Constraint{
-		Lb: 0,
-		Ub: int64(aper.POW_16 - 1),
-	}, false); err != nil {
-		return
+	if ie.AdditionalULNGUUPTNLInformation != nil {
+		aper.SetBit(optionals, 2)
 	}
-	if err = cW.Close(); err != nil { //finalize
-		return
+	if ie.DataForwardingNotPossible != nil {
+		aper.SetBit(optionals, 3)
 	}
-
-	if err = aw.WriteOpenType(subbuf.Bytes()); err != nil {
-		return
+	if ie.SecurityIndication != nil {
+		aper.SetBit(optionals, 4)
 	}
-	err = aw.Close()
-	wire = buf.Bytes()
-	return
-}
-func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE) {
-	ies = []NgapMessageIE{}
-	if msg.PDUSessionAggregateMaximumBitRate != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionAggregateMaximumBitRate},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.PDUSessionAggregateMaximumBitRate})
+	if ie.NetworkInstance != nil {
+		aper.SetBit(optionals, 5)
 	}
-	if msg.ULNGUUPTNLInformation != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_ULNGUUPTNLInformation},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.ULNGUUPTNLInformation})
+	if ie.CommonNetworkInstance != nil {
+		aper.SetBit(optionals, 6)
 	}
-	if msg.AdditionalULNGUUPTNLInformation != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_AdditionalULNGUUPTNLInformation},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.AdditionalULNGUUPTNLInformation})
+	w.WriteBits(optionals, 6)
+	if ie.PDUSessionAggregateMaximumBitRate != nil {
+		if err = ie.PDUSessionAggregateMaximumBitRate.Encode(w); err != nil {
+			return
+		}
 	}
-	if msg.DataForwardingNotPossible != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_DataForwardingNotPossible},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.DataForwardingNotPossible})
+	if ie.ULNGUUPTNLInformation != nil {
+		if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
+			return
+		}
 	}
-	if msg.PDUSessionType != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionType},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.PDUSessionType})
+	if ie.AdditionalULNGUUPTNLInformation != nil {
+		if err = ie.AdditionalULNGUUPTNLInformation.Encode(w); err != nil {
+			return
+		}
 	}
-	if msg.SecurityIndication != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_SecurityIndication},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.SecurityIndication})
+	if ie.DataForwardingNotPossible != nil {
+		if err = ie.DataForwardingNotPossible.Encode(w); err != nil {
+			return
+		}
 	}
-	if msg.NetworkInstance != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_NetworkInstance},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.NetworkInstance})
+	if ie.PDUSessionType != nil {
+		if err = ie.PDUSessionType.Encode(w); err != nil {
+			return
+		}
 	}
-	if msg.QosFlowSetupRequestList != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_QosFlowSetupRequestList},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.QosFlowSetupRequestList})
+	if ie.SecurityIndication != nil {
+		if err = ie.SecurityIndication.Encode(w); err != nil {
+			return
+		}
+	}
+	if ie.NetworkInstance != nil {
+		if err = ie.NetworkInstance.Encode(w); err != nil {
+			return
+		}
+	}
+	if ie.QosFlowSetupRequestList != nil {
+		if err = ie.QosFlowSetupRequestList.Encode(w); err != nil {
+			return
+		}
+	}
+	if ie.CommonNetworkInstance != nil {
+		if err = ie.CommonNetworkInstance.Encode(w); err != nil {
+			return
+		}
 	}
 	return
 }
-func (msg *PDUSessionResourceSetupRequestTransfer) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
-	r := aper.NewReader(bytes.NewReader(wire))
-	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+func (ie *PDUSessionResourceSetupRequestTransfer) Decode(r *aper.AperReader) (err error) {
+	if _, err = r.ReadBool(); err != nil {
 		return
 	}
-	_ = ies
-	return
-}
-func (msg *PDUSessionResourceSetupRequestTransfer) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
-	if err != nil {
+	var optionals []byte
+	if optionals, err = r.ReadBits(6); err != nil {
 		return
 	}
-	msgIe = new(NgapMessageIE)
-	msgIe.Id.Value = aper.Integer(id)
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
-	if err != nil {
+	ie.PDUSessionAggregateMaximumBitRate = new(PDUSessionAggregateMaximumBitRate)
+	ie.ULNGUUPTNLInformation = new(UPTransportLayerInformation)
+	ie.AdditionalULNGUUPTNLInformation = new(UPTransportLayerInformationList)
+	ie.DataForwardingNotPossible = new(DataForwardingNotPossible)
+	ie.PDUSessionType = new(PDUSessionType)
+	ie.CommonNetworkInstance = new(CommonNetworkInstance)
+	ie.NetworkInstance = new(NetworkInstance)
+	ie.QosFlowSetupRequestList = new(QosFlowSetupRequestList)
+	ie.CommonNetworkInstance = new(CommonNetworkInstance)
+	if aper.IsBitSet(optionals, 1) {
+		if err = ie.PDUSessionAggregateMaximumBitRate.Decode(r); err != nil {
+			return
+		}
+	}
+	if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
 		return
 	}
-	msgIe.Criticality.Value = aper.Enumerated(c)
-	var buf []byte
-	if buf, err = r.ReadOpenType(); err != nil {
+	if aper.IsBitSet(optionals, 2) {
+		if err = ie.AdditionalULNGUUPTNLInformation.Decode(r); err != nil {
+			return
+		}
+	}
+	if aper.IsBitSet(optionals, 3) {
+		if err = ie.DataForwardingNotPossible.Decode(r); err != nil {
+			return
+		}
+	}
+	if err = ie.PDUSessionType.Decode(r); err != nil {
 		return
 	}
-	ieR := aper.NewReader(bytes.NewReader(buf))
-	switch msgIe.Id.Value {
-	case ProtocolIEID_PDUSessionAggregateMaximumBitRate:
-		var tmp PDUSessionAggregateMaximumBitRate
-		if err = tmp.Decode(ieR); err != nil {
+	if aper.IsBitSet(optionals, 4) {
+		if err = ie.SecurityIndication.Decode(r); err != nil {
 			return
 		}
-		msg.PDUSessionAggregateMaximumBitRate = &tmp
-	case ProtocolIEID_ULNGUUPTNLInformation:
-		var tmp UPTransportLayerInformation
-		if err = tmp.Decode(ieR); err != nil {
+	}
+	if aper.IsBitSet(optionals, 5) {
+		if err = ie.NetworkInstance.Decode(r); err != nil {
 			return
 		}
-		msg.ULNGUUPTNLInformation = &tmp
-	case ProtocolIEID_AdditionalULNGUUPTNLInformation:
-		var tmp UPTransportLayerInformationList
-		if err = tmp.Decode(ieR); err != nil {
-			return
-		}
-		msg.AdditionalULNGUUPTNLInformation = &tmp
-	case ProtocolIEID_DataForwardingNotPossible:
-		var tmp DataForwardingNotPossible
-		if err = tmp.Decode(ieR); err != nil {
-			return
-		}
-		msg.DataForwardingNotPossible = &tmp
-	case ProtocolIEID_PDUSessionType:
-		var tmp PDUSessionType
-		if err = tmp.Decode(ieR); err != nil {
-			return
-		}
-		msg.PDUSessionType = &tmp
-	case ProtocolIEID_SecurityIndication:
-		var tmp SecurityIndication
-		if err = tmp.Decode(ieR); err != nil {
-			return
-		}
-		msg.SecurityIndication = &tmp
-	case ProtocolIEID_NetworkInstance:
-		var tmp NetworkInstance
-		if err = tmp.Decode(ieR); err != nil {
-			return
-		}
-		msg.NetworkInstance = &tmp
-	case ProtocolIEID_QosFlowSetupRequestList:
-		var tmp QosFlowSetupRequestList
-		if err = tmp.Decode(ieR); err != nil {
-			return
-		}
-		msg.QosFlowSetupRequestList = &tmp
-	default:
-		err = fmt.Errorf("temporary error")
+	}
+	if err = ie.QosFlowSetupRequestList.Decode(r); err != nil {
 		return
+	}
+	if aper.IsBitSet(optionals, 6) {
+		if err = ie.CommonNetworkInstance.Decode(r); err != nil {
+			return
+		}
 	}
 	return
 }
-
-// func (ie *PDUSessionResourceSetupRequestTransfer) Encode(w *aper.AperWriter) (err error) {
-// 	if err = w.WriteChoice(ie.Choice, 8, false); err != nil {
-// 		return
-// 	}
-// 	switch ie.Choice {
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionAggregateMaximumBitRate:
-// 		err = ie.PDUSessionAggregateMaximumBitRate.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentULNGUUPTNLInformation:
-// 		err = ie.ULNGUUPTNLInformation.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentAdditionalULNGUUPTNLInformation:
-// 		err = ie.AdditionalULNGUUPTNLInformation.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentDataForwardingNotPossible:
-// 		err = ie.DataForwardingNotPossible.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionType:
-// 		err = ie.PDUSessionType.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentSecurityIndication:
-// 		err = ie.SecurityIndication.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentNetworkInstance:
-// 		err = ie.NetworkInstance.Encode(w)
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentQosFlowSetupRequestList:
-// 		err = ie.QosFlowSetupRequestList.Encode(w)
-// 	}
-// 	return
-// }
-// func (ie *PDUSessionResourceSetupRequestTransfer) Decode(r *aper.AperReader) (err error) {
-// 	if ie.Choice, err = r.ReadChoice(8, false); err != nil {
-// 		return
-// 	}
-// 	switch ie.Choice {
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionAggregateMaximumBitRate:
-// 		var tmp PDUSessionAggregateMaximumBitRate
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.PDUSessionAggregateMaximumBitRate = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentULNGUUPTNLInformation:
-// 		var tmp UPTransportLayerInformation
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.ULNGUUPTNLInformation = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentAdditionalULNGUUPTNLInformation:
-// 		var tmp UPTransportLayerInformationList
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.AdditionalULNGUUPTNLInformation = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentDataForwardingNotPossible:
-// 		var tmp DataForwardingNotPossible
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.DataForwardingNotPossible = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentPDUSessionType:
-// 		var tmp PDUSessionType
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.PDUSessionType = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentSecurityIndication:
-// 		var tmp SecurityIndication
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.SecurityIndication = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentNetworkInstance:
-// 		var tmp NetworkInstance
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.NetworkInstance = &tmp
-// 	case PDUSessionResourceSetupRequestTransferIEsPresentQosFlowSetupRequestList:
-// 		var tmp QosFlowSetupRequestList
-// 		if err = tmp.Decode(r); err != nil {
-// 			return
-// 		}
-// 		ie.QosFlowSetupRequestList = &tmp
-// 	}
-// 	return
-// }
