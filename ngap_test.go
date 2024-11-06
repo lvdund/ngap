@@ -19,6 +19,7 @@ func TestDecodeUeRanSim(t *testing.T) {
 		if decode, err, _ := NgapDecode(f); err != nil {
 			t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
 		} else {
+			_ = decode
 			fmt.Println()
 			fmt.Println("Present:", decode.Present)
 			fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
@@ -69,6 +70,21 @@ func TestEncodeDecode(t *testing.T) {
 	}
 }
 
+func BenchmarkPerformace(b *testing.B) {
+	msg := test.resultPdu
+	out := test.buf
+	for i := 0; i < b.N; i++ {
+		if _, err, _ := NgapDecode(bytes.NewBuffer(out)); err != nil {
+			fmt.Println("Decode:", err)
+			return
+		}
+		if _, err := NgapEncode(msg.Message.Msg.(NgapMessageEncoder)); err != nil {
+			fmt.Println("Decode:", err)
+			return
+		}
+	}
+}
+
 var str string = "a"
 var oct aper.OctetString = aper.OctetString(str)
 
@@ -79,7 +95,7 @@ var test = struct {
 	check     bool
 }{
 	name: "NgSetupRequest",
-	// buf:  []byte{0x00, 0x15, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x00, 0x52, 0x40, 0x03, 0x00, 0x00, 0x61},
+	buf:  []byte{0x00, 0x15, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x00, 0x52, 0x40, 0x03, 0x00, 0x00, 0x61},
 	resultPdu: &NgapPdu{
 		Present: ies.NgapPduInitiatingMessage,
 		Message: NgapMessage{

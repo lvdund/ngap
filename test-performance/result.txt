@@ -1,0 +1,28 @@
+goos: linux
+goarch: amd64
+pkg: github.com/free5gc/ngap
+cpu: 9th Gen Intel(R) Core(TM) i5-9000
+              │ free5gc.txt │
+              │   sec/op    │
+Performace-20   5.352µ ± 1%
+
+              │ free5gc.txt  │
+              │     B/op     │
+Performace-20   1.836Ki ± 0%
+
+              │ free5gc.txt │
+              │  allocs/op  │
+Performace-20    111.0 ± 0%
+
+pkg: github.com/lvdund/ngap
+              │   own.txt   │
+              │   sec/op    │
+Performace-20   4.485µ ± 3%
+
+              │   own.txt    │
+              │     B/op     │
+Performace-20   1.977Ki ± 0%
+
+              │  own.txt   │
+              │ allocs/op  │
+Performace-20   114.0 ± 0%

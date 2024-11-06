@@ -116,7 +116,7 @@ func ReadSequenceOf[T any](decoder func(ar *AperReader) (*T, error), ar *AperRea
 			return
 		}
 	}
-	fmt.Printf("number of elem= %d\n", numElems)
+	// fmt.Printf("number of elem= %d\n", numElems)
 	//4. fianly read every elements
 	items = make([]T, numElems)
 	var tmpItem *T
