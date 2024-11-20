@@ -9,7 +9,7 @@ type NGRANTNLAssociationToRemoveItem struct {
 }
 
 func (ie *NGRANTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -42,7 +42,7 @@ func (ie *NGRANTNLAssociationToRemoveItem) Decode(r *aper.AperReader) (err error
 	if err = ie.TNLAssociationTransportLayerAddress.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.TNLAssociationTransportLayerAddressAMF.Decode(r); err != nil {
 			return
 		}

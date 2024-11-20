@@ -9,7 +9,7 @@ type ExpectedUEMovingTrajectoryItem struct {
 }
 
 func (ie *ExpectedUEMovingTrajectoryItem) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -42,7 +42,7 @@ func (ie *ExpectedUEMovingTrajectoryItem) Decode(r *aper.AperReader) (err error)
 	if err = ie.NGRANCGI.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if v, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 4095}, true); err != nil {
 			return
 		} else {

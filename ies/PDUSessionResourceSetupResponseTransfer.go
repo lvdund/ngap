@@ -11,7 +11,7 @@ type PDUSessionResourceSetupResponseTransfer struct {
 }
 
 func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -62,17 +62,17 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(r *aper.AperReader) (e
 	if err = ie.DLQosFlowPerTNLInformation.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.AdditionalDLQosFlowPerTNLInformation.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.SecurityResult.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.QosFlowFailedToSetupList.Decode(r); err != nil {
 			return
 		}

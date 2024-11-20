@@ -1,6 +1,9 @@
 package aper
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 // shift byte array by a number of bits (positive for left, negative for right)
 func ShiftBytes(input []byte, k int) (output []byte) {
@@ -78,4 +81,18 @@ func GetBitString(srcBytes []byte, bitsOffset uint, numBits uint) (dstBytes []by
 	}
 	dstBytes[numBitsByteLen-1] &= numBitsMask
 	return
+}
+
+func GetReader(r AperReader) []byte {
+	t := r.bitstreamReader.r
+	data, _ := io.ReadAll(t)
+	return data
+}
+func GetWriter(w AperWriter) io.Writer {
+	t := w.bitstreamWriter.w
+	return t
+}
+
+func FlushWrite(w *AperWriter) error {
+	return w.flush()
 }

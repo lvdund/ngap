@@ -8,6 +8,29 @@ import (
 	"github.com/lvdund/ngap/aper"
 )
 
+func encodeTransferMessage(w io.Writer, ies []NgapMessageIE) (err error) {
+	aw := aper.NewWriter(w)
+	if err = aw.WriteBool(aper.Zero); err != nil {
+		return
+	}
+	if len(ies) == 0 {
+		err = fmt.Errorf("empty message")
+		return
+	}
+
+	fmt.Printf("log before SeqOf:\t%b\n", aper.GetWriter(*aw))
+
+	if err = aper.WriteSequenceOf[NgapMessageIE](ies, aw, &aper.Constraint{
+		Lb: 0,
+		Ub: int64(aper.POW_16 - 1),
+	}, false); err != nil {
+		return
+	}
+
+	err = aw.Close()
+	return
+}
+
 func encodeMessage(w io.Writer, present uint8, procedureCode int64, criticality aper.Enumerated, ies []NgapMessageIE) (err error) {
 	aw := aper.NewWriter(w)
 	if err = aw.WriteBool(aper.Zero); err != nil {
@@ -61,6 +84,7 @@ type NgapMessageIE struct {
 }
 
 func (ie NgapMessageIE) Encode(w *aper.AperWriter) (err error) {
+	fmt.Printf("log before NgapMessageIE:\t%b\n", aper.GetWriter(*w))
 	//1. encode protocol Ie Id
 	if err = ie.Id.Encode(w); err != nil {
 		return
@@ -76,8 +100,10 @@ func (ie NgapMessageIE) Encode(w *aper.AperWriter) (err error) {
 	if err = ie.Value.Encode(ieW); err != nil {
 		return
 	}
+	ieW.Close()
 	//then write the array as open type
 	err = w.WriteOpenType(buf.Bytes())
+	fmt.Printf("    end    NgapMessageIE:\t%b\n", aper.GetWriter(*w))
 	return
 }
 

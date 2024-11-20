@@ -13,7 +13,7 @@ type HandoverRequestAcknowledgeTransfer struct {
 }
 
 func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -79,12 +79,12 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLForwardingUPTNLInformation.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.SecurityResult.Decode(r); err != nil {
 			return
 		}
@@ -92,12 +92,12 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 	if err = ie.QosFlowSetupResponseList.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.QosFlowFailedToSetupList.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 5) {
+	if aper.IsBitSet(optionals, 4) {
 		if err = ie.DataForwardingResponseDRBList.Decode(r); err != nil {
 			return
 		}

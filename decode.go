@@ -73,3 +73,11 @@ func NgapDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ies.Critica
 	diagnostics = ies.BuildDiagnostics(present, procedureCode, criticality, diagnosticsItems)
 	return
 }
+
+func TransferDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ies.CriticalityDiagnostics) {
+	r := aper.NewReader(ioR)
+	if _, err = r.ReadBool(); err != nil {
+		return
+	}
+	return
+}

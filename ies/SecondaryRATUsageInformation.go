@@ -9,7 +9,7 @@ type SecondaryRATUsageInformation struct {
 }
 
 func (ie *SecondaryRATUsageInformation) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -42,12 +42,12 @@ func (ie *SecondaryRATUsageInformation) Decode(r *aper.AperReader) (err error) {
 	}
 	ie.PDUSessionUsageReport = new(PDUSessionUsageReport)
 	ie.QosFlowsUsageReportList = new(QoSFlowsUsageReportList)
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.PDUSessionUsageReport.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.QosFlowsUsageReportList.Decode(r); err != nil {
 			return
 		}

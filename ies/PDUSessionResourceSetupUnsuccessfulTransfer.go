@@ -9,7 +9,7 @@ type PDUSessionResourceSetupUnsuccessfulTransfer struct {
 }
 
 func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -42,7 +42,7 @@ func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Decode(r *aper.AperReader
 	if err = ie.Cause.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.CriticalityDiagnostics.Decode(r); err != nil {
 			return
 		}

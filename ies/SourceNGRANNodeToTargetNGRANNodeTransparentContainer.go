@@ -13,7 +13,7 @@ type SourceNGRANNodeToTargetNGRANNodeTransparentContainer struct {
 }
 
 func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -76,12 +76,12 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(r *aper.A
 	if err = ie.RRCContainer.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.PDUSessionResourceInformationList.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.ERABInformationList.Decode(r); err != nil {
 			return
 		}
@@ -89,7 +89,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(r *aper.A
 	if err = ie.TargetCellID.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.IndexToRFSP.Decode(r); err != nil {
 			return
 		}

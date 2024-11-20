@@ -8,7 +8,7 @@ type SecondaryRATDataUsageReportTransfer struct {
 }
 
 func (ie *SecondaryRATDataUsageReportTransfer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -32,7 +32,7 @@ func (ie *SecondaryRATDataUsageReportTransfer) Decode(r *aper.AperReader) (err e
 		return
 	}
 	ie.SecondaryRATUsageInformation = new(SecondaryRATUsageInformation)
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.SecondaryRATUsageInformation.Decode(r); err != nil {
 			return
 		}

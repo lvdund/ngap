@@ -9,7 +9,7 @@ type XnTNLConfigurationInfo struct {
 }
 
 func (ie *XnTNLConfigurationInfo) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -42,7 +42,7 @@ func (ie *XnTNLConfigurationInfo) Decode(r *aper.AperReader) (err error) {
 	if err = ie.XnTransportLayerAddresses.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.XnExtendedTransportLayerAddresses.Decode(r); err != nil {
 			return
 		}

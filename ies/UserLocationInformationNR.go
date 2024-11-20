@@ -10,7 +10,7 @@ type UserLocationInformationNR struct {
 }
 
 func (ie *UserLocationInformationNR) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -52,7 +52,7 @@ func (ie *UserLocationInformationNR) Decode(r *aper.AperReader) (err error) {
 	if err = ie.TAI.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.TimeStamp.Decode(r); err != nil {
 			return
 		}

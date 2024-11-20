@@ -1,6 +1,8 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+)
 
 type SNSSAI struct {
 	SST *SST `False,`
@@ -9,7 +11,7 @@ type SNSSAI struct {
 }
 
 func (ie *SNSSAI) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -42,7 +44,7 @@ func (ie *SNSSAI) Decode(r *aper.AperReader) (err error) {
 	if err = ie.SST.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.SD.Decode(r); err != nil {
 			return
 		}
