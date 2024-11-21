@@ -8,7 +8,7 @@ type SONInformationReply struct {
 }
 
 func (ie *SONInformationReply) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -32,7 +32,7 @@ func (ie *SONInformationReply) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	ie.XnTNLConfigurationInfo = new(XnTNLConfigurationInfo)
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.XnTNLConfigurationInfo.Decode(r); err != nil {
 			return
 		}

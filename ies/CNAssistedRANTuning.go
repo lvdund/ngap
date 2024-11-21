@@ -8,7 +8,7 @@ type CNAssistedRANTuning struct {
 }
 
 func (ie *CNAssistedRANTuning) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -32,7 +32,7 @@ func (ie *CNAssistedRANTuning) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	ie.ExpectedUEBehaviour = new(ExpectedUEBehaviour)
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ExpectedUEBehaviour.Decode(r); err != nil {
 			return
 		}

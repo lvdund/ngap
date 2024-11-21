@@ -1,6 +1,10 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"fmt"
+
+	"github.com/lvdund/ngap/aper"
+)
 
 type PDUSessionAggregateMaximumBitRate struct {
 	PDUSessionAggregateMaximumBitRateDL *BitRate `False,`
@@ -9,7 +13,7 @@ type PDUSessionAggregateMaximumBitRate struct {
 }
 
 func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -19,6 +23,7 @@ func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err err
 			return
 		}
 	}
+	fmt.Printf("log PDUSessionAggregateMaximumBitRate:\t%b\n", aper.GetWriter(*w))
 	if ie.PDUSessionAggregateMaximumBitRateUL != nil {
 		if err = ie.PDUSessionAggregateMaximumBitRateUL.Encode(w); err != nil {
 			return

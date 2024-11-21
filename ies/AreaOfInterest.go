@@ -10,7 +10,7 @@ type AreaOfInterest struct {
 }
 
 func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -52,17 +52,17 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 	ie.AreaOfInterestTAIList = new(AreaOfInterestTAIList)
 	ie.AreaOfInterestCellList = new(AreaOfInterestCellList)
 	ie.AreaOfInterestRANNodeList = new(AreaOfInterestRANNodeList)
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.AreaOfInterestTAIList.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.AreaOfInterestCellList.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.AreaOfInterestRANNodeList.Decode(r); err != nil {
 			return
 		}

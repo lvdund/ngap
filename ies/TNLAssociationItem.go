@@ -9,7 +9,7 @@ type TNLAssociationItem struct {
 }
 
 func (ie *TNLAssociationItem) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}

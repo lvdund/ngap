@@ -9,7 +9,7 @@ type DRBStatusUL12 struct {
 }
 
 func (ie *DRBStatusUL12) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -43,7 +43,7 @@ func (ie *DRBStatusUL12) Decode(r *aper.AperReader) (err error) {
 	if err = ie.ULCOUNTValue.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if b, n, err = r.ReadBitString(&aper.Constraint{Lb: 1, Ub: 2048}, true); err != nil {
 			return
 		} else {

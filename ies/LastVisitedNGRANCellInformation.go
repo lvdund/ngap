@@ -12,7 +12,7 @@ type LastVisitedNGRANCellInformation struct {
 }
 
 func (ie *LastVisitedNGRANCellInformation) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -72,12 +72,12 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 	if err = ie.TimeUEStayedInCell.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.TimeUEStayedInCellEnhancedGranularity.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.HOCauseValue.Decode(r); err != nil {
 			return
 		}

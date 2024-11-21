@@ -11,7 +11,7 @@ type CriticalityDiagnostics struct {
 }
 
 func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -62,22 +62,22 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 	ie.TriggeringMessage = new(TriggeringMessage)
 	ie.ProcedureCriticality = new(Criticality)
 	ie.IEsCriticalityDiagnostics = new(CriticalityDiagnosticsIEList)
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ProcedureCode.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.TriggeringMessage.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.ProcedureCriticality.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 5) {
+	if aper.IsBitSet(optionals, 4) {
 		if err = ie.IEsCriticalityDiagnostics.Decode(r); err != nil {
 			return
 		}

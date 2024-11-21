@@ -11,6 +11,58 @@ import (
 	"github.com/lvdund/ngap/utils"
 )
 
+func TestOptional(t *testing.T) {
+	optionals := []byte{0x0}
+	aper.SetBit(optionals, 1)
+	fmt.Printf("%b\n\n", optionals)
+
+	s := ies.AreaOfInterest{
+		AreaOfInterestTAIList: &ies.AreaOfInterestTAIList{Value: []*ies.AreaOfInterestTAIItem{&ies.AreaOfInterestTAIItem{
+			TAI: &ies.TAI{
+				PLMNIdentity: &ies.PLMNIdentity{Value: aper.OctetString{0x02, 0xf8, 0x39}},
+				TAC: &ies.TAC{Value: aper.OctetString{0x02, 0xf8, 0x39}},
+			},
+		}}},
+		AreaOfInterestRANNodeList: &ies.AreaOfInterestRANNodeList{Value: []*ies.AreaOfInterestRANNodeItem{&ies.AreaOfInterestRANNodeItem{
+			GlobalRANNodeID: &ies.GlobalRANNodeID{
+				Choice: ies.GlobalRANNodeIDPresentGlobalGNBID,
+				GlobalGNBID: &ies.GlobalGNBID{
+					PLMNIdentity: &ies.PLMNIdentity{Value: aper.OctetString{0x02, 0xf8, 0x39}},
+					GNBID: &ies.GNBID{
+						Choice: ies.GNBIDPresentGNBID,
+						GNBID: &aper.BitString{
+							Bytes: []byte{0x45, 0x46, 0x47},
+							NumBits: 24,
+						},
+					},
+				},
+			},
+		}}},
+	}
+
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
+	if err := s.Encode(w); err != nil {
+		fmt.Println("err:", err)
+	}
+	aper.FlushWrite(w)
+	fmt.Printf("encode: %b\n", buf.Bytes())
+
+	// decode
+	ss := ies.AreaOfInterest{}
+	if err := ss.Decode(aper.NewReader(bytes.NewBuffer(buf.Bytes()))); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Decode:", ss)
+		fmt.Println("PLMNIdentity", ss.AreaOfInterestTAIList.Value[0].TAI.PLMNIdentity.Value)
+		fmt.Println("TAC", ss.AreaOfInterestTAIList.Value[0].TAI.TAC.Value)
+		fmt.Println("GlobalRANNodeID Choice", ss.AreaOfInterestRANNodeList.Value[0].GlobalRANNodeID.Choice)
+		fmt.Println("\tPLMNIdentity Choice", ss.AreaOfInterestRANNodeList.Value[0].GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+		fmt.Println("\tGlobalGNBID Choice", ss.AreaOfInterestRANNodeList.Value[0].GlobalRANNodeID.GlobalGNBID.GNBID.Choice)
+		fmt.Println("\t\tGNBID", ss.AreaOfInterestRANNodeList.Value[0].GlobalRANNodeID.GlobalGNBID.GNBID.GNBID)
+	}
+}
+
 func TestDecodeUeRanSim(t *testing.T) {
 	if f, err := os.Open("./test_msg/ngsetuprequest.bin"); err != nil {
 		t.Errorf("Fail to read file : %+v", err)
@@ -19,21 +71,14 @@ func TestDecodeUeRanSim(t *testing.T) {
 		if decode, err, _ := NgapDecode(f); err != nil {
 			t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
 		} else {
-			_ = decode
-			fmt.Println()
-			fmt.Println("Present:", decode.Present)
-			fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
-			fmt.Println("Criticality:", decode.Message.Criticality.Value)
 			msg := decode.Message.Msg.(*ies.NGSetupRequest)
-			fmt.Printf("Message rannodename %s\n", msg.RANNodeName.Value)
-			fmt.Println("Message GlobalRanNodeId:", msg.GlobalRANNodeID)
+			// GlobalRANNodeID
+			fmt.Println("GlobalGNBID - GNBID:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.Choice,
+				msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID)
 			mcc, mnc := utils.PlmnidToMccMnc(msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
-			fmt.Println("Message PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
-			fmt.Println("Message GNBID Choice:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.Choice)
-			if msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID != nil {
-				fmt.Println("Message GNBID:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID)
-			}
-			fmt.Println("Message GNBID:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID)
+			fmt.Println("GlobalGNBID - PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+			// RANNodeName
+			fmt.Printf("RANNodeName %s\n", msg.RANNodeName.Value)
 		}
 	}
 }
@@ -45,28 +90,25 @@ func TestNil(t *testing.T) {
 }
 
 func TestEncodeDecode(t *testing.T) {
-	msg, _ := test.resultPdu.Message.Msg.(NgapMessageEncoder)
-	var encoded []byte
-	var err error
-	if encoded, err = NgapEncode(msg); err != nil {
-		t.Errorf("NgapEncode() NGSetupRequest fail = %v", err)
-		return
-	}
-	fmt.Println()
-	if decode, err, _ := NgapDecode(bytes.NewBuffer(encoded)); err != nil {
+	if decode, err, _ := NgapDecode(bytes.NewBuffer(ngsetupreq)); err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println()
-		fmt.Println("Present:", decode.Present)
-		fmt.Println("ProcedureCode:", decode.Message.ProcedureCode.Value)
-		fmt.Println("Criticality:", decode.Message.Criticality.Value)
 		msg := decode.Message.Msg.(*ies.NGSetupRequest)
+
 		fmt.Printf("Message rannodename %s\n", msg.RANNodeName.Value)
+
 		mcc, mnc := utils.PlmnidToMccMnc(msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
-		fmt.Println("Message PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
-		fmt.Println("Message N3IWFID choice:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.Choice)
-		fmt.Println("Message GNBID Bytes:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID.Bytes)
-		fmt.Println("Message GNBID NumBits:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID.NumBits)
+		fmt.Println("GlobalGNBID PLMNIdentity:", mcc, mnc, msg.GlobalRANNodeID.GlobalGNBID.PLMNIdentity.Value)
+
+		fmt.Println("GlobalGNBID GNBID Bytes:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID.Bytes)
+		fmt.Println("GlobalGNBID GNBID NumBits:", msg.GlobalRANNodeID.GlobalGNBID.GNBID.GNBID.NumBits)
+
+		fmt.Println("SupportedTAList TAC:", msg.SupportedTAList.Value[0].TAC.Value)
+		fmt.Println("SupportedTAList PLMNIdentity:", msg.SupportedTAList.Value[0].BroadcastPLMNList.Value[0].PLMNIdentity)
+		snssai := msg.SupportedTAList.Value[0].BroadcastPLMNList.Value[0].TAISliceSupportList.Value[0].SNSSAI
+		fmt.Println("SNSSAI:", snssai.SST.Value, snssai.SD.Value)
+
+		fmt.Println("PagingDRX", msg.DefaultPagingDRX.Value)
 	}
 }
 
@@ -103,20 +145,9 @@ var test = struct {
 			Criticality:   ies.Criticality{Value: ies.Criticality_PresentReject},
 			Msg: &ies.NGSetupRequest{
 				RANNodeName: &ies.RANNodeName{Value: oct},
-				GlobalRANNodeID: &ies.GlobalRANNodeID{
-					Choice: ies.GlobalRANNodeIDPresentGlobalGNBID,
-					GlobalGNBID: &ies.GlobalGNBID{
-						PLMNIdentity: &ies.PLMNIdentity{Value: aper.OctetString{0x02, 0xf8, 0x39}},
-						GNBID: &ies.GNBID{
-							Choice: 1,
-							GNBID: &aper.BitString{
-								Bytes:   []byte{0x45, 0x46, 0x47},
-								NumBits: 24,
-							},
-						},
-					},
-				},
 			},
 		},
 	},
 }
+
+var ngsetupreq []byte = []byte{0,21,0,59,0,0,4,0,27,0,8,0,2,248,57,16,69,70,71,0,82,64,15,6,0,109,121,53,103,82,65,78,84,101,115,116,101,114,0,102,0,16,0,0,0,0,1,0,2,248,57,0,0,16,8,1,2,3,0,21,64,1,64}

@@ -12,7 +12,7 @@ type QosFlowLevelQosParameters struct {
 }
 
 func (ie *QosFlowLevelQosParameters) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -72,17 +72,17 @@ func (ie *QosFlowLevelQosParameters) Decode(r *aper.AperReader) (err error) {
 	if err = ie.AllocationAndRetentionPriority.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.GBRQosInformation.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.ReflectiveQosAttribute.Decode(r); err != nil {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.AdditionalQosFlowInformation.Decode(r); err != nil {
 			return
 		}

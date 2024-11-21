@@ -11,7 +11,7 @@ type SONConfigurationTransfer struct {
 }
 
 func (ie *SONConfigurationTransfer) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteBool(aper.One); err != nil {
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -62,7 +62,7 @@ func (ie *SONConfigurationTransfer) Decode(r *aper.AperReader) (err error) {
 	if err = ie.SONInformation.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 2) {
+	if aper.IsBitSet(optionals, 1) {
 		if err = ie.XnTNLConfigurationInfo.Decode(r); err != nil {
 			return
 		}
