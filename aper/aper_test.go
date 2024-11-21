@@ -525,6 +525,7 @@ func TestIntegerEncodeDecode(t *testing.T) {
 					}
 				})
 			}
+
 			writer.flush()
 
 			// 2. Verify the encoded result
@@ -742,5 +743,79 @@ func Test_Sequence(t *testing.T) {
 				fmt.Printf("Item %d matches: %+v\n", i, newItems[i])
 			}
 		}
+	}
+}
+
+
+
+
+
+
+
+func TestIntegerEncodeDecode2(t *testing.T) {
+	testGroups := []struct {
+		name  string
+		tests []struct {
+			value      int64
+			constraint *Constraint
+			extensible bool
+			expected   int64
+		}
+		expectedBytes []byte // Expected bytes after encoding all tests in the group
+	}{
+		{
+			name: "Group 1",
+			tests: []struct {
+				value      int64
+				constraint *Constraint
+				extensible bool
+				expected   int64
+			}{
+				{
+					value:      1,
+					constraint: &Constraint{Lb: 0, Ub: 4000000000000},
+					extensible: false,
+					expected:   45,
+				},
+			},
+			expectedBytes: []byte{0x58, 0x7B, 0x80, 0x02, 0x19, 0x2D},
+		},
+	}
+
+	for _, group := range testGroups {
+		t.Run(group.name, func(t *testing.T) {
+			// 1. Encode integers
+			buf := new(bytes.Buffer)
+			writer := NewWriter(buf)
+			for _, tt := range group.tests {
+				t.Run(fmt.Sprintf("Value=%d", tt.value), func(t *testing.T) {
+					err := writer.WriteInteger(tt.value, tt.constraint, tt.extensible)
+					if err != nil {
+						t.Errorf("WriteInteger() error = %v", err)
+					}
+				})
+			}
+			
+			writer.flush()
+			fmt.Println(buf.Bytes())
+			// 2. Verify the encoded result
+			// if !bytes.Equal(buf.Bytes(), group.expectedBytes) {
+			// 	t.Errorf("Encoded buffer = %v, want %v", buf.Bytes(), group.expectedBytes)
+			// }
+
+			// 3. Decode and compare with expected values
+			// reader := NewReader(bytes.NewReader(buf.Bytes()))
+			// for _, tt := range group.tests {
+			// 	t.Run(fmt.Sprintf("Expected=%d", tt.expected), func(t *testing.T) {
+			// 		decoded, err := reader.ReadInteger(tt.constraint, tt.extensible)
+			// 		if err != nil {
+			// 			t.Errorf("ReadInteger() error = %v", err)
+			// 		}
+			// 		if decoded != tt.expected {
+			// 			t.Errorf("Decoded value = %d, want %d", decoded, tt.expected)
+			// 		}
+			// 	})
+			// }
+		})
 	}
 }
