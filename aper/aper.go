@@ -107,7 +107,7 @@ func (ar *AperReader) readExBit(c *Constraint, e bool) (lRange uint64,lowerBound
 			lRange = c.Range()
 		}
 		if uint64(c.Ub) > POW_16 {
-			lRange = 0
+			lRange = c.Range()
 		}
 	}
 	return lRange, lowerBound, nil
