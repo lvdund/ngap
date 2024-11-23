@@ -313,7 +313,9 @@ func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	} else {
 		unsignedValueRange := uint64(sRange - 1)
 		bitLen := bits.Len64(unsignedValueRange)
-		if err := aw.writeValue(uint64(rawLength-1), uint(bitLen)); err != nil {
+		byteLen := uint((bitLen + 7) / 8)
+		bitLenngth := bits.Len(uint(int(byteLen)))
+		if err := aw.writeValue(uint64(rawLength-1), uint(bitLenngth)); err != nil {
 			return err
 		}
 	}
