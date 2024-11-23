@@ -15,7 +15,7 @@ type UPTransportLayerInformation struct {
 }
 
 func (ie *UPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 1, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 2, false); err != nil {
 		return
 	}
 	switch ie.Choice {

@@ -53,7 +53,7 @@ func (ar *AperReader) readConstraintValue(r uint64) (v uint64, err error) {
 
 	if r < POW_8 { //smaller than 1 byte, read value bits
 		//fmt.Printf("Range for constraint=%d[%d]\n", bits.Len64(r), r)
-		v, err = ar.readValue(uint(bits.Len64(r-1)))
+		v, err = ar.readValue(uint(bits.Len64(r - 1)))
 		return
 	} else if r == POW_8 {
 		nBytes = 1
@@ -154,23 +154,26 @@ func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err er
 
 func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (content []byte, err error) {
 	defer func() {
-		err = aperError("ReadOctetString", err)
+		if isBitstring {
+			err = aperError("ReadString BitString", err)
+		}
+		err = aperError("ReadString OctetString", err)
 	}()
-	lRange,lowerBound,err :=ar.readExBit(c,e)
+	lRange, lowerBound, err := ar.readExBit(c, e)
 	if err != nil {
-		return nil,err
-	}	
-	
+		return nil, err
+	}
+
 	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at least 16 bits then set as semi-constrain
 		lRange = 0
 	}
 
 	if lRange == 1 { //constrained with fixed length
 		var numBytes, nbits uint
-		if isBitstring{
+		if isBitstring {
 			nbits = uint(c.Lb)
 			numBytes = (nbits + 7) >> 3
-		}else{
+		} else {
 			numBytes = uint(c.Lb)
 			nbits = numBytes * 8
 		}
@@ -198,9 +201,9 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 		ar.align()
 		//then read the  part content
 		var partLenBits uint64
-		if isBitstring{
+		if isBitstring {
 			partLenBits = partLen
-		}else{
+		} else {
 			partLenBits = partLen * 8
 		}
 		if tmpBytes, err = ar.ReadBits(uint(partLenBits)); err != nil {
@@ -217,30 +220,30 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 	return
 }
 
-func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint,err error) {
+func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint, err error) {
 	defer func() {
 		err = aperError("ReadBitString", err)
-	}()	
-	content,err = ar.ReadString(c,e,true)
+	}()
+	content, err = ar.ReadString(c, e, true)
 	if err != nil {
 		return
 	}
-	return content,0,nil
-}	
+	return content, 0, nil
+}
 func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (content []byte, err error) {
 	defer func() {
 		err = aperError("ReadOctetString", err)
 	}()
-	content,err = ar.ReadString(c,e,false)
+	content, err = ar.ReadString(c, e, false)
 	if err != nil {
 		return
 	}
-	return content,nil
+	return content, nil
 }
 
 func (ar *AperReader) ReadOpenType() (octets []byte, err error) {
 	octets, err = ar.ReadOctetString(nil, false)
-	ar.align() 
+	ar.align()
 	return
 }
 
@@ -248,11 +251,11 @@ func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 	defer func() {
 		err = aperError("ReadInteger", err)
 	}()
-	
-	sRange,_,err :=ar.readExBit(c,e)
+
+	sRange, _, err := ar.readExBit(c, e)
 
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
 	var rawLength uint
 	switch {
@@ -277,7 +280,21 @@ func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 
 	default: //sRange > POW_16, c is non-nil
 		unsignedValueRange := uint64(sRange - 1)
-		bitLength := bits.Len64(unsignedValueRange)
+		var byteLen uint
+		for byteLen = 1; byteLen <= 127; byteLen++ {
+			unsignedValueRange >>= 8
+			if unsignedValueRange == 0 {
+				break
+			}
+		}
+		var bitLength, upper uint
+		// 1 ~ 8 bits
+		for bitLength = 1; bitLength <= 8; bitLength++ {
+			upper = 1 << bitLength
+			if upper >= byteLen {
+				break
+			}
+		}
 		var tmp uint64
 		if tmp, err = ar.readValue(uint(bitLength)); err != nil {
 			return
