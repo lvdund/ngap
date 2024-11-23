@@ -11,40 +11,6 @@ import (
 	"github.com/lvdund/ngap/ies"
 )
 
-// func Test_transfer(t *testing.T) {
-// 	var buff bytes.Buffer
-// 	w := aper.NewWriter(&buff)
-
-// 	msg := ies.UPTransportLayerInformation{
-// 		Choice: ies.UPTransportLayerInformationPresentGTPTunnel,
-// 		GTPTunnel: &ies.GTPTunnel{
-// 			TransportLayerAddress: &ies.TransportLayerAddress{Value: aper.BitString{
-// 				Bytes:   net.ParseIP("127.0.0.1").To4(),
-// 				NumBits: uint64(len(net.ParseIP("127.0.0.1").To4()) * 8),
-// 			}},
-// 			GTPTEID: &ies.GTPTEID{Value: aper.OctetString{0, 0, 0, 1}},
-// 		},
-// 	}
-// 	if err := msg.Encode(w); err != nil {
-// 		fmt.Println("err:", err)
-// 		return
-// 	}
-// 	w.Close()
-// 	b := buff.Bytes()
-// 	fmt.Printf("encode: %0b\n\t%v\n", b, b)
-// 	fmt.Println("=====================================================")
-// 	fmt.Println("=====================================================")
-// 	fmt.Println("=====================================================")
-// 	fmt.Println()
-// 	r := aper.NewReader(&buff)
-// 	aa := ies.UPTransportLayerInformation{}
-// 	// aa := ies.GTPTEID{}
-// 	if err := aa.Decode(r); err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(aa)
-// }
-
 func Test_PDUSessionResourceSetupRequestTransfer(t *testing.T) {
 	teidOct := make([]byte, 4)
 	// TODO might need to generate teid when adding real sessions
