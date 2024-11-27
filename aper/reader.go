@@ -52,7 +52,6 @@ func (ar *AperReader) readConstraintValue(r uint64) (v uint64, err error) {
 	var nBytes uint
 
 	if r < POW_8 { //smaller than 1 byte, read value bits
-		//fmt.Printf("Range for constraint=%d[%d]\n", bits.Len64(r), r)
 		v, err = ar.readValue(uint(bits.Len64(r - 1)))
 		return
 	} else if r == POW_8 {

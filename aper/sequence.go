@@ -39,23 +39,19 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint,
 		if err = aw.WriteBool(int64(numElems) > c.Ub); err != nil {
 			return
 		}
-		fmt.Printf("log before WriteSequenceOf-WriteBool:\t%b\n", GetWriter(*aw))
 	}
 	//NOTE: if sizeRange == 1, no need to write sequence size
 	if sizeRange > 1 {
 		if err = aw.writeConstraintValue(sizeRange, uint64(numElems)-lowerBound); err != nil {
 			return
 		}
-		fmt.Printf("log before WriteSequenceOf-writeConstraintValue:\t%b\n", GetWriter(*aw))
 	} else if sizeRange == 0 { //unconstraint
 		if err = aw.align(); err != nil {
 			return
 		}
-		fmt.Printf("log before WriteSequenceOf-align:\t%b\n", GetWriter(*aw))
 		if err = aw.writeValue(uint64(numElems&0xff), 8); err != nil {
 			return
 		}
-		fmt.Printf("log before WriteSequenceOf-writeValue:\t%d %b\n", numElems, GetWriter(*aw))
 	}
 	//finally, write all itemst
 	for _, item := range items {

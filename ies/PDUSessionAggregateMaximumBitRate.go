@@ -1,8 +1,6 @@
 package ies
 
 import (
-	"fmt"
-
 	"github.com/lvdund/ngap/aper"
 )
 
@@ -23,7 +21,6 @@ func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err err
 			return
 		}
 	}
-	fmt.Printf("log PDUSessionAggregateMaximumBitRate:\t%b\n", aper.GetWriter(*w))
 	if ie.PDUSessionAggregateMaximumBitRateUL != nil {
 		if err = ie.PDUSessionAggregateMaximumBitRateUL.Encode(w); err != nil {
 			return
