@@ -17,7 +17,7 @@ type NGRANCGI struct {
 }
 
 func (ie *NGRANCGI) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 3, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
@@ -29,7 +29,7 @@ func (ie *NGRANCGI) Encode(w *aper.AperWriter) (err error) {
 	return
 }
 func (ie *NGRANCGI) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
 		return
 	}
 	switch ie.Choice {

@@ -26,7 +26,7 @@ type BroadcastCancelledAreaList struct {
 }
 
 func (ie *BroadcastCancelledAreaList) Encode(w *aper.AperWriter) (err error) {
-	if err = w.WriteChoice(ie.Choice, 7, false); err != nil {
+	if err = w.WriteChoice(ie.Choice, 6, false); err != nil {
 		return
 	}
 	switch ie.Choice {
@@ -46,7 +46,7 @@ func (ie *BroadcastCancelledAreaList) Encode(w *aper.AperWriter) (err error) {
 	return
 }
 func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(7, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(6, false); err != nil {
 		return
 	}
 	switch ie.Choice {
