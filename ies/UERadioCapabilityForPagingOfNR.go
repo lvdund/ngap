@@ -7,12 +7,12 @@ type UERadioCapabilityForPagingOfNR struct {
 }
 
 func (ie *UERadioCapabilityForPagingOfNR) Encode(w *aper.AperWriter) (err error) {
-	err = w.WriteOctetString(ie.Value, &aper.Constraint{Lb: 0, Ub: 0}, false)
+	err = w.WriteOctetString(ie.Value, nil, false)
 	return
 }
 func (ie *UERadioCapabilityForPagingOfNR) Decode(r *aper.AperReader) (err error) {
 	var v aper.OctetString
-	if v, err = r.ReadOctetString(&aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
+	if v, err = r.ReadOctetString(nil, false); err != nil {
 		return
 	}
 	ie.Value = v
