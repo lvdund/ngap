@@ -151,7 +151,7 @@ func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err er
 	return
 }
 
-func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (content []byte, err error) {
+func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (content []byte, nbits uint, err error) {
 	defer func() {
 		if isBitstring {
 			err = aperError("ReadString BitString", err)
@@ -160,7 +160,7 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 	}()
 	lRange, lowerBound, err := ar.readExBit(c, e)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at least 16 bits then set as semi-constrain
@@ -168,7 +168,7 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 	}
 
 	if lRange == 1 { //constrained with fixed length
-		var numBytes, nbits uint
+		var numBytes uint
 		if isBitstring {
 			nbits = uint(c.Lb)
 			numBytes = (nbits + 7) >> 3
@@ -223,17 +223,17 @@ func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 	defer func() {
 		err = aperError("ReadBitString", err)
 	}()
-	content, err = ar.ReadString(c, e, true)
+	content, nbits, err = ar.ReadString(c, e, true)
 	if err != nil {
 		return
 	}
-	return content, 0, nil
+	return content, nbits, nil
 }
 func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (content []byte, err error) {
 	defer func() {
 		err = aperError("ReadOctetString", err)
 	}()
-	content, err = ar.ReadString(c, e, false)
+	content, _, err = ar.ReadString(c, e, false)
 	if err != nil {
 		return
 	}
