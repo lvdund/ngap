@@ -138,7 +138,7 @@ func (aw *AperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
 }
 
 func (aw *AperWriter) WriteString(content []byte, len uint64, c *Constraint, e bool, isBitstring bool) (err error) {
-	lowerBound,lRange,_:=aw.writeExtBit(len,e,c)
+	lowerBound, lRange, _ := aw.writeExtBit(len, e, c)
 	if lRange > 0 && uint64(c.Ub) >= POW_16 { //if upper bound is at lest 16bits then set as semi-constrain
 		lRange = 0
 	}
@@ -147,11 +147,11 @@ func (aw *AperWriter) WriteString(content []byte, len uint64, c *Constraint, e b
 			err = ErrFixedLength
 			return
 		}
-		var numByte ,nbits uint64
-		if isBitstring{
-			numByte = (len + 7) >> 3;
+		var numByte, nbits uint64
+		if isBitstring {
+			numByte = (len + 7) >> 3
 			nbits = len
-		}else{
+		} else {
 			numByte = len
 			nbits = len * 8
 		}
@@ -198,9 +198,9 @@ func (aw *AperWriter) WriteString(content []byte, len uint64, c *Constraint, e b
 			return
 		}
 		var partLenBits uint
-		if !isBitstring{
-			partLenBits = uint(partLen*8)
-		}else{
+		if !isBitstring {
+			partLenBits = uint(partLen * 8)
+		} else {
 			partLenBits = uint(partLen)
 		}
 		if partBytes, err = partReader.ReadBits(partLenBits); err != nil { //get a content part to write
@@ -220,7 +220,7 @@ func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 	defer func() {
 		err = aperError("WriteBitString", err)
 	}()
-	err = aw.WriteString(content, uint64(nbits),c,e,true)
+	err = aw.WriteString(content, uint64(nbits), c, e, true)
 	return
 }
 
@@ -229,7 +229,7 @@ func (aw *AperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (e
 		err = aperError("WriteOctetString", err)
 	}()
 	byteLen := uint64(len(content))
-	err = aw.WriteString(content, byteLen,c, e, false)
+	err = aw.WriteString(content, byteLen, c, e, false)
 	return
 }
 
@@ -281,7 +281,7 @@ func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	defer func() {
 		err = aperError("WriteInteger", err)
 	}()
-	lb,sRange,_ := aw.writeExtBit(uint64(v),e,c)
+	lb, sRange, _ := aw.writeExtBit(uint64(v), e, c)
 	unsignedValue := uint64(v)
 	var rawLength uint
 	if sRange == 1 {

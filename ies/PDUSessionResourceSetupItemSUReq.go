@@ -64,7 +64,7 @@ func (ie *PDUSessionResourceSetupItemSUReq) Decode(r *aper.AperReader) (err erro
 	if err = ie.SNSSAI.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(&aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
+	if o, err = r.ReadOctetString(nil, false); err != nil {
 		return
 	} else {
 		ie.PDUSessionResourceSetupRequestTransfer = (*aper.OctetString)(&o)

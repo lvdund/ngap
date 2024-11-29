@@ -38,7 +38,7 @@ func (ie *PDUSessionResourceNotifyItem) Decode(r *aper.AperReader) (err error) {
 	if err = ie.PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(&aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
+	if o, err = r.ReadOctetString(nil, false); err != nil {
 		return
 	} else {
 		ie.PDUSessionResourceNotifyTransfer = (*aper.OctetString)(&o)
