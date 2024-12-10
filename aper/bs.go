@@ -26,7 +26,9 @@ func NewBitStreamWriter(w io.Writer) *bitstreamWriter {
 // write buffer and reset
 func (bs *bitstreamWriter) align() error {
 	if bs.index > 0 {
-		if _, err := bs.w.Write(bs.b[:]); err != nil {
+		shift := 8 - bs.index
+		v := (bs.b[0] >> shift) << shift //set remaining bit to zeros
+		if _, err := bs.w.Write([]byte{v}); err != nil {
 			return err
 		}
 		bs.index = 0
