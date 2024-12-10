@@ -38,15 +38,18 @@ func (bs *bitstreamWriter) align() error {
 }
 
 func (bs *bitstreamWriter) flush() error {
-	if bs.index == 0 { //already flushed, no more write
+	return bs.align()
+	/*
+		if bs.index == 0 { //already flushed, no more write
+			return nil
+		}
+		if _, err := bs.w.Write(bs.b[:]); err != nil {
+			return err
+		}
+		bs.b[0] = 0
+		bs.index = 0
 		return nil
-	}
-	if _, err := bs.w.Write(bs.b[:]); err != nil {
-		return err
-	}
-	bs.b[0] = 0
-	bs.index = 0
-	return nil
+	*/
 }
 
 func (bs *bitstreamWriter) WriteBool(bit bool) error {
