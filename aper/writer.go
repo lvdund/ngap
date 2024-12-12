@@ -344,7 +344,7 @@ func (aw *AperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
 		return
 	}
 
-	if e {
+	if e && v > uBound {
 		if err = aw.WriteBool(Zero); err != nil {
 			return
 		}

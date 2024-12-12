@@ -11,6 +11,53 @@ import (
 	"github.com/lvdund/ngap/ies"
 )
 
+func Test_PDUSessionResourceSetupResponseTransfer(t *testing.T) {
+	msg := ies.PDUSessionResourceSetupResponseTransfer{
+		DLQosFlowPerTNLInformation: &ies.QosFlowPerTNLInformation{
+			UPTransportLayerInformation: &ies.UPTransportLayerInformation{
+				Choice: 1,
+				GTPTunnel: &ies.GTPTunnel{
+					GTPTEID: &ies.GTPTEID{Value: aper.OctetString{0, 0, 0, 1}},
+					TransportLayerAddress: &ies.TransportLayerAddress{Value: aper.BitString{
+						Bytes:   []byte{192, 168, 57, 1},
+						NumBits: 32,
+					}},
+				},
+			},
+			AssociatedQosFlowList: &ies.AssociatedQosFlowList{Value: []*ies.AssociatedQosFlowItem{&ies.AssociatedQosFlowItem{
+				QosFlowIdentifier: &ies.QosFlowIdentifier{3},
+			}}},
+		},
+	}
+	var buf bytes.Buffer
+	var b []byte
+	if err := msg.Encode(&buf); err != nil {
+		fmt.Println("err:", err)
+	} else {
+		b = buf.Bytes()
+		fmt.Printf("encode: %0b\n\t%v\n", b, b)
+	}
+	// need [0 3 224 192 168 57 1 0 0 0 1 0 3]
+	// have [0 3 224 192 168 57 1 0 0 0 1 0 3]
+	// have [0 3 224 192 168 57 1 0 0 0 1 0 3]
+	// have [0 3 224 192 168 57 1 0 0 0 1 0 3]
+
+	fmt.Println("=====================================================")
+	fmt.Println("=====================================================")
+	fmt.Println("=====================================================")
+	fmt.Println()
+	a := ies.PDUSessionResourceSetupResponseTransfer{}
+	if err := a.Decode(b); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(a.DLQosFlowPerTNLInformation.UPTransportLayerInformation.Choice)
+		fmt.Println(a.DLQosFlowPerTNLInformation.UPTransportLayerInformation.GTPTunnel.GTPTEID)
+		fmt.Println(a.DLQosFlowPerTNLInformation.UPTransportLayerInformation.GTPTunnel.TransportLayerAddress)
+		fmt.Println(a.DLQosFlowPerTNLInformation.AssociatedQosFlowList.Value[0].QosFlowIdentifier)
+	}
+
+}
+
 func Test_PDUSessionResourceSetupRequestTransfer(t *testing.T) {
 	teidOct := make([]byte, 4)
 	// TODO might need to generate teid when adding real sessions
@@ -83,4 +130,43 @@ func Test_PDUSessionResourceSetupRequestTransfer(t *testing.T) {
 		fmt.Println(a.QosFlowSetupRequestList.Value[0].QosFlowLevelQosParameters.AllocationAndRetentionPriority.PreemptionVulnerability)
 
 	}
+}
+
+/////
+
+func TestInitialContextSetupResponse(t *testing.T) {
+	msg := ies.InitialContextSetupResponse{
+		AMFUENGAPID: &ies.AMFUENGAPID{Value: 1},
+		// RANUENGAPID: &ies.RANUENGAPID{Value: 1},
+	}
+	var buf bytes.Buffer
+	if err := msg.Encode(&buf); err != nil {
+		fmt.Println("err:", err)
+	} else {
+		b := buf.Bytes()
+		fmt.Printf("encode: %0b\n\t%v\n", b, b)
+	}
+}
+
+func TestPduSessionResourceSetupResponse(t *testing.T) {
+	msg := ies.PDUSessionResourceSetupResponse{
+		AMFUENGAPID: &ies.AMFUENGAPID{1},
+		RANUENGAPID: &ies.RANUENGAPID{1},
+		PDUSessionResourceSetupListSURes: &ies.PDUSessionResourceSetupListSURes{
+			Value: []*ies.PDUSessionResourceSetupItemSURes{&ies.PDUSessionResourceSetupItemSURes{
+				PDUSessionID:                            &ies.PDUSessionID{1},
+				PDUSessionResourceSetupResponseTransfer: &aper.OctetString{0, 3, 224, 192, 168, 57, 1, 0, 0, 0, 1, 0, 3},
+			}},
+		},
+	}
+	var buf bytes.Buffer
+	if err := msg.Encode(&buf); err != nil {
+		fmt.Println("err:", err)
+	} else {
+		b := buf.Bytes()
+		fmt.Printf("encode: %0b\n\t%v\n", b, b)
+	}
+	// [32 29 0 36 0 0 3 0 10 64 2 0 1 0 85 64 2 0 1 0 75 64 17 0 0 1 13 0 3 224 192 168 57 1 0 0 0 1 0 3]
+	// [16 29 0 36 0 0 3 0 10 64 2 0 1 0 85 64 2 0 1 0 75 64 17 0 0 1 13 0 3 224 192 168 57 1 0 0 0 1 0 3]
+	// [32 29 0 36 0 0 3 0 10 64 2 0 1 0 85 64 2 0 1 0 75 64 17 0 0 1 13 0 3 224 192 168 57 1 0 0 0 1 0 3]
 }

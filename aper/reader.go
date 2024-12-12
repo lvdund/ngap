@@ -202,6 +202,7 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 		var partLenBits uint64
 		if isBitstring {
 			partLenBits = partLen
+			nbits += uint(partLen)
 		} else {
 			partLenBits = partLen * 8
 		}
@@ -212,7 +213,6 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 		if err = partWriter.WriteBits(tmpBytes, uint(partLenBits)); err != nil {
 			return
 		}
-		//nbits += uint(partLen)
 	}
 	partWriter.flush()    //flush the buffer
 	content = buf.Bytes() //return the concatenated output

@@ -28,14 +28,22 @@ func (ie *AssociatedQosFlowItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}
-	if _, err = r.ReadBits(1); err != nil {
+	var optionals []byte
+	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
 	ie.QosFlowIdentifier = new(QosFlowIdentifier)
 	if err = ie.QosFlowIdentifier.Decode(r); err != nil {
 		return
 	}
-	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 1}, true)
-	*ie.QosFlowMappingIndication = aper.Enumerated(v)
+	if aper.IsBitSet(optionals, 3) {
+		var v uint64
+		v, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 1}, true)
+		if err != nil {
+			return
+		}
+		*ie.QosFlowMappingIndication = aper.Enumerated(v)
+	}
+
 	return
 }

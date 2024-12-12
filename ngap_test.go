@@ -20,7 +20,7 @@ func TestOptional(t *testing.T) {
 		AreaOfInterestTAIList: &ies.AreaOfInterestTAIList{Value: []*ies.AreaOfInterestTAIItem{&ies.AreaOfInterestTAIItem{
 			TAI: &ies.TAI{
 				PLMNIdentity: &ies.PLMNIdentity{Value: aper.OctetString{0x02, 0xf8, 0x39}},
-				TAC: &ies.TAC{Value: aper.OctetString{0x02, 0xf8, 0x39}},
+				TAC:          &ies.TAC{Value: aper.OctetString{0x02, 0xf8, 0x39}},
 			},
 		}}},
 		AreaOfInterestRANNodeList: &ies.AreaOfInterestRANNodeList{Value: []*ies.AreaOfInterestRANNodeItem{&ies.AreaOfInterestRANNodeItem{
@@ -31,7 +31,7 @@ func TestOptional(t *testing.T) {
 					GNBID: &ies.GNBID{
 						Choice: ies.GNBIDPresentGNBID,
 						GNBID: &aper.BitString{
-							Bytes: []byte{0x45, 0x46, 0x47},
+							Bytes:   []byte{0x45, 0x46, 0x47},
 							NumBits: 24,
 						},
 					},
@@ -126,6 +126,20 @@ func BenchmarkPerformace(b *testing.B) {
 		}
 	}
 }
+func TestNgap(t *testing.T) {
+	msg := test.resultPdu
+	out := test.buf
+	if _, err, _ := NgapDecode(bytes.NewBuffer(out)); err != nil {
+		fmt.Println("Decode:", err)
+		return
+	}
+	if b , err := NgapEncode(msg.Message.Msg.(NgapMessageEncoder)); err != nil {
+		fmt.Println("Decode:", err)
+		return
+	} else {
+		fmt.Printf("encode: %0b\n\t%v\n", b, b)
+	}
+}
 
 var str string = "a"
 var oct aper.OctetString = aper.OctetString(str)
@@ -150,4 +164,4 @@ var test = struct {
 	},
 }
 
-var ngsetupreq []byte = []byte{0,21,0,59,0,0,4,0,27,0,8,0,2,248,57,16,69,70,71,0,82,64,15,6,0,109,121,53,103,82,65,78,84,101,115,116,101,114,0,102,0,16,0,0,0,0,1,0,2,248,57,0,0,16,8,1,2,3,0,21,64,1,64}
+var ngsetupreq []byte = []byte{0, 21, 0, 59, 0, 0, 4, 0, 27, 0, 8, 0, 2, 248, 57, 16, 69, 70, 71, 0, 82, 64, 15, 6, 0, 109, 121, 53, 103, 82, 65, 78, 84, 101, 115, 116, 101, 114, 0, 102, 0, 16, 0, 0, 0, 0, 1, 0, 2, 248, 57, 0, 0, 16, 8, 1, 2, 3, 0, 21, 64, 1, 64}

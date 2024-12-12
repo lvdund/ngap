@@ -24,13 +24,13 @@ func (msg *InitialContextSetupResponse) toIes() (ies []NgapMessageIE) {
 	if msg.AMFUENGAPID != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Criticality: Criticality{Value: Criticality_PresentReject},
 			Value:       msg.AMFUENGAPID})
 	}
 	if msg.RANUENGAPID != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Criticality: Criticality{Value: Criticality_PresentReject},
 			Value:       msg.RANUENGAPID})
 	}
 	if msg.PDUSessionResourceSetupListCxtRes != nil {
