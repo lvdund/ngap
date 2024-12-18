@@ -1,13 +1,18 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"bytes"
+
+	"github.com/lvdund/ngap/aper"
+)
 
 type PDUSessionResourceReleaseCommandTransfer struct {
 	Cause *Cause `False,`
 	// IEExtensions PDUSessionResourceReleaseCommandTransferExtIEs `False,OPTIONAL`
 }
 
-func (ie *PDUSessionResourceReleaseCommandTransfer) Encode(w *aper.AperWriter) (err error) {
+func (ie *PDUSessionResourceReleaseCommandTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -20,7 +25,8 @@ func (ie *PDUSessionResourceReleaseCommandTransfer) Encode(w *aper.AperWriter) (
 	}
 	return
 }
-func (ie *PDUSessionResourceReleaseCommandTransfer) Decode(r *aper.AperReader) (err error) {
+func (ie *PDUSessionResourceReleaseCommandTransfer) Decode(wire []byte) (err error) {
+	r := aper.NewReader(bytes.NewBuffer(wire))
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

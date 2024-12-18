@@ -1,6 +1,10 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"bytes"
+
+	"github.com/lvdund/ngap/aper"
+)
 
 type PathSwitchRequestTransfer struct {
 	DLNGUUPTNLInformation        *UPTransportLayerInformation  `False,`
@@ -10,7 +14,8 @@ type PathSwitchRequestTransfer struct {
 	// IEExtensions PathSwitchRequestTransferExtIEs `False,OPTIONAL`
 }
 
-func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
+func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -44,7 +49,8 @@ func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 	}
 	return
 }
-func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
+func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
+	r := aper.NewReader(bytes.NewBuffer(wire))
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

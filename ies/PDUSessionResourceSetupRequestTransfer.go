@@ -3,7 +3,6 @@ package ies
 import (
 	"bytes"
 	"fmt"
-	"io"
 
 	"github.com/lvdund/ngap/aper"
 )
@@ -20,8 +19,8 @@ type PDUSessionResourceSetupRequestTransfer struct {
 	CommonNetworkInstance             *CommonNetworkInstance
 }
 
-func (msg *PDUSessionResourceSetupRequestTransfer) Encode(w io.Writer) (err error) {
-	return encodeTransferMessage(w, msg.toIes())
+func (msg *PDUSessionResourceSetupRequestTransfer) Encode() ([]byte, error) {
+	return encodeTransferMessage(msg.toIes())
 }
 
 func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE) {

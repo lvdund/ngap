@@ -8,8 +8,9 @@ import (
 	"github.com/lvdund/ngap/aper"
 )
 
-func encodeTransferMessage(w io.Writer, ies []NgapMessageIE) (err error) {
-	aw := aper.NewWriter(w)
+func encodeTransferMessage(ies []NgapMessageIE) (w []byte, err error) {
+	buffer := bytes.NewBuffer(w)
+	aw := aper.NewWriter(buffer)
 	if err = aw.WriteBool(aper.Zero); err != nil {
 		return
 	}

@@ -29,12 +29,11 @@ func Test_PDUSessionResourceSetupResponseTransfer(t *testing.T) {
 			}}},
 		},
 	}
-	var buf bytes.Buffer
 	var b []byte
-	if err := msg.Encode(&buf); err != nil {
+	var err error
+	if b, err = msg.Encode(); err != nil {
 		fmt.Println("err:", err)
 	} else {
-		b = buf.Bytes()
 		fmt.Printf("encode: %0b\n\t%v\n", b, b)
 	}
 	// need [0 3 224 192 168 57 1 0 0 0 1 0 3]
@@ -99,20 +98,19 @@ func Test_PDUSessionResourceSetupRequestTransfer(t *testing.T) {
 		}}},
 	}
 
-	var buf bytes.Buffer
-	if err := a.Encode(&buf); err != nil {
+	var buf []byte
+	var err error
+	if buf, err = a.Encode(); err != nil {
 		fmt.Println("err:", err)
 	} else {
-		b := buf.Bytes()
-		fmt.Printf("encode: %0b\n\t%v\n", b, b)
+		fmt.Printf("encode: %0b\n\t%v\n", buf, buf)
 	}
 	fmt.Println("=====================================================")
 	fmt.Println("=====================================================")
 	fmt.Println("=====================================================")
 	fmt.Println()
-	b := buf.Bytes()
 	a = ies.PDUSessionResourceSetupRequestTransfer{}
-	if err, _ := a.Decode(b); err != nil {
+	if err, _ := a.Decode(buf); err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println(a)

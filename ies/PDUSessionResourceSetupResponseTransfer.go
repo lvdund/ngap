@@ -2,7 +2,6 @@ package ies
 
 import (
 	"bytes"
-	"io"
 
 	"github.com/lvdund/ngap/aper"
 )
@@ -15,9 +14,9 @@ type PDUSessionResourceSetupResponseTransfer struct {
 	// IEExtensions PDUSessionResourceSetupResponseTransferExtIEs `False,OPTIONAL`
 }
 
-func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w io.Writer) (err error) {
-	aw := aper.NewWriter(w)
-	if err = aw.WriteBool(aper.Zero); err != nil {
+func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
+	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
@@ -30,24 +29,24 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w io.Writer) (err erro
 	if ie.QosFlowFailedToSetupList != nil {
 		aper.SetBit(optionals, 3)
 	}
-	aw.WriteBits(optionals, 4)
+	w.WriteBits(optionals, 4)
 	if ie.DLQosFlowPerTNLInformation != nil {
-		if err = ie.DLQosFlowPerTNLInformation.Encode(aw); err != nil {
+		if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Encode(aw); err != nil {
+		if err = ie.AdditionalDLQosFlowPerTNLInformation.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.SecurityResult != nil {
-		if err = ie.SecurityResult.Encode(aw); err != nil {
+		if err = ie.SecurityResult.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.QosFlowFailedToSetupList != nil {
-		if err = ie.QosFlowFailedToSetupList.Encode(aw); err != nil {
+		if err = ie.QosFlowFailedToSetupList.Encode(w); err != nil {
 			return
 		}
 	}
