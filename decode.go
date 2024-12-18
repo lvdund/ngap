@@ -1,6 +1,7 @@
 package ngap
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -9,8 +10,8 @@ import (
 )
 
 // decode a Ngap message from io.Reader
-func NgapDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ies.CriticalityDiagnostics) {
-	r := aper.NewReader(ioR)
+func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.CriticalityDiagnostics) {
+	r := aper.NewReader(bytes.NewBuffer(buf))
 	//1. decode extention bit
 	var b bool
 	if b, err = r.ReadBool(); err != nil {

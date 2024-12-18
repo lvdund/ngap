@@ -1,7 +1,6 @@
 package ngap
 
 import (
-	"bytes"
 	"fmt"
 	"testing"
 
@@ -12,7 +11,7 @@ import (
 var InitialContextSetup []byte = []byte{0, 14, 0, 128, 160, 0, 0, 9, 0, 10, 0, 2, 0, 3, 0, 85, 0, 2, 0, 1, 0, 28, 0, 7, 0, 2, 248, 57, 202, 254, 0, 0, 0, 0, 5, 2, 1, 1, 2, 3, 0, 119, 0, 9, 8, 0, 4, 0, 0, 0, 0, 0, 0, 0, 94, 0, 32, 206, 95, 98, 156, 163, 174, 116, 221, 109, 37, 95, 134, 126, 99, 8, 187, 95, 19, 3, 95, 23, 52, 107, 185, 18, 252, 178, 206, 240, 225, 31, 23, 0, 36, 64, 4, 0, 2, 248, 57, 0, 34, 64, 8, 17, 16, 0, 0, 0, 255, 255, 0, 0, 38, 64, 52, 51, 126, 2, 144, 13, 43, 124, 1, 126, 0, 66, 1, 1, 119, 0, 11, 242, 2, 248, 57, 202, 254, 0, 0, 0, 0, 3, 84, 7, 0, 2, 248, 57, 0, 0, 1, 21, 5, 4, 1, 1, 2, 3, 33, 1, 0, 94, 1, 6, 22, 1, 44}
 
 func Test5(t *testing.T) {
-	if decode, err, _ := NgapDecode(bytes.NewBuffer(InitialContextSetup)); err != nil {
+	if decode, err, _ := NgapDecode(InitialContextSetup); err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("=======================")
@@ -40,7 +39,7 @@ var UplinkNASTransport []byte = []byte{0, 46, 64, 60, 0, 0, 4, 0, 10, 0, 2, 0, 1
 
 func Test3(t *testing.T) {
 	// test decode
-	if decode, err, _ := NgapDecode(bytes.NewBuffer(UplinkNASTransport)); err != nil {
+	if decode, err, _ := NgapDecode(UplinkNASTransport); err != nil {
 		fmt.Println(err)
 	} else {
 		msg := decode.Message.Msg.(*ies.UplinkNASTransport)
@@ -62,7 +61,7 @@ var inituemsg []byte = []byte{0, 15, 64, 66, 0, 0, 5, 0, 85, 0, 2, 0, 1, 0, 38, 
 
 func Test2(t *testing.T) {
 	// test decode
-	if decode, err, _ := NgapDecode(bytes.NewBuffer(inituemsg)); err != nil {
+	if decode, err, _ := NgapDecode(inituemsg); err != nil {
 		fmt.Println(err)
 	} else {
 		msg := decode.Message.Msg.(*ies.InitialUEMessage)
@@ -117,7 +116,7 @@ var DownlinkNASTransport1 []byte = []byte{0, 4, 64, 62, 0, 0, 3, 0, 10, 0, 2, 0,
 
 func Test1(t *testing.T) {
 	// test decode
-	if decode, err, _ := NgapDecode(bytes.NewBuffer(DownlinkNASTransport1)); err != nil {
+	if decode, err, _ := NgapDecode(DownlinkNASTransport1); err != nil {
 		fmt.Println(err)
 	} else {
 		msg := decode.Message.Msg.(*ies.DownlinkNASTransport)

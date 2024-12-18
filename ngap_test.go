@@ -3,6 +3,7 @@ package ngap
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"testing"
 
@@ -68,7 +69,8 @@ func TestDecodeUeRanSim(t *testing.T) {
 		t.Errorf("Fail to read file : %+v", err)
 	} else {
 		defer f.Close()
-		if decode, err, _ := NgapDecode(f); err != nil {
+		content, _ := io.ReadAll(f)
+		if decode, err, _ := NgapDecode(content); err != nil {
 			t.Errorf("NgapDecode() NGSetupRequest fail = %v", err)
 		} else {
 			msg := decode.Message.Msg.(*ies.NGSetupRequest)
@@ -90,7 +92,7 @@ func TestNil(t *testing.T) {
 }
 
 func TestEncodeDecode(t *testing.T) {
-	if decode, err, _ := NgapDecode(bytes.NewBuffer(ngsetupreq)); err != nil {
+	if decode, err, _ := NgapDecode(ngsetupreq); err != nil {
 		fmt.Println(err)
 	} else {
 		msg := decode.Message.Msg.(*ies.NGSetupRequest)
@@ -116,7 +118,7 @@ func BenchmarkPerformace(b *testing.B) {
 	msg := test.resultPdu
 	out := test.buf
 	for i := 0; i < b.N; i++ {
-		if _, err, _ := NgapDecode(bytes.NewBuffer(out)); err != nil {
+		if _, err, _ := NgapDecode(out); err != nil {
 			fmt.Println("Decode:", err)
 			return
 		}
@@ -129,11 +131,11 @@ func BenchmarkPerformace(b *testing.B) {
 func TestNgap(t *testing.T) {
 	msg := test.resultPdu
 	out := test.buf
-	if _, err, _ := NgapDecode(bytes.NewBuffer(out)); err != nil {
+	if _, err, _ := NgapDecode(out); err != nil {
 		fmt.Println("Decode:", err)
 		return
 	}
-	if b , err := NgapEncode(msg.Message.Msg.(NgapMessageEncoder)); err != nil {
+	if b, err := NgapEncode(msg.Message.Msg.(NgapMessageEncoder)); err != nil {
 		fmt.Println("Decode:", err)
 		return
 	} else {
