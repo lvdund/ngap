@@ -9,9 +9,9 @@ import (
 )
 
 type InitialUEMessage struct {
-	RANUENGAPID                         *RANUENGAPID                         `,reject,mandatory`
-	NASPDU                              *NASPDU                              `,reject,mandatory`
-	UserLocationInformation             *UserLocationInformation             `,reject,mandatory`
+	RANUENGAPID                         RANUENGAPID                          `,reject,mandatory`
+	NASPDU                              NASPDU                               `,reject,mandatory`
+	UserLocationInformation             UserLocationInformation              `,reject,mandatory`
 	RRCEstablishmentCause               *RRCEstablishmentCause               `,ignore,mandatory`
 	FiveGSTMSI                          *FiveGSTMSI                          `,reject,optional`
 	AMFSetID                            *AMFSetID                            `,ignore,optional`
@@ -26,24 +26,18 @@ func (msg *InitialUEMessage) Encode(w io.Writer) (err error) {
 }
 func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE) {
 	ies = []NgapMessageIE{}
-	if msg.RANUENGAPID != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.RANUENGAPID})
-	}
-	if msg.NASPDU != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.NASPDU})
-	}
-	if msg.UserLocationInformation != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_UserLocationInformation},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.UserLocationInformation})
-	}
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value:       &msg.RANUENGAPID})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value:       &msg.NASPDU})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_UserLocationInformation},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value:       &msg.UserLocationInformation})
 	if msg.RRCEstablishmentCause != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_RRCEstablishmentCause},
@@ -91,14 +85,24 @@ func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE) {
 func (msg *InitialUEMessage) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+	decoder := InitialUEMessageDecoder{
+		msg:  msg,
+		list: make(map[aper.Integer]*NgapMessageIE),
+	}
+	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	_ = ies
+
 	return
 }
-func (msg *InitialUEMessage) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
+
+type InitialUEMessageDecoder struct {
+	msg                    *InitialUEMessage
+	criticalityDiagnostics []CriticalityDiagnostics        //for gradually building criticality diagnostics
+	list                   map[aper.Integer]*NgapMessageIE //keep decoded IEs to check for duplication
+}
+
+func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
 	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
 	if err != nil {
 		return
@@ -114,30 +118,43 @@ func (msg *InitialUEMessage) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE,
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
+
+	ieId := msgIe.Id.Value
+	//check for duplicated IE
+	if _, ok := decoder.list[ieId]; ok {
+		err = fmt.Errorf("Duplicated protocol IEID: %d", ieId)
+		return
+	}
+	decoder.list[ieId] = msgIe //mark as decoded
+
 	ieR := aper.NewReader(bytes.NewReader(buf))
+	msg := decoder.msg
 	switch msgIe.Id.Value {
 	case ProtocolIEID_RANUENGAPID:
-		var tmp RANUENGAPID
-		if err = tmp.Decode(ieR); err != nil {
+		//NOTE1: for each IE, depending on criticality, we may return an error
+		//or just accumulate a criticlity dagnostic item
+		//NOTE2: mandatory/reject field should be represented as object field, we can decode the field directly
+		//NOTE3: mandatory/ignore or optional field should be represent by a
+		//pointer, we should decoded to a temporary variable then assign its
+		//address to the field pointer
+		if err = msg.RANUENGAPID.Decode(ieR); err != nil {
 			return
 		}
-		msg.RANUENGAPID = &tmp
 	case ProtocolIEID_NASPDU:
-		var tmp NASPDU
-		if err = tmp.Decode(ieR); err != nil {
+		if err = msg.NASPDU.Decode(ieR); err != nil {
 			return
 		}
-		msg.NASPDU = &tmp
 	case ProtocolIEID_UserLocationInformation:
-		var tmp UserLocationInformation
-		if err = tmp.Decode(ieR); err != nil {
+		if err = msg.UserLocationInformation.Decode(ieR); err != nil {
 			return
 		}
-		msg.UserLocationInformation = &tmp
 	case ProtocolIEID_RRCEstablishmentCause:
 		var tmp RRCEstablishmentCause
 		if err = tmp.Decode(ieR); err != nil {
-			return
+			//TODO: for this one (mandatory/ignore) we should not return an
+			//error; should may need to build an criticality diagnostic item
+			//then reset the error
+			err = nil
 		}
 		msg.RRCEstablishmentCause = &tmp
 	case ProtocolIEID_FiveGSTMSI:
@@ -177,8 +194,10 @@ func (msg *InitialUEMessage) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE,
 		}
 		msg.SelectedPLMNIdentity = &tmp
 	default:
-		err = fmt.Errorf("temporary error")
-		return
+		//err = fmt.Errorf("temporary error")
+		//TOOD: see free5gc ngap handler (AMF) to know how to deal with decoded IEs
+		//that do  not belong to the message
 	}
 	return
+
 }

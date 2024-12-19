@@ -82,13 +82,13 @@ func Test2(t *testing.T) {
 func GetInitialUEMessage() ies.InitialUEMessage {
 	msg := ies.InitialUEMessage{}
 
-	msg.RANUENGAPID = &ies.RANUENGAPID{
+	msg.RANUENGAPID = ies.RANUENGAPID{
 		Value: 1,
 	}
 
-	msg.NASPDU = &ies.NASPDU{Value: aper.OctetString{126, 0, 65, 121, 0, 13, 1, 2, 248, 57, 0, 0, 0, 0, 0, 0, 0, 0, 16, 46, 2, 160, 32}}
+	msg.NASPDU = ies.NASPDU{Value: aper.OctetString{126, 0, 65, 121, 0, 13, 1, 2, 248, 57, 0, 0, 0, 0, 0, 0, 0, 0, 16, 46, 2, 160, 32}}
 
-	msg.UserLocationInformation = &ies.UserLocationInformation{
+	msg.UserLocationInformation = ies.UserLocationInformation{
 		Choice: ies.UserLocationInformationPresentUserLocationInformationNR,
 		UserLocationInformationNR: &ies.UserLocationInformationNR{
 			NRCGI: &ies.NRCGI{
