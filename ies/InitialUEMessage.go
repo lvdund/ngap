@@ -92,8 +92,8 @@ func (msg *InitialUEMessage) Decode(wire []byte) (err error, diagList []Critical
 	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	//check if all mandatory fields are decoded
 
+	//check if all mandatory fields are decoded
 	if _, ok := decoder.list[ProtocolIEID_RANUENGAPID]; !ok {
 		err = fmt.Errorf("Mandatory field RANUENGAPID is missing")
 		return
@@ -107,7 +107,7 @@ func (msg *InitialUEMessage) Decode(wire []byte) (err error, diagList []Critical
 		err = fmt.Errorf("Mandatory field UserLocationInformation is missing")
 		return
 	}
-
+	//return the built criticality diagnostics
 	diagList = decoder.criticalityDiagnostics
 	return
 }
