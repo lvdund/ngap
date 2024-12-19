@@ -92,7 +92,23 @@ func (msg *InitialUEMessage) Decode(wire []byte) (err error, diagList []Critical
 	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
+	//check if all mandatory fields are decoded
 
+	if _, ok := decoder.list[ProtocolIEID_RANUENGAPID]; !ok {
+		err = fmt.Errorf("Mandatory field RANUENGAPID is missing")
+		return
+	}
+
+	if _, ok := decoder.list[ProtocolIEID_NASPDU]; !ok {
+		err = fmt.Errorf("Mandatory field NASPDU is missing")
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_UserLocationInformation]; !ok {
+		err = fmt.Errorf("Mandatory field UserLocationInformation is missing")
+		return
+	}
+
+	diagList = decoder.criticalityDiagnostics
 	return
 }
 
@@ -122,7 +138,7 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 	ieId := msgIe.Id.Value
 	//check for duplicated IE
 	if _, ok := decoder.list[ieId]; ok {
-		err = fmt.Errorf("Duplicated protocol IEID: %d", ieId)
+		err = fmt.Errorf("Duplicated protocol IEID[%d] found", ieId)
 		return
 	}
 	decoder.list[ieId] = msgIe //mark as decoded
