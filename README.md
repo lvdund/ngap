@@ -31,8 +31,37 @@ The message should become:
 ```go
 type AnNgapMessage struct {
 	AMFUENGAPID integer
+	// other fields
 }
 ```	
+
+ - Similarly, an IE which is a structure holding a single array can be replaced by the array itself.
+```go
+type HandoverRequest struct {
+	PDUSessionResourceSetupListHOReq *PDUSessionResourceSetupListHOReq
+	//other fields
+}
+
+type PDUSessionResourceSetupListHOReq struct {
+	Value []*PDUSessionResourceSetupItemHOReq
+}
+
+```
+should become:
+
+```go
+type HandoverRequest struct {
+	PDUSessionResourceSetupListHOReq []PDUSessionResourceSetupItemHOReq
+	//other fields
+}
+
+type PDUSessionResourceSetupListHOReq struct {
+	Value []*PDUSessionResourceSetupItemHOReq
+}
+```
+however, keep in mind that if the field is mandatory, you should check the array size (not zero) when encoding and decoding to enforce its mandatoriness.
+
+- Don't use array of pointers, use array of object instead. Otherwise, it leave users pondering should they need to check for nil pointer (when receiving)
 
 ## Contributing
 
