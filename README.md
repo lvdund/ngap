@@ -10,6 +10,7 @@
 
 
 ## TODO list:
+ - Log error with context using `err = utils.WrapError("context definition", err)`
  - Should we need a 'ies' submodule or we can move all messages and IEs to the root folder so that we don't need to import multiple submodules? It is the best that users only need to import 'github.com/lvdund/ngap'
  - When composing a message or an IEs, it is best if users do not need to use aper sub-module, except for the case of BitString.
  - IE structure with a single field 'Value' can be replace by type of the Value itself. For example

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/reogac/utils"
 	"io"
 	"math/bits"
 )
@@ -25,7 +26,7 @@ func (ar *AperReader) readBytes(nbytes uint) (output []byte, err error) {
 func (ar *AperReader) readValue(nbits uint) (v uint64, err error) {
 	defer func() {
 		if err != nil {
-			err = aperError("readValue", err)
+			err = utils.WrapError("readValue", err)
 		}
 	}()
 
@@ -46,7 +47,7 @@ func (ar *AperReader) readValue(nbits uint) (v uint64, err error) {
 
 func (ar *AperReader) readConstraintValue(r uint64) (v uint64, err error) {
 	defer func() {
-		err = aperError("readConstraintValue", err)
+		err = utils.WrapError("readConstraintValue", err)
 	}()
 
 	var nBytes uint
@@ -70,7 +71,7 @@ func (ar *AperReader) readConstraintValue(r uint64) (v uint64, err error) {
 
 func (ar *AperReader) readSemiConstraintWholeNumber(lb uint64) (v uint64, err error) {
 	defer func() {
-		err = aperError("readSemiConstraintWholeNumber", err)
+		err = utils.WrapError("readSemiConstraintWholeNumber", err)
 	}()
 
 	ar.align()
@@ -88,7 +89,7 @@ func (ar *AperReader) readSemiConstraintWholeNumber(lb uint64) (v uint64, err er
 
 func (ar *AperReader) readNormallySmallNonNegativeValue() (v uint64, err error) {
 	defer func() {
-		err = aperError("readNormallySmallNonNegativeValue", err)
+		err = utils.WrapError("readNormallySmallNonNegativeValue", err)
 	}()
 
 	var b bool
@@ -106,7 +107,7 @@ func (ar *AperReader) readNormallySmallNonNegativeValue() (v uint64, err error) 
 // decode length of a data part in a multiple-parts content
 func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err error) {
 	defer func() {
-		err = aperError("readLength", err)
+		err = utils.WrapError("readLength", err)
 	}()
 
 	more = false
@@ -122,7 +123,7 @@ func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err er
 	//detect the type of length then decode the value
 	var first, second uint64
 	if first, err = ar.readValue(8); err != nil { //read first byte for detecting type of encoded length
-		err = aperError("read first byte", err)
+		err = utils.WrapError("read first byte", err)
 		return
 	}
 
@@ -131,7 +132,7 @@ func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err er
 		return
 	} else if (first & POW_6) == 0 { //  first byte has '10' leading bits -> 14bits value
 		if second, err = ar.readValue(8); err != nil { //read second byte to calculate the length value
-			err = aperError("read second byte", err)
+			err = utils.WrapError("read second byte", err)
 			return
 		}
 
@@ -154,9 +155,9 @@ func (ar *AperReader) readLength(lRange uint64) (value uint64, more bool, err er
 func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (content []byte, nbits uint, err error) {
 	defer func() {
 		if isBitstring {
-			err = aperError("ReadString BitString", err)
+			err = utils.WrapError("ReadString BitString", err)
 		}
-		err = aperError("ReadString OctetString", err)
+		err = utils.WrapError("ReadString OctetString", err)
 	}()
 	lRange, lowerBound, err := ar.readExBit(c, e)
 	if err != nil {
@@ -221,7 +222,7 @@ func (ar *AperReader) ReadString(c *Constraint, e bool, isBitstring bool) (conte
 
 func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbits uint, err error) {
 	defer func() {
-		err = aperError("ReadBitString", err)
+		err = utils.WrapError("ReadBitString", err)
 	}()
 	content, nbits, err = ar.ReadString(c, e, true)
 	if err != nil {
@@ -231,7 +232,7 @@ func (ar *AperReader) ReadBitString(c *Constraint, e bool) (content []byte, nbit
 }
 func (ar *AperReader) ReadOctetString(c *Constraint, e bool) (content []byte, err error) {
 	defer func() {
-		err = aperError("ReadOctetString", err)
+		err = utils.WrapError("ReadOctetString", err)
 	}()
 	content, _, err = ar.ReadString(c, e, false)
 	if err != nil {
@@ -248,7 +249,7 @@ func (ar *AperReader) ReadOpenType() (octets []byte, err error) {
 
 func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error) {
 	defer func() {
-		err = aperError("ReadInteger", err)
+		err = utils.WrapError("ReadInteger", err)
 	}()
 
 	sRange, _, err := ar.readExBit(c, e)
@@ -323,7 +324,7 @@ func (ar *AperReader) ReadInteger(c *Constraint, e bool) (value int64, err error
 // constrain must have Lb <= Ub
 func (ar *AperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) {
 	defer func() {
-		err = aperError("ReadEnumerate", err)
+		err = utils.WrapError("ReadEnumerate", err)
 	}()
 
 	if e { //if extensible is true, read the extention bit
@@ -355,7 +356,7 @@ func (ar *AperReader) ReadEnumerate(c Constraint, e bool) (v uint64, err error) 
 
 func (ar *AperReader) ReadChoice(uBound uint64, e bool) (v uint64, err error) {
 	defer func() {
-		err = aperError("ReadChoice", err)
+		err = utils.WrapError("ReadChoice", err)
 	}()
 
 	if e {

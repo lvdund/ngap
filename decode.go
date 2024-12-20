@@ -3,10 +3,10 @@ package ngap
 import (
 	"bytes"
 	"fmt"
-	"io"
 
 	"github.com/lvdund/ngap/aper"
 	"github.com/lvdund/ngap/ies"
+	"github.com/reogac/utils"
 )
 
 // decode a Ngap message from io.Reader
@@ -15,6 +15,7 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	//1. decode extention bit
 	var b bool
 	if b, err = r.ReadBool(); err != nil {
+		err = utils.WrapError("Read extension bit", err)
 		return
 	}
 	_ = b
@@ -23,6 +24,7 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	// v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 2}, false)
 	c, err := r.ReadChoice(2, false)
 	if err != nil {
+		err = utils.WrapError("Read message present", err)
 		return
 	}
 	present := uint8(c)
@@ -30,6 +32,7 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	//3. decode procedure code
 	v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err != nil {
+		err = utils.WrapError("Read procedure code", err)
 		return
 	}
 	// fmt.Printf("procedureCode:%d\n", v)
@@ -37,6 +40,7 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	//4. decode criticality
 	e, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
 	if err != nil {
+		err = utils.WrapError("Read message criticality", err)
 		return
 	}
 	var criticality ies.Criticality = ies.Criticality{Value: aper.Enumerated(e)}
@@ -44,6 +48,7 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	//5. decode message content
 	var containerBytes []byte
 	if containerBytes, err = r.ReadOpenType(); err != nil {
+		err = utils.WrapError("Read message body content", err)
 		return
 	}
 	//fmt.Printf("exten=%v - containerBytes readopen type= %.8b\n", b, containerBytes)
@@ -51,13 +56,14 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	//prepare message for decoding
 	message := createMessage(present, procedureCode)
 	if message == nil {
-		err = fmt.Errorf("Unknown message") //TODO: create a right error message
+		err = fmt.Errorf("Unknown message type") //TODO: create a right error message
 		return
 	}
 
 	var diagnosticsItems []ies.CriticalityDiagnostics
 	//decode all IEs within the message
 	if err, diagnosticsItems = message.Decode(containerBytes); err != nil {
+		err = utils.WrapError("Decode message content", err)
 		return
 	}
 
@@ -75,6 +81,7 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	return
 }
 
+/*
 func TransferDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ies.CriticalityDiagnostics) {
 	r := aper.NewReader(ioR)
 	if _, err = r.ReadBool(); err != nil {
@@ -82,3 +89,4 @@ func TransferDecode(ioR io.Reader) (pdu NgapPdu, err error, diagnostics *ies.Cri
 	}
 	return
 }
+*/
