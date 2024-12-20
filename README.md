@@ -55,9 +55,6 @@ type HandoverRequest struct {
 	//other fields
 }
 
-type PDUSessionResourceSetupListHOReq struct {
-	Value []*PDUSessionResourceSetupItemHOReq
-}
 ```
 however, keep in mind that if the field is mandatory, you should check the array size (not zero) when encoding and decoding to enforce its mandatoriness.
 
