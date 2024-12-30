@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type NGRANTNLAssociationToRemoveItem struct {
-	TNLAssociationTransportLayerAddress    *CPTransportLayerInformation `False,`
-	TNLAssociationTransportLayerAddressAMF *CPTransportLayerInformation `False,OPTIONAL`
-	// IEExtensions NGRANTNLAssociationToRemoveItemExtIEs `False,OPTIONAL`
+	TNLAssociationTransportLayerAddress    CPTransportLayerInformation
+	TNLAssociationTransportLayerAddressAMF *CPTransportLayerInformation
+	// IEExtensions  *NGRANTNLAssociationToRemoveItemExtIEs
 }
 
 func (ie *NGRANTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error) {
@@ -17,10 +17,8 @@ func (ie *NGRANTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.TNLAssociationTransportLayerAddress != nil {
-		if err = ie.TNLAssociationTransportLayerAddress.Encode(w); err != nil {
-			return
-		}
+	if err = ie.TNLAssociationTransportLayerAddress.Encode(w); err != nil {
+		return
 	}
 	if ie.TNLAssociationTransportLayerAddressAMF != nil {
 		if err = ie.TNLAssociationTransportLayerAddressAMF.Encode(w); err != nil {
@@ -37,8 +35,6 @@ func (ie *NGRANTNLAssociationToRemoveItem) Decode(r *aper.AperReader) (err error
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.TNLAssociationTransportLayerAddress = new(CPTransportLayerInformation)
-	ie.TNLAssociationTransportLayerAddressAMF = new(CPTransportLayerInformation)
 	if err = ie.TNLAssociationTransportLayerAddress.Decode(r); err != nil {
 		return
 	}

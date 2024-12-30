@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UserLocationInformationEUTRA struct {
-	EUTRACGI  *EUTRACGI  `True,`
-	TAI       *TAI       `True,`
-	TimeStamp *TimeStamp `False,OPTIONAL`
-	// IEExtensions UserLocationInformationEUTRAExtIEs `False,OPTIONAL`
+	EUTRACGI  EUTRACGI
+	TAI       TAI
+	TimeStamp *[]byte
+	// IEExtensions  *UserLocationInformationEUTRAExtIEs
 }
 
 func (ie *UserLocationInformationEUTRA) Encode(w *aper.AperWriter) (err error) {
@@ -18,18 +18,15 @@ func (ie *UserLocationInformationEUTRA) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.EUTRACGI != nil {
-		if err = ie.EUTRACGI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.EUTRACGI.Encode(w); err != nil {
+		return
 	}
-	if ie.TAI != nil {
-		if err = ie.TAI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.TAI.Encode(w); err != nil {
+		return
 	}
 	if ie.TimeStamp != nil {
-		if err = ie.TimeStamp.Encode(w); err != nil {
+		tmp_TimeStamp := NewOCTETSTRING(*ie.TimeStamp, aper.Constraint{Lb: 4, Ub: 4}, true)
+		if err = tmp_TimeStamp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -43,9 +40,6 @@ func (ie *UserLocationInformationEUTRA) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.EUTRACGI = new(EUTRACGI)
-	ie.TAI = new(TAI)
-	ie.TimeStamp = new(TimeStamp)
 	if err = ie.EUTRACGI.Decode(r); err != nil {
 		return
 	}
@@ -53,9 +47,14 @@ func (ie *UserLocationInformationEUTRA) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.TimeStamp.Decode(r); err != nil {
+		tmp_TimeStamp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 4, Ub: 4},
+			ext: false,
+		}
+		if err = tmp_TimeStamp.Decode(r); err != nil {
 			return
 		}
+		*ie.TimeStamp = tmp_TimeStamp.Value
 	}
 	return
 }

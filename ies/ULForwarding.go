@@ -7,7 +7,7 @@ const (
 )
 
 type ULForwarding struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *ULForwarding) Encode(w *aper.AperWriter) (err error) {

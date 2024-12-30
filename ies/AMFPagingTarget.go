@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	AMFPagingTargetPresentNothing uint64 = iota /* No components present */
-	AMFPagingTargetPresentGlobalRANNodeID
-	AMFPagingTargetPresentTAI
+	AMFPagingTargetPresentNothing uint64 = iota
+	AMFPagingTargetPresentGlobalrannodeid
+	AMFPagingTargetPresentTai
 	AMFPagingTargetPresentChoiceExtensions
 )
 
 type AMFPagingTarget struct {
 	Choice          uint64
-	GlobalRANNodeID *GlobalRANNodeID `False,,,`
-	TAI             *TAI             `True,,,`
-	// ChoiceExtensions *AMFPagingTargetExtIEs `False,,,`
+	GlobalRANNodeID *GlobalRANNodeID
+	TAI             *TAI
+	// ChoiceExtensions *AMFPagingTargetExtIEs
 }
 
 func (ie *AMFPagingTarget) Encode(w *aper.AperWriter) (err error) {
@@ -21,25 +21,25 @@ func (ie *AMFPagingTarget) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case AMFPagingTargetPresentGlobalRANNodeID:
+	case AMFPagingTargetPresentGlobalrannodeid:
 		err = ie.GlobalRANNodeID.Encode(w)
-	case AMFPagingTargetPresentTAI:
+	case AMFPagingTargetPresentTai:
 		err = ie.TAI.Encode(w)
 	}
 	return
 }
 func (ie *AMFPagingTarget) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case AMFPagingTargetPresentGlobalRANNodeID:
+	case AMFPagingTargetPresentGlobalrannodeid:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.GlobalRANNodeID = &tmp
-	case AMFPagingTargetPresentTAI:
+	case AMFPagingTargetPresentTai:
 		var tmp TAI
 		if err = tmp.Decode(r); err != nil {
 			return

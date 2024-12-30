@@ -8,7 +8,7 @@ const (
 )
 
 type ExpectedUEMobility struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *ExpectedUEMobility) Encode(w *aper.AperWriter) (err error) {

@@ -8,7 +8,7 @@ const (
 )
 
 type TypeOfError struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *TypeOfError) Encode(w *aper.AperWriter) (err error) {

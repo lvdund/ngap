@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type XnExtTLAItem struct {
-	IPsecTLA *TransportLayerAddress `False,OPTIONAL`
-	GTPTLAs  *XnGTPTLAs             `False,OPTIONAL`
-	// IEExtensions XnExtTLAItemExtIEs `False,OPTIONAL`
+	IPsecTLA *[]byte
+	// GTPTLAs  *[]TransportLayerAddress
+	// IEExtensions  *XnExtTLAItemExtIEs
 }
 
 func (ie *XnExtTLAItem) Encode(w *aper.AperWriter) (err error) {
@@ -16,20 +16,31 @@ func (ie *XnExtTLAItem) Encode(w *aper.AperWriter) (err error) {
 	if ie.IPsecTLA != nil {
 		aper.SetBit(optionals, 1)
 	}
-	if ie.GTPTLAs != nil {
-		aper.SetBit(optionals, 2)
-	}
+	// if ie.GTPTLAs != nil {
+	// 	aper.SetBit(optionals, 2)
+	// }
 	w.WriteBits(optionals, 3)
 	if ie.IPsecTLA != nil {
-		if err = ie.IPsecTLA.Encode(w); err != nil {
+		tmp_IPsecTLA := NewBITSTRING(*ie.IPsecTLA, aper.Constraint{Lb: 1, Ub: 160}, true)
+		if err = tmp_IPsecTLA.Encode(w); err != nil {
 			return
 		}
 	}
-	if ie.GTPTLAs != nil {
-		if err = ie.GTPTLAs.Encode(w); err != nil {
-			return
-		}
-	}
+	// if ie.GTPTLAs != nil {
+	// 	if len(*ie.GTPTLAs) > 0 {
+	// 		tmp := Sequence[*TransportLayerAddress]{
+	// 			Value: []*TransportLayerAddress{},
+	// 			c:     aper.Constraint{Lb: 0, Ub: 0},
+	// 			ext:   false,
+	// 		}
+	// 		for _, i := range *ie.GTPTLAs {
+	// 			tmp.Value = append(tmp.Value, &i)
+	// 		}
+	// 		if err = tmp.Encode(w); err != nil {
+	// 			return
+	// 		}
+	// 	}
+	// }
 	return
 }
 func (ie *XnExtTLAItem) Decode(r *aper.AperReader) (err error) {
@@ -40,17 +51,28 @@ func (ie *XnExtTLAItem) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.IPsecTLA = new(TransportLayerAddress)
-	ie.GTPTLAs = new(XnGTPTLAs)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.IPsecTLA.Decode(r); err != nil {
+		tmp_IPsecTLA := BITSTRING{
+			c:   aper.Constraint{Lb: 1, Ub: 160},
+			ext: false,
+		}
+		if err = tmp_IPsecTLA.Decode(r); err != nil {
 			return
 		}
+		*ie.IPsecTLA = tmp_IPsecTLA.Value.Bytes
 	}
-	if aper.IsBitSet(optionals, 2) {
-		if err = ie.GTPTLAs.Decode(r); err != nil {
-			return
-		}
-	}
+	// if aper.IsBitSet(optionals, 2) {
+	// 	tmp_GTPTLAs := Sequence[*TransportLayerAddress]{
+	// 		c:   aper.Constraint{Lb: 0, Ub: 0},
+	// 		ext: false,
+	// 	}
+	// 	if err = tmp_GTPTLAs.Decode(r); err != nil {
+	// 		return
+	// 	}
+	// 	ie.GTPTLAs = &[]TransportLayerAddress{}
+	// 	for _, i := range tmp_GTPTLAs.Value {
+	// 		*ie.GTPTLAs = append(*ie.GTPTLAs, *i)
+	// 	}
+	// }
 	return
 }

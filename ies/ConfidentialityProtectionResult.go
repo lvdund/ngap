@@ -8,7 +8,7 @@ const (
 )
 
 type ConfidentialityProtectionResult struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *ConfidentialityProtectionResult) Encode(w *aper.AperWriter) (err error) {

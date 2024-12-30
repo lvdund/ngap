@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceSetupItemHOReq struct {
-	PDUSessionID            *PDUSessionID     `False,`
-	SNSSAI                  *SNSSAI           `True,`
-	HandoverRequestTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceSetupItemHOReqExtIEs `False,OPTIONAL`
+	PDUSessionID            int64
+	SNSSAI                  SNSSAI
+	HandoverRequestTransfer []byte
+	// IEExtensions  *PDUSessionResourceSetupItemHOReqExtIEs
 }
 
 func (ie *PDUSessionResourceSetupItemHOReq) Encode(w *aper.AperWriter) (err error) {
@@ -15,20 +15,16 @@ func (ie *PDUSessionResourceSetupItemHOReq) Encode(w *aper.AperWriter) (err erro
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, true)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.SNSSAI != nil {
-		if err = ie.SNSSAI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.SNSSAI.Encode(w); err != nil {
+		return
 	}
-	if ie.HandoverRequestTransfer != nil {
-		if err = w.WriteOctetString(*ie.HandoverRequestTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_HandoverRequestTransfer := NewOCTETSTRING(ie.HandoverRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, true)
+	if err = tmp_HandoverRequestTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -39,19 +35,24 @@ func (ie *PDUSessionResourceSetupItemHOReq) Decode(r *aper.AperReader) (err erro
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	ie.SNSSAI = new(SNSSAI)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
 	if err = ie.SNSSAI.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.HandoverRequestTransfer = (*aper.OctetString)(&o)
+	tmp_HandoverRequestTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_HandoverRequestTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.HandoverRequestTransfer = tmp_HandoverRequestTransfer.Value
 	return
 }

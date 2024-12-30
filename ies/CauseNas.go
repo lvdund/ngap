@@ -10,7 +10,7 @@ const (
 )
 
 type CauseNas struct {
-	Value aper.Enumerated `True,0,3`
+	Value aper.Enumerated
 }
 
 func (ie *CauseNas) Encode(w *aper.AperWriter) (err error) {

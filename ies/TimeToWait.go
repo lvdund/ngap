@@ -3,16 +3,16 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	TimeToWaitV1s  aper.Enumerated = 0
-	TimeToWaitV2s  aper.Enumerated = 1
-	TimeToWaitV5s  aper.Enumerated = 2
-	TimeToWaitV10s aper.Enumerated = 3
-	TimeToWaitV20s aper.Enumerated = 4
-	TimeToWaitV60s aper.Enumerated = 5
+	TimeToWaitV1S  aper.Enumerated = 0
+	TimeToWaitV2S  aper.Enumerated = 1
+	TimeToWaitV5S  aper.Enumerated = 2
+	TimeToWaitV10S aper.Enumerated = 3
+	TimeToWaitV20S aper.Enumerated = 4
+	TimeToWaitV60S aper.Enumerated = 5
 )
 
 type TimeToWait struct {
-	Value aper.Enumerated `True,0,5`
+	Value aper.Enumerated
 }
 
 func (ie *TimeToWait) Encode(w *aper.AperWriter) (err error) {
@@ -20,10 +20,7 @@ func (ie *TimeToWait) Encode(w *aper.AperWriter) (err error) {
 	return
 }
 func (ie *TimeToWait) Decode(r *aper.AperReader) (err error) {
-	var v uint64
-	if v, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 5}, true); err != nil {
-		return
-	}
+	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 5}, true)
 	ie.Value = aper.Enumerated(v)
 	return
 }

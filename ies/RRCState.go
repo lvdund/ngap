@@ -8,7 +8,7 @@ const (
 )
 
 type RRCState struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *RRCState) Encode(w *aper.AperWriter) (err error) {

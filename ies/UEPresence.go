@@ -9,7 +9,7 @@ const (
 )
 
 type UEPresence struct {
-	Value aper.Enumerated `True,0,2`
+	Value aper.Enumerated
 }
 
 func (ie *UEPresence) Encode(w *aper.AperWriter) (err error) {
@@ -17,10 +17,7 @@ func (ie *UEPresence) Encode(w *aper.AperWriter) (err error) {
 	return
 }
 func (ie *UEPresence) Decode(r *aper.AperReader) (err error) {
-	var v uint64
-	if v, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, true); err != nil {
-		return
-	}
+	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, true)
 	ie.Value = aper.Enumerated(v)
 	return
 }

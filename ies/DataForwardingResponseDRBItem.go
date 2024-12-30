@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type DataForwardingResponseDRBItem struct {
-	DRBID                        *DRBID                       `False,`
-	DLForwardingUPTNLInformation *UPTransportLayerInformation `False,OPTIONAL`
-	ULForwardingUPTNLInformation *UPTransportLayerInformation `False,OPTIONAL`
-	// IEExtensions DataForwardingResponseDRBItemExtIEs `False,OPTIONAL`
+	DRBID                        int64
+	DLForwardingUPTNLInformation *UPTransportLayerInformation
+	ULForwardingUPTNLInformation *UPTransportLayerInformation
+	// IEExtensions  *DataForwardingResponseDRBItemExtIEs
 }
 
 func (ie *DataForwardingResponseDRBItem) Encode(w *aper.AperWriter) (err error) {
@@ -21,10 +21,9 @@ func (ie *DataForwardingResponseDRBItem) Encode(w *aper.AperWriter) (err error) 
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	if ie.DRBID != nil {
-		if err = ie.DRBID.Encode(w); err != nil {
-			return
-		}
+	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, true)
+	if err = tmp_DRBID.Encode(w); err != nil {
+		return
 	}
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
@@ -46,12 +45,14 @@ func (ie *DataForwardingResponseDRBItem) Decode(r *aper.AperReader) (err error) 
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.DRBID = new(DRBID)
-	ie.DLForwardingUPTNLInformation = new(UPTransportLayerInformation)
-	ie.ULForwardingUPTNLInformation = new(UPTransportLayerInformation)
-	if err = ie.DRBID.Decode(r); err != nil {
+	tmp_DRBID := INTEGER{
+		c:   aper.Constraint{Lb: 1, Ub: 32},
+		ext: false,
+	}
+	if err = tmp_DRBID.Decode(r); err != nil {
 		return
 	}
+	ie.DRBID = int64(tmp_DRBID.Value)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLForwardingUPTNLInformation.Decode(r); err != nil {
 			return

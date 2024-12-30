@@ -7,7 +7,7 @@ const (
 )
 
 type SONInformationRequest struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *SONInformationRequest) Encode(w *aper.AperWriter) (err error) {

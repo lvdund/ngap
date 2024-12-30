@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceToReleaseItemHOCmd struct {
-	PDUSessionID                            *PDUSessionID     `False,`
-	HandoverPreparationUnsuccessfulTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceToReleaseItemHOCmdExtIEs `False,OPTIONAL`
+	PDUSessionID                            int64
+	HandoverPreparationUnsuccessfulTransfer []byte
+	// IEExtensions  *PDUSessionResourceToReleaseItemHOCmdExtIEs
 }
 
 func (ie *PDUSessionResourceToReleaseItemHOCmd) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceToReleaseItemHOCmd) Encode(w *aper.AperWriter) (err 
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, true)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.HandoverPreparationUnsuccessfulTransfer != nil {
-		if err = w.WriteOctetString(*ie.HandoverPreparationUnsuccessfulTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_HandoverPreparationUnsuccessfulTransfer := NewOCTETSTRING(ie.HandoverPreparationUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, true)
+	if err = tmp_HandoverPreparationUnsuccessfulTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceToReleaseItemHOCmd) Decode(r *aper.AperReader) (err 
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.HandoverPreparationUnsuccessfulTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_HandoverPreparationUnsuccessfulTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_HandoverPreparationUnsuccessfulTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.HandoverPreparationUnsuccessfulTransfer = tmp_HandoverPreparationUnsuccessfulTransfer.Value
 	return
 }

@@ -8,7 +8,7 @@ const (
 )
 
 type EmergencyServiceTargetCN struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *EmergencyServiceTargetCN) Encode(w *aper.AperWriter) (err error) {

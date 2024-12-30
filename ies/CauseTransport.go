@@ -8,7 +8,7 @@ const (
 )
 
 type CauseTransport struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *CauseTransport) Encode(w *aper.AperWriter) (err error) {

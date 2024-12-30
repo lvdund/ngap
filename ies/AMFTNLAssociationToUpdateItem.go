@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type AMFTNLAssociationToUpdateItem struct {
-	AMFTNLAssociationAddress *CPTransportLayerInformation `False,`
-	TNLAssociationUsage      *TNLAssociationUsage         `False,OPTIONAL`
-	TNLAddressWeightFactor   *TNLAddressWeightFactor      `False,OPTIONAL`
-	// IEExtensions AMFTNLAssociationToUpdateItemExtIEs `False,OPTIONAL`
+	AMFTNLAssociationAddress CPTransportLayerInformation
+	TNLAssociationUsage      *TNLAssociationUsage
+	TNLAddressWeightFactor   *int64
+	// IEExtensions  *AMFTNLAssociationToUpdateItemExtIEs
 }
 
 func (ie *AMFTNLAssociationToUpdateItem) Encode(w *aper.AperWriter) (err error) {
@@ -21,10 +21,8 @@ func (ie *AMFTNLAssociationToUpdateItem) Encode(w *aper.AperWriter) (err error) 
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	if ie.AMFTNLAssociationAddress != nil {
-		if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
-			return
-		}
+	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
+		return
 	}
 	if ie.TNLAssociationUsage != nil {
 		if err = ie.TNLAssociationUsage.Encode(w); err != nil {
@@ -32,7 +30,8 @@ func (ie *AMFTNLAssociationToUpdateItem) Encode(w *aper.AperWriter) (err error) 
 		}
 	}
 	if ie.TNLAddressWeightFactor != nil {
-		if err = ie.TNLAddressWeightFactor.Encode(w); err != nil {
+		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, true)
+		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
 			return
 		}
 	}
@@ -46,9 +45,6 @@ func (ie *AMFTNLAssociationToUpdateItem) Decode(r *aper.AperReader) (err error) 
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.AMFTNLAssociationAddress = new(CPTransportLayerInformation)
-	ie.TNLAssociationUsage = new(TNLAssociationUsage)
-	ie.TNLAddressWeightFactor = new(TNLAddressWeightFactor)
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
 		return
 	}
@@ -58,9 +54,14 @@ func (ie *AMFTNLAssociationToUpdateItem) Decode(r *aper.AperReader) (err error) 
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.TNLAddressWeightFactor.Decode(r); err != nil {
+		tmp_TNLAddressWeightFactor := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 255},
+			ext: false,
+		}
+		if err = tmp_TNLAddressWeightFactor.Decode(r); err != nil {
 			return
 		}
+		*ie.TNLAddressWeightFactor = int64(tmp_TNLAddressWeightFactor.Value)
 	}
 	return
 }

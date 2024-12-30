@@ -13,7 +13,7 @@ const (
 )
 
 type CauseProtocol struct {
-	Value aper.Enumerated `True,0,6`
+	Value aper.Enumerated
 }
 
 func (ie *CauseProtocol) Encode(w *aper.AperWriter) (err error) {

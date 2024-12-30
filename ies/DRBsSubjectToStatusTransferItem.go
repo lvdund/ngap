@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type DRBsSubjectToStatusTransferItem struct {
-	DRBID       *DRBID       `False,`
-	DRBStatusUL *DRBStatusUL `False,`
-	DRBStatusDL *DRBStatusDL `False,`
-	// IEExtension DRBsSubjectToStatusTransferItemExtIEs `False,OPTIONAL`
+	DRBID       int64
+	DRBStatusUL DRBStatusUL
+	DRBStatusDL DRBStatusDL
+	// IEExtension  *DRBsSubjectToStatusTransferItemExtIEs
 }
 
 func (ie *DRBsSubjectToStatusTransferItem) Encode(w *aper.AperWriter) (err error) {
@@ -15,20 +15,15 @@ func (ie *DRBsSubjectToStatusTransferItem) Encode(w *aper.AperWriter) (err error
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.DRBID != nil {
-		if err = ie.DRBID.Encode(w); err != nil {
-			return
-		}
+	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, true)
+	if err = tmp_DRBID.Encode(w); err != nil {
+		return
 	}
-	if ie.DRBStatusUL != nil {
-		if err = ie.DRBStatusUL.Encode(w); err != nil {
-			return
-		}
+	if err = ie.DRBStatusUL.Encode(w); err != nil {
+		return
 	}
-	if ie.DRBStatusDL != nil {
-		if err = ie.DRBStatusDL.Encode(w); err != nil {
-			return
-		}
+	if err = ie.DRBStatusDL.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -39,12 +34,14 @@ func (ie *DRBsSubjectToStatusTransferItem) Decode(r *aper.AperReader) (err error
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.DRBID = new(DRBID)
-	ie.DRBStatusUL = new(DRBStatusUL)
-	ie.DRBStatusDL = new(DRBStatusDL)
-	if err = ie.DRBID.Decode(r); err != nil {
+	tmp_DRBID := INTEGER{
+		c:   aper.Constraint{Lb: 1, Ub: 32},
+		ext: false,
+	}
+	if err = tmp_DRBID.Decode(r); err != nil {
 		return
 	}
+	ie.DRBID = int64(tmp_DRBID.Value)
 	if err = ie.DRBStatusUL.Decode(r); err != nil {
 		return
 	}

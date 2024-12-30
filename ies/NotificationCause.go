@@ -8,7 +8,7 @@ const (
 )
 
 type NotificationCause struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *NotificationCause) Encode(w *aper.AperWriter) (err error) {

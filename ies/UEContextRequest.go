@@ -7,7 +7,7 @@ const (
 )
 
 type UEContextRequest struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *UEContextRequest) Encode(w *aper.AperWriter) (err error) {
@@ -15,10 +15,7 @@ func (ie *UEContextRequest) Encode(w *aper.AperWriter) (err error) {
 	return
 }
 func (ie *UEContextRequest) Decode(r *aper.AperReader) (err error) {
-	var v uint64
-	if v, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 0}, true); err != nil {
-		return
-	}
+	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 0}, true)
 	ie.Value = aper.Enumerated(v)
 	return
 }

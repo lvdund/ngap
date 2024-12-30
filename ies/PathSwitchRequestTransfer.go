@@ -1,21 +1,16 @@
 package ies
 
-import (
-	"bytes"
-
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type PathSwitchRequestTransfer struct {
-	DLNGUUPTNLInformation        *UPTransportLayerInformation  `False,`
-	DLNGUTNLInformationReused    *DLNGUTNLInformationReused    `False,OPTIONAL`
-	UserPlaneSecurityInformation *UserPlaneSecurityInformation `True,OPTIONAL`
-	QosFlowAcceptedList          *QosFlowAcceptedList          `False,`
-	// IEExtensions PathSwitchRequestTransferExtIEs `False,OPTIONAL`
+	DLNGUUPTNLInformation        UPTransportLayerInformation
+	DLNGUTNLInformationReused    *DLNGUTNLInformationReused
+	UserPlaneSecurityInformation *UserPlaneSecurityInformation
+	QosFlowAcceptedList          *[]QosFlowAcceptedItem
+	// IEExtensions  *PathSwitchRequestTransferExtIEs
 }
 
-func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -26,11 +21,12 @@ func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
 	if ie.UserPlaneSecurityInformation != nil {
 		aper.SetBit(optionals, 2)
 	}
-	w.WriteBits(optionals, 3)
-	if ie.DLNGUUPTNLInformation != nil {
-		if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-			return
-		}
+	if ie.QosFlowAcceptedList != nil {
+		aper.SetBit(optionals, 3)
+	}
+	w.WriteBits(optionals, 4)
+	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
+		return
 	}
 	if ie.DLNGUTNLInformationReused != nil {
 		if err = ie.DLNGUTNLInformationReused.Encode(w); err != nil {
@@ -43,25 +39,30 @@ func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
 		}
 	}
 	if ie.QosFlowAcceptedList != nil {
-		if err = ie.QosFlowAcceptedList.Encode(w); err != nil {
-			return
+		if len(*ie.QosFlowAcceptedList) > 0 {
+			tmp := Sequence[*QosFlowAcceptedItem]{
+				Value: []*QosFlowAcceptedItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+				ext:   false,
+			}
+			for _, i := range *ie.QosFlowAcceptedList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
 }
-func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(3); err != nil {
+	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.DLNGUUPTNLInformation = new(UPTransportLayerInformation)
-	ie.DLNGUTNLInformationReused = new(DLNGUTNLInformationReused)
-	ie.UserPlaneSecurityInformation = new(UserPlaneSecurityInformation)
-	ie.QosFlowAcceptedList = new(QosFlowAcceptedList)
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
 		return
 	}
@@ -75,8 +76,18 @@ func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
 			return
 		}
 	}
-	if err = ie.QosFlowAcceptedList.Decode(r); err != nil {
-		return
+	if aper.IsBitSet(optionals, 3) {
+		tmp_QosFlowAcceptedList := Sequence[*QosFlowAcceptedItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		if err = tmp_QosFlowAcceptedList.Decode(r); err != nil {
+			return
+		}
+		ie.QosFlowAcceptedList = &[]QosFlowAcceptedItem{}
+		for _, i := range tmp_QosFlowAcceptedList.Value {
+			*ie.QosFlowAcceptedList = append(*ie.QosFlowAcceptedList, *i)
+		}
 	}
 	return
 }

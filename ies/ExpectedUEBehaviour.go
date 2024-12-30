@@ -3,11 +3,11 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type ExpectedUEBehaviour struct {
-	ExpectedUEActivityBehaviour *ExpectedUEActivityBehaviour `True,OPTIONAL`
-	ExpectedHOInterval          *ExpectedHOInterval          `False,OPTIONAL`
-	ExpectedUEMobility          *ExpectedUEMobility          `False,OPTIONAL`
-	ExpectedUEMovingTrajectory  *ExpectedUEMovingTrajectory  `False,OPTIONAL`
-	// IEExtensions ExpectedUEBehaviourExtIEs `False,OPTIONAL`
+	ExpectedUEActivityBehaviour *ExpectedUEActivityBehaviour
+	ExpectedHOInterval          *ExpectedHOInterval
+	ExpectedUEMobility          *ExpectedUEMobility
+	ExpectedUEMovingTrajectory  *[]ExpectedUEMovingTrajectoryItem
+	// IEExtensions  *ExpectedUEBehaviourExtIEs
 }
 
 func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
@@ -44,8 +44,18 @@ func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.ExpectedUEMovingTrajectory != nil {
-		if err = ie.ExpectedUEMovingTrajectory.Encode(w); err != nil {
-			return
+		if len(*ie.ExpectedUEMovingTrajectory) > 0 {
+			tmp := Sequence[*ExpectedUEMovingTrajectoryItem]{
+				Value: []*ExpectedUEMovingTrajectoryItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofCellsUEMovingTrajectory},
+				ext:   false,
+			}
+			for _, i := range *ie.ExpectedUEMovingTrajectory {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
@@ -58,10 +68,6 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(5); err != nil {
 		return
 	}
-	ie.ExpectedUEActivityBehaviour = new(ExpectedUEActivityBehaviour)
-	ie.ExpectedHOInterval = new(ExpectedHOInterval)
-	ie.ExpectedUEMobility = new(ExpectedUEMobility)
-	ie.ExpectedUEMovingTrajectory = new(ExpectedUEMovingTrajectory)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ExpectedUEActivityBehaviour.Decode(r); err != nil {
 			return
@@ -78,8 +84,16 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 		}
 	}
 	if aper.IsBitSet(optionals, 4) {
-		if err = ie.ExpectedUEMovingTrajectory.Decode(r); err != nil {
+		tmp_ExpectedUEMovingTrajectory := Sequence[*ExpectedUEMovingTrajectoryItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsUEMovingTrajectory},
+			ext: false,
+		}
+		if err = tmp_ExpectedUEMovingTrajectory.Decode(r); err != nil {
 			return
+		}
+		ie.ExpectedUEMovingTrajectory = &[]ExpectedUEMovingTrajectoryItem{}
+		for _, i := range tmp_ExpectedUEMovingTrajectory.Value {
+			*ie.ExpectedUEMovingTrajectory = append(*ie.ExpectedUEMovingTrajectory, *i)
 		}
 	}
 	return

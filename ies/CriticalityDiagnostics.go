@@ -3,11 +3,11 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type CriticalityDiagnostics struct {
-	ProcedureCode             *ProcedureCode                `False,OPTIONAL`
-	TriggeringMessage         *TriggeringMessage            `False,OPTIONAL`
-	ProcedureCriticality      *Criticality                  `False,OPTIONAL`
-	IEsCriticalityDiagnostics *CriticalityDiagnosticsIEList `False,OPTIONAL`
-	// IEExtensions CriticalityDiagnosticsExtIEs `False,OPTIONAL`
+	ProcedureCode             *ProcedureCode
+	TriggeringMessage         *TriggeringMessage
+	ProcedureCriticality      *Criticality
+	IEsCriticalityDiagnostics *[]CriticalityDiagnosticsIEItem
+	// IEExtensions  *CriticalityDiagnosticsExtIEs
 }
 
 func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
@@ -44,8 +44,18 @@ func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.IEsCriticalityDiagnostics != nil {
-		if err = ie.IEsCriticalityDiagnostics.Encode(w); err != nil {
-			return
+		if len(*ie.IEsCriticalityDiagnostics) > 0 {
+			tmp := Sequence[*CriticalityDiagnosticsIEItem]{
+				Value: []*CriticalityDiagnosticsIEItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofErrors},
+				ext:   false,
+			}
+			for _, i := range *ie.IEsCriticalityDiagnostics {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
@@ -58,10 +68,6 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(5); err != nil {
 		return
 	}
-	ie.ProcedureCode = new(ProcedureCode)
-	ie.TriggeringMessage = new(TriggeringMessage)
-	ie.ProcedureCriticality = new(Criticality)
-	ie.IEsCriticalityDiagnostics = new(CriticalityDiagnosticsIEList)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ProcedureCode.Decode(r); err != nil {
 			return
@@ -78,8 +84,16 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 		}
 	}
 	if aper.IsBitSet(optionals, 4) {
-		if err = ie.IEsCriticalityDiagnostics.Decode(r); err != nil {
+		tmp_IEsCriticalityDiagnostics := Sequence[*CriticalityDiagnosticsIEItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofErrors},
+			ext: false,
+		}
+		if err = tmp_IEsCriticalityDiagnostics.Decode(r); err != nil {
 			return
+		}
+		ie.IEsCriticalityDiagnostics = &[]CriticalityDiagnosticsIEItem{}
+		for _, i := range tmp_IEsCriticalityDiagnostics.Value {
+			*ie.IEsCriticalityDiagnostics = append(*ie.IEsCriticalityDiagnostics, *i)
 		}
 	}
 	return

@@ -7,7 +7,7 @@ const (
 )
 
 type ConcurrentWarningMessageInd struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *ConcurrentWarningMessageInd) Encode(w *aper.AperWriter) (err error) {

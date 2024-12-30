@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UEPresenceInAreaOfInterestItem struct {
-	LocationReportingReferenceID *LocationReportingReferenceID `False,`
-	UEPresence                   *UEPresence                   `False,`
-	// IEExtensions UEPresenceInAreaOfInterestItemExtIEs `False,OPTIONAL`
+	LocationReportingReferenceID int64
+	UEPresence                   UEPresence
+	// IEExtensions  *UEPresenceInAreaOfInterestItemExtIEs
 }
 
 func (ie *UEPresenceInAreaOfInterestItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,12 @@ func (ie *UEPresenceInAreaOfInterestItem) Encode(w *aper.AperWriter) (err error)
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.LocationReportingReferenceID != nil {
-		if err = ie.LocationReportingReferenceID.Encode(w); err != nil {
-			return
-		}
+	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, true)
+	if err = tmp_LocationReportingReferenceID.Encode(w); err != nil {
+		return
 	}
-	if ie.UEPresence != nil {
-		if err = ie.UEPresence.Encode(w); err != nil {
-			return
-		}
+	if err = ie.UEPresence.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,11 +30,14 @@ func (ie *UEPresenceInAreaOfInterestItem) Decode(r *aper.AperReader) (err error)
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.LocationReportingReferenceID = new(LocationReportingReferenceID)
-	ie.UEPresence = new(UEPresence)
-	if err = ie.LocationReportingReferenceID.Decode(r); err != nil {
+	tmp_LocationReportingReferenceID := INTEGER{
+		c:   aper.Constraint{Lb: 1, Ub: 64},
+		ext: false,
+	}
+	if err = tmp_LocationReportingReferenceID.Decode(r); err != nil {
 		return
 	}
+	ie.LocationReportingReferenceID = int64(tmp_LocationReportingReferenceID.Value)
 	if err = ie.UEPresence.Decode(r); err != nil {
 		return
 	}

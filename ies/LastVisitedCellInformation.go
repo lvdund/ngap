@@ -3,21 +3,21 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	LastVisitedCellInformationPresentNothing uint64 = iota /* No components present */
-	LastVisitedCellInformationPresentNGRANCell
-	LastVisitedCellInformationPresentEUTRANCell
-	LastVisitedCellInformationPresentUTRANCell
-	LastVisitedCellInformationPresentGERANCell
+	LastVisitedCellInformationPresentNothing uint64 = iota
+	LastVisitedCellInformationPresentNgrancell
+	LastVisitedCellInformationPresentEutrancell
+	LastVisitedCellInformationPresentUtrancell
+	LastVisitedCellInformationPresentGerancell
 	LastVisitedCellInformationPresentChoiceExtensions
 )
 
 type LastVisitedCellInformation struct {
 	Choice     uint64
-	NGRANCell  *LastVisitedNGRANCellInformation  `False,,,`
-	EUTRANCell *LastVisitedEUTRANCellInformation `False,,,`
-	UTRANCell  *LastVisitedUTRANCellInformation  `False,,,`
-	GERANCell  *LastVisitedGERANCellInformation  `False,,,`
-	// ChoiceExtensions *LastVisitedCellInformationExtIEs `False,,,`
+	NGRANCell  *LastVisitedNGRANCellInformation
+	EUTRANCell *OCTETSTRING
+	UTRANCell  *OCTETSTRING
+	GERANCell  *OCTETSTRING
+	// ChoiceExtensions *LastVisitedCellInformationExtIEs
 }
 
 func (ie *LastVisitedCellInformation) Encode(w *aper.AperWriter) (err error) {
@@ -25,42 +25,42 @@ func (ie *LastVisitedCellInformation) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case LastVisitedCellInformationPresentNGRANCell:
+	case LastVisitedCellInformationPresentNgrancell:
 		err = ie.NGRANCell.Encode(w)
-	case LastVisitedCellInformationPresentEUTRANCell:
+	case LastVisitedCellInformationPresentEutrancell:
 		err = ie.EUTRANCell.Encode(w)
-	case LastVisitedCellInformationPresentUTRANCell:
+	case LastVisitedCellInformationPresentUtrancell:
 		err = ie.UTRANCell.Encode(w)
-	case LastVisitedCellInformationPresentGERANCell:
+	case LastVisitedCellInformationPresentGerancell:
 		err = ie.GERANCell.Encode(w)
 	}
 	return
 }
 func (ie *LastVisitedCellInformation) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(4, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(5, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case LastVisitedCellInformationPresentNGRANCell:
+	case LastVisitedCellInformationPresentNgrancell:
 		var tmp LastVisitedNGRANCellInformation
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NGRANCell = &tmp
-	case LastVisitedCellInformationPresentEUTRANCell:
-		var tmp LastVisitedEUTRANCellInformation
+	case LastVisitedCellInformationPresentEutrancell:
+		var tmp OCTETSTRING
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.EUTRANCell = &tmp
-	case LastVisitedCellInformationPresentUTRANCell:
-		var tmp LastVisitedUTRANCellInformation
+	case LastVisitedCellInformationPresentUtrancell:
+		var tmp OCTETSTRING
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.UTRANCell = &tmp
-	case LastVisitedCellInformationPresentGERANCell:
-		var tmp LastVisitedGERANCellInformation
+	case LastVisitedCellInformationPresentGerancell:
+		var tmp OCTETSTRING
 		if err = tmp.Decode(r); err != nil {
 			return
 		}

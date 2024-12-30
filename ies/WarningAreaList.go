@@ -3,21 +3,21 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	WarningAreaListPresentNothing uint64 = iota /* No components present */
-	WarningAreaListPresentEUTRACGIListForWarning
-	WarningAreaListPresentNRCGIListForWarning
-	WarningAreaListPresentTAIListForWarning
-	WarningAreaListPresentEmergencyAreaIDList
+	WarningAreaListPresentNothing uint64 = iota
+	WarningAreaListPresentEutraCgilistforwarning
+	WarningAreaListPresentNrCgilistforwarning
+	WarningAreaListPresentTailistforwarning
+	WarningAreaListPresentEmergencyareaidlist
 	WarningAreaListPresentChoiceExtensions
 )
 
 type WarningAreaList struct {
 	Choice                 uint64
-	EUTRACGIListForWarning *EUTRACGIListForWarning `False,,,`
-	NRCGIListForWarning    *NRCGIListForWarning    `False,,,`
-	TAIListForWarning      *TAIListForWarning      `False,,,`
-	EmergencyAreaIDList    *EmergencyAreaIDList    `False,,,`
-	// ChoiceExtensions *WarningAreaListExtIEs `False,,,`
+	EUTRACGIListForWarning *EUTRACGI
+	NRCGIListForWarning    *NRCGI
+	TAIListForWarning      *TAI
+	// EmergencyAreaIDList    *EmergencyAreaID
+	// ChoiceExtensions *WarningAreaListExtIEs
 }
 
 func (ie *WarningAreaList) Encode(w *aper.AperWriter) (err error) {
@@ -25,46 +25,46 @@ func (ie *WarningAreaList) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case WarningAreaListPresentEUTRACGIListForWarning:
+	case WarningAreaListPresentEutraCgilistforwarning:
 		err = ie.EUTRACGIListForWarning.Encode(w)
-	case WarningAreaListPresentNRCGIListForWarning:
+	case WarningAreaListPresentNrCgilistforwarning:
 		err = ie.NRCGIListForWarning.Encode(w)
-	case WarningAreaListPresentTAIListForWarning:
+	case WarningAreaListPresentTailistforwarning:
 		err = ie.TAIListForWarning.Encode(w)
-	case WarningAreaListPresentEmergencyAreaIDList:
-		err = ie.EmergencyAreaIDList.Encode(w)
+	case WarningAreaListPresentEmergencyareaidlist:
+		// err = ie.EmergencyAreaIDList.Encode(w)
 	}
 	return
 }
 func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(4, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(5, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case WarningAreaListPresentEUTRACGIListForWarning:
-		var tmp EUTRACGIListForWarning
+	case WarningAreaListPresentEutraCgilistforwarning:
+		var tmp EUTRACGI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.EUTRACGIListForWarning = &tmp
-	case WarningAreaListPresentNRCGIListForWarning:
-		var tmp NRCGIListForWarning
+	case WarningAreaListPresentNrCgilistforwarning:
+		var tmp NRCGI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NRCGIListForWarning = &tmp
-	case WarningAreaListPresentTAIListForWarning:
-		var tmp TAIListForWarning
+	case WarningAreaListPresentTailistforwarning:
+		var tmp TAI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.TAIListForWarning = &tmp
-	case WarningAreaListPresentEmergencyAreaIDList:
-		var tmp EmergencyAreaIDList
-		if err = tmp.Decode(r); err != nil {
-			return
-		}
-		ie.EmergencyAreaIDList = &tmp
+	case WarningAreaListPresentEmergencyareaidlist:
+		// var tmp EmergencyAreaID
+		// if err = tmp.Decode(r); err != nil {
+		// 	return
+		// }
+		// ie.EmergencyAreaIDList = &tmp
 	}
 	return
 }

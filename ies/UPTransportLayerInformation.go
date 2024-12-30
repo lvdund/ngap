@@ -3,15 +3,15 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	UPTransportLayerInformationPresentNothing uint64 = iota /* No components present */
-	UPTransportLayerInformationPresentGTPTunnel
+	UPTransportLayerInformationPresentNothing uint64 = iota
+	UPTransportLayerInformationPresentGtptunnel
 	UPTransportLayerInformationPresentChoiceExtensions
 )
 
 type UPTransportLayerInformation struct {
 	Choice    uint64
-	GTPTunnel *GTPTunnel `True,,,`
-	// ChoiceExtensions *UPTransportLayerInformationExtIEs `False,,,`
+	GTPTunnel *GTPTunnel
+	// ChoiceExtensions *UPTransportLayerInformationExtIEs
 }
 
 func (ie *UPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
@@ -19,17 +19,17 @@ func (ie *UPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UPTransportLayerInformationPresentGTPTunnel:
+	case UPTransportLayerInformationPresentGtptunnel:
 		err = ie.GTPTunnel.Encode(w)
 	}
 	return
 }
 func (ie *UPTransportLayerInformation) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(1, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case UPTransportLayerInformationPresentGTPTunnel:
+	case UPTransportLayerInformationPresentGtptunnel:
 		var tmp GTPTunnel
 		if err = tmp.Decode(r); err != nil {
 			return

@@ -3,11 +3,11 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type SONConfigurationTransfer struct {
-	TargetRANNodeID        *TargetRANNodeID        `True,`
-	SourceRANNodeID        *SourceRANNodeID        `True,`
-	SONInformation         *SONInformation         `False,`
-	XnTNLConfigurationInfo *XnTNLConfigurationInfo `True,OPTIONAL`
-	// IEExtensions SONConfigurationTransferExtIEs `False,OPTIONAL`
+	TargetRANNodeID        TargetRANNodeID
+	SourceRANNodeID        SourceRANNodeID
+	SONInformation         SONInformation
+	XnTNLConfigurationInfo *XnTNLConfigurationInfo
+	// IEExtensions  *SONConfigurationTransferExtIEs
 }
 
 func (ie *SONConfigurationTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -19,20 +19,14 @@ func (ie *SONConfigurationTransfer) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.TargetRANNodeID != nil {
-		if err = ie.TargetRANNodeID.Encode(w); err != nil {
-			return
-		}
+	if err = ie.TargetRANNodeID.Encode(w); err != nil {
+		return
 	}
-	if ie.SourceRANNodeID != nil {
-		if err = ie.SourceRANNodeID.Encode(w); err != nil {
-			return
-		}
+	if err = ie.SourceRANNodeID.Encode(w); err != nil {
+		return
 	}
-	if ie.SONInformation != nil {
-		if err = ie.SONInformation.Encode(w); err != nil {
-			return
-		}
+	if err = ie.SONInformation.Encode(w); err != nil {
+		return
 	}
 	if ie.XnTNLConfigurationInfo != nil {
 		if err = ie.XnTNLConfigurationInfo.Encode(w); err != nil {
@@ -49,10 +43,6 @@ func (ie *SONConfigurationTransfer) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.TargetRANNodeID = new(TargetRANNodeID)
-	ie.SourceRANNodeID = new(SourceRANNodeID)
-	ie.SONInformation = new(SONInformation)
-	ie.XnTNLConfigurationInfo = new(XnTNLConfigurationInfo)
 	if err = ie.TargetRANNodeID.Decode(r); err != nil {
 		return
 	}

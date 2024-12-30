@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type CancelledCellsInEAIEUTRAItem struct {
-	EUTRACGI           *EUTRACGI           `True,`
-	NumberOfBroadcasts *NumberOfBroadcasts `False,`
-	// IEExtensions CancelledCellsInEAIEUTRAItemExtIEs `False,OPTIONAL`
+	EUTRACGI           EUTRACGI
+	NumberOfBroadcasts int64
+	// IEExtensions  *CancelledCellsInEAIEUTRAItemExtIEs
 }
 
 func (ie *CancelledCellsInEAIEUTRAItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,12 @@ func (ie *CancelledCellsInEAIEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.EUTRACGI != nil {
-		if err = ie.EUTRACGI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.EUTRACGI.Encode(w); err != nil {
+		return
 	}
-	if ie.NumberOfBroadcasts != nil {
-		if err = ie.NumberOfBroadcasts.Encode(w); err != nil {
-			return
-		}
+	tmp_NumberOfBroadcasts := NewINTEGER(ie.NumberOfBroadcasts, aper.Constraint{Lb: 0, Ub: 65535}, true)
+	if err = tmp_NumberOfBroadcasts.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +30,16 @@ func (ie *CancelledCellsInEAIEUTRAItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.EUTRACGI = new(EUTRACGI)
-	ie.NumberOfBroadcasts = new(NumberOfBroadcasts)
 	if err = ie.EUTRACGI.Decode(r); err != nil {
 		return
 	}
-	if err = ie.NumberOfBroadcasts.Decode(r); err != nil {
+	tmp_NumberOfBroadcasts := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 65535},
+		ext: false,
+	}
+	if err = tmp_NumberOfBroadcasts.Decode(r); err != nil {
 		return
 	}
+	ie.NumberOfBroadcasts = int64(tmp_NumberOfBroadcasts.Value)
 	return
 }

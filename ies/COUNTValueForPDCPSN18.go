@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type COUNTValueForPDCPSN18 struct {
-	PDCPSN18    *aper.Integer `False,`
-	HFNPDCPSN18 *aper.Integer `False,`
-	// IEExtensions COUNTValueForPDCPSN18ExtIEs `False,OPTIONAL`
+	PDCPSN18    int64
+	HFNPDCPSN18 int64
+	// IEExtensions  *COUNTValueForPDCPSN18ExtIEs
 }
 
 func (ie *COUNTValueForPDCPSN18) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *COUNTValueForPDCPSN18) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDCPSN18 != nil {
-		if err = w.WriteInteger(int64(*ie.PDCPSN18), &aper.Constraint{Lb: 0, Ub: 262143}, false); err != nil {
-			return
-		}
+	tmp_PDCPSN18 := NewINTEGER(ie.PDCPSN18, aper.Constraint{Lb: 0, Ub: 0}, true)
+	if err = tmp_PDCPSN18.Encode(w); err != nil {
+		return
 	}
-	if ie.HFNPDCPSN18 != nil {
-		if err = w.WriteInteger(int64(*ie.HFNPDCPSN18), &aper.Constraint{Lb: 0, Ub: 16383}, false); err != nil {
-			return
-		}
+	tmp_HFNPDCPSN18 := NewINTEGER(ie.HFNPDCPSN18, aper.Constraint{Lb: 0, Ub: 0}, true)
+	if err = tmp_HFNPDCPSN18.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,16 +31,21 @@ func (ie *COUNTValueForPDCPSN18) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	var v int64
-	if v, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 262143}, false); err != nil {
-		return
-	} else {
-		ie.PDCPSN18 = (*aper.Integer)(&v)
+	tmp_PDCPSN18 := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
-	if v, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 16383}, false); err != nil {
+	if err = tmp_PDCPSN18.Decode(r); err != nil {
 		return
-	} else {
-		ie.HFNPDCPSN18 = (*aper.Integer)(&v)
 	}
+	ie.PDCPSN18 = int64(tmp_PDCPSN18.Value)
+	tmp_HFNPDCPSN18 := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
+	}
+	if err = tmp_HFNPDCPSN18.Decode(r); err != nil {
+		return
+	}
+	ie.HFNPDCPSN18 = int64(tmp_HFNPDCPSN18.Value)
 	return
 }

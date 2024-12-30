@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	UENGAPIDsPresentNothing uint64 = iota /* No components present */
-	UENGAPIDsPresentUENGAPIDPair
-	UENGAPIDsPresentAMFUENGAPID
+	UENGAPIDsPresentNothing uint64 = iota
+	UENGAPIDsPresentUeNgapIdPair
+	UENGAPIDsPresentAmfUeNgapId
 	UENGAPIDsPresentChoiceExtensions
 )
 
 type UENGAPIDs struct {
 	Choice       uint64
-	UENGAPIDpair *UENGAPIDpair `True,,,`
-	AMFUENGAPID  *AMFUENGAPID  `False,,,`
-	// ChoiceExtensions *UENGAPIDsExtIEs `False,,,`
+	UENGAPIDpair *UENGAPIDpair
+	AMFUENGAPID  *INTEGER
+	// ChoiceExtensions *UENGAPIDsExtIEs
 }
 
 func (ie *UENGAPIDs) Encode(w *aper.AperWriter) (err error) {
@@ -21,26 +21,26 @@ func (ie *UENGAPIDs) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UENGAPIDsPresentUENGAPIDPair:
+	case UENGAPIDsPresentUeNgapIdPair:
 		err = ie.UENGAPIDpair.Encode(w)
-	case UENGAPIDsPresentAMFUENGAPID:
+	case UENGAPIDsPresentAmfUeNgapId:
 		err = ie.AMFUENGAPID.Encode(w)
 	}
 	return
 }
 func (ie *UENGAPIDs) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case UENGAPIDsPresentUENGAPIDPair:
+	case UENGAPIDsPresentUeNgapIdPair:
 		var tmp UENGAPIDpair
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.UENGAPIDpair = &tmp
-	case UENGAPIDsPresentAMFUENGAPID:
-		var tmp AMFUENGAPID
+	case UENGAPIDsPresentAmfUeNgapId:
+		var tmp INTEGER
 		if err = tmp.Decode(r); err != nil {
 			return
 		}

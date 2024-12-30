@@ -7,7 +7,7 @@ const (
 )
 
 type EmergencyFallbackRequestIndicator struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *EmergencyFallbackRequestIndicator) Encode(w *aper.AperWriter) (err error) {

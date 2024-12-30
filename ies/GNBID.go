@@ -1,19 +1,17 @@
 package ies
 
-import (
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 const (
-	GNBIDPresentNothing uint64 = iota /* No components present */
-	GNBIDPresentGNBID
+	GNBIDPresentNothing uint64 = iota
+	GNBIDPresentGnbId
 	GNBIDPresentChoiceExtensions
 )
 
 type GNBID struct {
 	Choice uint64
-	GNBID  *aper.BitString `False,,22,32`
-	// ChoiceExtensions *GNBIDExtIEs `False,,,`
+	GNBID  *BITSTRING
+	// ChoiceExtensions *GNBIDExtIEs
 }
 
 func (ie *GNBID) Encode(w *aper.AperWriter) (err error) {
@@ -21,23 +19,22 @@ func (ie *GNBID) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case GNBIDPresentGNBID:
-		err = w.WriteBitString(ie.GNBID.Bytes, uint(ie.GNBID.NumBits), &aper.Constraint{Lb: 22, Ub: 32}, false)
+	case GNBIDPresentGnbId:
+		err = ie.GNBID.Encode(w)
 	}
 	return
 }
 func (ie *GNBID) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(1, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case GNBIDPresentGNBID:
-		var b []byte
-		var n uint
-		if b, n, err = r.ReadBitString(&aper.Constraint{Lb: 22, Ub: 32}, false); err != nil {
+	case GNBIDPresentGnbId:
+		var tmp BITSTRING
+		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.GNBID = &aper.BitString{Bytes: b, NumBits: uint64(n)}
+		ie.GNBID = &tmp
 	}
 	return
 }

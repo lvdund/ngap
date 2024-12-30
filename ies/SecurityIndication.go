@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type SecurityIndication struct {
-	IntegrityProtectionIndication       *IntegrityProtectionIndication       `False,`
-	ConfidentialityProtectionIndication *ConfidentialityProtectionIndication `False,`
-	MaximumIntegrityProtectedDataRateUL *MaximumIntegrityProtectedDataRate   `False,OPTIONAL`
-	// IEExtensions SecurityIndicationExtIEs `False,OPTIONAL`
+	IntegrityProtectionIndication       IntegrityProtectionIndication
+	ConfidentialityProtectionIndication ConfidentialityProtectionIndication
+	MaximumIntegrityProtectedDataRateUL *MaximumIntegrityProtectedDataRate
+	// IEExtensions  *SecurityIndicationExtIEs
 }
 
 func (ie *SecurityIndication) Encode(w *aper.AperWriter) (err error) {
@@ -18,15 +18,11 @@ func (ie *SecurityIndication) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.IntegrityProtectionIndication != nil {
-		if err = ie.IntegrityProtectionIndication.Encode(w); err != nil {
-			return
-		}
+	if err = ie.IntegrityProtectionIndication.Encode(w); err != nil {
+		return
 	}
-	if ie.ConfidentialityProtectionIndication != nil {
-		if err = ie.ConfidentialityProtectionIndication.Encode(w); err != nil {
-			return
-		}
+	if err = ie.ConfidentialityProtectionIndication.Encode(w); err != nil {
+		return
 	}
 	if ie.MaximumIntegrityProtectedDataRateUL != nil {
 		if err = ie.MaximumIntegrityProtectedDataRateUL.Encode(w); err != nil {
@@ -43,9 +39,6 @@ func (ie *SecurityIndication) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.IntegrityProtectionIndication = new(IntegrityProtectionIndication)
-	ie.ConfidentialityProtectionIndication = new(ConfidentialityProtectionIndication)
-	ie.MaximumIntegrityProtectedDataRateUL = new(MaximumIntegrityProtectedDataRate)
 	if err = ie.IntegrityProtectionIndication.Decode(r); err != nil {
 		return
 	}

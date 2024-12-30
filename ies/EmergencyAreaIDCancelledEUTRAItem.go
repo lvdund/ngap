@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type EmergencyAreaIDCancelledEUTRAItem struct {
-	EmergencyAreaID          *EmergencyAreaID          `False,`
-	CancelledCellsInEAIEUTRA *CancelledCellsInEAIEUTRA `False,`
-	// IEExtensions EmergencyAreaIDCancelledEUTRAItemExtIEs `False,OPTIONAL`
+	EmergencyAreaID          []byte
+	CancelledCellsInEAIEUTRA []CancelledCellsInEAIEUTRAItem
+	// IEExtensions  *EmergencyAreaIDCancelledEUTRAItemExtIEs
 }
 
 func (ie *EmergencyAreaIDCancelledEUTRAItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,13 +14,20 @@ func (ie *EmergencyAreaIDCancelledEUTRAItem) Encode(w *aper.AperWriter) (err err
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.EmergencyAreaID != nil {
-		if err = ie.EmergencyAreaID.Encode(w); err != nil {
-			return
-		}
+	tmp_EmergencyAreaID := NewOCTETSTRING(ie.EmergencyAreaID, aper.Constraint{Lb: 3, Ub: 3}, true)
+	if err = tmp_EmergencyAreaID.Encode(w); err != nil {
+		return
 	}
-	if ie.CancelledCellsInEAIEUTRA != nil {
-		if err = ie.CancelledCellsInEAIEUTRA.Encode(w); err != nil {
+	if len(ie.CancelledCellsInEAIEUTRA) > 0 {
+		tmp := Sequence[*CancelledCellsInEAIEUTRAItem]{
+			Value: []*CancelledCellsInEAIEUTRAItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinEAI},
+			ext:   false,
+		}
+		for _, i := range ie.CancelledCellsInEAIEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -33,13 +40,24 @@ func (ie *EmergencyAreaIDCancelledEUTRAItem) Decode(r *aper.AperReader) (err err
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.EmergencyAreaID = new(EmergencyAreaID)
-	ie.CancelledCellsInEAIEUTRA = new(CancelledCellsInEAIEUTRA)
-	if err = ie.EmergencyAreaID.Decode(r); err != nil {
+	tmp_EmergencyAreaID := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = tmp_EmergencyAreaID.Decode(r); err != nil {
 		return
 	}
-	if err = ie.CancelledCellsInEAIEUTRA.Decode(r); err != nil {
+	ie.EmergencyAreaID = tmp_EmergencyAreaID.Value
+	tmp_CancelledCellsInEAIEUTRA := Sequence[*CancelledCellsInEAIEUTRAItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofCellinEAI},
+		ext: false,
+	}
+	if err = tmp_CancelledCellsInEAIEUTRA.Decode(r); err != nil {
 		return
+	}
+	ie.CancelledCellsInEAIEUTRA = []CancelledCellsInEAIEUTRAItem{}
+	for _, i := range tmp_CancelledCellsInEAIEUTRA.Value {
+		ie.CancelledCellsInEAIEUTRA = append(ie.CancelledCellsInEAIEUTRA, *i)
 	}
 	return
 }

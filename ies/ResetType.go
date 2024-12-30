@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	ResetTypePresentNothing uint64 = iota /* No components present */
-	ResetTypePresentNGInterface
-	ResetTypePresentPartOfNGInterface
+	ResetTypePresentNothing uint64 = iota
+	ResetTypePresentNgInterface
+	ResetTypePresentPartofngInterface
 	ResetTypePresentChoiceExtensions
 )
 
 type ResetType struct {
 	Choice            uint64
-	NGInterface       *ResetAll                            `False,,,`
-	PartOfNGInterface *UEassociatedLogicalNGconnectionList `False,,,`
-	// ChoiceExtensions *ResetTypeExtIEs `False,,,`
+	NGInterface       *ResetAll
+	PartOfNGInterface *UEassociatedLogicalNGconnectionItem
+	// ChoiceExtensions *ResetTypeExtIEs
 }
 
 func (ie *ResetType) Encode(w *aper.AperWriter) (err error) {
@@ -21,26 +21,26 @@ func (ie *ResetType) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case ResetTypePresentNGInterface:
+	case ResetTypePresentNgInterface:
 		err = ie.NGInterface.Encode(w)
-	case ResetTypePresentPartOfNGInterface:
+	case ResetTypePresentPartofngInterface:
 		err = ie.PartOfNGInterface.Encode(w)
 	}
 	return
 }
 func (ie *ResetType) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case ResetTypePresentNGInterface:
+	case ResetTypePresentNgInterface:
 		var tmp ResetAll
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NGInterface = &tmp
-	case ResetTypePresentPartOfNGInterface:
-		var tmp UEassociatedLogicalNGconnectionList
+	case ResetTypePresentPartofngInterface:
+		var tmp UEassociatedLogicalNGconnectionItem
 		if err = tmp.Decode(r); err != nil {
 			return
 		}

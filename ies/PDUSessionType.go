@@ -11,7 +11,7 @@ const (
 )
 
 type PDUSessionType struct {
-	Value aper.Enumerated `True,0,4`
+	Value aper.Enumerated
 }
 
 func (ie *PDUSessionType) Encode(w *aper.AperWriter) (err error) {

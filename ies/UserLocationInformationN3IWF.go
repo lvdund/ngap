@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UserLocationInformationN3IWF struct {
-	IPAddress  *TransportLayerAddress `False,`
-	PortNumber *PortNumber            `False,`
-	// IEExtensions UserLocationInformationN3IWFExtIEs `False,OPTIONAL`
+	IPAddress  []byte
+	PortNumber []byte
+	// IEExtensions  *UserLocationInformationN3IWFExtIEs
 }
 
 func (ie *UserLocationInformationN3IWF) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *UserLocationInformationN3IWF) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.IPAddress != nil {
-		if err = ie.IPAddress.Encode(w); err != nil {
-			return
-		}
+	tmp_IPAddress := NewBITSTRING(ie.IPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
+	if err = tmp_IPAddress.Encode(w); err != nil {
+		return
 	}
-	if ie.PortNumber != nil {
-		if err = ie.PortNumber.Encode(w); err != nil {
-			return
-		}
+	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, true)
+	if err = tmp_PortNumber.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +31,21 @@ func (ie *UserLocationInformationN3IWF) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.IPAddress = new(TransportLayerAddress)
-	ie.PortNumber = new(PortNumber)
-	if err = ie.IPAddress.Decode(r); err != nil {
+	tmp_IPAddress := BITSTRING{
+		c:   aper.Constraint{Lb: 1, Ub: 160},
+		ext: false,
+	}
+	if err = tmp_IPAddress.Decode(r); err != nil {
 		return
 	}
-	if err = ie.PortNumber.Decode(r); err != nil {
+	ie.IPAddress = tmp_IPAddress.Value.Bytes
+	tmp_PortNumber := OCTETSTRING{
+		c:   aper.Constraint{Lb: 2, Ub: 2},
+		ext: false,
+	}
+	if err = tmp_PortNumber.Decode(r); err != nil {
 		return
 	}
+	ie.PortNumber = tmp_PortNumber.Value
 	return
 }

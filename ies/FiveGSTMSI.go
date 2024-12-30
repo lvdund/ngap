@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type FiveGSTMSI struct {
-	AMFSetID   *AMFSetID   `False,`
-	AMFPointer *AMFPointer `False,`
-	FiveGTMSI  *FiveGTMSI  `False,`
-	// IEExtensions FiveGSTMSIExtIEs `False,OPTIONAL`
+	AMFSetID   []byte
+	AMFPointer []byte
+	FiveGTMSI  []byte
+	// IEExtensions  *FiveGSTMSIExtIEs
 }
 
 func (ie *FiveGSTMSI) Encode(w *aper.AperWriter) (err error) {
@@ -15,20 +15,17 @@ func (ie *FiveGSTMSI) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.AMFSetID != nil {
-		if err = ie.AMFSetID.Encode(w); err != nil {
-			return
-		}
+	tmp_AMFSetID := NewBITSTRING(ie.AMFSetID, aper.Constraint{Lb: 10, Ub: 10}, true)
+	if err = tmp_AMFSetID.Encode(w); err != nil {
+		return
 	}
-	if ie.AMFPointer != nil {
-		if err = ie.AMFPointer.Encode(w); err != nil {
-			return
-		}
+	tmp_AMFPointer := NewBITSTRING(ie.AMFPointer, aper.Constraint{Lb: 6, Ub: 6}, true)
+	if err = tmp_AMFPointer.Encode(w); err != nil {
+		return
 	}
-	if ie.FiveGTMSI != nil {
-		if err = ie.FiveGTMSI.Encode(w); err != nil {
-			return
-		}
+	tmp_FiveGTMSI := NewOCTETSTRING(ie.FiveGTMSI, aper.Constraint{Lb: 4, Ub: 4}, true)
+	if err = tmp_FiveGTMSI.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -39,17 +36,29 @@ func (ie *FiveGSTMSI) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.AMFSetID = new(AMFSetID)
-	ie.AMFPointer = new(AMFPointer)
-	ie.FiveGTMSI = new(FiveGTMSI)
-	if err = ie.AMFSetID.Decode(r); err != nil {
+	tmp_AMFSetID := BITSTRING{
+		c:   aper.Constraint{Lb: 10, Ub: 10},
+		ext: false,
+	}
+	if err = tmp_AMFSetID.Decode(r); err != nil {
 		return
 	}
-	if err = ie.AMFPointer.Decode(r); err != nil {
+	ie.AMFSetID = tmp_AMFSetID.Value.Bytes
+	tmp_AMFPointer := BITSTRING{
+		c:   aper.Constraint{Lb: 6, Ub: 6},
+		ext: false,
+	}
+	if err = tmp_AMFPointer.Decode(r); err != nil {
 		return
 	}
-	if err = ie.FiveGTMSI.Decode(r); err != nil {
+	ie.AMFPointer = tmp_AMFPointer.Value.Bytes
+	tmp_FiveGTMSI := OCTETSTRING{
+		c:   aper.Constraint{Lb: 4, Ub: 4},
+		ext: false,
+	}
+	if err = tmp_FiveGTMSI.Decode(r); err != nil {
 		return
 	}
+	ie.FiveGTMSI = tmp_FiveGTMSI.Value
 	return
 }

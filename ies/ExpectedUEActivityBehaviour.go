@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type ExpectedUEActivityBehaviour struct {
-	ExpectedActivityPeriod                 *ExpectedActivityPeriod                 `False,OPTIONAL`
-	ExpectedIdlePeriod                     *ExpectedIdlePeriod                     `False,OPTIONAL`
-	SourceOfUEActivityBehaviourInformation *SourceOfUEActivityBehaviourInformation `False,OPTIONAL`
-	// IEExtensions ExpectedUEActivityBehaviourExtIEs `False,OPTIONAL`
+	ExpectedActivityPeriod                 *int64
+	ExpectedIdlePeriod                     *int64
+	SourceOfUEActivityBehaviourInformation *SourceOfUEActivityBehaviourInformation
+	// IEExtensions  *ExpectedUEActivityBehaviourExtIEs
 }
 
 func (ie *ExpectedUEActivityBehaviour) Encode(w *aper.AperWriter) (err error) {
@@ -25,12 +25,14 @@ func (ie *ExpectedUEActivityBehaviour) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if ie.ExpectedActivityPeriod != nil {
-		if err = ie.ExpectedActivityPeriod.Encode(w); err != nil {
+		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
+		if err = tmp_ExpectedActivityPeriod.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.ExpectedIdlePeriod != nil {
-		if err = ie.ExpectedIdlePeriod.Encode(w); err != nil {
+		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
+		if err = tmp_ExpectedIdlePeriod.Encode(w); err != nil {
 			return
 		}
 	}
@@ -49,18 +51,25 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.ExpectedActivityPeriod = new(ExpectedActivityPeriod)
-	ie.ExpectedIdlePeriod = new(ExpectedIdlePeriod)
-	ie.SourceOfUEActivityBehaviourInformation = new(SourceOfUEActivityBehaviourInformation)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.ExpectedActivityPeriod.Decode(r); err != nil {
+		tmp_ExpectedActivityPeriod := INTEGER{
+			c:   aper.Constraint{Lb: 1, Ub: 181},
+			ext: false,
+		}
+		if err = tmp_ExpectedActivityPeriod.Decode(r); err != nil {
 			return
 		}
+		*ie.ExpectedActivityPeriod = int64(tmp_ExpectedActivityPeriod.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.ExpectedIdlePeriod.Decode(r); err != nil {
+		tmp_ExpectedIdlePeriod := INTEGER{
+			c:   aper.Constraint{Lb: 1, Ub: 181},
+			ext: false,
+		}
+		if err = tmp_ExpectedIdlePeriod.Decode(r); err != nil {
 			return
 		}
+		*ie.ExpectedIdlePeriod = int64(tmp_ExpectedIdlePeriod.Value)
 	}
 	if aper.IsBitSet(optionals, 3) {
 		if err = ie.SourceOfUEActivityBehaviourInformation.Decode(r); err != nil {

@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type AdditionalDLUPTNLInformationForHOItem struct {
-	AdditionalDLNGUUPTNLInformation        *UPTransportLayerInformation   `False,`
-	AdditionalQosFlowSetupResponseList     *QosFlowListWithDataForwarding `False,`
-	AdditionalDLForwardingUPTNLInformation *UPTransportLayerInformation   `False,OPTIONAL`
-	// IEExtensions AdditionalDLUPTNLInformationForHOItemExtIEs `False,OPTIONAL`
+	AdditionalDLNGUUPTNLInformation        UPTransportLayerInformation
+	AdditionalQosFlowSetupResponseList     []QosFlowItemWithDataForwarding
+	AdditionalDLForwardingUPTNLInformation *UPTransportLayerInformation
+	// IEExtensions  *AdditionalDLUPTNLInformationForHOItemExtIEs
 }
 
 func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err error) {
@@ -18,13 +18,19 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.AdditionalDLNGUUPTNLInformation != nil {
-		if err = ie.AdditionalDLNGUUPTNLInformation.Encode(w); err != nil {
-			return
-		}
+	if err = ie.AdditionalDLNGUUPTNLInformation.Encode(w); err != nil {
+		return
 	}
-	if ie.AdditionalQosFlowSetupResponseList != nil {
-		if err = ie.AdditionalQosFlowSetupResponseList.Encode(w); err != nil {
+	if len(ie.AdditionalQosFlowSetupResponseList) > 0 {
+		tmp := Sequence[*QosFlowItemWithDataForwarding]{
+			Value: []*QosFlowItemWithDataForwarding{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.AdditionalQosFlowSetupResponseList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -43,14 +49,19 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.AdditionalDLNGUUPTNLInformation = new(UPTransportLayerInformation)
-	ie.AdditionalQosFlowSetupResponseList = new(QosFlowListWithDataForwarding)
-	ie.AdditionalDLForwardingUPTNLInformation = new(UPTransportLayerInformation)
 	if err = ie.AdditionalDLNGUUPTNLInformation.Decode(r); err != nil {
 		return
 	}
-	if err = ie.AdditionalQosFlowSetupResponseList.Decode(r); err != nil {
+	tmp_AdditionalQosFlowSetupResponseList := Sequence[*QosFlowItemWithDataForwarding]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+		ext: false,
+	}
+	if err = tmp_AdditionalQosFlowSetupResponseList.Decode(r); err != nil {
 		return
+	}
+	ie.AdditionalQosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
+	for _, i := range tmp_AdditionalQosFlowSetupResponseList.Value {
+		ie.AdditionalQosFlowSetupResponseList = append(ie.AdditionalQosFlowSetupResponseList, *i)
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.AdditionalDLForwardingUPTNLInformation.Decode(r); err != nil {

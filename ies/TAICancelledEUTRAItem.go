@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type TAICancelledEUTRAItem struct {
-	TAI                      *TAI                      `True,`
-	CancelledCellsInTAIEUTRA *CancelledCellsInTAIEUTRA `False,`
-	// IEExtensions TAICancelledEUTRAItemExtIEs `False,OPTIONAL`
+	TAI                      TAI
+	CancelledCellsInTAIEUTRA []CancelledCellsInTAIEUTRAItem
+	// IEExtensions  *TAICancelledEUTRAItemExtIEs
 }
 
 func (ie *TAICancelledEUTRAItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,13 +14,19 @@ func (ie *TAICancelledEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.TAI != nil {
-		if err = ie.TAI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.TAI.Encode(w); err != nil {
+		return
 	}
-	if ie.CancelledCellsInTAIEUTRA != nil {
-		if err = ie.CancelledCellsInTAIEUTRA.Encode(w); err != nil {
+	if len(ie.CancelledCellsInTAIEUTRA) > 0 {
+		tmp := Sequence[*CancelledCellsInTAIEUTRAItem]{
+			Value: []*CancelledCellsInTAIEUTRAItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinTAI},
+			ext:   false,
+		}
+		for _, i := range ie.CancelledCellsInTAIEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -33,13 +39,19 @@ func (ie *TAICancelledEUTRAItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.TAI = new(TAI)
-	ie.CancelledCellsInTAIEUTRA = new(CancelledCellsInTAIEUTRA)
 	if err = ie.TAI.Decode(r); err != nil {
 		return
 	}
-	if err = ie.CancelledCellsInTAIEUTRA.Decode(r); err != nil {
+	tmp_CancelledCellsInTAIEUTRA := Sequence[*CancelledCellsInTAIEUTRAItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofCellinTAI},
+		ext: false,
+	}
+	if err = tmp_CancelledCellsInTAIEUTRA.Decode(r); err != nil {
 		return
+	}
+	ie.CancelledCellsInTAIEUTRA = []CancelledCellsInTAIEUTRAItem{}
+	for _, i := range tmp_CancelledCellsInTAIEUTRA.Value {
+		ie.CancelledCellsInTAIEUTRA = append(ie.CancelledCellsInTAIEUTRA, *i)
 	}
 	return
 }

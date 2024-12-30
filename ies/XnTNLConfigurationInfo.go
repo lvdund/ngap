@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type XnTNLConfigurationInfo struct {
-	XnTransportLayerAddresses         *XnTLAs    `False,`
-	XnExtendedTransportLayerAddresses *XnExtTLAs `False,OPTIONAL`
-	// IEExtensions XnTNLConfigurationInfoExtIEs `False,OPTIONAL`
+	// XnTransportLayerAddresses         []TransportLayerAddress
+	XnExtendedTransportLayerAddresses *[]XnExtTLAItem
+	// IEExtensions  *XnTNLConfigurationInfoExtIEs
 }
 
 func (ie *XnTNLConfigurationInfo) Encode(w *aper.AperWriter) (err error) {
@@ -17,14 +17,32 @@ func (ie *XnTNLConfigurationInfo) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.XnTransportLayerAddresses != nil {
-		if err = ie.XnTransportLayerAddresses.Encode(w); err != nil {
-			return
-		}
-	}
+	// if len(ie.XnTransportLayerAddresses) > 0 {
+	// 	tmp := Sequence[*TransportLayerAddress]{
+	// 		Value: []*TransportLayerAddress{},
+	// 		c:     aper.Constraint{Lb: 1, Ub: maxnoofXnTLAs},
+	// 		ext:   false,
+	// 	}
+	// 	for _, i := range ie.XnTransportLayerAddresses {
+	// 		tmp.Value = append(tmp.Value, &i)
+	// 	}
+	// 	if err = tmp.Encode(w); err != nil {
+	// 		return
+	// 	}
+	// }
 	if ie.XnExtendedTransportLayerAddresses != nil {
-		if err = ie.XnExtendedTransportLayerAddresses.Encode(w); err != nil {
-			return
+		if len(*ie.XnExtendedTransportLayerAddresses) > 0 {
+			tmp := Sequence[*XnExtTLAItem]{
+				Value: []*XnExtTLAItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofXnExtTLAs},
+				ext:   false,
+			}
+			for _, i := range *ie.XnExtendedTransportLayerAddresses {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
@@ -37,14 +55,28 @@ func (ie *XnTNLConfigurationInfo) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.XnTransportLayerAddresses = new(XnTLAs)
-	ie.XnExtendedTransportLayerAddresses = new(XnExtTLAs)
-	if err = ie.XnTransportLayerAddresses.Decode(r); err != nil {
-		return
-	}
+	// tmp_XnTransportLayerAddresses := Sequence[*TransportLayerAddress]{
+	// 	c:   aper.Constraint{Lb: 1, Ub: maxnoofXnTLAs},
+	// 	ext: false,
+	// }
+	// if err = tmp_XnTransportLayerAddresses.Decode(r); err != nil {
+	// 	return
+	// }
+	// ie.XnTransportLayerAddresses = []TransportLayerAddress{}
+	// for _, i := range tmp_XnTransportLayerAddresses.Value {
+	// 	ie.XnTransportLayerAddresses = append(ie.XnTransportLayerAddresses, *i)
+	// }
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.XnExtendedTransportLayerAddresses.Decode(r); err != nil {
+		tmp_XnExtendedTransportLayerAddresses := Sequence[*XnExtTLAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofXnExtTLAs},
+			ext: false,
+		}
+		if err = tmp_XnExtendedTransportLayerAddresses.Decode(r); err != nil {
 			return
+		}
+		ie.XnExtendedTransportLayerAddresses = &[]XnExtTLAItem{}
+		for _, i := range tmp_XnExtendedTransportLayerAddresses.Value {
+			*ie.XnExtendedTransportLayerAddresses = append(*ie.XnExtendedTransportLayerAddresses, *i)
 		}
 	}
 	return

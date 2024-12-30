@@ -7,7 +7,7 @@ const (
 )
 
 type UERetentionInformation struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *UERetentionInformation) Encode(w *aper.AperWriter) (err error) {

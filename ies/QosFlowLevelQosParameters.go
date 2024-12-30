@@ -3,12 +3,12 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type QosFlowLevelQosParameters struct {
-	QosCharacteristics             *QosCharacteristics             `False,`
-	AllocationAndRetentionPriority *AllocationAndRetentionPriority `True,`
-	GBRQosInformation              *GBRQosInformation              `True,OPTIONAL`
-	ReflectiveQosAttribute         *ReflectiveQosAttribute         `False,OPTIONAL`
-	AdditionalQosFlowInformation   *AdditionalQosFlowInformation   `False,OPTIONAL`
-	// IEExtensions QosFlowLevelQosParametersExtIEs `False,OPTIONAL`
+	QosCharacteristics             QosCharacteristics
+	AllocationAndRetentionPriority AllocationAndRetentionPriority
+	GBRQosInformation              *GBRQosInformation
+	ReflectiveQosAttribute         *ReflectiveQosAttribute
+	AdditionalQosFlowInformation   *AdditionalQosFlowInformation
+	// IEExtensions  *QosFlowLevelQosParametersExtIEs
 }
 
 func (ie *QosFlowLevelQosParameters) Encode(w *aper.AperWriter) (err error) {
@@ -26,15 +26,11 @@ func (ie *QosFlowLevelQosParameters) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	if ie.QosCharacteristics != nil {
-		if err = ie.QosCharacteristics.Encode(w); err != nil {
-			return
-		}
+	if err = ie.QosCharacteristics.Encode(w); err != nil {
+		return
 	}
-	if ie.AllocationAndRetentionPriority != nil {
-		if err = ie.AllocationAndRetentionPriority.Encode(w); err != nil {
-			return
-		}
+	if err = ie.AllocationAndRetentionPriority.Encode(w); err != nil {
+		return
 	}
 	if ie.GBRQosInformation != nil {
 		if err = ie.GBRQosInformation.Encode(w); err != nil {
@@ -61,11 +57,6 @@ func (ie *QosFlowLevelQosParameters) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.QosCharacteristics = new(QosCharacteristics)
-	ie.AllocationAndRetentionPriority = new(AllocationAndRetentionPriority)
-	ie.GBRQosInformation = new(GBRQosInformation)
-	ie.ReflectiveQosAttribute = new(ReflectiveQosAttribute)
-	ie.AdditionalQosFlowInformation = new(AdditionalQosFlowInformation)
 	if err = ie.QosCharacteristics.Decode(r); err != nil {
 		return
 	}

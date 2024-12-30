@@ -12,7 +12,7 @@ const (
 )
 
 type TraceDepth struct {
-	Value aper.Enumerated `True,0,5`
+	Value aper.Enumerated
 }
 
 func (ie *TraceDepth) Encode(w *aper.AperWriter) (err error) {

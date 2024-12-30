@@ -1,13 +1,11 @@
 package ies
 
-import (
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type PDUSessionAggregateMaximumBitRate struct {
-	PDUSessionAggregateMaximumBitRateDL *BitRate `False,`
-	PDUSessionAggregateMaximumBitRateUL *BitRate `False,`
-	// IEExtensions PDUSessionAggregateMaximumBitRateExtIEs `False,OPTIONAL`
+	PDUSessionAggregateMaximumBitRateDL int64
+	PDUSessionAggregateMaximumBitRateUL int64
+	// IEExtensions  *PDUSessionAggregateMaximumBitRateExtIEs
 }
 
 func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err error) {
@@ -16,15 +14,13 @@ func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err err
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionAggregateMaximumBitRateDL != nil {
-		if err = ie.PDUSessionAggregateMaximumBitRateDL.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionAggregateMaximumBitRateDL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
+	if err = tmp_PDUSessionAggregateMaximumBitRateDL.Encode(w); err != nil {
+		return
 	}
-	if ie.PDUSessionAggregateMaximumBitRateUL != nil {
-		if err = ie.PDUSessionAggregateMaximumBitRateUL.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionAggregateMaximumBitRateUL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
+	if err = tmp_PDUSessionAggregateMaximumBitRateUL.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -35,13 +31,21 @@ func (ie *PDUSessionAggregateMaximumBitRate) Decode(r *aper.AperReader) (err err
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionAggregateMaximumBitRateDL = new(BitRate)
-	ie.PDUSessionAggregateMaximumBitRateUL = new(BitRate)
-	if err = ie.PDUSessionAggregateMaximumBitRateDL.Decode(r); err != nil {
+	tmp_PDUSessionAggregateMaximumBitRateDL := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 4000000000000},
+		ext: false,
+	}
+	if err = tmp_PDUSessionAggregateMaximumBitRateDL.Decode(r); err != nil {
 		return
 	}
-	if err = ie.PDUSessionAggregateMaximumBitRateUL.Decode(r); err != nil {
+	ie.PDUSessionAggregateMaximumBitRateDL = int64(tmp_PDUSessionAggregateMaximumBitRateDL.Value)
+	tmp_PDUSessionAggregateMaximumBitRateUL := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 4000000000000},
+		ext: false,
+	}
+	if err = tmp_PDUSessionAggregateMaximumBitRateUL.Decode(r); err != nil {
 		return
 	}
+	ie.PDUSessionAggregateMaximumBitRateUL = int64(tmp_PDUSessionAggregateMaximumBitRateUL.Value)
 	return
 }

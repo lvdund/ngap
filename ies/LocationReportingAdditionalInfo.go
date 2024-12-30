@@ -7,7 +7,7 @@ const (
 )
 
 type LocationReportingAdditionalInfo struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *LocationReportingAdditionalInfo) Encode(w *aper.AperWriter) (err error) {

@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type HandoverPreparationUnsuccessfulTransfer struct {
-	Cause *Cause `False,`
-	// IEExtensions HandoverPreparationUnsuccessfulTransferExtIEs `False,OPTIONAL`
+	Cause Cause
+	// IEExtensions  *HandoverPreparationUnsuccessfulTransferExtIEs
 }
 
 func (ie *HandoverPreparationUnsuccessfulTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -13,10 +13,8 @@ func (ie *HandoverPreparationUnsuccessfulTransfer) Encode(w *aper.AperWriter) (e
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.Cause != nil {
-		if err = ie.Cause.Encode(w); err != nil {
-			return
-		}
+	if err = ie.Cause.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -27,7 +25,6 @@ func (ie *HandoverPreparationUnsuccessfulTransfer) Decode(r *aper.AperReader) (e
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.Cause = new(Cause)
 	if err = ie.Cause.Decode(r); err != nil {
 		return
 	}

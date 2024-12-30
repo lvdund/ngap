@@ -7,7 +7,7 @@ const (
 )
 
 type DataForwardingNotPossible struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *DataForwardingNotPossible) Encode(w *aper.AperWriter) (err error) {

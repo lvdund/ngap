@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	PWSFailedCellIDListPresentNothing uint64 = iota /* No components present */
-	PWSFailedCellIDListPresentEUTRACGIPWSFailedList
-	PWSFailedCellIDListPresentNRCGIPWSFailedList
+	PWSFailedCellIDListPresentNothing uint64 = iota
+	PWSFailedCellIDListPresentEutraCgiPwsfailedlist
+	PWSFailedCellIDListPresentNrCgiPwsfailedlist
 	PWSFailedCellIDListPresentChoiceExtensions
 )
 
 type PWSFailedCellIDList struct {
 	Choice                uint64
-	EUTRACGIPWSFailedList *EUTRACGIList `False,,,`
-	NRCGIPWSFailedList    *NRCGIList    `False,,,`
-	// ChoiceExtensions *PWSFailedCellIDListExtIEs `False,,,`
+	EUTRACGIPWSFailedList *EUTRACGI
+	NRCGIPWSFailedList    *NRCGI
+	// ChoiceExtensions *PWSFailedCellIDListExtIEs
 }
 
 func (ie *PWSFailedCellIDList) Encode(w *aper.AperWriter) (err error) {
@@ -21,26 +21,26 @@ func (ie *PWSFailedCellIDList) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case PWSFailedCellIDListPresentEUTRACGIPWSFailedList:
+	case PWSFailedCellIDListPresentEutraCgiPwsfailedlist:
 		err = ie.EUTRACGIPWSFailedList.Encode(w)
-	case PWSFailedCellIDListPresentNRCGIPWSFailedList:
+	case PWSFailedCellIDListPresentNrCgiPwsfailedlist:
 		err = ie.NRCGIPWSFailedList.Encode(w)
 	}
 	return
 }
 func (ie *PWSFailedCellIDList) Decode(r *aper.AperReader) (err error) {
-	if ie.Choice, err = r.ReadChoice(2, false); err != nil {
+	if ie.Choice, err = r.ReadChoice(3, false); err != nil {
 		return
 	}
 	switch ie.Choice {
-	case PWSFailedCellIDListPresentEUTRACGIPWSFailedList:
-		var tmp EUTRACGIList
+	case PWSFailedCellIDListPresentEutraCgiPwsfailedlist:
+		var tmp EUTRACGI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.EUTRACGIPWSFailedList = &tmp
-	case PWSFailedCellIDListPresentNRCGIPWSFailedList:
-		var tmp NRCGIList
+	case PWSFailedCellIDListPresentNrCgiPwsfailedlist:
+		var tmp NRCGI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}

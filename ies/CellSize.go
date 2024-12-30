@@ -10,7 +10,7 @@ const (
 )
 
 type CellSize struct {
-	Value aper.Enumerated `True,0,3`
+	Value aper.Enumerated
 }
 
 func (ie *CellSize) Encode(w *aper.AperWriter) (err error) {
@@ -18,10 +18,7 @@ func (ie *CellSize) Encode(w *aper.AperWriter) (err error) {
 	return
 }
 func (ie *CellSize) Decode(r *aper.AperReader) (err error) {
-	var v uint64
-	if v, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 3}, true); err != nil {
-		return
-	}
+	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 3}, true)
 	ie.Value = aper.Enumerated(v)
 	return
 }

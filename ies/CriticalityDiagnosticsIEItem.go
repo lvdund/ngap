@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type CriticalityDiagnosticsIEItem struct {
-	IECriticality *Criticality  `False,`
-	IEID          *ProtocolIEID `False,`
-	TypeOfError   *TypeOfError  `False,`
-	// IEExtensions CriticalityDiagnosticsIEItemExtIEs `False,OPTIONAL`
+	IECriticality Criticality
+	IEID          ProtocolIEID
+	TypeOfError   TypeOfError
+	// IEExtensions  *CriticalityDiagnosticsIEItemExtIEs
 }
 
 func (ie *CriticalityDiagnosticsIEItem) Encode(w *aper.AperWriter) (err error) {
@@ -15,20 +15,14 @@ func (ie *CriticalityDiagnosticsIEItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.IECriticality != nil {
-		if err = ie.IECriticality.Encode(w); err != nil {
-			return
-		}
+	if err = ie.IECriticality.Encode(w); err != nil {
+		return
 	}
-	if ie.IEID != nil {
-		if err = ie.IEID.Encode(w); err != nil {
-			return
-		}
+	if err = ie.IEID.Encode(w); err != nil {
+		return
 	}
-	if ie.TypeOfError != nil {
-		if err = ie.TypeOfError.Encode(w); err != nil {
-			return
-		}
+	if err = ie.TypeOfError.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -39,9 +33,6 @@ func (ie *CriticalityDiagnosticsIEItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.IECriticality = new(Criticality)
-	ie.IEID = new(ProtocolIEID)
-	ie.TypeOfError = new(TypeOfError)
 	if err = ie.IECriticality.Decode(r); err != nil {
 		return
 	}

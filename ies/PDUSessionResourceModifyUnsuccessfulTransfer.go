@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceModifyUnsuccessfulTransfer struct {
-	Cause                  *Cause                  `False,`
-	CriticalityDiagnostics *CriticalityDiagnostics `True,OPTIONAL`
-	// IEExtensions PDUSessionResourceModifyUnsuccessfulTransferExtIEs `False,OPTIONAL`
+	Cause                  Cause
+	CriticalityDiagnostics *CriticalityDiagnostics
+	// IEExtensions  *PDUSessionResourceModifyUnsuccessfulTransferExtIEs
 }
 
 func (ie *PDUSessionResourceModifyUnsuccessfulTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -17,10 +17,8 @@ func (ie *PDUSessionResourceModifyUnsuccessfulTransfer) Encode(w *aper.AperWrite
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.Cause != nil {
-		if err = ie.Cause.Encode(w); err != nil {
-			return
-		}
+	if err = ie.Cause.Encode(w); err != nil {
+		return
 	}
 	if ie.CriticalityDiagnostics != nil {
 		if err = ie.CriticalityDiagnostics.Encode(w); err != nil {
@@ -37,8 +35,6 @@ func (ie *PDUSessionResourceModifyUnsuccessfulTransfer) Decode(r *aper.AperReade
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.Cause = new(Cause)
-	ie.CriticalityDiagnostics = new(CriticalityDiagnostics)
 	if err = ie.Cause.Decode(r); err != nil {
 		return
 	}

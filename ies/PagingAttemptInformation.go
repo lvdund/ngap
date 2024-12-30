@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PagingAttemptInformation struct {
-	PagingAttemptCount             *PagingAttemptCount             `False,`
-	IntendedNumberOfPagingAttempts *IntendedNumberOfPagingAttempts `False,`
-	NextPagingAreaScope            *NextPagingAreaScope            `False,OPTIONAL`
-	// IEExtensions PagingAttemptInformationExtIEs `False,OPTIONAL`
+	PagingAttemptCount             int64
+	IntendedNumberOfPagingAttempts int64
+	NextPagingAreaScope            *NextPagingAreaScope
+	// IEExtensions  *PagingAttemptInformationExtIEs
 }
 
 func (ie *PagingAttemptInformation) Encode(w *aper.AperWriter) (err error) {
@@ -18,15 +18,13 @@ func (ie *PagingAttemptInformation) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.PagingAttemptCount != nil {
-		if err = ie.PagingAttemptCount.Encode(w); err != nil {
-			return
-		}
+	tmp_PagingAttemptCount := NewINTEGER(ie.PagingAttemptCount, aper.Constraint{Lb: 1, Ub: 16}, true)
+	if err = tmp_PagingAttemptCount.Encode(w); err != nil {
+		return
 	}
-	if ie.IntendedNumberOfPagingAttempts != nil {
-		if err = ie.IntendedNumberOfPagingAttempts.Encode(w); err != nil {
-			return
-		}
+	tmp_IntendedNumberOfPagingAttempts := NewINTEGER(ie.IntendedNumberOfPagingAttempts, aper.Constraint{Lb: 1, Ub: 16}, true)
+	if err = tmp_IntendedNumberOfPagingAttempts.Encode(w); err != nil {
+		return
 	}
 	if ie.NextPagingAreaScope != nil {
 		if err = ie.NextPagingAreaScope.Encode(w); err != nil {
@@ -43,15 +41,22 @@ func (ie *PagingAttemptInformation) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.PagingAttemptCount = new(PagingAttemptCount)
-	ie.IntendedNumberOfPagingAttempts = new(IntendedNumberOfPagingAttempts)
-	ie.NextPagingAreaScope = new(NextPagingAreaScope)
-	if err = ie.PagingAttemptCount.Decode(r); err != nil {
+	tmp_PagingAttemptCount := INTEGER{
+		c:   aper.Constraint{Lb: 1, Ub: 16},
+		ext: false,
+	}
+	if err = tmp_PagingAttemptCount.Decode(r); err != nil {
 		return
 	}
-	if err = ie.IntendedNumberOfPagingAttempts.Decode(r); err != nil {
+	ie.PagingAttemptCount = int64(tmp_PagingAttemptCount.Value)
+	tmp_IntendedNumberOfPagingAttempts := INTEGER{
+		c:   aper.Constraint{Lb: 1, Ub: 16},
+		ext: false,
+	}
+	if err = tmp_IntendedNumberOfPagingAttempts.Decode(r); err != nil {
 		return
 	}
+	ie.IntendedNumberOfPagingAttempts = int64(tmp_IntendedNumberOfPagingAttempts.Value)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.NextPagingAreaScope.Decode(r); err != nil {
 			return
