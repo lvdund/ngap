@@ -16,7 +16,7 @@ type WarningAreaList struct {
 	EUTRACGIListForWarning *EUTRACGI
 	NRCGIListForWarning    *NRCGI
 	TAIListForWarning      *TAI
-	// EmergencyAreaIDList    *EmergencyAreaID
+	EmergencyAreaIDList    *EmergencyAreaID
 	// ChoiceExtensions *WarningAreaListExtIEs
 }
 
@@ -32,7 +32,7 @@ func (ie *WarningAreaList) Encode(w *aper.AperWriter) (err error) {
 	case WarningAreaListPresentTailistforwarning:
 		err = ie.TAIListForWarning.Encode(w)
 	case WarningAreaListPresentEmergencyareaidlist:
-		// err = ie.EmergencyAreaIDList.Encode(w)
+		err = ie.EmergencyAreaIDList.Encode(w)
 	}
 	return
 }
@@ -60,11 +60,11 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 		}
 		ie.TAIListForWarning = &tmp
 	case WarningAreaListPresentEmergencyareaidlist:
-		// var tmp EmergencyAreaID
-		// if err = tmp.Decode(r); err != nil {
-		// 	return
-		// }
-		// ie.EmergencyAreaIDList = &tmp
+		var tmp EmergencyAreaID
+		if err = tmp.Decode(r); err != nil {
+			return
+		}
+		ie.EmergencyAreaIDList = &tmp
 	}
 	return
 }

@@ -21,7 +21,7 @@ func (ie *DRBStatusUL18) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	if ie.ReceiveStatusOfULPDCPSDUs != nil {
-		tmp_ReceiveStatusOfULPDCPSDUs := NewBITSTRING(*ie.ReceiveStatusOfULPDCPSDUs, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_ReceiveStatusOfULPDCPSDUs := NewBITSTRING(*ie.ReceiveStatusOfULPDCPSDUs, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_ReceiveStatusOfULPDCPSDUs.Encode(w); err != nil {
 			return
 		}

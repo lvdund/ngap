@@ -25,13 +25,13 @@ func (ie *ExpectedUEActivityBehaviour) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if ie.ExpectedActivityPeriod != nil {
-		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
+		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, false)
 		if err = tmp_ExpectedActivityPeriod.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.ExpectedIdlePeriod != nil {
-		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
+		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, false)
 		if err = tmp_ExpectedIdlePeriod.Encode(w); err != nil {
 			return
 		}

@@ -14,7 +14,7 @@ func (ie *PDUSessionUsageReport) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_RATType := NewENUMERATED(ie.RATType, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_RATType := NewENUMERATED(ie.RATType, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RATType.Encode(w); err != nil {
 		return
 	}

@@ -44,7 +44,7 @@ func (ie *LocationReportingRequestType) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.LocationReportingReferenceIDToBeCancelled != nil {
-		tmp_LocationReportingReferenceIDToBeCancelled := NewINTEGER(*ie.LocationReportingReferenceIDToBeCancelled, aper.Constraint{Lb: 1, Ub: 64}, true)
+		tmp_LocationReportingReferenceIDToBeCancelled := NewINTEGER(*ie.LocationReportingReferenceIDToBeCancelled, aper.Constraint{Lb: 1, Ub: 64}, false)
 		if err = tmp_LocationReportingReferenceIDToBeCancelled.Encode(w); err != nil {
 			return
 		}

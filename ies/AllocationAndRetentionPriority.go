@@ -15,7 +15,7 @@ func (ie *AllocationAndRetentionPriority) Encode(w *aper.AperWriter) (err error)
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PriorityLevelARP := NewINTEGER(ie.PriorityLevelARP, aper.Constraint{Lb: 1, Ub: 15}, true)
+	tmp_PriorityLevelARP := NewINTEGER(ie.PriorityLevelARP, aper.Constraint{Lb: 1, Ub: 15}, false)
 	if err = tmp_PriorityLevelARP.Encode(w); err != nil {
 		return
 	}

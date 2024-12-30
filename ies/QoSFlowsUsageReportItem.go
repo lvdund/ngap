@@ -15,11 +15,11 @@ func (ie *QoSFlowsUsageReportItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
 		return
 	}
-	tmp_RATType := NewENUMERATED(ie.RATType, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_RATType := NewENUMERATED(ie.RATType, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RATType.Encode(w); err != nil {
 		return
 	}

@@ -25,7 +25,7 @@ func (ie *UserLocationInformationNR) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	if ie.TimeStamp != nil {
-		tmp_TimeStamp := NewOCTETSTRING(*ie.TimeStamp, aper.Constraint{Lb: 4, Ub: 4}, true)
+		tmp_TimeStamp := NewOCTETSTRING(*ie.TimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 		if err = tmp_TimeStamp.Encode(w); err != nil {
 			return
 		}

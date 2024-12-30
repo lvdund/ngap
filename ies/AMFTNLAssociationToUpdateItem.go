@@ -30,7 +30,7 @@ func (ie *AMFTNLAssociationToUpdateItem) Encode(w *aper.AperWriter) (err error) 
 		}
 	}
 	if ie.TNLAddressWeightFactor != nil {
-		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, true)
+		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
 		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
 			return
 		}

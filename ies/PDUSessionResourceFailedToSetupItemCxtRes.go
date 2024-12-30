@@ -14,11 +14,11 @@ func (ie *PDUSessionResourceFailedToSetupItemCxtRes) Encode(w *aper.AperWriter) 
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, true)
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
 		return
 	}
-	tmp_PDUSessionResourceSetupUnsuccessfulTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_PDUSessionResourceSetupUnsuccessfulTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceSetupUnsuccessfulTransfer.Encode(w); err != nil {
 		return
 	}

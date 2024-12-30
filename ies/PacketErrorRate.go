@@ -14,11 +14,11 @@ func (ie *PacketErrorRate) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PERScalar := NewINTEGER(ie.PERScalar, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_PERScalar := NewINTEGER(ie.PERScalar, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PERScalar.Encode(w); err != nil {
 		return
 	}
-	tmp_PERExponent := NewINTEGER(ie.PERExponent, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_PERExponent := NewINTEGER(ie.PERExponent, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PERExponent.Encode(w); err != nil {
 		return
 	}

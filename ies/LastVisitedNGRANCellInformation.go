@@ -29,12 +29,12 @@ func (ie *LastVisitedNGRANCellInformation) Encode(w *aper.AperWriter) (err error
 	if err = ie.CellType.Encode(w); err != nil {
 		return
 	}
-	tmp_TimeUEStayedInCell := NewINTEGER(ie.TimeUEStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, true)
+	tmp_TimeUEStayedInCell := NewINTEGER(ie.TimeUEStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, false)
 	if err = tmp_TimeUEStayedInCell.Encode(w); err != nil {
 		return
 	}
 	if ie.TimeUEStayedInCellEnhancedGranularity != nil {
-		tmp_TimeUEStayedInCellEnhancedGranularity := NewINTEGER(*ie.TimeUEStayedInCellEnhancedGranularity, aper.Constraint{Lb: 0, Ub: 40950}, true)
+		tmp_TimeUEStayedInCellEnhancedGranularity := NewINTEGER(*ie.TimeUEStayedInCellEnhancedGranularity, aper.Constraint{Lb: 0, Ub: 40950}, false)
 		if err = tmp_TimeUEStayedInCellEnhancedGranularity.Encode(w); err != nil {
 			return
 		}

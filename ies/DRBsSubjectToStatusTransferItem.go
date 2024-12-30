@@ -15,7 +15,7 @@ func (ie *DRBsSubjectToStatusTransferItem) Encode(w *aper.AperWriter) (err error
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, true)
+	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, false)
 	if err = tmp_DRBID.Encode(w); err != nil {
 		return
 	}

@@ -18,11 +18,11 @@ func (ie *PagingAttemptInformation) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_PagingAttemptCount := NewINTEGER(ie.PagingAttemptCount, aper.Constraint{Lb: 1, Ub: 16}, true)
+	tmp_PagingAttemptCount := NewINTEGER(ie.PagingAttemptCount, aper.Constraint{Lb: 1, Ub: 16}, false)
 	if err = tmp_PagingAttemptCount.Encode(w); err != nil {
 		return
 	}
-	tmp_IntendedNumberOfPagingAttempts := NewINTEGER(ie.IntendedNumberOfPagingAttempts, aper.Constraint{Lb: 1, Ub: 16}, true)
+	tmp_IntendedNumberOfPagingAttempts := NewINTEGER(ie.IntendedNumberOfPagingAttempts, aper.Constraint{Lb: 1, Ub: 16}, false)
 	if err = tmp_IntendedNumberOfPagingAttempts.Encode(w); err != nil {
 		return
 	}

@@ -17,7 +17,7 @@ func (ie *CancelledCellsInTAINRItem) Encode(w *aper.AperWriter) (err error) {
 	if err = ie.NRCGI.Encode(w); err != nil {
 		return
 	}
-	tmp_NumberOfBroadcasts := NewINTEGER(ie.NumberOfBroadcasts, aper.Constraint{Lb: 0, Ub: 65535}, true)
+	tmp_NumberOfBroadcasts := NewINTEGER(ie.NumberOfBroadcasts, aper.Constraint{Lb: 0, Ub: 65535}, false)
 	if err = tmp_NumberOfBroadcasts.Encode(w); err != nil {
 		return
 	}

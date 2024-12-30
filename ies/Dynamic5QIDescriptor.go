@@ -31,11 +31,11 @@ func (ie *Dynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 4)
 	}
 	w.WriteBits(optionals, 5)
-	tmp_PriorityLevelQos := NewINTEGER(ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, true)
+	tmp_PriorityLevelQos := NewINTEGER(ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, false)
 	if err = tmp_PriorityLevelQos.Encode(w); err != nil {
 		return
 	}
-	tmp_PacketDelayBudget := NewINTEGER(ie.PacketDelayBudget, aper.Constraint{Lb: 0, Ub: 1023}, true)
+	tmp_PacketDelayBudget := NewINTEGER(ie.PacketDelayBudget, aper.Constraint{Lb: 0, Ub: 1023}, false)
 	if err = tmp_PacketDelayBudget.Encode(w); err != nil {
 		return
 	}
@@ -43,7 +43,7 @@ func (ie *Dynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	if ie.FiveQI != nil {
-		tmp_FiveQI := NewINTEGER(*ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, true)
+		tmp_FiveQI := NewINTEGER(*ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, false)
 		if err = tmp_FiveQI.Encode(w); err != nil {
 			return
 		}
@@ -54,13 +54,13 @@ func (ie *Dynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.AveragingWindow != nil {
-		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, true)
+		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_AveragingWindow.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.MaximumDataBurstVolume != nil {
-		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, true)
+		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_MaximumDataBurstVolume.Encode(w); err != nil {
 			return
 		}

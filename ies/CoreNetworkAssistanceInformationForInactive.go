@@ -42,7 +42,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 		}
 	}
 	if ie.PeriodicRegistrationUpdateTimer != nil {
-		tmp_PeriodicRegistrationUpdateTimer := NewBITSTRING(*ie.PeriodicRegistrationUpdateTimer, aper.Constraint{Lb: 8, Ub: 8}, true)
+		tmp_PeriodicRegistrationUpdateTimer := NewBITSTRING(*ie.PeriodicRegistrationUpdateTimer, aper.Constraint{Lb: 8, Ub: 8}, false)
 		if err = tmp_PeriodicRegistrationUpdateTimer.Encode(w); err != nil {
 			return
 		}

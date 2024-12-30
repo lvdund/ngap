@@ -21,7 +21,7 @@ func (ie *QosFlowAddOrModifyRequestItem) Encode(w *aper.AperWriter) (err error) 
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
 		return
 	}
@@ -31,7 +31,7 @@ func (ie *QosFlowAddOrModifyRequestItem) Encode(w *aper.AperWriter) (err error) 
 		}
 	}
 	if ie.ERABID != nil {
-		tmp_ERABID := NewINTEGER(*ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, true)
+		tmp_ERABID := NewINTEGER(*ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, false)
 		if err = tmp_ERABID.Encode(w); err != nil {
 			return
 		}

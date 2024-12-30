@@ -28,19 +28,19 @@ func (ie *GBRQosInformation) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	tmp_MaximumFlowBitRateDL := NewINTEGER(ie.MaximumFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
+	tmp_MaximumFlowBitRateDL := NewINTEGER(ie.MaximumFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_MaximumFlowBitRateDL.Encode(w); err != nil {
 		return
 	}
-	tmp_MaximumFlowBitRateUL := NewINTEGER(ie.MaximumFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
+	tmp_MaximumFlowBitRateUL := NewINTEGER(ie.MaximumFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_MaximumFlowBitRateUL.Encode(w); err != nil {
 		return
 	}
-	tmp_GuaranteedFlowBitRateDL := NewINTEGER(ie.GuaranteedFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
+	tmp_GuaranteedFlowBitRateDL := NewINTEGER(ie.GuaranteedFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_GuaranteedFlowBitRateDL.Encode(w); err != nil {
 		return
 	}
-	tmp_GuaranteedFlowBitRateUL := NewINTEGER(ie.GuaranteedFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
+	tmp_GuaranteedFlowBitRateUL := NewINTEGER(ie.GuaranteedFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_GuaranteedFlowBitRateUL.Encode(w); err != nil {
 		return
 	}
@@ -50,13 +50,13 @@ func (ie *GBRQosInformation) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.MaximumPacketLossRateDL != nil {
-		tmp_MaximumPacketLossRateDL := NewINTEGER(*ie.MaximumPacketLossRateDL, aper.Constraint{Lb: 0, Ub: 1000}, true)
+		tmp_MaximumPacketLossRateDL := NewINTEGER(*ie.MaximumPacketLossRateDL, aper.Constraint{Lb: 0, Ub: 1000}, false)
 		if err = tmp_MaximumPacketLossRateDL.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.MaximumPacketLossRateUL != nil {
-		tmp_MaximumPacketLossRateUL := NewINTEGER(*ie.MaximumPacketLossRateUL, aper.Constraint{Lb: 0, Ub: 1000}, true)
+		tmp_MaximumPacketLossRateUL := NewINTEGER(*ie.MaximumPacketLossRateUL, aper.Constraint{Lb: 0, Ub: 1000}, false)
 		if err = tmp_MaximumPacketLossRateUL.Encode(w); err != nil {
 			return
 		}

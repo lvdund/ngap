@@ -13,7 +13,7 @@ func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Encode(w *aper.A
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
 		return
 	}

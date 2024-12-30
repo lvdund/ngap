@@ -17,12 +17,12 @@ func (ie *SNSSAI) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_SST := NewOCTETSTRING(ie.SST, aper.Constraint{Lb: 1, Ub: 1}, true)
+	tmp_SST := NewOCTETSTRING(ie.SST, aper.Constraint{Lb: 1, Ub: 1}, false)
 	if err = tmp_SST.Encode(w); err != nil {
 		return
 	}
 	if ie.SD != nil {
-		tmp_SD := NewOCTETSTRING(*ie.SD, aper.Constraint{Lb: 3, Ub: 3}, true)
+		tmp_SD := NewOCTETSTRING(*ie.SD, aper.Constraint{Lb: 3, Ub: 3}, false)
 		if err = tmp_SD.Encode(w); err != nil {
 			return
 		}

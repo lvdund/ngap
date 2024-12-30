@@ -14,7 +14,7 @@ func (ie *UEPresenceInAreaOfInterestItem) Encode(w *aper.AperWriter) (err error)
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, true)
+	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, false)
 	if err = tmp_LocationReportingReferenceID.Encode(w); err != nil {
 		return
 	}

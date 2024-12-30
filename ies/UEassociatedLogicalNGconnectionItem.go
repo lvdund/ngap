@@ -21,13 +21,13 @@ func (ie *UEassociatedLogicalNGconnectionItem) Encode(w *aper.AperWriter) (err e
 	}
 	w.WriteBits(optionals, 3)
 	if ie.AMFUENGAPID != nil {
-		tmp_AMFUENGAPID := NewINTEGER(*ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, true)
+		tmp_AMFUENGAPID := NewINTEGER(*ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, false)
 		if err = tmp_AMFUENGAPID.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.RANUENGAPID != nil {
-		tmp_RANUENGAPID := NewINTEGER(*ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, true)
+		tmp_RANUENGAPID := NewINTEGER(*ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, false)
 		if err = tmp_RANUENGAPID.Encode(w); err != nil {
 			return
 		}

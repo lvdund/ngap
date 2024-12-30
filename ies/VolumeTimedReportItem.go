@@ -16,19 +16,19 @@ func (ie *VolumeTimedReportItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_StartTimeStamp := NewOCTETSTRING(ie.StartTimeStamp, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_StartTimeStamp := NewOCTETSTRING(ie.StartTimeStamp, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_StartTimeStamp.Encode(w); err != nil {
 		return
 	}
-	tmp_EndTimeStamp := NewOCTETSTRING(ie.EndTimeStamp, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_EndTimeStamp := NewOCTETSTRING(ie.EndTimeStamp, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_EndTimeStamp.Encode(w); err != nil {
 		return
 	}
-	tmp_UsageCountUL := NewINTEGER(ie.UsageCountUL, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_UsageCountUL := NewINTEGER(ie.UsageCountUL, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_UsageCountUL.Encode(w); err != nil {
 		return
 	}
-	tmp_UsageCountDL := NewINTEGER(ie.UsageCountDL, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_UsageCountDL := NewINTEGER(ie.UsageCountDL, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_UsageCountDL.Encode(w); err != nil {
 		return
 	}

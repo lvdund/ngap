@@ -16,18 +16,18 @@ func (ie *TraceActivation) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_NGRANTraceID := NewOCTETSTRING(ie.NGRANTraceID, aper.Constraint{Lb: 8, Ub: 8}, true)
+	tmp_NGRANTraceID := NewOCTETSTRING(ie.NGRANTraceID, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_NGRANTraceID.Encode(w); err != nil {
 		return
 	}
-	tmp_InterfacesToTrace := NewBITSTRING(ie.InterfacesToTrace, aper.Constraint{Lb: 8, Ub: 8}, true)
+	tmp_InterfacesToTrace := NewBITSTRING(ie.InterfacesToTrace, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_InterfacesToTrace.Encode(w); err != nil {
 		return
 	}
 	if err = ie.TraceDepth.Encode(w); err != nil {
 		return
 	}
-	tmp_TraceCollectionEntityIPAddress := NewBITSTRING(ie.TraceCollectionEntityIPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
+	tmp_TraceCollectionEntityIPAddress := NewBITSTRING(ie.TraceCollectionEntityIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
 	if err = tmp_TraceCollectionEntityIPAddress.Encode(w); err != nil {
 		return
 	}

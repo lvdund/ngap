@@ -14,11 +14,11 @@ func (ie *EPSTAI) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, true)
+	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
 		return
 	}
-	tmp_EPSTAC := NewOCTETSTRING(ie.EPSTAC, aper.Constraint{Lb: 2, Ub: 2}, true)
+	tmp_EPSTAC := NewOCTETSTRING(ie.EPSTAC, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_EPSTAC.Encode(w); err != nil {
 		return
 	}

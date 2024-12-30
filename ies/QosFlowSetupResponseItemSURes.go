@@ -13,7 +13,7 @@ func (ie *QosFlowSetupResponseItemSURes) Encode(w *aper.AperWriter) (err error) 
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
 		return
 	}

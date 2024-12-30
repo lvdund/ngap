@@ -14,11 +14,11 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Encode(w *aper.AperWriter) (err e
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PlmnIdentity := NewOCTETSTRING(ie.PlmnIdentity, aper.Constraint{Lb: 3, Ub: 3}, true)
+	tmp_PlmnIdentity := NewOCTETSTRING(ie.PlmnIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PlmnIdentity.Encode(w); err != nil {
 		return
 	}
-	tmp_CnType := NewENUMERATED(ie.CnType, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_CnType := NewENUMERATED(ie.CnType, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_CnType.Encode(w); err != nil {
 		return
 	}

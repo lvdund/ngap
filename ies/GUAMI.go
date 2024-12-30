@@ -16,19 +16,19 @@ func (ie *GUAMI) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, true)
+	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
 		return
 	}
-	tmp_AMFRegionID := NewBITSTRING(ie.AMFRegionID, aper.Constraint{Lb: 8, Ub: 8}, true)
+	tmp_AMFRegionID := NewBITSTRING(ie.AMFRegionID, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_AMFRegionID.Encode(w); err != nil {
 		return
 	}
-	tmp_AMFSetID := NewBITSTRING(ie.AMFSetID, aper.Constraint{Lb: 10, Ub: 10}, true)
+	tmp_AMFSetID := NewBITSTRING(ie.AMFSetID, aper.Constraint{Lb: 10, Ub: 10}, false)
 	if err = tmp_AMFSetID.Encode(w); err != nil {
 		return
 	}
-	tmp_AMFPointer := NewBITSTRING(ie.AMFPointer, aper.Constraint{Lb: 6, Ub: 6}, true)
+	tmp_AMFPointer := NewBITSTRING(ie.AMFPointer, aper.Constraint{Lb: 6, Ub: 6}, false)
 	if err = tmp_AMFPointer.Encode(w); err != nil {
 		return
 	}

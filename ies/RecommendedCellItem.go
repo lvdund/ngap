@@ -21,7 +21,7 @@ func (ie *RecommendedCellItem) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	if ie.TimeStayedInCell != nil {
-		tmp_TimeStayedInCell := NewINTEGER(*ie.TimeStayedInCell, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_TimeStayedInCell := NewINTEGER(*ie.TimeStayedInCell, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_TimeStayedInCell.Encode(w); err != nil {
 			return
 		}

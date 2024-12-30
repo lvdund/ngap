@@ -17,7 +17,7 @@ func (ie *AreaOfInterestItem) Encode(w *aper.AperWriter) (err error) {
 	if err = ie.AreaOfInterest.Encode(w); err != nil {
 		return
 	}
-	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, true)
+	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, false)
 	if err = tmp_LocationReportingReferenceID.Encode(w); err != nil {
 		return
 	}

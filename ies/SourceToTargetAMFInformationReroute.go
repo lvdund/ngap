@@ -25,19 +25,19 @@ func (ie *SourceToTargetAMFInformationReroute) Encode(w *aper.AperWriter) (err e
 	}
 	w.WriteBits(optionals, 4)
 	if ie.ConfiguredNSSAI != nil {
-		tmp_ConfiguredNSSAI := NewOCTETSTRING(*ie.ConfiguredNSSAI, aper.Constraint{Lb: 128, Ub: 128}, true)
+		tmp_ConfiguredNSSAI := NewOCTETSTRING(*ie.ConfiguredNSSAI, aper.Constraint{Lb: 128, Ub: 128}, false)
 		if err = tmp_ConfiguredNSSAI.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.RejectedNSSAIinPLMN != nil {
-		tmp_RejectedNSSAIinPLMN := NewOCTETSTRING(*ie.RejectedNSSAIinPLMN, aper.Constraint{Lb: 32, Ub: 32}, true)
+		tmp_RejectedNSSAIinPLMN := NewOCTETSTRING(*ie.RejectedNSSAIinPLMN, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinPLMN.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.RejectedNSSAIinTA != nil {
-		tmp_RejectedNSSAIinTA := NewOCTETSTRING(*ie.RejectedNSSAIinTA, aper.Constraint{Lb: 32, Ub: 32}, true)
+		tmp_RejectedNSSAIinTA := NewOCTETSTRING(*ie.RejectedNSSAIinTA, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinTA.Encode(w); err != nil {
 			return
 		}

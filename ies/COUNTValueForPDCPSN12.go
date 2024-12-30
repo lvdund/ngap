@@ -14,11 +14,11 @@ func (ie *COUNTValueForPDCPSN12) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PDCPSN12 := NewINTEGER(ie.PDCPSN12, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_PDCPSN12 := NewINTEGER(ie.PDCPSN12, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDCPSN12.Encode(w); err != nil {
 		return
 	}
-	tmp_HFNPDCPSN12 := NewINTEGER(ie.HFNPDCPSN12, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_HFNPDCPSN12 := NewINTEGER(ie.HFNPDCPSN12, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HFNPDCPSN12.Encode(w); err != nil {
 		return
 	}

@@ -4,7 +4,7 @@ import "github.com/lvdund/ngap/aper"
 
 type MobilityRestrictionList struct {
 	ServingPLMN              []byte
-	// EquivalentPLMNs          *[]PLMNIdentity
+	EquivalentPLMNs          *[]PLMNIdentity
 	RATRestrictions          *[]RATRestrictionsItem
 	ForbiddenAreaInformation *[]ForbiddenAreaInformationItem
 	ServiceAreaInformation   *[]ServiceAreaInformationItem
@@ -16,9 +16,9 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	optionals := []byte{0x0}
-	// if ie.EquivalentPLMNs != nil {
-	// 	aper.SetBit(optionals, 1)
-	// }
+	if ie.EquivalentPLMNs != nil {
+		aper.SetBit(optionals, 1)
+	}
 	if ie.RATRestrictions != nil {
 		aper.SetBit(optionals, 2)
 	}
@@ -29,25 +29,25 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 4)
 	}
 	w.WriteBits(optionals, 5)
-	tmp_ServingPLMN := NewOCTETSTRING(ie.ServingPLMN, aper.Constraint{Lb: 3, Ub: 3}, true)
+	tmp_ServingPLMN := NewOCTETSTRING(ie.ServingPLMN, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_ServingPLMN.Encode(w); err != nil {
 		return
 	}
-	// if ie.EquivalentPLMNs != nil {
-	// 	if len(*ie.EquivalentPLMNs) > 0 {
-	// 		tmp := Sequence[*PLMNIdentity]{
-	// 			Value: []*PLMNIdentity{},
-	// 			c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNs},
-	// 			ext:   false,
-	// 		}
-	// 		for _, i := range *ie.EquivalentPLMNs {
-	// 			tmp.Value = append(tmp.Value, &i)
-	// 		}
-	// 		if err = tmp.Encode(w); err != nil {
-	// 			return
-	// 		}
-	// 	}
-	// }
+	if ie.EquivalentPLMNs != nil {
+		if len(*ie.EquivalentPLMNs) > 0 {
+			tmp := Sequence[*PLMNIdentity]{
+				Value: []*PLMNIdentity{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNs},
+				ext:   false,
+			}
+			for _, i := range *ie.EquivalentPLMNs {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
+		}
+	}
 	if ie.RATRestrictions != nil {
 		if len(*ie.RATRestrictions) > 0 {
 			tmp := Sequence[*RATRestrictionsItem]{
@@ -111,19 +111,19 @@ func (ie *MobilityRestrictionList) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	ie.ServingPLMN = tmp_ServingPLMN.Value
-	// if aper.IsBitSet(optionals, 1) {
-	// 	tmp_EquivalentPLMNs := Sequence[*PLMNIdentity]{
-	// 		c:   aper.Constraint{Lb: 1, Ub: maxnoofEPLMNs},
-	// 		ext: false,
-	// 	}
-	// 	if err = tmp_EquivalentPLMNs.Decode(r); err != nil {
-	// 		return
-	// 	}
-	// 	ie.EquivalentPLMNs = &[]PLMNIdentity{}
-	// 	for _, i := range tmp_EquivalentPLMNs.Value {
-	// 		*ie.EquivalentPLMNs = append(*ie.EquivalentPLMNs, *i)
-	// 	}
-	// }
+	if aper.IsBitSet(optionals, 1) {
+		tmp_EquivalentPLMNs := Sequence[*PLMNIdentity]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEPLMNs},
+			ext: false,
+		}
+		if err = tmp_EquivalentPLMNs.Decode(r); err != nil {
+			return
+		}
+		ie.EquivalentPLMNs = &[]PLMNIdentity{}
+		for _, i := range tmp_EquivalentPLMNs.Value {
+			*ie.EquivalentPLMNs = append(*ie.EquivalentPLMNs, *i)
+		}
+	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_RATRestrictions := Sequence[*RATRestrictionsItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},

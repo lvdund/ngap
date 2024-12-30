@@ -1,6 +1,8 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+)
 
 type ENUMERATED struct {
 	Value aper.Enumerated
@@ -122,6 +124,51 @@ func (s *Sequence[T]) Decode(r *aper.AperReader) (err error) {
 	newItems, err = aper.ReadSequenceOfIEs[T](r, &s.c, s.ext)
 	s.Value = []T{}
 	s.Value = append(s.Value, newItems...)
+	return
+}
+
+// temparory
+type TAC struct {
+	Value []byte
+}
+
+func (ie *TAC) Encode(w *aper.AperWriter) (err error) {
+	return
+}
+func (ie *TAC) Decode(r *aper.AperReader) (err error) {
+	return
+}
+
+type PLMNIdentity struct {
+	Value []byte
+}
+
+func (ie *PLMNIdentity) Encode(w *aper.AperWriter) (err error) {
+	return
+}
+func (ie *PLMNIdentity) Decode(r *aper.AperReader) (err error) {
+	return
+}
+
+type EmergencyAreaID struct {
+	Value []byte
+}
+
+func (ie *EmergencyAreaID) Encode(w *aper.AperWriter) (err error) {
+	return
+}
+func (ie *EmergencyAreaID) Decode(r *aper.AperReader) (err error) {
+	return
+}
+
+type TransportLayerAddress struct {
+	Value []byte
+}
+
+func (ie *TransportLayerAddress) Encode(w *aper.AperWriter) (err error) {
+	return
+}
+func (ie *TransportLayerAddress) Decode(r *aper.AperReader) (err error) {
 	return
 }
 

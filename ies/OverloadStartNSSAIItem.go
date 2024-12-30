@@ -40,7 +40,7 @@ func (ie *OverloadStartNSSAIItem) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.SliceTrafficLoadReductionIndication != nil {
-		tmp_SliceTrafficLoadReductionIndication := NewINTEGER(*ie.SliceTrafficLoadReductionIndication, aper.Constraint{Lb: 1, Ub: 99}, true)
+		tmp_SliceTrafficLoadReductionIndication := NewINTEGER(*ie.SliceTrafficLoadReductionIndication, aper.Constraint{Lb: 1, Ub: 99}, false)
 		if err = tmp_SliceTrafficLoadReductionIndication.Encode(w); err != nil {
 			return
 		}

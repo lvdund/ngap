@@ -14,7 +14,7 @@ func (ie *EmergencyAreaIDCancelledEUTRAItem) Encode(w *aper.AperWriter) (err err
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_EmergencyAreaID := NewOCTETSTRING(ie.EmergencyAreaID, aper.Constraint{Lb: 3, Ub: 3}, true)
+	tmp_EmergencyAreaID := NewOCTETSTRING(ie.EmergencyAreaID, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_EmergencyAreaID.Encode(w); err != nil {
 		return
 	}

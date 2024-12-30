@@ -14,11 +14,11 @@ func (ie *PDUSessionResourceFailedToModifyItemModCfm) Encode(w *aper.AperWriter)
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, true)
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
 		return
 	}
-	tmp_PDUSessionResourceModifyIndicationUnsuccessfulTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyIndicationUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_PDUSessionResourceModifyIndicationUnsuccessfulTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyIndicationUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceModifyIndicationUnsuccessfulTransfer.Encode(w); err != nil {
 		return
 	}

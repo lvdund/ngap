@@ -33,7 +33,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.A
 		aper.SetBit(optionals, 5)
 	}
 	w.WriteBits(optionals, 6)
-	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, true)
+	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
 		return
 	}
@@ -73,7 +73,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.A
 		}
 	}
 	if ie.IndexToRFSP != nil {
-		tmp_IndexToRFSP := NewINTEGER(*ie.IndexToRFSP, aper.Constraint{Lb: 1, Ub: 256}, true)
+		tmp_IndexToRFSP := NewINTEGER(*ie.IndexToRFSP, aper.Constraint{Lb: 1, Ub: 256}, false)
 		if err = tmp_IndexToRFSP.Encode(w); err != nil {
 			return
 		}

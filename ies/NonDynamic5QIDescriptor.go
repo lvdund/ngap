@@ -25,24 +25,24 @@ func (ie *NonDynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	tmp_FiveQI := NewINTEGER(ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, true)
+	tmp_FiveQI := NewINTEGER(ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_FiveQI.Encode(w); err != nil {
 		return
 	}
 	if ie.PriorityLevelQos != nil {
-		tmp_PriorityLevelQos := NewINTEGER(*ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, true)
+		tmp_PriorityLevelQos := NewINTEGER(*ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, false)
 		if err = tmp_PriorityLevelQos.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.AveragingWindow != nil {
-		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, true)
+		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_AveragingWindow.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.MaximumDataBurstVolume != nil {
-		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, true)
+		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_MaximumDataBurstVolume.Encode(w); err != nil {
 			return
 		}

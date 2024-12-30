@@ -25,12 +25,12 @@ func (ie *PDUSessionResourceSetupItemSUReq) Encode(w *aper.AperWriter) (err erro
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, true)
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
 		return
 	}
 	if ie.PDUSessionNASPDU != nil {
-		tmp_PDUSessionNASPDU := NewOCTETSTRING(*ie.PDUSessionNASPDU, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_PDUSessionNASPDU := NewOCTETSTRING(*ie.PDUSessionNASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionNASPDU.Encode(w); err != nil {
 			return
 		}
@@ -41,7 +41,7 @@ func (ie *PDUSessionResourceSetupItemSUReq) Encode(w *aper.AperWriter) (err erro
 		}
 	}
 	if ie.PDUSessionResourceSetupRequestTransfer != nil {
-		tmp_PDUSessionResourceSetupRequestTransfer := NewOCTETSTRING(*ie.PDUSessionResourceSetupRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_PDUSessionResourceSetupRequestTransfer := NewOCTETSTRING(*ie.PDUSessionResourceSetupRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionResourceSetupRequestTransfer.Encode(w); err != nil {
 			return
 		}

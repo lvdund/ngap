@@ -21,18 +21,18 @@ func (ie *PDUSessionResourceModifyItemModReq) Encode(w *aper.AperWriter) (err er
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, true)
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
 		return
 	}
 	if ie.NASPDU != nil {
-		tmp_NASPDU := NewOCTETSTRING(*ie.NASPDU, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_NASPDU := NewOCTETSTRING(*ie.NASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_NASPDU.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.PDUSessionResourceModifyRequestTransfer != nil {
-		tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(*ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(*ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionResourceModifyRequestTransfer.Encode(w); err != nil {
 			return
 		}

@@ -17,12 +17,12 @@ func (ie *AssociatedQosFlowItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
 		return
 	}
 	if ie.QosFlowMappingIndication != nil {
-		tmp_QosFlowMappingIndication := NewENUMERATED(*ie.QosFlowMappingIndication, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_QosFlowMappingIndication := NewENUMERATED(*ie.QosFlowMappingIndication, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_QosFlowMappingIndication.Encode(w); err != nil {
 			return
 		}

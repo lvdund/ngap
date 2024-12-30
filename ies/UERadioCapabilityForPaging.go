@@ -21,13 +21,13 @@ func (ie *UERadioCapabilityForPaging) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if ie.UERadioCapabilityForPagingOfNR != nil {
-		tmp_UERadioCapabilityForPagingOfNR := NewOCTETSTRING(*ie.UERadioCapabilityForPagingOfNR, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_UERadioCapabilityForPagingOfNR := NewOCTETSTRING(*ie.UERadioCapabilityForPagingOfNR, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_UERadioCapabilityForPagingOfNR.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.UERadioCapabilityForPagingOfEUTRA != nil {
-		tmp_UERadioCapabilityForPagingOfEUTRA := NewOCTETSTRING(*ie.UERadioCapabilityForPagingOfEUTRA, aper.Constraint{Lb: 0, Ub: 0}, true)
+		tmp_UERadioCapabilityForPagingOfEUTRA := NewOCTETSTRING(*ie.UERadioCapabilityForPagingOfEUTRA, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_UERadioCapabilityForPagingOfEUTRA.Encode(w); err != nil {
 			return
 		}

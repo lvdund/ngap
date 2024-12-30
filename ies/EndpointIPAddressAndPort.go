@@ -14,11 +14,11 @@ func (ie *EndpointIPAddressAndPort) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_EndpointIPAddress := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
+	tmp_EndpointIPAddress := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
 	if err = tmp_EndpointIPAddress.Encode(w); err != nil {
 		return
 	}
-	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, true)
+	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_PortNumber.Encode(w); err != nil {
 		return
 	}

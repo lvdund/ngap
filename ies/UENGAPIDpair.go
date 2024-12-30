@@ -14,11 +14,11 @@ func (ie *UENGAPIDpair) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_AMFUENGAPID := NewINTEGER(ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, true)
+	tmp_AMFUENGAPID := NewINTEGER(ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, false)
 	if err = tmp_AMFUENGAPID.Encode(w); err != nil {
 		return
 	}
-	tmp_RANUENGAPID := NewINTEGER(ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, true)
+	tmp_RANUENGAPID := NewINTEGER(ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, false)
 	if err = tmp_RANUENGAPID.Encode(w); err != nil {
 		return
 	}

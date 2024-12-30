@@ -21,7 +21,7 @@ func (ie *ServedGUAMIItem) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	if ie.BackupAMFName != nil {
-		tmp_BackupAMFName := NewOCTETSTRING(*ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, true)
+		tmp_BackupAMFName := NewOCTETSTRING(*ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, false)
 		if err = tmp_BackupAMFName.Encode(w); err != nil {
 			return
 		}

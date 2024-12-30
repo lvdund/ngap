@@ -17,7 +17,7 @@ func (ie *ERABInformationItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_ERABID := NewINTEGER(ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, true)
+	tmp_ERABID := NewINTEGER(ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, false)
 	if err = tmp_ERABID.Encode(w); err != nil {
 		return
 	}

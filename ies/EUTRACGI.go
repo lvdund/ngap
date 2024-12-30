@@ -14,11 +14,11 @@ func (ie *EUTRACGI) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, true)
+	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
 		return
 	}
-	tmp_EUTRACellIdentity := NewBITSTRING(ie.EUTRACellIdentity, aper.Constraint{Lb: 28, Ub: 28}, true)
+	tmp_EUTRACellIdentity := NewBITSTRING(ie.EUTRACellIdentity, aper.Constraint{Lb: 28, Ub: 28}, false)
 	if err = tmp_EUTRACellIdentity.Encode(w); err != nil {
 		return
 	}
