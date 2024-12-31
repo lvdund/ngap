@@ -15,12 +15,12 @@ const (
 
 type BroadcastCompletedAreaList struct {
 	Choice                        uint64
-	CellIDBroadcastEUTRA          *CellIDBroadcastEUTRAItem
-	TAIBroadcastEUTRA             *TAIBroadcastEUTRAItem
-	EmergencyAreaIDBroadcastEUTRA *EmergencyAreaIDBroadcastEUTRAItem
-	CellIDBroadcastNR             *CellIDBroadcastNRItem
-	TAIBroadcastNR                *TAIBroadcastNRItem
-	EmergencyAreaIDBroadcastNR    *EmergencyAreaIDBroadcastNRItem
+	CellIDBroadcastEUTRA          *[]CellIDBroadcastEUTRAItem
+	TAIBroadcastEUTRA             *[]TAIBroadcastEUTRAItem
+	EmergencyAreaIDBroadcastEUTRA *[]EmergencyAreaIDBroadcastEUTRAItem
+	CellIDBroadcastNR             *[]CellIDBroadcastNRItem
+	TAIBroadcastNR                *[]TAIBroadcastNRItem
+	EmergencyAreaIDBroadcastNR    *[]EmergencyAreaIDBroadcastNRItem
 	// ChoiceExtensions *BroadcastCompletedAreaListExtIEs
 }
 
@@ -30,17 +30,59 @@ func (ie *BroadcastCompletedAreaList) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case BroadcastCompletedAreaListPresentCellidbroadcasteutra:
-		err = ie.CellIDBroadcastEUTRA.Encode(w)
+		tmp := Sequence[*CellIDBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.CellIDBroadcastEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCompletedAreaListPresentTaibroadcasteutra:
-		err = ie.TAIBroadcastEUTRA.Encode(w)
+		tmp := Sequence[*TAIBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.TAIBroadcastEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcasteutra:
-		err = ie.EmergencyAreaIDBroadcastEUTRA.Encode(w)
+		tmp := Sequence[*EmergencyAreaIDBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range *ie.EmergencyAreaIDBroadcastEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCompletedAreaListPresentCellidbroadcastnr:
-		err = ie.CellIDBroadcastNR.Encode(w)
+		tmp := Sequence[*CellIDBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.CellIDBroadcastNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCompletedAreaListPresentTaibroadcastnr:
-		err = ie.TAIBroadcastNR.Encode(w)
+		tmp := Sequence[*TAIBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.TAIBroadcastNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcastnr:
-		err = ie.EmergencyAreaIDBroadcastNR.Encode(w)
+		tmp := Sequence[*EmergencyAreaIDBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range *ie.EmergencyAreaIDBroadcastNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -50,41 +92,77 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case BroadcastCompletedAreaListPresentCellidbroadcasteutra:
-		var tmp CellIDBroadcastEUTRAItem
+		tmp := Sequence[*CellIDBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.CellIDBroadcastEUTRA = &tmp
+		ie.CellIDBroadcastEUTRA = &[]CellIDBroadcastEUTRAItem{}
+		for _, i := range tmp.Value {
+			*ie.CellIDBroadcastEUTRA = append(*ie.CellIDBroadcastEUTRA, *i)
+		}
 	case BroadcastCompletedAreaListPresentTaibroadcasteutra:
-		var tmp TAIBroadcastEUTRAItem
+		tmp := Sequence[*TAIBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.TAIBroadcastEUTRA = &tmp
+		ie.TAIBroadcastEUTRA = &[]TAIBroadcastEUTRAItem{}
+		for _, i := range tmp.Value {
+			*ie.TAIBroadcastEUTRA = append(*ie.TAIBroadcastEUTRA, *i)
+		}
 	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcasteutra:
-		var tmp EmergencyAreaIDBroadcastEUTRAItem
+		tmp := Sequence[*EmergencyAreaIDBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDBroadcastEUTRA = &tmp
+		ie.EmergencyAreaIDBroadcastEUTRA = &[]EmergencyAreaIDBroadcastEUTRAItem{}
+		for _, i := range tmp.Value {
+			*ie.EmergencyAreaIDBroadcastEUTRA = append(*ie.EmergencyAreaIDBroadcastEUTRA, *i)
+		}
 	case BroadcastCompletedAreaListPresentCellidbroadcastnr:
-		var tmp CellIDBroadcastNRItem
+		tmp := Sequence[*CellIDBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.CellIDBroadcastNR = &tmp
+		ie.CellIDBroadcastNR = &[]CellIDBroadcastNRItem{}
+		for _, i := range tmp.Value {
+			*ie.CellIDBroadcastNR = append(*ie.CellIDBroadcastNR, *i)
+		}
 	case BroadcastCompletedAreaListPresentTaibroadcastnr:
-		var tmp TAIBroadcastNRItem
+		tmp := Sequence[*TAIBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.TAIBroadcastNR = &tmp
+		ie.TAIBroadcastNR = &[]TAIBroadcastNRItem{}
+		for _, i := range tmp.Value {
+			*ie.TAIBroadcastNR = append(*ie.TAIBroadcastNR, *i)
+		}
 	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcastnr:
-		var tmp EmergencyAreaIDBroadcastNRItem
+		tmp := Sequence[*EmergencyAreaIDBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDBroadcastNR = &tmp
+		ie.EmergencyAreaIDBroadcastNR = &[]EmergencyAreaIDBroadcastNRItem{}
+		for _, i := range tmp.Value {
+			*ie.EmergencyAreaIDBroadcastNR = append(*ie.EmergencyAreaIDBroadcastNR, *i)
+		}
 	}
 	return
 }

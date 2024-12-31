@@ -10,7 +10,7 @@ const (
 
 type UEIdentityIndexValue struct {
 	Choice        uint64
-	IndexLength10 *BITSTRING
+	IndexLength10 *[]byte
 	// ChoiceExtensions *UEIdentityIndexValueExtIEs
 }
 
@@ -20,7 +20,15 @@ func (ie *UEIdentityIndexValue) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case UEIdentityIndexValuePresentIndexlength10:
-		err = ie.IndexLength10.Encode(w)
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+			Value: aper.BitString{
+				Bytes:   *ie.IndexLength10,
+				NumBits: uint64(len(*ie.IndexLength10)),
+			},
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -30,11 +38,14 @@ func (ie *UEIdentityIndexValue) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case UEIdentityIndexValuePresentIndexlength10:
-		var tmp BITSTRING
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.IndexLength10 = &tmp
+		ie.IndexLength10 = &tmp.Value.Bytes
 	}
 	return
 }

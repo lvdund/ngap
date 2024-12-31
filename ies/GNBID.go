@@ -10,7 +10,7 @@ const (
 
 type GNBID struct {
 	Choice uint64
-	GNBID  *BITSTRING
+	GNBID  *[]byte
 	// ChoiceExtensions *GNBIDExtIEs
 }
 
@@ -20,7 +20,15 @@ func (ie *GNBID) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case GNBIDPresentGnbId:
-		err = ie.GNBID.Encode(w)
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+			Value: aper.BitString{
+				Bytes:   *ie.GNBID,
+				NumBits: uint64(len(*ie.GNBID)),
+			},
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -30,11 +38,14 @@ func (ie *GNBID) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case GNBIDPresentGnbId:
-		var tmp BITSTRING
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.GNBID = &tmp
+		ie.GNBID = &tmp.Value.Bytes
 	}
 	return
 }

@@ -14,9 +14,9 @@ const (
 type LastVisitedCellInformation struct {
 	Choice     uint64
 	NGRANCell  *LastVisitedNGRANCellInformation
-	EUTRANCell *OCTETSTRING
-	UTRANCell  *OCTETSTRING
-	GERANCell  *OCTETSTRING
+	EUTRANCell *[]byte
+	UTRANCell  *[]byte
+	GERANCell  *[]byte
 	// ChoiceExtensions *LastVisitedCellInformationExtIEs
 }
 
@@ -28,11 +28,26 @@ func (ie *LastVisitedCellInformation) Encode(w *aper.AperWriter) (err error) {
 	case LastVisitedCellInformationPresentNgrancell:
 		err = ie.NGRANCell.Encode(w)
 	case LastVisitedCellInformationPresentEutrancell:
-		err = ie.EUTRANCell.Encode(w)
+		tmp := OCTETSTRING{
+			c:     aper.Constraint{Lb: 0, Ub: 0},
+			ext:   false,
+			Value: *ie.EUTRANCell,
+		}
+		err = tmp.Encode(w)
 	case LastVisitedCellInformationPresentUtrancell:
-		err = ie.UTRANCell.Encode(w)
+		tmp := OCTETSTRING{
+			c:     aper.Constraint{Lb: 0, Ub: 0},
+			ext:   false,
+			Value: *ie.UTRANCell,
+		}
+		err = tmp.Encode(w)
 	case LastVisitedCellInformationPresentGerancell:
-		err = ie.GERANCell.Encode(w)
+		tmp := OCTETSTRING{
+			c:     aper.Constraint{Lb: 0, Ub: 0},
+			ext:   false,
+			Value: *ie.GERANCell,
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -48,23 +63,32 @@ func (ie *LastVisitedCellInformation) Decode(r *aper.AperReader) (err error) {
 		}
 		ie.NGRANCell = &tmp
 	case LastVisitedCellInformationPresentEutrancell:
-		var tmp OCTETSTRING
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EUTRANCell = &tmp
+		*ie.EUTRANCell = tmp.Value
 	case LastVisitedCellInformationPresentUtrancell:
-		var tmp OCTETSTRING
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.UTRANCell = &tmp
+		*ie.UTRANCell = tmp.Value
 	case LastVisitedCellInformationPresentGerancell:
-		var tmp OCTETSTRING
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.GERANCell = &tmp
+		*ie.GERANCell = tmp.Value
 	}
 	return
 }

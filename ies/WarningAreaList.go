@@ -13,10 +13,10 @@ const (
 
 type WarningAreaList struct {
 	Choice                 uint64
-	EUTRACGIListForWarning *EUTRACGI
-	NRCGIListForWarning    *NRCGI
-	TAIListForWarning      *TAI
-	EmergencyAreaIDList    *EmergencyAreaID
+	EUTRACGIListForWarning *[]EUTRACGI
+	NRCGIListForWarning    *[]NRCGI
+	TAIListForWarning      *[]TAI
+	EmergencyAreaIDList    *[]EmergencyAreaID
 	// ChoiceExtensions *WarningAreaListExtIEs
 }
 
@@ -26,13 +26,41 @@ func (ie *WarningAreaList) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case WarningAreaListPresentEutraCgilistforwarning:
-		err = ie.EUTRACGIListForWarning.Encode(w)
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.EUTRACGIListForWarning {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case WarningAreaListPresentNrCgilistforwarning:
-		err = ie.NRCGIListForWarning.Encode(w)
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.NRCGIListForWarning {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case WarningAreaListPresentTailistforwarning:
-		err = ie.TAIListForWarning.Encode(w)
+		tmp := Sequence[*TAI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.TAIListForWarning {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case WarningAreaListPresentEmergencyareaidlist:
-		err = ie.EmergencyAreaIDList.Encode(w)
+		tmp := Sequence[*EmergencyAreaID]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range *ie.EmergencyAreaIDList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -42,29 +70,53 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case WarningAreaListPresentEutraCgilistforwarning:
-		var tmp EUTRACGI
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EUTRACGIListForWarning = &tmp
+		ie.EUTRACGIListForWarning = &[]EUTRACGI{}
+		for _, i := range tmp.Value {
+			*ie.EUTRACGIListForWarning = append(*ie.EUTRACGIListForWarning, *i)
+		}
 	case WarningAreaListPresentNrCgilistforwarning:
-		var tmp NRCGI
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.NRCGIListForWarning = &tmp
+		ie.NRCGIListForWarning = &[]NRCGI{}
+		for _, i := range tmp.Value {
+			*ie.NRCGIListForWarning = append(*ie.NRCGIListForWarning, *i)
+		}
 	case WarningAreaListPresentTailistforwarning:
-		var tmp TAI
+		tmp := Sequence[*TAI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.TAIListForWarning = &tmp
+		ie.TAIListForWarning = &[]TAI{}
+		for _, i := range tmp.Value {
+			*ie.TAIListForWarning = append(*ie.TAIListForWarning, *i)
+		}
 	case WarningAreaListPresentEmergencyareaidlist:
-		var tmp EmergencyAreaID
+		tmp := Sequence[*EmergencyAreaID]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDList = &tmp
+		ie.EmergencyAreaIDList = &[]EmergencyAreaID{}
+		for _, i := range tmp.Value {
+			*ie.EmergencyAreaIDList = append(*ie.EmergencyAreaIDList, *i)
+		}
 	}
 	return
 }

@@ -11,8 +11,8 @@ const (
 
 type PWSFailedCellIDList struct {
 	Choice                uint64
-	EUTRACGIPWSFailedList *EUTRACGI
-	NRCGIPWSFailedList    *NRCGI
+	EUTRACGIPWSFailedList *[]EUTRACGI
+	NRCGIPWSFailedList    *[]NRCGI
 	// ChoiceExtensions *PWSFailedCellIDListExtIEs
 }
 
@@ -22,9 +22,23 @@ func (ie *PWSFailedCellIDList) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case PWSFailedCellIDListPresentEutraCgiPwsfailedlist:
-		err = ie.EUTRACGIPWSFailedList.Encode(w)
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinngeNB},
+			ext: false,
+		}
+		for _, i := range *ie.EUTRACGIPWSFailedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case PWSFailedCellIDListPresentNrCgiPwsfailedlist:
-		err = ie.NRCGIPWSFailedList.Encode(w)
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsingNB},
+			ext: false,
+		}
+		for _, i := range *ie.NRCGIPWSFailedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -34,17 +48,29 @@ func (ie *PWSFailedCellIDList) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case PWSFailedCellIDListPresentEutraCgiPwsfailedlist:
-		var tmp EUTRACGI
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinngeNB},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EUTRACGIPWSFailedList = &tmp
+		ie.EUTRACGIPWSFailedList = &[]EUTRACGI{}
+		for _, i := range tmp.Value {
+			*ie.EUTRACGIPWSFailedList = append(*ie.EUTRACGIPWSFailedList, *i)
+		}
 	case PWSFailedCellIDListPresentNrCgiPwsfailedlist:
-		var tmp NRCGI
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsingNB},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.NRCGIPWSFailedList = &tmp
+		ie.NRCGIPWSFailedList = &[]NRCGI{}
+		for _, i := range tmp.Value {
+			*ie.NRCGIPWSFailedList = append(*ie.NRCGIPWSFailedList, *i)
+		}
 	}
 	return
 }

@@ -12,7 +12,7 @@ const (
 type ResetType struct {
 	Choice            uint64
 	NGInterface       *ResetAll
-	PartOfNGInterface *UEassociatedLogicalNGconnectionItem
+	PartOfNGInterface *[]UEassociatedLogicalNGconnectionItem
 	// ChoiceExtensions *ResetTypeExtIEs
 }
 
@@ -24,7 +24,14 @@ func (ie *ResetType) Encode(w *aper.AperWriter) (err error) {
 	case ResetTypePresentNgInterface:
 		err = ie.NGInterface.Encode(w)
 	case ResetTypePresentPartofngInterface:
-		err = ie.PartOfNGInterface.Encode(w)
+		tmp := Sequence[*UEassociatedLogicalNGconnectionItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofNGConnectionsToReset},
+			ext: false,
+		}
+		for _, i := range *ie.PartOfNGInterface {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -40,11 +47,17 @@ func (ie *ResetType) Decode(r *aper.AperReader) (err error) {
 		}
 		ie.NGInterface = &tmp
 	case ResetTypePresentPartofngInterface:
-		var tmp UEassociatedLogicalNGconnectionItem
+		tmp := Sequence[*UEassociatedLogicalNGconnectionItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofNGConnectionsToReset},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.PartOfNGInterface = &tmp
+		ie.PartOfNGInterface = &[]UEassociatedLogicalNGconnectionItem{}
+		for _, i := range tmp.Value {
+			*ie.PartOfNGInterface = append(*ie.PartOfNGInterface, *i)
+		}
 	}
 	return
 }

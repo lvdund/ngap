@@ -12,7 +12,7 @@ const (
 type UENGAPIDs struct {
 	Choice       uint64
 	UENGAPIDpair *UENGAPIDpair
-	AMFUENGAPID  *INTEGER
+	AMFUENGAPID  *int64
 	// ChoiceExtensions *UENGAPIDsExtIEs
 }
 
@@ -24,7 +24,12 @@ func (ie *UENGAPIDs) Encode(w *aper.AperWriter) (err error) {
 	case UENGAPIDsPresentUeNgapIdPair:
 		err = ie.UENGAPIDpair.Encode(w)
 	case UENGAPIDsPresentAmfUeNgapId:
-		err = ie.AMFUENGAPID.Encode(w)
+		tmp := INTEGER{
+			c:     aper.Constraint{Lb: 0, Ub: 1099511627775},
+			ext:   false,
+			Value: aper.Integer(*ie.AMFUENGAPID),
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -40,11 +45,14 @@ func (ie *UENGAPIDs) Decode(r *aper.AperReader) (err error) {
 		}
 		ie.UENGAPIDpair = &tmp
 	case UENGAPIDsPresentAmfUeNgapId:
-		var tmp INTEGER
+		tmp := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 1099511627775},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.AMFUENGAPID = &tmp
+		*ie.AMFUENGAPID = int64(tmp.Value)
 	}
 	return
 }

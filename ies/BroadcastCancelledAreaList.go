@@ -15,12 +15,12 @@ const (
 
 type BroadcastCancelledAreaList struct {
 	Choice                        uint64
-	CellIDCancelledEUTRA          *CellIDCancelledEUTRAItem
-	TAICancelledEUTRA             *TAICancelledEUTRAItem
-	EmergencyAreaIDCancelledEUTRA *EmergencyAreaIDCancelledEUTRAItem
-	CellIDCancelledNR             *CellIDCancelledNRItem
-	TAICancelledNR                *TAICancelledNRItem
-	EmergencyAreaIDCancelledNR    *EmergencyAreaIDCancelledNRItem
+	CellIDCancelledEUTRA          *[]CellIDCancelledEUTRAItem
+	TAICancelledEUTRA             *[]TAICancelledEUTRAItem
+	EmergencyAreaIDCancelledEUTRA *[]EmergencyAreaIDCancelledEUTRAItem
+	CellIDCancelledNR             *[]CellIDCancelledNRItem
+	TAICancelledNR                *[]TAICancelledNRItem
+	EmergencyAreaIDCancelledNR    *[]EmergencyAreaIDCancelledNRItem
 	// ChoiceExtensions *BroadcastCancelledAreaListExtIEs
 }
 
@@ -30,17 +30,59 @@ func (ie *BroadcastCancelledAreaList) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case BroadcastCancelledAreaListPresentCellidcancelledeutra:
-		err = ie.CellIDCancelledEUTRA.Encode(w)
+		tmp := Sequence[*CellIDCancelledEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.CellIDCancelledEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCancelledAreaListPresentTaicancelledeutra:
-		err = ie.TAICancelledEUTRA.Encode(w)
+		tmp := Sequence[*TAICancelledEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.TAICancelledEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCancelledAreaListPresentEmergencyareaidcancelledeutra:
-		err = ie.EmergencyAreaIDCancelledEUTRA.Encode(w)
+		tmp := Sequence[*EmergencyAreaIDCancelledEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range *ie.EmergencyAreaIDCancelledEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCancelledAreaListPresentCellidcancellednr:
-		err = ie.CellIDCancelledNR.Encode(w)
+		tmp := Sequence[*CellIDCancelledNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.CellIDCancelledNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCancelledAreaListPresentTaicancellednr:
-		err = ie.TAICancelledNR.Encode(w)
+		tmp := Sequence[*TAICancelledNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range *ie.TAICancelledNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case BroadcastCancelledAreaListPresentEmergencyareaidcancellednr:
-		err = ie.EmergencyAreaIDCancelledNR.Encode(w)
+		tmp := Sequence[*EmergencyAreaIDCancelledNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range *ie.EmergencyAreaIDCancelledNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -50,41 +92,77 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case BroadcastCancelledAreaListPresentCellidcancelledeutra:
-		var tmp CellIDCancelledEUTRAItem
+		tmp := Sequence[*CellIDCancelledEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.CellIDCancelledEUTRA = &tmp
+		ie.CellIDCancelledEUTRA = &[]CellIDCancelledEUTRAItem{}
+		for _, i := range tmp.Value {
+			*ie.CellIDCancelledEUTRA = append(*ie.CellIDCancelledEUTRA, *i)
+		}
 	case BroadcastCancelledAreaListPresentTaicancelledeutra:
-		var tmp TAICancelledEUTRAItem
+		tmp := Sequence[*TAICancelledEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.TAICancelledEUTRA = &tmp
+		ie.TAICancelledEUTRA = &[]TAICancelledEUTRAItem{}
+		for _, i := range tmp.Value {
+			*ie.TAICancelledEUTRA = append(*ie.TAICancelledEUTRA, *i)
+		}
 	case BroadcastCancelledAreaListPresentEmergencyareaidcancelledeutra:
-		var tmp EmergencyAreaIDCancelledEUTRAItem
+		tmp := Sequence[*EmergencyAreaIDCancelledEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDCancelledEUTRA = &tmp
+		ie.EmergencyAreaIDCancelledEUTRA = &[]EmergencyAreaIDCancelledEUTRAItem{}
+		for _, i := range tmp.Value {
+			*ie.EmergencyAreaIDCancelledEUTRA = append(*ie.EmergencyAreaIDCancelledEUTRA, *i)
+		}
 	case BroadcastCancelledAreaListPresentCellidcancellednr:
-		var tmp CellIDCancelledNRItem
+		tmp := Sequence[*CellIDCancelledNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.CellIDCancelledNR = &tmp
+		ie.CellIDCancelledNR = &[]CellIDCancelledNRItem{}
+		for _, i := range tmp.Value {
+			*ie.CellIDCancelledNR = append(*ie.CellIDCancelledNR, *i)
+		}
 	case BroadcastCancelledAreaListPresentTaicancellednr:
-		var tmp TAICancelledNRItem
+		tmp := Sequence[*TAICancelledNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.TAICancelledNR = &tmp
+		ie.TAICancelledNR = &[]TAICancelledNRItem{}
+		for _, i := range tmp.Value {
+			*ie.TAICancelledNR = append(*ie.TAICancelledNR, *i)
+		}
 	case BroadcastCancelledAreaListPresentEmergencyareaidcancellednr:
-		var tmp EmergencyAreaIDCancelledNRItem
+		tmp := Sequence[*EmergencyAreaIDCancelledNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDCancelledNR = &tmp
+		ie.EmergencyAreaIDCancelledNR = &[]EmergencyAreaIDCancelledNRItem{}
+		for _, i := range tmp.Value {
+			*ie.EmergencyAreaIDCancelledNR = append(*ie.EmergencyAreaIDCancelledNR, *i)
+		}
 	}
 	return
 }

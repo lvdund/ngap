@@ -11,8 +11,8 @@ const (
 
 type CellIDListForRestart struct {
 	Choice                 uint64
-	EUTRACGIListforRestart *EUTRACGI
-	NRCGIListforRestart    *NRCGI
+	EUTRACGIListforRestart *[]EUTRACGI
+	NRCGIListforRestart    *[]NRCGI
 	// ChoiceExtensions *CellIDListForRestartExtIEs
 }
 
@@ -22,9 +22,23 @@ func (ie *CellIDListForRestart) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case CellIDListForRestartPresentEutraCgilistforrestart:
-		err = ie.EUTRACGIListforRestart.Encode(w)
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinngeNB},
+			ext: false,
+		}
+		for _, i := range *ie.EUTRACGIListforRestart {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	case CellIDListForRestartPresentNrCgilistforrestart:
-		err = ie.NRCGIListforRestart.Encode(w)
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsingNB},
+			ext: false,
+		}
+		for _, i := range *ie.NRCGIListforRestart {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -34,17 +48,29 @@ func (ie *CellIDListForRestart) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case CellIDListForRestartPresentEutraCgilistforrestart:
-		var tmp EUTRACGI
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinngeNB},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EUTRACGIListforRestart = &tmp
+		ie.EUTRACGIListforRestart = &[]EUTRACGI{}
+		for _, i := range tmp.Value {
+			*ie.EUTRACGIListforRestart = append(*ie.EUTRACGIListforRestart, *i)
+		}
 	case CellIDListForRestartPresentNrCgilistforrestart:
-		var tmp NRCGI
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsingNB},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.NRCGIListforRestart = &tmp
+		ie.NRCGIListforRestart = &[]NRCGI{}
+		for _, i := range tmp.Value {
+			*ie.NRCGIListforRestart = append(*ie.NRCGIListforRestart, *i)
+		}
 	}
 	return
 }

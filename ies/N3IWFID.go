@@ -10,7 +10,7 @@ const (
 
 type N3IWFID struct {
 	Choice  uint64
-	N3IWFID *BITSTRING
+	N3IWFID *[]byte
 	// ChoiceExtensions *N3IWFIDExtIEs
 }
 
@@ -20,7 +20,15 @@ func (ie *N3IWFID) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case N3IWFIDPresentN3IwfId:
-		err = ie.N3IWFID.Encode(w)
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+			Value: aper.BitString{
+				Bytes:   *ie.N3IWFID,
+				NumBits: uint64(len(*ie.N3IWFID)),
+			},
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -30,11 +38,14 @@ func (ie *N3IWFID) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case N3IWFIDPresentN3IwfId:
-		var tmp BITSTRING
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.N3IWFID = &tmp
+		ie.N3IWFID = &tmp.Value.Bytes
 	}
 	return
 }
