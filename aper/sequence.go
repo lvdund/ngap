@@ -2,12 +2,11 @@ package aper
 
 import (
 	"fmt"
-	"github.com/reogac/utils"
 )
 
 func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint, e bool) (err error) {
 	defer func() {
-		err = utils.WrapError("WriteSequenceOf", err)
+		err = aperError("WriteSequenceOf", err)
 	}()
 
 	numElems := len(items)
@@ -137,6 +136,18 @@ func ReadSequenceOf[T any](decoder func(ar *AperReader) (*T, error), ar *AperRea
 func ReadSequenceOfEx[T AperUnmarshaller](fn func() T, ar *AperReader, c *Constraint, e bool) (items []T, err error) {
 	decoder := func(ar *AperReader) (*T, error) {
 		item := fn()
+		if err := item.Decode(ar); err != nil {
+			return nil, err
+		}
+		return &item, nil
+	}
+	items, err = ReadSequenceOf[T](decoder, ar, c, e)
+	return
+}
+
+func ReadSequenceOfIEs[T AperUnmarshaller](ar *AperReader, c *Constraint, e bool) (items []T, err error) {
+	decoder := func(ar *AperReader) (*T, error) {
+		var item T
 		if err := item.Decode(ar); err != nil {
 			return nil, err
 		}
