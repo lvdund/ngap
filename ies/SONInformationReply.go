@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type SONInformationReply struct {
-	XnTNLConfigurationInfo *XnTNLConfigurationInfo `True,OPTIONAL`
-	// IEExtensions SONInformationReplyExtIEs `False,OPTIONAL`
+	XnTNLConfigurationInfo *XnTNLConfigurationInfo `optional`
+	// IEExtensions *SONInformationReplyExtIEs `optional`
 }
 
 func (ie *SONInformationReply) Encode(w *aper.AperWriter) (err error) {
@@ -31,7 +31,6 @@ func (ie *SONInformationReply) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.XnTNLConfigurationInfo = new(XnTNLConfigurationInfo)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.XnTNLConfigurationInfo.Decode(r); err != nil {
 			return

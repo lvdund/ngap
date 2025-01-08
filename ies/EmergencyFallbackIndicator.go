@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type EmergencyFallbackIndicator struct {
-	EmergencyFallbackRequestIndicator *EmergencyFallbackRequestIndicator `False,`
-	EmergencyServiceTargetCN          *EmergencyServiceTargetCN          `False,OPTIONAL`
-	// IEExtensions EmergencyFallbackIndicatorExtIEs `False,OPTIONAL`
+	EmergencyFallbackRequestIndicator EmergencyFallbackRequestIndicator
+	EmergencyServiceTargetCN          *EmergencyServiceTargetCN `optional`
+	// IEExtensions *EmergencyFallbackIndicatorExtIEs `optional`
 }
 
 func (ie *EmergencyFallbackIndicator) Encode(w *aper.AperWriter) (err error) {
@@ -17,10 +17,8 @@ func (ie *EmergencyFallbackIndicator) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.EmergencyFallbackRequestIndicator != nil {
-		if err = ie.EmergencyFallbackRequestIndicator.Encode(w); err != nil {
-			return
-		}
+	if err = ie.EmergencyFallbackRequestIndicator.Encode(w); err != nil {
+		return
 	}
 	if ie.EmergencyServiceTargetCN != nil {
 		if err = ie.EmergencyServiceTargetCN.Encode(w); err != nil {
@@ -37,8 +35,6 @@ func (ie *EmergencyFallbackIndicator) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.EmergencyFallbackRequestIndicator = new(EmergencyFallbackRequestIndicator)
-	ie.EmergencyServiceTargetCN = new(EmergencyServiceTargetCN)
 	if err = ie.EmergencyFallbackRequestIndicator.Decode(r); err != nil {
 		return
 	}

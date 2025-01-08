@@ -10,7 +10,7 @@ const (
 )
 
 type PagingDRX struct {
-	Value aper.Enumerated `True,0,3`
+	Value aper.Enumerated
 }
 
 func (ie *PagingDRX) Encode(w *aper.AperWriter) (err error) {

@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UnavailableGUAMIItem struct {
-	GUAMI                        *GUAMI                        `True,`
-	TimerApproachForGUAMIRemoval *TimerApproachForGUAMIRemoval `False,OPTIONAL`
-	BackupAMFName                *AMFName                      `False,OPTIONAL`
-	// IEExtensions UnavailableGUAMIItemExtIEs `False,OPTIONAL`
+	GUAMI                        GUAMI
+	TimerApproachForGUAMIRemoval *TimerApproachForGUAMIRemoval `optional`
+	BackupAMFName                []byte
+	// IEExtensions *UnavailableGUAMIItemExtIEs `optional`
 }
 
 func (ie *UnavailableGUAMIItem) Encode(w *aper.AperWriter) (err error) {
@@ -21,10 +21,8 @@ func (ie *UnavailableGUAMIItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	if ie.GUAMI != nil {
-		if err = ie.GUAMI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.GUAMI.Encode(w); err != nil {
+		return
 	}
 	if ie.TimerApproachForGUAMIRemoval != nil {
 		if err = ie.TimerApproachForGUAMIRemoval.Encode(w); err != nil {
@@ -32,7 +30,8 @@ func (ie *UnavailableGUAMIItem) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.BackupAMFName != nil {
-		if err = ie.BackupAMFName.Encode(w); err != nil {
+		tmp_BackupAMFName := NewOCTETSTRING(ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, false)
+		if err = tmp_BackupAMFName.Encode(w); err != nil {
 			return
 		}
 	}
@@ -46,9 +45,6 @@ func (ie *UnavailableGUAMIItem) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.GUAMI = new(GUAMI)
-	ie.TimerApproachForGUAMIRemoval = new(TimerApproachForGUAMIRemoval)
-	ie.BackupAMFName = new(AMFName)
 	if err = ie.GUAMI.Decode(r); err != nil {
 		return
 	}
@@ -58,9 +54,14 @@ func (ie *UnavailableGUAMIItem) Decode(r *aper.AperReader) (err error) {
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.BackupAMFName.Decode(r); err != nil {
+		tmp_BackupAMFName := OCTETSTRING{
+			c:   aper.Constraint{Lb: 1, Ub: 150},
+			ext: false,
+		}
+		if err = tmp_BackupAMFName.Decode(r); err != nil {
 			return
 		}
+		ie.BackupAMFName = tmp_BackupAMFName.Value
 	}
 	return
 }

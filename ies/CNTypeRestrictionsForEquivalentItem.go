@@ -3,8 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type CNTypeRestrictionsForEquivalentItem struct {
-	PlmnIdentity *PLMNIdentity `False,`
-	// IEExtensions CNTypeRestrictionsForEquivalentItemExtIEs `False,OPTIONAL`
+	PlmnIdentity []byte
+	CnType       int64
+	// IEExtensions *CNTypeRestrictionsForEquivalentItemExtIEs `optional`
 }
 
 func (ie *CNTypeRestrictionsForEquivalentItem) Encode(w *aper.AperWriter) (err error) {
@@ -13,10 +14,13 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Encode(w *aper.AperWriter) (err e
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PlmnIdentity != nil {
-		if err = ie.PlmnIdentity.Encode(w); err != nil {
-			return
-		}
+	tmp_PlmnIdentity := NewOCTETSTRING(ie.PlmnIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
+	if err = tmp_PlmnIdentity.Encode(w); err != nil {
+		return
+	}
+	tmp_CnType := NewENUMERATED(ie.CnType, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_CnType.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -27,9 +31,21 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Decode(r *aper.AperReader) (err e
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PlmnIdentity = new(PLMNIdentity)
-	if err = ie.PlmnIdentity.Decode(r); err != nil {
+	tmp_PlmnIdentity := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = tmp_PlmnIdentity.Decode(r); err != nil {
 		return
 	}
+	ie.PlmnIdentity = tmp_PlmnIdentity.Value
+	tmp_CnType := ENUMERATED{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
+	}
+	if err = tmp_CnType.Decode(r); err != nil {
+		return
+	}
+	ie.CnType = int64(tmp_CnType.Value)
 	return
 }

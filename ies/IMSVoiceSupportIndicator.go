@@ -8,7 +8,7 @@ const (
 )
 
 type IMSVoiceSupportIndicator struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *IMSVoiceSupportIndicator) Encode(w *aper.AperWriter) (err error) {

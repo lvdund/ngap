@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	NGRANCGIPresentNothing uint64 = iota /* No components present */
-	NGRANCGIPresentNRCGI
-	NGRANCGIPresentEUTRACGI
+	NGRANCGIPresentNothing uint64 = iota
+	NGRANCGIPresentNrCgi
+	NGRANCGIPresentEutraCgi
 	NGRANCGIPresentChoiceExtensions
 )
 
 type NGRANCGI struct {
 	Choice   uint64
-	NRCGI    *NRCGI    `True,,,`
-	EUTRACGI *EUTRACGI `True,,,`
-	// ChoiceExtensions *NGRANCGIExtIEs `False,,,`
+	NRCGI    *NRCGI
+	EUTRACGI *EUTRACGI
+	// ChoiceExtensions *NGRANCGIExtIEs
 }
 
 func (ie *NGRANCGI) Encode(w *aper.AperWriter) (err error) {
@@ -21,9 +21,9 @@ func (ie *NGRANCGI) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case NGRANCGIPresentNRCGI:
+	case NGRANCGIPresentNrCgi:
 		err = ie.NRCGI.Encode(w)
-	case NGRANCGIPresentEUTRACGI:
+	case NGRANCGIPresentEutraCgi:
 		err = ie.EUTRACGI.Encode(w)
 	}
 	return
@@ -33,13 +33,13 @@ func (ie *NGRANCGI) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case NGRANCGIPresentNRCGI:
+	case NGRANCGIPresentNrCgi:
 		var tmp NRCGI
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NRCGI = &tmp
-	case NGRANCGIPresentEUTRACGI:
+	case NGRANCGIPresentEutraCgi:
 		var tmp EUTRACGI
 		if err = tmp.Decode(r); err != nil {
 			return

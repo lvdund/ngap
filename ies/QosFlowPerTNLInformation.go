@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type QosFlowPerTNLInformation struct {
-	UPTransportLayerInformation *UPTransportLayerInformation `False,`
-	AssociatedQosFlowList       *AssociatedQosFlowList       `False,`
-	// IEExtensions QosFlowPerTNLInformationExtIEs `False,OPTIONAL`
+	UPTransportLayerInformation UPTransportLayerInformation
+	AssociatedQosFlowList       []AssociatedQosFlowItem
+	// IEExtensions *QosFlowPerTNLInformationExtIEs `optional`
 }
 
 func (ie *QosFlowPerTNLInformation) Encode(w *aper.AperWriter) (err error) {
@@ -14,13 +14,19 @@ func (ie *QosFlowPerTNLInformation) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.UPTransportLayerInformation != nil {
-		if err = ie.UPTransportLayerInformation.Encode(w); err != nil {
-			return
-		}
+	if err = ie.UPTransportLayerInformation.Encode(w); err != nil {
+		return
 	}
-	if ie.AssociatedQosFlowList != nil {
-		if err = ie.AssociatedQosFlowList.Encode(w); err != nil {
+	if len(ie.AssociatedQosFlowList) > 0 {
+		tmp := Sequence[*AssociatedQosFlowItem]{
+			Value: []*AssociatedQosFlowItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.AssociatedQosFlowList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -33,13 +39,20 @@ func (ie *QosFlowPerTNLInformation) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.UPTransportLayerInformation = new(UPTransportLayerInformation)
-	ie.AssociatedQosFlowList = new(AssociatedQosFlowList)
 	if err = ie.UPTransportLayerInformation.Decode(r); err != nil {
 		return
 	}
-	if err = ie.AssociatedQosFlowList.Decode(r); err != nil {
+	tmp_AssociatedQosFlowList := Sequence[*AssociatedQosFlowItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+		ext: false,
+	}
+	fn := func() *AssociatedQosFlowItem { return new(AssociatedQosFlowItem) }
+	if err = tmp_AssociatedQosFlowList.Decode(r, fn); err != nil {
 		return
+	}
+	ie.AssociatedQosFlowList = []AssociatedQosFlowItem{}
+	for _, i := range tmp_AssociatedQosFlowList.Value {
+		ie.AssociatedQosFlowList = append(ie.AssociatedQosFlowList, *i)
 	}
 	return
 }

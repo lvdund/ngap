@@ -7,7 +7,7 @@ const (
 )
 
 type ReflectiveQosAttribute struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *ReflectiveQosAttribute) Encode(w *aper.AperWriter) (err error) {

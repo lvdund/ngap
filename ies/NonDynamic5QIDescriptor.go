@@ -3,11 +3,11 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type NonDynamic5QIDescriptor struct {
-	FiveQI                 *FiveQI                 `False,`
-	PriorityLevelQos       *PriorityLevelQos       `False,OPTIONAL`
-	AveragingWindow        *AveragingWindow        `False,OPTIONAL`
-	MaximumDataBurstVolume *MaximumDataBurstVolume `False,OPTIONAL`
-	// IEExtensions NonDynamic5QIDescriptorExtIEs `False,OPTIONAL`
+	FiveQI                 int64
+	PriorityLevelQos       *int64 `optional`
+	AveragingWindow        *int64 `optional`
+	MaximumDataBurstVolume *int64 `optional`
+	// IEExtensions *NonDynamic5QIDescriptorExtIEs `optional`
 }
 
 func (ie *NonDynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
@@ -25,23 +25,25 @@ func (ie *NonDynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	if ie.FiveQI != nil {
-		if err = ie.FiveQI.Encode(w); err != nil {
-			return
-		}
+	tmp_FiveQI := NewINTEGER(ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_FiveQI.Encode(w); err != nil {
+		return
 	}
 	if ie.PriorityLevelQos != nil {
-		if err = ie.PriorityLevelQos.Encode(w); err != nil {
+		tmp_PriorityLevelQos := NewINTEGER(*ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, false)
+		if err = tmp_PriorityLevelQos.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.AveragingWindow != nil {
-		if err = ie.AveragingWindow.Encode(w); err != nil {
+		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, false)
+		if err = tmp_AveragingWindow.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.MaximumDataBurstVolume != nil {
-		if err = ie.MaximumDataBurstVolume.Encode(w); err != nil {
+		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, false)
+		if err = tmp_MaximumDataBurstVolume.Encode(w); err != nil {
 			return
 		}
 	}
@@ -55,27 +57,43 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.FiveQI = new(FiveQI)
-	ie.PriorityLevelQos = new(PriorityLevelQos)
-	ie.AveragingWindow = new(AveragingWindow)
-	ie.MaximumDataBurstVolume = new(MaximumDataBurstVolume)
-	if err = ie.FiveQI.Decode(r); err != nil {
+	tmp_FiveQI := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_FiveQI.Decode(r); err != nil {
 		return
 	}
+	ie.FiveQI = int64(tmp_FiveQI.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.PriorityLevelQos.Decode(r); err != nil {
+		tmp_PriorityLevelQos := INTEGER{
+			c:   aper.Constraint{Lb: 1, Ub: 127},
+			ext: false,
+		}
+		if err = tmp_PriorityLevelQos.Decode(r); err != nil {
 			return
 		}
+		ie.PriorityLevelQos = (*int64)(&tmp_PriorityLevelQos.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.AveragingWindow.Decode(r); err != nil {
+		tmp_AveragingWindow := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 4095},
+			ext: false,
+		}
+		if err = tmp_AveragingWindow.Decode(r); err != nil {
 			return
 		}
+		ie.AveragingWindow = (*int64)(&tmp_AveragingWindow.Value)
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.MaximumDataBurstVolume.Decode(r); err != nil {
+		tmp_MaximumDataBurstVolume := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 4095},
+			ext: false,
+		}
+		if err = tmp_MaximumDataBurstVolume.Decode(r); err != nil {
 			return
 		}
+		ie.MaximumDataBurstVolume = (*int64)(&tmp_MaximumDataBurstVolume.Value)
 	}
 	return
 }

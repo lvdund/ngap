@@ -14,7 +14,7 @@ const (
 )
 
 type PagingPriority struct {
-	Value aper.Enumerated `True,0,7`
+	Value aper.Enumerated
 }
 
 func (ie *PagingPriority) Encode(w *aper.AperWriter) (err error) {

@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type CNAssistedRANTuning struct {
-	ExpectedUEBehaviour *ExpectedUEBehaviour `True,OPTIONAL`
-	// IEExtensions CNAssistedRANTuningExtIEs `False,OPTIONAL`
+	ExpectedUEBehaviour *ExpectedUEBehaviour `optional`
+	// IEExtensions *CNAssistedRANTuningExtIEs `optional`
 }
 
 func (ie *CNAssistedRANTuning) Encode(w *aper.AperWriter) (err error) {
@@ -31,7 +31,6 @@ func (ie *CNAssistedRANTuning) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.ExpectedUEBehaviour = new(ExpectedUEBehaviour)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ExpectedUEBehaviour.Decode(r); err != nil {
 			return

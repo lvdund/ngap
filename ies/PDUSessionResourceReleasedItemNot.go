@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceReleasedItemNot struct {
-	PDUSessionID                             *PDUSessionID     `False,`
-	PDUSessionResourceNotifyReleasedTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceReleasedItemNotExtIEs `False,OPTIONAL`
+	PDUSessionID                             int64
+	PDUSessionResourceNotifyReleasedTransfer []byte
+	// IEExtensions *PDUSessionResourceReleasedItemNotExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceReleasedItemNot) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceReleasedItemNot) Encode(w *aper.AperWriter) (err err
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.PDUSessionResourceNotifyReleasedTransfer != nil {
-		if err = w.WriteOctetString(*ie.PDUSessionResourceNotifyReleasedTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_PDUSessionResourceNotifyReleasedTransfer := NewOCTETSTRING(ie.PDUSessionResourceNotifyReleasedTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_PDUSessionResourceNotifyReleasedTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceReleasedItemNot) Decode(r *aper.AperReader) (err err
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.PDUSessionResourceNotifyReleasedTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_PDUSessionResourceNotifyReleasedTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_PDUSessionResourceNotifyReleasedTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.PDUSessionResourceNotifyReleasedTransfer = tmp_PDUSessionResourceNotifyReleasedTransfer.Value
 	return
 }

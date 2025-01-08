@@ -6,13 +6,14 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
 )
 
 type NASNonDeliveryIndication struct {
-	AMFUENGAPID *AMFUENGAPID `,reject,mandatory`
-	RANUENGAPID *RANUENGAPID `,reject,mandatory`
-	NASPDU      *NASPDU      `,ignore,mandatory`
-	Cause       *Cause       `,ignore,mandatory`
+	AMFUENGAPID int64
+	RANUENGAPID int64
+	NASPDU      []byte
+	Cause       Cause
 }
 
 func (msg *NASNonDeliveryIndication) Encode(w io.Writer) (err error) {
@@ -20,87 +21,170 @@ func (msg *NASNonDeliveryIndication) Encode(w io.Writer) (err error) {
 }
 func (msg *NASNonDeliveryIndication) toIes() (ies []NgapMessageIE) {
 	ies = []NgapMessageIE{}
-	if msg.AMFUENGAPID != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.AMFUENGAPID})
-	}
-	if msg.RANUENGAPID != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.RANUENGAPID})
-	}
-	if msg.NASPDU != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.NASPDU})
-	}
-	if msg.Cause != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_Cause},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.Cause})
-	}
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value: &INTEGER{
+			c:     aper.Constraint{Lb: 0, Ub: 1099511627775},
+			ext:   false,
+			Value: aper.Integer(msg.AMFUENGAPID),
+		}})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value: &INTEGER{
+			c:     aper.Constraint{Lb: 0, Ub: 4294967295},
+			ext:   false,
+			Value: aper.Integer(msg.RANUENGAPID),
+		}})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
+		Criticality: Criticality{Value: Criticality_PresentIgnore},
+		Value: &OCTETSTRING{
+			c:     aper.Constraint{Lb: 0, Ub: 0},
+			ext:   false,
+			Value: msg.NASPDU,
+		}})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_Cause},
+		Criticality: Criticality{Value: Criticality_PresentIgnore},
+		Value:       &msg.Cause,
+	})
 	return
 }
-func (msg *NASNonDeliveryIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
+func (msg *NASNonDeliveryIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+	decoder := NASNonDeliveryIndicationDecoder{
+		msg:  msg,
+		list: make(map[aper.Integer]*NgapMessageIE),
+	}
+	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	_ = ies
+	if _, ok := decoder.list[ProtocolIEID_AMFUENGAPID]; !ok {
+		err = fmt.Errorf("Mandatory field AMFUENGAPID is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_RANUENGAPID]; !ok {
+		err = fmt.Errorf("Mandatory field RANUENGAPID is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_NASPDU]; !ok {
+		err = fmt.Errorf("Mandatory field NASPDU is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentIgnore},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_Cause]; !ok {
+		err = fmt.Errorf("Mandatory field Cause is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentIgnore},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_Cause},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
 	return
 }
-func (msg *NASNonDeliveryIndication) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
-	if err != nil {
+
+type NASNonDeliveryIndicationDecoder struct {
+	msg      *NASNonDeliveryIndication
+	diagList []CriticalityDiagnosticsIEItem
+	list     map[aper.Integer]*NgapMessageIE
+}
+
+func (decoder *NASNonDeliveryIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
+	var id int64
+	var c uint64
+	var buf []byte
+	if id, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false); err != nil {
 		return
 	}
 	msgIe = new(NgapMessageIE)
 	msgIe.Id.Value = aper.Integer(id)
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
-	if err != nil {
+	if c, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false); err != nil {
 		return
 	}
 	msgIe.Criticality.Value = aper.Enumerated(c)
-	var buf []byte
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
+	ieId := msgIe.Id.Value
+	if _, ok := decoder.list[ieId]; ok {
+		err = fmt.Errorf("Duplicated protocol IEID[%d] found", ieId)
+		return
+	}
+	decoder.list[ieId] = msgIe
 	ieR := aper.NewReader(bytes.NewReader(buf))
+	msg := decoder.msg
 	switch msgIe.Id.Value {
 	case ProtocolIEID_AMFUENGAPID:
-		var tmp AMFUENGAPID
+		tmp := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 1099511627775},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read AMFUENGAPID", err)
 			return
 		}
-		msg.AMFUENGAPID = &tmp
+		msg.AMFUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_RANUENGAPID:
-		var tmp RANUENGAPID
+		tmp := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 4294967295},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read RANUENGAPID", err)
 			return
 		}
-		msg.RANUENGAPID = &tmp
+		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_NASPDU:
-		var tmp NASPDU
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read NASPDU", err)
 			return
 		}
-		msg.NASPDU = &tmp
+		msg.NASPDU = tmp.Value
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read Cause", err)
 			return
 		}
-		msg.Cause = &tmp
+		msg.Cause = tmp
 	default:
-		err = fmt.Errorf("temporary error")
-		return
+		switch msgIe.Criticality.Value {
+		case Criticality_PresentReject:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: reject)", msgIe.Id.Value)
+		case Criticality_PresentIgnore:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: ignore)", msgIe.Id.Value)
+		case Criticality_PresentNotify:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: notify)", msgIe.Id.Value)
+		}
+		if msgIe.Criticality.Value != Criticality_PresentIgnore {
+			decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+				IECriticality: msgIe.Criticality,
+				IEID:          msgIe.Id,
+				TypeOfError:   TypeOfError{Value: TypeOfErrorNotunderstood},
+			})
+		}
 	}
 	return
 }

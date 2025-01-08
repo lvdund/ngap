@@ -8,7 +8,7 @@ const (
 )
 
 type NextPagingAreaScope struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *NextPagingAreaScope) Encode(w *aper.AperWriter) (err error) {

@@ -9,7 +9,7 @@ const (
 )
 
 type IntegrityProtectionIndication struct {
-	Value aper.Enumerated `True,0,2`
+	Value aper.Enumerated
 }
 
 func (ie *IntegrityProtectionIndication) Encode(w *aper.AperWriter) (err error) {

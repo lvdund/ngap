@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceToBeSwitchedDLItem struct {
-	PDUSessionID              *PDUSessionID     `False,`
-	PathSwitchRequestTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceToBeSwitchedDLItemExtIEs `False,OPTIONAL`
+	PDUSessionID              int64
+	PathSwitchRequestTransfer []byte
+	// IEExtensions *PDUSessionResourceToBeSwitchedDLItemExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceToBeSwitchedDLItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceToBeSwitchedDLItem) Encode(w *aper.AperWriter) (err 
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.PathSwitchRequestTransfer != nil {
-		if err = w.WriteOctetString(*ie.PathSwitchRequestTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_PathSwitchRequestTransfer := NewOCTETSTRING(ie.PathSwitchRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_PathSwitchRequestTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceToBeSwitchedDLItem) Decode(r *aper.AperReader) (err 
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.PathSwitchRequestTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_PathSwitchRequestTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_PathSwitchRequestTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.PathSwitchRequestTransfer = tmp_PathSwitchRequestTransfer.Value
 	return
 }

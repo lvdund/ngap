@@ -21,7 +21,7 @@ type NgapMessage struct {
 
 // interface to message decoder all message need to implement this interface
 type MessageUnmarshaller interface {
-	Decode([]byte) (error, []ies.CriticalityDiagnostics)
+	Decode([]byte) (error, []ies.CriticalityDiagnosticsIEItem)
 }
 
 type NgapMessageEncoder interface {

@@ -18,21 +18,17 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 		return
 	}
 	_ = b
-	// fmt.Println("extenstion bit:", b)
 	//2. decode present		//choice among InitiatingMessage, SuccessfulOutcome and UnsuccessfulOutcome
-	// v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 2}, false)
 	c, err := r.ReadChoice(2, false)
 	if err != nil {
 		return
 	}
 	present := uint8(c)
-	// fmt.Println("present:", present)
 	//3. decode procedure code
 	v, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err != nil {
 		return
 	}
-	// fmt.Printf("procedureCode:%d\n", v)
 	var procedureCode ies.ProcedureCode = ies.ProcedureCode{Value: aper.Integer(v)}
 	//4. decode criticality
 	e, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
@@ -40,13 +36,11 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 		return
 	}
 	var criticality ies.Criticality = ies.Criticality{Value: aper.Enumerated(e)}
-	// fmt.Println("criticality:", e)
 	//5. decode message content
 	var containerBytes []byte
 	if containerBytes, err = r.ReadOpenType(); err != nil {
 		return
 	}
-	//fmt.Printf("exten=%v - containerBytes readopen type= %.8b\n", b, containerBytes)
 
 	//prepare message for decoding
 	message := createMessage(present, procedureCode)
@@ -55,9 +49,10 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 		return
 	}
 
-	var diagnosticsItems []ies.CriticalityDiagnostics
+	var diagnosticsItems []ies.CriticalityDiagnosticsIEItem
 	//decode all IEs within the message
 	if err, diagnosticsItems = message.Decode(containerBytes); err != nil {
+		fmt.Println("-- message.Decode 1")
 		return
 	}
 

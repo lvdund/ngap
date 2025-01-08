@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type DRBsToQosFlowsMappingItem struct {
-	DRBID                 *DRBID                 `False,`
-	AssociatedQosFlowList *AssociatedQosFlowList `False,`
-	// IEExtensions DRBsToQosFlowsMappingItemExtIEs `False,OPTIONAL`
+	DRBID                 int64
+	AssociatedQosFlowList []AssociatedQosFlowItem
+	// IEExtensions *DRBsToQosFlowsMappingItemExtIEs `optional`
 }
 
 func (ie *DRBsToQosFlowsMappingItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,13 +14,20 @@ func (ie *DRBsToQosFlowsMappingItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.DRBID != nil {
-		if err = ie.DRBID.Encode(w); err != nil {
-			return
-		}
+	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, false)
+	if err = tmp_DRBID.Encode(w); err != nil {
+		return
 	}
-	if ie.AssociatedQosFlowList != nil {
-		if err = ie.AssociatedQosFlowList.Encode(w); err != nil {
+	if len(ie.AssociatedQosFlowList) > 0 {
+		tmp := Sequence[*AssociatedQosFlowItem]{
+			Value: []*AssociatedQosFlowItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.AssociatedQosFlowList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -33,13 +40,25 @@ func (ie *DRBsToQosFlowsMappingItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.DRBID = new(DRBID)
-	ie.AssociatedQosFlowList = new(AssociatedQosFlowList)
-	if err = ie.DRBID.Decode(r); err != nil {
+	tmp_DRBID := INTEGER{
+		c:   aper.Constraint{Lb: 1, Ub: 32},
+		ext: false,
+	}
+	if err = tmp_DRBID.Decode(r); err != nil {
 		return
 	}
-	if err = ie.AssociatedQosFlowList.Decode(r); err != nil {
+	ie.DRBID = int64(tmp_DRBID.Value)
+	tmp_AssociatedQosFlowList := Sequence[*AssociatedQosFlowItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+		ext: false,
+	}
+	fn := func() *AssociatedQosFlowItem { return new(AssociatedQosFlowItem) }
+	if err = tmp_AssociatedQosFlowList.Decode(r, fn); err != nil {
 		return
+	}
+	ie.AssociatedQosFlowList = []AssociatedQosFlowItem{}
+	for _, i := range tmp_AssociatedQosFlowList.Value {
+		ie.AssociatedQosFlowList = append(ie.AssociatedQosFlowList, *i)
 	}
 	return
 }

@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceHandoverItem struct {
-	PDUSessionID            *PDUSessionID     `False,`
-	HandoverCommandTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceHandoverItemExtIEs `False,OPTIONAL`
+	PDUSessionID            int64
+	HandoverCommandTransfer []byte
+	// IEExtensions *PDUSessionResourceHandoverItemExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceHandoverItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceHandoverItem) Encode(w *aper.AperWriter) (err error)
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.HandoverCommandTransfer != nil {
-		if err = w.WriteOctetString(*ie.HandoverCommandTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_HandoverCommandTransfer := NewOCTETSTRING(ie.HandoverCommandTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_HandoverCommandTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceHandoverItem) Decode(r *aper.AperReader) (err error)
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.HandoverCommandTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_HandoverCommandTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_HandoverCommandTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.HandoverCommandTransfer = tmp_HandoverCommandTransfer.Value
 	return
 }

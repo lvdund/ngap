@@ -6,19 +6,20 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
 )
 
 type InitialUEMessage struct {
-	RANUENGAPID                         *RANUENGAPID                         `,reject,mandatory`
-	NASPDU                              *NASPDU                              `,reject,mandatory`
-	UserLocationInformation             *UserLocationInformation             `,reject,mandatory`
-	RRCEstablishmentCause               *RRCEstablishmentCause               `,ignore,mandatory`
-	FiveGSTMSI                          *FiveGSTMSI                          `,reject,optional`
-	AMFSetID                            *AMFSetID                            `,ignore,optional`
-	UEContextRequest                    *UEContextRequest                    `,ignore,optional`
-	AllowedNSSAI                        *AllowedNSSAI                        `,reject,optional`
-	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `,ignore,optional`
-	SelectedPLMNIdentity                *PLMNIdentity                        `,ignore,optional`
+	RANUENGAPID                         int64
+	NASPDU                              []byte
+	UserLocationInformation             UserLocationInformation
+	RRCEstablishmentCause               RRCEstablishmentCause
+	FiveGSTMSI                          *FiveGSTMSI                          `optional`
+	AMFSetID                            []byte                               `optional`
+	UEContextRequest                    *UEContextRequest                    `optional`
+	AllowedNSSAI                        []AllowedNSSAIItem                   `optional`
+	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional`
+	SelectedPLMNIdentity                []byte                               `optional`
 }
 
 func (msg *InitialUEMessage) Encode(w io.Writer) (err error) {
@@ -26,159 +27,275 @@ func (msg *InitialUEMessage) Encode(w io.Writer) (err error) {
 }
 func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE) {
 	ies = []NgapMessageIE{}
-	if msg.RANUENGAPID != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.RANUENGAPID})
-	}
-	if msg.NASPDU != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.NASPDU})
-	}
-	if msg.UserLocationInformation != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_UserLocationInformation},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.UserLocationInformation})
-	}
-	if msg.RRCEstablishmentCause != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_RRCEstablishmentCause},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.RRCEstablishmentCause})
-	}
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value: &INTEGER{
+			c:     aper.Constraint{Lb: 0, Ub: 4294967295},
+			ext:   false,
+			Value: aper.Integer(msg.RANUENGAPID),
+		}})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value: &OCTETSTRING{
+			c:     aper.Constraint{Lb: 0, Ub: 0},
+			ext:   false,
+			Value: msg.NASPDU,
+		}})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_UserLocationInformation},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value:       &msg.UserLocationInformation,
+	})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_RRCEstablishmentCause},
+		Criticality: Criticality{Value: Criticality_PresentIgnore},
+		Value:       &msg.RRCEstablishmentCause,
+	})
 	if msg.FiveGSTMSI != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_FiveGSTMSI},
 			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.FiveGSTMSI})
+			Value:       msg.FiveGSTMSI,
+		})
 	}
 	if msg.AMFSetID != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFSetID},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.AMFSetID})
+			Value: &BITSTRING{
+				c:   aper.Constraint{Lb: 10, Ub: 10},
+				ext: false,
+				Value: aper.BitString{
+					Bytes: msg.AMFSetID},
+			}})
 	}
 	if msg.UEContextRequest != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_UEContextRequest},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.UEContextRequest})
+			Value:       msg.UEContextRequest,
+		})
 	}
 	if msg.AllowedNSSAI != nil {
+		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
+			ext: false,
+		}
+		for _, i := range msg.AllowedNSSAI {
+			tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
 			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.AllowedNSSAI})
+			Value:       &tmp_AllowedNSSAI,
+		})
 	}
 	if msg.SourceToTargetAMFInformationReroute != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_SourceToTargetAMFInformationReroute},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.SourceToTargetAMFInformationReroute})
+			Value:       msg.SourceToTargetAMFInformationReroute,
+		})
 	}
 	if msg.SelectedPLMNIdentity != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_SelectedPLMNIdentity},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.SelectedPLMNIdentity})
+			Value: &OCTETSTRING{
+				c:     aper.Constraint{Lb: 3, Ub: 3},
+				ext:   false,
+				Value: msg.SelectedPLMNIdentity,
+			}})
 	}
 	return
 }
-func (msg *InitialUEMessage) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
+func (msg *InitialUEMessage) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+	decoder := InitialUEMessageDecoder{
+		msg:  msg,
+		list: make(map[aper.Integer]*NgapMessageIE),
+	}
+	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	_ = ies
+	if _, ok := decoder.list[ProtocolIEID_RANUENGAPID]; !ok {
+		err = fmt.Errorf("Mandatory field RANUENGAPID is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_NASPDU]; !ok {
+		err = fmt.Errorf("Mandatory field NASPDU is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_NASPDU},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_UserLocationInformation]; !ok {
+		err = fmt.Errorf("Mandatory field UserLocationInformation is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_UserLocationInformation},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_RRCEstablishmentCause]; !ok {
+		err = fmt.Errorf("Mandatory field RRCEstablishmentCause is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentIgnore},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_RRCEstablishmentCause},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
 	return
 }
-func (msg *InitialUEMessage) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
-	if err != nil {
+
+type InitialUEMessageDecoder struct {
+	msg      *InitialUEMessage
+	diagList []CriticalityDiagnosticsIEItem
+	list     map[aper.Integer]*NgapMessageIE
+}
+
+func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
+	var id int64
+	var c uint64
+	var buf []byte
+	if id, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false); err != nil {
 		return
 	}
 	msgIe = new(NgapMessageIE)
 	msgIe.Id.Value = aper.Integer(id)
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
-	if err != nil {
+	if c, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false); err != nil {
 		return
 	}
 	msgIe.Criticality.Value = aper.Enumerated(c)
-	var buf []byte
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
+	ieId := msgIe.Id.Value
+	if _, ok := decoder.list[ieId]; ok {
+		err = fmt.Errorf("Duplicated protocol IEID[%d] found", ieId)
+		return
+	}
+	decoder.list[ieId] = msgIe
 	ieR := aper.NewReader(bytes.NewReader(buf))
+	msg := decoder.msg
 	switch msgIe.Id.Value {
 	case ProtocolIEID_RANUENGAPID:
-		var tmp RANUENGAPID
+		tmp := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 4294967295},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read RANUENGAPID", err)
 			return
 		}
-		msg.RANUENGAPID = &tmp
+		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_NASPDU:
-		var tmp NASPDU
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read NASPDU", err)
 			return
 		}
-		msg.NASPDU = &tmp
+		msg.NASPDU = tmp.Value
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read UserLocationInformation", err)
 			return
 		}
-		msg.UserLocationInformation = &tmp
+		msg.UserLocationInformation = tmp
 	case ProtocolIEID_RRCEstablishmentCause:
 		var tmp RRCEstablishmentCause
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read RRCEstablishmentCause", err)
 			return
 		}
-		msg.RRCEstablishmentCause = &tmp
+		msg.RRCEstablishmentCause = tmp
 	case ProtocolIEID_FiveGSTMSI:
 		var tmp FiveGSTMSI
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read FiveGSTMSI", err)
 			return
 		}
 		msg.FiveGSTMSI = &tmp
 	case ProtocolIEID_AMFSetID:
-		var tmp AMFSetID
+		tmp := BITSTRING{
+			c:   aper.Constraint{Lb: 10, Ub: 10},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read AMFSetID", err)
 			return
 		}
-		msg.AMFSetID = &tmp
+		msg.AMFSetID = tmp.Value.Bytes
 	case ProtocolIEID_UEContextRequest:
 		var tmp UEContextRequest
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read UEContextRequest", err)
 			return
 		}
 		msg.UEContextRequest = &tmp
 	case ProtocolIEID_AllowedNSSAI:
-		var tmp AllowedNSSAI
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*AllowedNSSAIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
+			ext: false,
+		}
+		fn := func() *AllowedNSSAIItem { return new(AllowedNSSAIItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read AllowedNSSAI", err)
 			return
 		}
-		msg.AllowedNSSAI = &tmp
+		msg.AllowedNSSAI = []AllowedNSSAIItem{}
+		for _, i := range tmp.Value {
+			msg.AllowedNSSAI = append(msg.AllowedNSSAI, *i)
+		}
 	case ProtocolIEID_SourceToTargetAMFInformationReroute:
 		var tmp SourceToTargetAMFInformationReroute
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read SourceToTargetAMFInformationReroute", err)
 			return
 		}
 		msg.SourceToTargetAMFInformationReroute = &tmp
 	case ProtocolIEID_SelectedPLMNIdentity:
-		var tmp PLMNIdentity
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 3, Ub: 3},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read SelectedPLMNIdentity", err)
 			return
 		}
-		msg.SelectedPLMNIdentity = &tmp
+		msg.SelectedPLMNIdentity = tmp.Value
 	default:
-		err = fmt.Errorf("temporary error")
-		return
+		switch msgIe.Criticality.Value {
+		case Criticality_PresentReject:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: reject)", msgIe.Id.Value)
+		case Criticality_PresentIgnore:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: ignore)", msgIe.Id.Value)
+		case Criticality_PresentNotify:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: notify)", msgIe.Id.Value)
+		}
+		if msgIe.Criticality.Value != Criticality_PresentIgnore {
+			decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+				IECriticality: msgIe.Criticality,
+				IEID:          msgIe.Id,
+				TypeOfError:   TypeOfError{Value: TypeOfErrorNotunderstood},
+			})
+		}
 	}
 	return
 }

@@ -9,7 +9,7 @@ const (
 )
 
 type RRCInactiveTransitionReportRequest struct {
-	Value aper.Enumerated `True,0,2`
+	Value aper.Enumerated
 }
 
 func (ie *RRCInactiveTransitionReportRequest) Encode(w *aper.AperWriter) (err error) {

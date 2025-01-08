@@ -3,15 +3,15 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	CPTransportLayerInformationPresentNothing uint64 = iota /* No components present */
-	CPTransportLayerInformationPresentEndpointIPAddress
+	CPTransportLayerInformationPresentNothing uint64 = iota
+	CPTransportLayerInformationPresentEndpointipaddress
 	CPTransportLayerInformationPresentChoiceExtensions
 )
 
 type CPTransportLayerInformation struct {
 	Choice            uint64
-	EndpointIPAddress *TransportLayerAddress `False,,,`
-	// ChoiceExtensions *CPTransportLayerInformationExtIEs `False,,,`
+	EndpointIPAddress []byte
+	// ChoiceExtensions *CPTransportLayerInformationExtIEs
 }
 
 func (ie *CPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
@@ -19,8 +19,9 @@ func (ie *CPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case CPTransportLayerInformationPresentEndpointIPAddress:
-		err = ie.EndpointIPAddress.Encode(w)
+	case CPTransportLayerInformationPresentEndpointipaddress:
+		tmp := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -29,12 +30,12 @@ func (ie *CPTransportLayerInformation) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case CPTransportLayerInformationPresentEndpointIPAddress:
-		var tmp TransportLayerAddress
+	case CPTransportLayerInformationPresentEndpointipaddress:
+		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 1, Ub: 160}, false)
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EndpointIPAddress = &tmp
+		ie.EndpointIPAddress = tmp.Value.Bytes
 	}
 	return
 }

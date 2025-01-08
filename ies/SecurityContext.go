@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type SecurityContext struct {
-	NextHopChainingCount *NextHopChainingCount `False,`
-	NextHopNH            *SecurityKey          `False,`
-	// IEExtensions SecurityContextExtIEs `False,OPTIONAL`
+	NextHopChainingCount int64
+	NextHopNH            []byte
+	// IEExtensions *SecurityContextExtIEs `optional`
 }
 
 func (ie *SecurityContext) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *SecurityContext) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.NextHopChainingCount != nil {
-		if err = ie.NextHopChainingCount.Encode(w); err != nil {
-			return
-		}
+	tmp_NextHopChainingCount := NewINTEGER(ie.NextHopChainingCount, aper.Constraint{Lb: 0, Ub: 7}, false)
+	if err = tmp_NextHopChainingCount.Encode(w); err != nil {
+		return
 	}
-	if ie.NextHopNH != nil {
-		if err = ie.NextHopNH.Encode(w); err != nil {
-			return
-		}
+	tmp_NextHopNH := NewBITSTRING(ie.NextHopNH, aper.Constraint{Lb: 256, Ub: 256}, false)
+	if err = tmp_NextHopNH.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +31,21 @@ func (ie *SecurityContext) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.NextHopChainingCount = new(NextHopChainingCount)
-	ie.NextHopNH = new(SecurityKey)
-	if err = ie.NextHopChainingCount.Decode(r); err != nil {
+	tmp_NextHopChainingCount := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 7},
+		ext: false,
+	}
+	if err = tmp_NextHopChainingCount.Decode(r); err != nil {
 		return
 	}
-	if err = ie.NextHopNH.Decode(r); err != nil {
+	ie.NextHopChainingCount = int64(tmp_NextHopChainingCount.Value)
+	tmp_NextHopNH := BITSTRING{
+		c:   aper.Constraint{Lb: 256, Ub: 256},
+		ext: false,
+	}
+	if err = tmp_NextHopNH.Decode(r); err != nil {
 		return
 	}
+	ie.NextHopNH = tmp_NextHopNH.Value.Bytes
 	return
 }

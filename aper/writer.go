@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/reogac/utils"
 	"io"
 	"math/bits"
 )
@@ -28,7 +29,7 @@ func (aw *AperWriter) writeBytes(bytes []byte) error {
 
 func (aw *AperWriter) writeValue(v uint64, nbits uint) (err error) {
 	defer func() {
-		err = aperError("writeValue", err)
+		err = utils.WrapError("writeValue", err)
 	}()
 
 	if nbits > 64 {
@@ -44,7 +45,7 @@ func (aw *AperWriter) writeValue(v uint64, nbits uint) (err error) {
 
 func (aw *AperWriter) writeSemiConstraintWholeNumber(v uint64, lb uint64) (err error) {
 	defer func() {
-		err = aperError("writeSemiContrainWholeNumber", err)
+		err = utils.WrapError("writeSemiContrainWholeNumber", err)
 	}()
 
 	if lb > v {
@@ -67,7 +68,7 @@ func (aw *AperWriter) writeSemiConstraintWholeNumber(v uint64, lb uint64) (err e
 
 func (aw *AperWriter) writeNormallySmallNonNegativeValue(v uint64) (err error) {
 	defer func() {
-		err = aperError("writeNormallySmallNonNegativeValue", err)
+		err = utils.WrapError("writeNormallySmallNonNegativeValue", err)
 	}()
 	if v < POW_6 { //leading Zero to indicate a small value
 		if err = aw.WriteBool(Zero); err != nil {
@@ -87,7 +88,7 @@ func (aw *AperWriter) writeNormallySmallNonNegativeValue(v uint64) (err error) {
 
 func (aw *AperWriter) writeLength(r uint64, v uint64) (err error) {
 	defer func() {
-		err = aperError("writeLength", err)
+		err = utils.WrapError("writeLength", err)
 	}()
 
 	//if range is within 2 bytes, write value as a constrained value
@@ -116,7 +117,7 @@ func (aw *AperWriter) writeLength(r uint64, v uint64) (err error) {
 
 func (aw *AperWriter) writeConstraintValue(r uint64, v uint64) (err error) {
 	defer func() {
-		err = aperError("writeConstraintValue", err)
+		err = utils.WrapError("writeConstraintValue", err)
 	}()
 
 	var nBytes uint
@@ -218,7 +219,7 @@ func (aw *AperWriter) WriteString(content []byte, len uint64, c *Constraint, e b
 
 func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, e bool) (err error) {
 	defer func() {
-		err = aperError("WriteBitString", err)
+		err = utils.WrapError("WriteBitString", err)
 	}()
 	err = aw.WriteString(content, uint64(nbits), c, e, true)
 	return
@@ -226,7 +227,7 @@ func (aw *AperWriter) WriteBitString(content []byte, nbits uint, c *Constraint, 
 
 func (aw *AperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (err error) {
 	defer func() {
-		err = aperError("WriteOctetString", err)
+		err = utils.WrapError("WriteOctetString", err)
 	}()
 	byteLen := uint64(len(content))
 	err = aw.WriteString(content, byteLen, c, e, false)
@@ -236,7 +237,7 @@ func (aw *AperWriter) WriteOctetString(content []byte, c *Constraint, e bool) (e
 // constrain must have Lb <= Ub
 func (aw *AperWriter) WriteEnumerate(v uint64, c Constraint, e bool) (err error) {
 	defer func() {
-		err = aperError("WriteEnumerate", err)
+		err = utils.WrapError("WriteEnumerate", err)
 	}()
 
 	if v <= uint64(c.Ub) { //value is in range
@@ -279,7 +280,7 @@ func (aw *AperWriter) WriteOpenType(content []byte) (err error) {
 
 func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	defer func() {
-		err = aperError("WriteInteger", err)
+		err = utils.WrapError("WriteInteger", err)
 	}()
 	lb, sRange, _ := aw.writeExtBit(uint64(v), e, c)
 	unsignedValue := uint64(v)
@@ -332,7 +333,7 @@ func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 
 func (aw *AperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {
 	defer func() {
-		err = aperError("WriteChoice", err)
+		err = utils.WrapError("WriteChoice", err)
 	}()
 	if v < 1 {
 		err = fmt.Errorf("Choice must be larger than 1")

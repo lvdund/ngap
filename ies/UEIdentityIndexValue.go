@@ -3,16 +3,15 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	UEIdentityIndexValuePresentNothing uint64 = iota /* No components present */
-	UEIdentityIndexValuePresentIndexLength10
+	UEIdentityIndexValuePresentNothing uint64 = iota
+	UEIdentityIndexValuePresentIndexlength10
 	UEIdentityIndexValuePresentChoiceExtensions
 )
 
-
 type UEIdentityIndexValue struct {
 	Choice        uint64
-	IndexLength10 *aper.BitString `False,,10,10`
-	// ChoiceExtensions *UEIdentityIndexValueExtIEs `False,,,`
+	IndexLength10 []byte
+	// ChoiceExtensions *UEIdentityIndexValueExtIEs
 }
 
 func (ie *UEIdentityIndexValue) Encode(w *aper.AperWriter) (err error) {
@@ -20,8 +19,9 @@ func (ie *UEIdentityIndexValue) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UEIdentityIndexValuePresentIndexLength10:
-		err = w.WriteBitString(ie.IndexLength10.Bytes, uint(ie.IndexLength10.NumBits), &aper.Constraint{Lb: 10, Ub: 10}, false)
+	case UEIdentityIndexValuePresentIndexlength10:
+		tmp := NewBITSTRING(ie.IndexLength10, aper.Constraint{Lb: 10, Ub: 10}, false)
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -30,13 +30,12 @@ func (ie *UEIdentityIndexValue) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UEIdentityIndexValuePresentIndexLength10:
-		var b []byte
-		var n uint
-		if b, n, err = r.ReadBitString(&aper.Constraint{Lb: 10, Ub: 10}, false); err != nil {
+	case UEIdentityIndexValuePresentIndexlength10:
+		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 10, Ub: 10}, false)
+		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.IndexLength10 = &aper.BitString{Bytes: b, NumBits: uint64(n)}
+		ie.IndexLength10 = tmp.Value.Bytes
 	}
 	return
 }

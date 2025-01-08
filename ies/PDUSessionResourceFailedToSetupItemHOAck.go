@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceFailedToSetupItemHOAck struct {
-	PDUSessionID                                   *PDUSessionID     `False,`
-	HandoverResourceAllocationUnsuccessfulTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceFailedToSetupItemHOAckExtIEs `False,OPTIONAL`
+	PDUSessionID                                   int64
+	HandoverResourceAllocationUnsuccessfulTransfer []byte
+	// IEExtensions *PDUSessionResourceFailedToSetupItemHOAckExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceFailedToSetupItemHOAck) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceFailedToSetupItemHOAck) Encode(w *aper.AperWriter) (
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.HandoverResourceAllocationUnsuccessfulTransfer != nil {
-		if err = w.WriteOctetString(*ie.HandoverResourceAllocationUnsuccessfulTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_HandoverResourceAllocationUnsuccessfulTransfer := NewOCTETSTRING(ie.HandoverResourceAllocationUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_HandoverResourceAllocationUnsuccessfulTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceFailedToSetupItemHOAck) Decode(r *aper.AperReader) (
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.HandoverResourceAllocationUnsuccessfulTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_HandoverResourceAllocationUnsuccessfulTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_HandoverResourceAllocationUnsuccessfulTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.HandoverResourceAllocationUnsuccessfulTransfer = tmp_HandoverResourceAllocationUnsuccessfulTransfer.Value
 	return
 }

@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UEAggregateMaximumBitRate struct {
-	UEAggregateMaximumBitRateDL *BitRate `False,`
-	UEAggregateMaximumBitRateUL *BitRate `False,`
-	// IEExtensions UEAggregateMaximumBitRateExtIEs `False,OPTIONAL`
+	UEAggregateMaximumBitRateDL int64
+	UEAggregateMaximumBitRateUL int64
+	// IEExtensions *UEAggregateMaximumBitRateExtIEs `optional`
 }
 
 func (ie *UEAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *UEAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.UEAggregateMaximumBitRateDL != nil {
-		if err = ie.UEAggregateMaximumBitRateDL.Encode(w); err != nil {
-			return
-		}
+	tmp_UEAggregateMaximumBitRateDL := NewINTEGER(ie.UEAggregateMaximumBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
+	if err = tmp_UEAggregateMaximumBitRateDL.Encode(w); err != nil {
+		return
 	}
-	if ie.UEAggregateMaximumBitRateUL != nil {
-		if err = ie.UEAggregateMaximumBitRateUL.Encode(w); err != nil {
-			return
-		}
+	tmp_UEAggregateMaximumBitRateUL := NewINTEGER(ie.UEAggregateMaximumBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
+	if err = tmp_UEAggregateMaximumBitRateUL.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +31,21 @@ func (ie *UEAggregateMaximumBitRate) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.UEAggregateMaximumBitRateDL = new(BitRate)
-	ie.UEAggregateMaximumBitRateUL = new(BitRate)
-	if err = ie.UEAggregateMaximumBitRateDL.Decode(r); err != nil {
+	tmp_UEAggregateMaximumBitRateDL := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 4000000000000},
+		ext: false,
+	}
+	if err = tmp_UEAggregateMaximumBitRateDL.Decode(r); err != nil {
 		return
 	}
-	if err = ie.UEAggregateMaximumBitRateUL.Decode(r); err != nil {
+	ie.UEAggregateMaximumBitRateDL = int64(tmp_UEAggregateMaximumBitRateDL.Value)
+	tmp_UEAggregateMaximumBitRateUL := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 4000000000000},
+		ext: false,
+	}
+	if err = tmp_UEAggregateMaximumBitRateUL.Decode(r); err != nil {
 		return
 	}
+	ie.UEAggregateMaximumBitRateUL = int64(tmp_UEAggregateMaximumBitRateUL.Value)
 	return
 }

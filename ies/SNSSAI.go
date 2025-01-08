@@ -1,13 +1,11 @@
 package ies
 
-import (
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type SNSSAI struct {
-	SST *SST `False,`
-	SD  *SD  `False,OPTIONAL`
-	// IEExtensions SNSSAIExtIEs `False,OPTIONAL`
+	SST []byte
+	SD  []byte
+	// IEExtensions *SNSSAIExtIEs `optional`
 }
 
 func (ie *SNSSAI) Encode(w *aper.AperWriter) (err error) {
@@ -19,13 +17,13 @@ func (ie *SNSSAI) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.SST != nil {
-		if err = ie.SST.Encode(w); err != nil {
-			return
-		}
+	tmp_SST := NewOCTETSTRING(ie.SST, aper.Constraint{Lb: 1, Ub: 1}, false)
+	if err = tmp_SST.Encode(w); err != nil {
+		return
 	}
 	if ie.SD != nil {
-		if err = ie.SD.Encode(w); err != nil {
+		tmp_SD := NewOCTETSTRING(ie.SD, aper.Constraint{Lb: 3, Ub: 3}, false)
+		if err = tmp_SD.Encode(w); err != nil {
 			return
 		}
 	}
@@ -39,15 +37,23 @@ func (ie *SNSSAI) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.SST = new(SST)
-	ie.SD = new(SD)
-	if err = ie.SST.Decode(r); err != nil {
+	tmp_SST := OCTETSTRING{
+		c:   aper.Constraint{Lb: 1, Ub: 1},
+		ext: false,
+	}
+	if err = tmp_SST.Decode(r); err != nil {
 		return
 	}
+	ie.SST = tmp_SST.Value
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.SD.Decode(r); err != nil {
+		tmp_SD := OCTETSTRING{
+			c:   aper.Constraint{Lb: 3, Ub: 3},
+			ext: false,
+		}
+		if err = tmp_SD.Decode(r); err != nil {
 			return
 		}
+		ie.SD = tmp_SD.Value
 	}
 	return
 }

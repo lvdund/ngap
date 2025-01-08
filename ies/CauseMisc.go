@@ -12,7 +12,7 @@ const (
 )
 
 type CauseMisc struct {
-	Value aper.Enumerated `True,0,5`
+	Value aper.Enumerated
 }
 
 func (ie *CauseMisc) Encode(w *aper.AperWriter) (err error) {

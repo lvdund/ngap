@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type SecondaryRATDataUsageReportTransfer struct {
-	SecondaryRATUsageInformation *SecondaryRATUsageInformation `False,OPTIONAL`
-	// IEExtensions SecondaryRATDataUsageReportTransferExtIEs `False,OPTIONAL`
+	SecondaryRATUsageInformation *SecondaryRATUsageInformation `optional`
+	// IEExtensions *SecondaryRATDataUsageReportTransferExtIEs `optional`
 }
 
 func (ie *SecondaryRATDataUsageReportTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -31,7 +31,6 @@ func (ie *SecondaryRATDataUsageReportTransfer) Decode(r *aper.AperReader) (err e
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.SecondaryRATUsageInformation = new(SecondaryRATUsageInformation)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.SecondaryRATUsageInformation.Decode(r); err != nil {
 			return

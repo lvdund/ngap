@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	ExpectedHOIntervalSec15  aper.Enumerated = 0
-	ExpectedHOIntervalSec30  aper.Enumerated = 1
-	ExpectedHOIntervalSec60  aper.Enumerated = 2
-	ExpectedHOIntervalSec90  aper.Enumerated = 3
-	ExpectedHOIntervalSec120 aper.Enumerated = 4
-	ExpectedHOIntervalSec180 aper.Enumerated = 5
-	ExpectedHOIntervalLongTime aper.Enumerated = 6
+	ExpectedHOIntervalSec15    aper.Enumerated = 0
+	ExpectedHOIntervalSec30    aper.Enumerated = 1
+	ExpectedHOIntervalSec60    aper.Enumerated = 2
+	ExpectedHOIntervalSec90    aper.Enumerated = 3
+	ExpectedHOIntervalSec120   aper.Enumerated = 4
+	ExpectedHOIntervalSec180   aper.Enumerated = 5
+	ExpectedHOIntervalLongtime aper.Enumerated = 6
 )
 
 type ExpectedHOInterval struct {
-	Value aper.Enumerated `True,0,6`
+	Value aper.Enumerated
 }
 
 func (ie *ExpectedHOInterval) Encode(w *aper.AperWriter) (err error) {

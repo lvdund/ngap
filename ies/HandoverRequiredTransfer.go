@@ -1,18 +1,13 @@
 package ies
 
-import (
-	"bytes"
-
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type HandoverRequiredTransfer struct {
-	DirectForwardingPathAvailability *DirectForwardingPathAvailability `False,OPTIONAL`
-	// IEExtensions HandoverRequiredTransferExtIEs `False,OPTIONAL`
+	DirectForwardingPathAvailability *DirectForwardingPathAvailability `optional`
+	// IEExtensions *HandoverRequiredTransferExtIEs `optional`
 }
 
-func (ie *HandoverRequiredTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *HandoverRequiredTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -28,8 +23,7 @@ func (ie *HandoverRequiredTransfer) Encode() (b []byte, err error) {
 	}
 	return
 }
-func (ie *HandoverRequiredTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *HandoverRequiredTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}
@@ -37,7 +31,6 @@ func (ie *HandoverRequiredTransfer) Decode(wire []byte) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.DirectForwardingPathAvailability = new(DirectForwardingPathAvailability)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DirectForwardingPathAvailability.Decode(r); err != nil {
 			return

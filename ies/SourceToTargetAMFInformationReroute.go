@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type SourceToTargetAMFInformationReroute struct {
-	ConfiguredNSSAI     *ConfiguredNSSAI     `False,OPTIONAL`
-	RejectedNSSAIinPLMN *RejectedNSSAIinPLMN `False,OPTIONAL`
-	RejectedNSSAIinTA   *RejectedNSSAIinTA   `False,OPTIONAL`
-	// IEExtensions SourceToTargetAMFInformationRerouteExtIEs `False,OPTIONAL`
+	ConfiguredNSSAI     []byte
+	RejectedNSSAIinPLMN []byte
+	RejectedNSSAIinTA   []byte
+	// IEExtensions *SourceToTargetAMFInformationRerouteExtIEs `optional`
 }
 
 func (ie *SourceToTargetAMFInformationReroute) Encode(w *aper.AperWriter) (err error) {
@@ -25,17 +25,20 @@ func (ie *SourceToTargetAMFInformationReroute) Encode(w *aper.AperWriter) (err e
 	}
 	w.WriteBits(optionals, 4)
 	if ie.ConfiguredNSSAI != nil {
-		if err = ie.ConfiguredNSSAI.Encode(w); err != nil {
+		tmp_ConfiguredNSSAI := NewOCTETSTRING(ie.ConfiguredNSSAI, aper.Constraint{Lb: 128, Ub: 128}, false)
+		if err = tmp_ConfiguredNSSAI.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.RejectedNSSAIinPLMN != nil {
-		if err = ie.RejectedNSSAIinPLMN.Encode(w); err != nil {
+		tmp_RejectedNSSAIinPLMN := NewOCTETSTRING(ie.RejectedNSSAIinPLMN, aper.Constraint{Lb: 32, Ub: 32}, false)
+		if err = tmp_RejectedNSSAIinPLMN.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.RejectedNSSAIinTA != nil {
-		if err = ie.RejectedNSSAIinTA.Encode(w); err != nil {
+		tmp_RejectedNSSAIinTA := NewOCTETSTRING(ie.RejectedNSSAIinTA, aper.Constraint{Lb: 32, Ub: 32}, false)
+		if err = tmp_RejectedNSSAIinTA.Encode(w); err != nil {
 			return
 		}
 	}
@@ -49,23 +52,35 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.ConfiguredNSSAI = new(ConfiguredNSSAI)
-	ie.RejectedNSSAIinPLMN = new(RejectedNSSAIinPLMN)
-	ie.RejectedNSSAIinTA = new(RejectedNSSAIinTA)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.ConfiguredNSSAI.Decode(r); err != nil {
+		tmp_ConfiguredNSSAI := OCTETSTRING{
+			c:   aper.Constraint{Lb: 128, Ub: 128},
+			ext: false,
+		}
+		if err = tmp_ConfiguredNSSAI.Decode(r); err != nil {
 			return
 		}
+		ie.ConfiguredNSSAI = tmp_ConfiguredNSSAI.Value
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.RejectedNSSAIinPLMN.Decode(r); err != nil {
+		tmp_RejectedNSSAIinPLMN := OCTETSTRING{
+			c:   aper.Constraint{Lb: 32, Ub: 32},
+			ext: false,
+		}
+		if err = tmp_RejectedNSSAIinPLMN.Decode(r); err != nil {
 			return
 		}
+		ie.RejectedNSSAIinPLMN = tmp_RejectedNSSAIinPLMN.Value
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.RejectedNSSAIinTA.Decode(r); err != nil {
+		tmp_RejectedNSSAIinTA := OCTETSTRING{
+			c:   aper.Constraint{Lb: 32, Ub: 32},
+			ext: false,
+		}
+		if err = tmp_RejectedNSSAIinTA.Decode(r); err != nil {
 			return
 		}
+		ie.RejectedNSSAIinTA = tmp_RejectedNSSAIinTA.Value
 	}
 	return
 }

@@ -3,21 +3,21 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	LastVisitedCellInformationPresentNothing uint64 = iota /* No components present */
-	LastVisitedCellInformationPresentNGRANCell
-	LastVisitedCellInformationPresentEUTRANCell
-	LastVisitedCellInformationPresentUTRANCell
-	LastVisitedCellInformationPresentGERANCell
+	LastVisitedCellInformationPresentNothing uint64 = iota
+	LastVisitedCellInformationPresentNgrancell
+	LastVisitedCellInformationPresentEutrancell
+	LastVisitedCellInformationPresentUtrancell
+	LastVisitedCellInformationPresentGerancell
 	LastVisitedCellInformationPresentChoiceExtensions
 )
 
 type LastVisitedCellInformation struct {
 	Choice     uint64
-	NGRANCell  *LastVisitedNGRANCellInformation  `False,,,`
-	EUTRANCell *LastVisitedEUTRANCellInformation `False,,,`
-	UTRANCell  *LastVisitedUTRANCellInformation  `False,,,`
-	GERANCell  *LastVisitedGERANCellInformation  `False,,,`
-	// ChoiceExtensions *LastVisitedCellInformationExtIEs `False,,,`
+	NGRANCell  *LastVisitedNGRANCellInformation
+	EUTRANCell []byte
+	UTRANCell  []byte
+	GERANCell  []byte
+	// ChoiceExtensions *LastVisitedCellInformationExtIEs
 }
 
 func (ie *LastVisitedCellInformation) Encode(w *aper.AperWriter) (err error) {
@@ -25,14 +25,17 @@ func (ie *LastVisitedCellInformation) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case LastVisitedCellInformationPresentNGRANCell:
+	case LastVisitedCellInformationPresentNgrancell:
 		err = ie.NGRANCell.Encode(w)
-	case LastVisitedCellInformationPresentEUTRANCell:
-		err = ie.EUTRANCell.Encode(w)
-	case LastVisitedCellInformationPresentUTRANCell:
-		err = ie.UTRANCell.Encode(w)
-	case LastVisitedCellInformationPresentGERANCell:
-		err = ie.GERANCell.Encode(w)
+	case LastVisitedCellInformationPresentEutrancell:
+		tmp := NewOCTETSTRING(ie.EUTRANCell, aper.Constraint{Lb: 0, Ub: 0}, false)
+		err = tmp.Encode(w)
+	case LastVisitedCellInformationPresentUtrancell:
+		tmp := NewOCTETSTRING(ie.UTRANCell, aper.Constraint{Lb: 0, Ub: 0}, false)
+		err = tmp.Encode(w)
+	case LastVisitedCellInformationPresentGerancell:
+		tmp := NewOCTETSTRING(ie.GERANCell, aper.Constraint{Lb: 0, Ub: 0}, false)
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -41,30 +44,30 @@ func (ie *LastVisitedCellInformation) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case LastVisitedCellInformationPresentNGRANCell:
+	case LastVisitedCellInformationPresentNgrancell:
 		var tmp LastVisitedNGRANCellInformation
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NGRANCell = &tmp
-	case LastVisitedCellInformationPresentEUTRANCell:
-		var tmp LastVisitedEUTRANCellInformation
+	case LastVisitedCellInformationPresentEutrancell:
+		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.EUTRANCell = &tmp
-	case LastVisitedCellInformationPresentUTRANCell:
-		var tmp LastVisitedUTRANCellInformation
+		ie.EUTRANCell = tmp.Value
+	case LastVisitedCellInformationPresentUtrancell:
+		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.UTRANCell = &tmp
-	case LastVisitedCellInformationPresentGERANCell:
-		var tmp LastVisitedGERANCellInformation
+		ie.UTRANCell = tmp.Value
+	case LastVisitedCellInformationPresentGerancell:
+		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.GERANCell = &tmp
+		ie.GERANCell = tmp.Value
 	}
 	return
 }

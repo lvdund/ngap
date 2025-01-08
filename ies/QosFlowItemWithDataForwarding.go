@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type QosFlowItemWithDataForwarding struct {
-	QosFlowIdentifier      *QosFlowIdentifier      `False,`
-	DataForwardingAccepted *DataForwardingAccepted `False,OPTIONAL`
-	// IEExtensions QosFlowItemWithDataForwardingExtIEs `False,OPTIONAL`
+	QosFlowIdentifier      int64
+	DataForwardingAccepted *DataForwardingAccepted `optional`
+	// IEExtensions *QosFlowItemWithDataForwardingExtIEs `optional`
 }
 
 func (ie *QosFlowItemWithDataForwarding) Encode(w *aper.AperWriter) (err error) {
@@ -17,10 +17,9 @@ func (ie *QosFlowItemWithDataForwarding) Encode(w *aper.AperWriter) (err error) 
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.QosFlowIdentifier != nil {
-		if err = ie.QosFlowIdentifier.Encode(w); err != nil {
-			return
-		}
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
+		return
 	}
 	if ie.DataForwardingAccepted != nil {
 		if err = ie.DataForwardingAccepted.Encode(w); err != nil {
@@ -37,11 +36,14 @@ func (ie *QosFlowItemWithDataForwarding) Decode(r *aper.AperReader) (err error) 
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.QosFlowIdentifier = new(QosFlowIdentifier)
-	ie.DataForwardingAccepted = new(DataForwardingAccepted)
-	if err = ie.QosFlowIdentifier.Decode(r); err != nil {
+	tmp_QosFlowIdentifier := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 63},
+		ext: false,
+	}
+	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		return
 	}
+	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DataForwardingAccepted.Decode(r); err != nil {
 			return

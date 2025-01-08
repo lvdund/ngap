@@ -3,15 +3,15 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	UEPagingIdentityPresentNothing uint64 = iota /* No components present */
-	UEPagingIdentityPresentFiveGSTMSI
+	UEPagingIdentityPresentNothing uint64 = iota
+	UEPagingIdentityPresentFivegSTmsi
 	UEPagingIdentityPresentChoiceExtensions
 )
 
 type UEPagingIdentity struct {
 	Choice     uint64
-	FiveGSTMSI *FiveGSTMSI `True,,,`
-	// ChoiceExtensions *UEPagingIdentityExtIEs `False,,,`
+	FiveGSTMSI *FiveGSTMSI
+	// ChoiceExtensions *UEPagingIdentityExtIEs
 }
 
 func (ie *UEPagingIdentity) Encode(w *aper.AperWriter) (err error) {
@@ -19,7 +19,7 @@ func (ie *UEPagingIdentity) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UEPagingIdentityPresentFiveGSTMSI:
+	case UEPagingIdentityPresentFivegSTmsi:
 		err = ie.FiveGSTMSI.Encode(w)
 	}
 	return
@@ -29,7 +29,7 @@ func (ie *UEPagingIdentity) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UEPagingIdentityPresentFiveGSTMSI:
+	case UEPagingIdentityPresentFivegSTmsi:
 		var tmp FiveGSTMSI
 		if err = tmp.Decode(r); err != nil {
 			return

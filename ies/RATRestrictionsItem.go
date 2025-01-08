@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type RATRestrictionsItem struct {
-	PLMNIdentity              *PLMNIdentity              `False,`
-	RATRestrictionInformation *RATRestrictionInformation `False,`
-	// IEExtensions RATRestrictionsItemExtIEs `False,OPTIONAL`
+	PLMNIdentity              []byte
+	RATRestrictionInformation []byte
+	// IEExtensions *RATRestrictionsItemExtIEs `optional`
 }
 
 func (ie *RATRestrictionsItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *RATRestrictionsItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PLMNIdentity != nil {
-		if err = ie.PLMNIdentity.Encode(w); err != nil {
-			return
-		}
+	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
+	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		return
 	}
-	if ie.RATRestrictionInformation != nil {
-		if err = ie.RATRestrictionInformation.Encode(w); err != nil {
-			return
-		}
+	tmp_RATRestrictionInformation := NewBITSTRING(ie.RATRestrictionInformation, aper.Constraint{Lb: 8, Ub: 8}, false)
+	if err = tmp_RATRestrictionInformation.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +31,21 @@ func (ie *RATRestrictionsItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PLMNIdentity = new(PLMNIdentity)
-	ie.RATRestrictionInformation = new(RATRestrictionInformation)
-	if err = ie.PLMNIdentity.Decode(r); err != nil {
+	tmp_PLMNIdentity := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = tmp_PLMNIdentity.Decode(r); err != nil {
 		return
 	}
-	if err = ie.RATRestrictionInformation.Decode(r); err != nil {
+	ie.PLMNIdentity = tmp_PLMNIdentity.Value
+	tmp_RATRestrictionInformation := BITSTRING{
+		c:   aper.Constraint{Lb: 8, Ub: 8},
+		ext: false,
+	}
+	if err = tmp_RATRestrictionInformation.Decode(r); err != nil {
 		return
 	}
+	ie.RATRestrictionInformation = tmp_RATRestrictionInformation.Value.Bytes
 	return
 }

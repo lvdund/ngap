@@ -3,7 +3,7 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceReleaseResponseTransfer struct {
-	// IEExtensions PDUSessionResourceReleaseResponseTransferExtIEs `False,OPTIONAL`
+	// IEExtensions *PDUSessionResourceReleaseResponseTransferExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceReleaseResponseTransfer) Encode(w *aper.AperWriter) (err error) {

@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	DRBStatusDLPresentNothing uint64 = iota /* No components present */
-	DRBStatusDLPresentDRBStatusDL12
-	DRBStatusDLPresentDRBStatusDL18
+	DRBStatusDLPresentNothing uint64 = iota
+	DRBStatusDLPresentDrbstatusdl12
+	DRBStatusDLPresentDrbstatusdl18
 	DRBStatusDLPresentChoiceExtensions
 )
 
 type DRBStatusDL struct {
 	Choice        uint64
-	DRBStatusDL12 *DRBStatusDL12 `False,,,`
-	DRBStatusDL18 *DRBStatusDL18 `False,,,`
-	// ChoiceExtensions *DRBStatusDLExtIEs `False,,,`
+	DRBStatusDL12 *DRBStatusDL12
+	DRBStatusDL18 *DRBStatusDL18
+	// ChoiceExtensions *DRBStatusDLExtIEs
 }
 
 func (ie *DRBStatusDL) Encode(w *aper.AperWriter) (err error) {
@@ -21,9 +21,9 @@ func (ie *DRBStatusDL) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case DRBStatusDLPresentDRBStatusDL12:
+	case DRBStatusDLPresentDrbstatusdl12:
 		err = ie.DRBStatusDL12.Encode(w)
-	case DRBStatusDLPresentDRBStatusDL18:
+	case DRBStatusDLPresentDrbstatusdl18:
 		err = ie.DRBStatusDL18.Encode(w)
 	}
 	return
@@ -33,13 +33,13 @@ func (ie *DRBStatusDL) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case DRBStatusDLPresentDRBStatusDL12:
+	case DRBStatusDLPresentDrbstatusdl12:
 		var tmp DRBStatusDL12
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.DRBStatusDL12 = &tmp
-	case DRBStatusDLPresentDRBStatusDL18:
+	case DRBStatusDLPresentDrbstatusdl18:
 		var tmp DRBStatusDL18
 		if err = tmp.Decode(r); err != nil {
 			return

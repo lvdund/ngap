@@ -1,21 +1,16 @@
 package ies
 
-import (
-	"bytes"
-
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceSetupResponseTransfer struct {
-	DLQosFlowPerTNLInformation           *QosFlowPerTNLInformation     `True,`
-	AdditionalDLQosFlowPerTNLInformation *QosFlowPerTNLInformationList `False,OPTIONAL`
-	SecurityResult                       *SecurityResult               `True,OPTIONAL`
-	QosFlowFailedToSetupList             *QosFlowListWithCause         `False,OPTIONAL`
-	// IEExtensions PDUSessionResourceSetupResponseTransferExtIEs `False,OPTIONAL`
+	DLQosFlowPerTNLInformation           QosFlowPerTNLInformation
+	AdditionalDLQosFlowPerTNLInformation []QosFlowPerTNLInformationItem `optional`
+	SecurityResult                       *SecurityResult                `optional`
+	QosFlowFailedToSetupList             []QosFlowWithCauseItem         `optional`
+	// IEExtensions *PDUSessionResourceSetupResponseTransferExtIEs `optional`
 }
 
-func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -30,14 +25,22 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	if ie.DLQosFlowPerTNLInformation != nil {
-		if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
-			return
-		}
+	if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
+		return
 	}
 	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Encode(w); err != nil {
-			return
+		if len(ie.AdditionalDLQosFlowPerTNLInformation) > 0 {
+			tmp := Sequence[*QosFlowPerTNLInformationItem]{
+				Value: []*QosFlowPerTNLInformationItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+				ext:   false,
+			}
+			for _, i := range ie.AdditionalDLQosFlowPerTNLInformation {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	if ie.SecurityResult != nil {
@@ -46,14 +49,23 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error
 		}
 	}
 	if ie.QosFlowFailedToSetupList != nil {
-		if err = ie.QosFlowFailedToSetupList.Encode(w); err != nil {
-			return
+		if len(ie.QosFlowFailedToSetupList) > 0 {
+			tmp := Sequence[*QosFlowWithCauseItem]{
+				Value: []*QosFlowWithCauseItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+				ext:   false,
+			}
+			for _, i := range ie.QosFlowFailedToSetupList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
 }
-func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewReader(wire))
+func (ie *PDUSessionResourceSetupResponseTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}
@@ -61,16 +73,21 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.DLQosFlowPerTNLInformation = new(QosFlowPerTNLInformation)
-	ie.AdditionalDLQosFlowPerTNLInformation = new(QosFlowPerTNLInformationList)
-	ie.SecurityResult = new(SecurityResult)
-	ie.QosFlowFailedToSetupList = new(QosFlowListWithCause)
 	if err = ie.DLQosFlowPerTNLInformation.Decode(r); err != nil {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Decode(r); err != nil {
+		tmp_AdditionalDLQosFlowPerTNLInformation := Sequence[*QosFlowPerTNLInformationItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+			ext: false,
+		}
+		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
+		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
 			return
+		}
+		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
+		for _, i := range tmp_AdditionalDLQosFlowPerTNLInformation.Value {
+			ie.AdditionalDLQosFlowPerTNLInformation = append(ie.AdditionalDLQosFlowPerTNLInformation, *i)
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
@@ -79,8 +96,17 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 		}
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.QosFlowFailedToSetupList.Decode(r); err != nil {
+		tmp_QosFlowFailedToSetupList := Sequence[*QosFlowWithCauseItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
+		if err = tmp_QosFlowFailedToSetupList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.QosFlowFailedToSetupList = []QosFlowWithCauseItem{}
+		for _, i := range tmp_QosFlowFailedToSetupList.Value {
+			ie.QosFlowFailedToSetupList = append(ie.QosFlowFailedToSetupList, *i)
 		}
 	}
 	return

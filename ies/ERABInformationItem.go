@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type ERABInformationItem struct {
-	ERABID       *ERABID       `False,`
-	DLForwarding *DLForwarding `False,OPTIONAL`
-	// IEExtensions ERABInformationItemExtIEs `False,OPTIONAL`
+	ERABID       int64
+	DLForwarding *DLForwarding `optional`
+	// IEExtensions *ERABInformationItemExtIEs `optional`
 }
 
 func (ie *ERABInformationItem) Encode(w *aper.AperWriter) (err error) {
@@ -17,10 +17,9 @@ func (ie *ERABInformationItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.ERABID != nil {
-		if err = ie.ERABID.Encode(w); err != nil {
-			return
-		}
+	tmp_ERABID := NewINTEGER(ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, false)
+	if err = tmp_ERABID.Encode(w); err != nil {
+		return
 	}
 	if ie.DLForwarding != nil {
 		if err = ie.DLForwarding.Encode(w); err != nil {
@@ -37,11 +36,14 @@ func (ie *ERABInformationItem) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.ERABID = new(ERABID)
-	ie.DLForwarding = new(DLForwarding)
-	if err = ie.ERABID.Decode(r); err != nil {
+	tmp_ERABID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 15},
+		ext: false,
+	}
+	if err = tmp_ERABID.Decode(r); err != nil {
 		return
 	}
+	ie.ERABID = int64(tmp_ERABID.Value)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLForwarding.Decode(r); err != nil {
 			return

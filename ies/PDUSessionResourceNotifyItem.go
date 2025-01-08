@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceNotifyItem struct {
-	PDUSessionID                     *PDUSessionID     `False,`
-	PDUSessionResourceNotifyTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceNotifyItemExtIEs `False,OPTIONAL`
+	PDUSessionID                     int64
+	PDUSessionResourceNotifyTransfer []byte
+	// IEExtensions *PDUSessionResourceNotifyItemExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceNotifyItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceNotifyItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.PDUSessionResourceNotifyTransfer != nil {
-		if err = w.WriteOctetString(*ie.PDUSessionResourceNotifyTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_PDUSessionResourceNotifyTransfer := NewOCTETSTRING(ie.PDUSessionResourceNotifyTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_PDUSessionResourceNotifyTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceNotifyItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.PDUSessionResourceNotifyTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_PDUSessionResourceNotifyTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_PDUSessionResourceNotifyTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.PDUSessionResourceNotifyTransfer = tmp_PDUSessionResourceNotifyTransfer.Value
 	return
 }

@@ -6,14 +6,15 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
 )
 
 type NGSetupRequest struct {
-	GlobalRANNodeID        *GlobalRANNodeID        `,reject,mandatory`
-	RANNodeName            *RANNodeName            `,ignore,optional`
-	SupportedTAList        *SupportedTAList        `,reject,mandatory`
-	DefaultPagingDRX       *PagingDRX              `,ignore,mandatory`
-	UERetentionInformation *UERetentionInformation `,ignore,optional`
+	GlobalRANNodeID        GlobalRANNodeID
+	RANNodeName            []byte `optional`
+	SupportedTAList        []SupportedTAItem
+	DefaultPagingDRX       PagingDRX
+	UERetentionInformation *UERetentionInformation `optional`
 }
 
 func (msg *NGSetupRequest) Encode(w io.Writer) (err error) {
@@ -21,99 +22,179 @@ func (msg *NGSetupRequest) Encode(w io.Writer) (err error) {
 }
 func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 	ies = []NgapMessageIE{}
-	if msg.GlobalRANNodeID != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_GlobalRANNodeID},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.GlobalRANNodeID})
-	}
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_GlobalRANNodeID},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value:       &msg.GlobalRANNodeID,
+	})
 	if msg.RANNodeName != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_RANNodeName},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.RANNodeName})
+			Value: &OCTETSTRING{
+				c:     aper.Constraint{Lb: 1, Ub: 150},
+				ext:   true,
+				Value: msg.RANNodeName,
+			}})
 	}
-	if msg.SupportedTAList != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_SupportedTAList},
-			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.SupportedTAList})
+	tmp_SupportedTAList := Sequence[*SupportedTAItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofTACs},
+		ext: false,
 	}
-	if msg.DefaultPagingDRX != nil {
-		ies = append(ies, NgapMessageIE{
-			Id:          ProtocolIEID{Value: ProtocolIEID_DefaultPagingDRX},
-			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.DefaultPagingDRX})
+	for _, i := range msg.SupportedTAList {
+		tmp_SupportedTAList.Value = append(tmp_SupportedTAList.Value, &i)
 	}
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_SupportedTAList},
+		Criticality: Criticality{Value: Criticality_PresentReject},
+		Value:       &tmp_SupportedTAList,
+	})
+	ies = append(ies, NgapMessageIE{
+		Id:          ProtocolIEID{Value: ProtocolIEID_DefaultPagingDRX},
+		Criticality: Criticality{Value: Criticality_PresentIgnore},
+		Value:       &msg.DefaultPagingDRX,
+	})
 	if msg.UERetentionInformation != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_UERetentionInformation},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.UERetentionInformation})
+			Value:       msg.UERetentionInformation,
+		})
 	}
 	return
 }
-func (msg *NGSetupRequest) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
+func (msg *NGSetupRequest) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+	decoder := NGSetupRequestDecoder{
+		msg:  msg,
+		list: make(map[aper.Integer]*NgapMessageIE),
+	}
+	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	_ = ies
+	if _, ok := decoder.list[ProtocolIEID_GlobalRANNodeID]; !ok {
+		err = fmt.Errorf("Mandatory field GlobalRANNodeID is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_GlobalRANNodeID},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_SupportedTAList]; !ok {
+		err = fmt.Errorf("Mandatory field SupportedTAList is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentReject},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_SupportedTAList},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
+	if _, ok := decoder.list[ProtocolIEID_DefaultPagingDRX]; !ok {
+		err = fmt.Errorf("Mandatory field DefaultPagingDRX is missing")
+		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+			IECriticality: Criticality{Value: Criticality_PresentIgnore},
+			IEID:          ProtocolIEID{Value: ProtocolIEID_DefaultPagingDRX},
+			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
+		})
+		return
+	}
 	return
 }
-func (msg *NGSetupRequest) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
-	if err != nil {
+
+type NGSetupRequestDecoder struct {
+	msg      *NGSetupRequest
+	diagList []CriticalityDiagnosticsIEItem
+	list     map[aper.Integer]*NgapMessageIE
+}
+
+func (decoder *NGSetupRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
+	var id int64
+	var c uint64
+	var buf []byte
+	if id, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false); err != nil {
 		return
 	}
 	msgIe = new(NgapMessageIE)
 	msgIe.Id.Value = aper.Integer(id)
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
-	if err != nil {
+	if c, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false); err != nil {
 		return
 	}
 	msgIe.Criticality.Value = aper.Enumerated(c)
-	var buf []byte
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
+	ieId := msgIe.Id.Value
+	if _, ok := decoder.list[ieId]; ok {
+		err = fmt.Errorf("Duplicated protocol IEID[%d] found", ieId)
+		return
+	}
+	decoder.list[ieId] = msgIe
 	ieR := aper.NewReader(bytes.NewReader(buf))
+	msg := decoder.msg
 	switch msgIe.Id.Value {
 	case ProtocolIEID_GlobalRANNodeID:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read GlobalRANNodeID", err)
 			return
 		}
-		msg.GlobalRANNodeID = &tmp
+		msg.GlobalRANNodeID = tmp
 	case ProtocolIEID_RANNodeName:
-		var tmp RANNodeName
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 1, Ub: 150},
+			ext: true,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read RANNodeName", err)
 			return
 		}
-		msg.RANNodeName = &tmp
+		msg.RANNodeName = tmp.Value
 	case ProtocolIEID_SupportedTAList:
-		var tmp SupportedTAList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*SupportedTAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTACs},
+			ext: false,
+		}
+		fn := func() *SupportedTAItem { return new(SupportedTAItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read SupportedTAList", err)
 			return
 		}
-		msg.SupportedTAList = &tmp
+		msg.SupportedTAList = []SupportedTAItem{}
+		for _, i := range tmp.Value {
+			msg.SupportedTAList = append(msg.SupportedTAList, *i)
+		}
 	case ProtocolIEID_DefaultPagingDRX:
 		var tmp PagingDRX
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read DefaultPagingDRX", err)
 			return
 		}
-		msg.DefaultPagingDRX = &tmp
+		msg.DefaultPagingDRX = tmp
 	case ProtocolIEID_UERetentionInformation:
 		var tmp UERetentionInformation
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read UERetentionInformation", err)
 			return
 		}
 		msg.UERetentionInformation = &tmp
 	default:
-		err = fmt.Errorf("temporary error")
-		return
+		switch msgIe.Criticality.Value {
+		case Criticality_PresentReject:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: reject)", msgIe.Id.Value)
+		case Criticality_PresentIgnore:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: ignore)", msgIe.Id.Value)
+		case Criticality_PresentNotify:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: notify)", msgIe.Id.Value)
+		}
+		if msgIe.Criticality.Value != Criticality_PresentIgnore {
+			decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+				IECriticality: msgIe.Criticality,
+				IEID:          msgIe.Id,
+				TypeOfError:   TypeOfError{Value: TypeOfErrorNotunderstood},
+			})
+		}
 	}
 	return
 }

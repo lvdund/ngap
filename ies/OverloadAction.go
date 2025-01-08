@@ -10,7 +10,7 @@ const (
 )
 
 type OverloadAction struct {
-	Value aper.Enumerated `True,0,3`
+	Value aper.Enumerated
 }
 
 func (ie *OverloadAction) Encode(w *aper.AperWriter) (err error) {

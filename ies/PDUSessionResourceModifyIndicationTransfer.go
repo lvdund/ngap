@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceModifyIndicationTransfer struct {
-	DLQosFlowPerTNLInformation           *QosFlowPerTNLInformation     `True,`
-	AdditionalDLQosFlowPerTNLInformation *QosFlowPerTNLInformationList `False,OPTIONAL`
-	// IEExtensions PDUSessionResourceModifyIndicationTransferExtIEs `False,OPTIONAL`
+	DLQosFlowPerTNLInformation           QosFlowPerTNLInformation
+	AdditionalDLQosFlowPerTNLInformation []QosFlowPerTNLInformationItem `optional`
+	// IEExtensions *PDUSessionResourceModifyIndicationTransferExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceModifyIndicationTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -17,14 +17,22 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Encode(w *aper.AperWriter)
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.DLQosFlowPerTNLInformation != nil {
-		if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
-			return
-		}
+	if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
+		return
 	}
 	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Encode(w); err != nil {
-			return
+		if len(ie.AdditionalDLQosFlowPerTNLInformation) > 0 {
+			tmp := Sequence[*QosFlowPerTNLInformationItem]{
+				Value: []*QosFlowPerTNLInformationItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+				ext:   false,
+			}
+			for _, i := range ie.AdditionalDLQosFlowPerTNLInformation {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
@@ -37,14 +45,21 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Decode(r *aper.AperReader)
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.DLQosFlowPerTNLInformation = new(QosFlowPerTNLInformation)
-	ie.AdditionalDLQosFlowPerTNLInformation = new(QosFlowPerTNLInformationList)
 	if err = ie.DLQosFlowPerTNLInformation.Decode(r); err != nil {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Decode(r); err != nil {
+		tmp_AdditionalDLQosFlowPerTNLInformation := Sequence[*QosFlowPerTNLInformationItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+			ext: false,
+		}
+		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
+		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
 			return
+		}
+		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
+		for _, i := range tmp_AdditionalDLQosFlowPerTNLInformation.Value {
+			ie.AdditionalDLQosFlowPerTNLInformation = append(ie.AdditionalDLQosFlowPerTNLInformation, *i)
 		}
 	}
 	return

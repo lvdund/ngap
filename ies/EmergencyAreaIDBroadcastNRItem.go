@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type EmergencyAreaIDBroadcastNRItem struct {
-	EmergencyAreaID       *EmergencyAreaID       `False,`
-	CompletedCellsInEAINR *CompletedCellsInEAINR `False,`
-	// IEExtensions EmergencyAreaIDBroadcastNRItemExtIEs `False,OPTIONAL`
+	EmergencyAreaID       []byte
+	CompletedCellsInEAINR []CompletedCellsInEAINRItem
+	// IEExtensions *EmergencyAreaIDBroadcastNRItemExtIEs `optional`
 }
 
 func (ie *EmergencyAreaIDBroadcastNRItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,13 +14,20 @@ func (ie *EmergencyAreaIDBroadcastNRItem) Encode(w *aper.AperWriter) (err error)
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.EmergencyAreaID != nil {
-		if err = ie.EmergencyAreaID.Encode(w); err != nil {
-			return
-		}
+	tmp_EmergencyAreaID := NewOCTETSTRING(ie.EmergencyAreaID, aper.Constraint{Lb: 3, Ub: 3}, false)
+	if err = tmp_EmergencyAreaID.Encode(w); err != nil {
+		return
 	}
-	if ie.CompletedCellsInEAINR != nil {
-		if err = ie.CompletedCellsInEAINR.Encode(w); err != nil {
+	if len(ie.CompletedCellsInEAINR) > 0 {
+		tmp := Sequence[*CompletedCellsInEAINRItem]{
+			Value: []*CompletedCellsInEAINRItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinEAI},
+			ext:   false,
+		}
+		for _, i := range ie.CompletedCellsInEAINR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -33,13 +40,25 @@ func (ie *EmergencyAreaIDBroadcastNRItem) Decode(r *aper.AperReader) (err error)
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.EmergencyAreaID = new(EmergencyAreaID)
-	ie.CompletedCellsInEAINR = new(CompletedCellsInEAINR)
-	if err = ie.EmergencyAreaID.Decode(r); err != nil {
+	tmp_EmergencyAreaID := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = tmp_EmergencyAreaID.Decode(r); err != nil {
 		return
 	}
-	if err = ie.CompletedCellsInEAINR.Decode(r); err != nil {
+	ie.EmergencyAreaID = tmp_EmergencyAreaID.Value
+	tmp_CompletedCellsInEAINR := Sequence[*CompletedCellsInEAINRItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofCellinEAI},
+		ext: false,
+	}
+	fn := func() *CompletedCellsInEAINRItem { return new(CompletedCellsInEAINRItem) }
+	if err = tmp_CompletedCellsInEAINR.Decode(r, fn); err != nil {
 		return
+	}
+	ie.CompletedCellsInEAINR = []CompletedCellsInEAINRItem{}
+	for _, i := range tmp_CompletedCellsInEAINR.Value {
+		ie.CompletedCellsInEAINR = append(ie.CompletedCellsInEAINR, *i)
 	}
 	return
 }

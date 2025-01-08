@@ -3,11 +3,11 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceSetupItemCxtReq struct {
-	PDUSessionID                           *PDUSessionID     `False,`
-	NASPDU                                 *NASPDU           `False,OPTIONAL`
-	SNSSAI                                 *SNSSAI           `True,`
-	PDUSessionResourceSetupRequestTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceSetupItemCxtReqExtIEs `False,OPTIONAL`
+	PDUSessionID                           int64
+	NASPDU                                 []byte
+	SNSSAI                                 *SNSSAI `optional`
+	PDUSessionResourceSetupRequestTransfer []byte
+	// IEExtensions *PDUSessionResourceSetupItemCxtReqExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceSetupItemCxtReq) Encode(w *aper.AperWriter) (err error) {
@@ -18,14 +18,20 @@ func (ie *PDUSessionResourceSetupItemCxtReq) Encode(w *aper.AperWriter) (err err
 	if ie.NASPDU != nil {
 		aper.SetBit(optionals, 1)
 	}
-	w.WriteBits(optionals, 2)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	if ie.SNSSAI != nil {
+		aper.SetBit(optionals, 2)
+	}
+	if ie.PDUSessionResourceSetupRequestTransfer != nil {
+		aper.SetBit(optionals, 3)
+	}
+	w.WriteBits(optionals, 4)
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
 	if ie.NASPDU != nil {
-		if err = ie.NASPDU.Encode(w); err != nil {
+		tmp_NASPDU := NewOCTETSTRING(ie.NASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
+		if err = tmp_NASPDU.Encode(w); err != nil {
 			return
 		}
 	}
@@ -35,7 +41,8 @@ func (ie *PDUSessionResourceSetupItemCxtReq) Encode(w *aper.AperWriter) (err err
 		}
 	}
 	if ie.PDUSessionResourceSetupRequestTransfer != nil {
-		if err = w.WriteOctetString(*ie.PDUSessionResourceSetupRequestTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
+		tmp_PDUSessionResourceSetupRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+		if err = tmp_PDUSessionResourceSetupRequestTransfer.Encode(w); err != nil {
 			return
 		}
 	}
@@ -46,28 +53,41 @@ func (ie *PDUSessionResourceSetupItemCxtReq) Decode(r *aper.AperReader) (err err
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(2); err != nil {
+	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	ie.NASPDU = new(NASPDU)
-	ie.SNSSAI = new(SNSSAI)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.NASPDU.Decode(r); err != nil {
+		tmp_NASPDU := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
+		if err = tmp_NASPDU.Decode(r); err != nil {
+			return
+		}
+		ie.NASPDU = tmp_NASPDU.Value
+	}
+	if aper.IsBitSet(optionals, 2) {
+		if err = ie.SNSSAI.Decode(r); err != nil {
 			return
 		}
 	}
-	if err = ie.SNSSAI.Decode(r); err != nil {
-		return
-	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.PDUSessionResourceSetupRequestTransfer = (*aper.OctetString)(&o)
+	if aper.IsBitSet(optionals, 3) {
+		tmp_PDUSessionResourceSetupRequestTransfer := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
+		if err = tmp_PDUSessionResourceSetupRequestTransfer.Decode(r); err != nil {
+			return
+		}
+		ie.PDUSessionResourceSetupRequestTransfer = tmp_PDUSessionResourceSetupRequestTransfer.Value
 	}
 	return
 }

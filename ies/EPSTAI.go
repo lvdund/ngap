@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type EPSTAI struct {
-	PLMNIdentity *PLMNIdentity `False,`
-	EPSTAC       *EPSTAC       `False,`
-	// IEExtensions EPSTAIExtIEs `False,OPTIONAL`
+	PLMNIdentity []byte
+	EPSTAC       []byte
+	// IEExtensions *EPSTAIExtIEs `optional`
 }
 
 func (ie *EPSTAI) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *EPSTAI) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PLMNIdentity != nil {
-		if err = ie.PLMNIdentity.Encode(w); err != nil {
-			return
-		}
+	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
+	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		return
 	}
-	if ie.EPSTAC != nil {
-		if err = ie.EPSTAC.Encode(w); err != nil {
-			return
-		}
+	tmp_EPSTAC := NewOCTETSTRING(ie.EPSTAC, aper.Constraint{Lb: 2, Ub: 2}, false)
+	if err = tmp_EPSTAC.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +31,21 @@ func (ie *EPSTAI) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PLMNIdentity = new(PLMNIdentity)
-	ie.EPSTAC = new(EPSTAC)
-	if err = ie.PLMNIdentity.Decode(r); err != nil {
+	tmp_PLMNIdentity := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = tmp_PLMNIdentity.Decode(r); err != nil {
 		return
 	}
-	if err = ie.EPSTAC.Decode(r); err != nil {
+	ie.PLMNIdentity = tmp_PLMNIdentity.Value
+	tmp_EPSTAC := OCTETSTRING{
+		c:   aper.Constraint{Lb: 2, Ub: 2},
+		ext: false,
+	}
+	if err = tmp_EPSTAC.Decode(r); err != nil {
 		return
 	}
+	ie.EPSTAC = tmp_EPSTAC.Value
 	return
 }

@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceNotifyTransfer struct {
-	QosFlowNotifyList   *QosFlowNotifyList    `False,OPTIONAL`
-	QosFlowReleasedList *QosFlowListWithCause `False,OPTIONAL`
-	// IEExtensions PDUSessionResourceNotifyTransferExtIEs `False,OPTIONAL`
+	QosFlowNotifyList   []QosFlowNotifyItem    `optional`
+	QosFlowReleasedList []QosFlowWithCauseItem `optional`
+	// IEExtensions *PDUSessionResourceNotifyTransferExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceNotifyTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -21,13 +21,33 @@ func (ie *PDUSessionResourceNotifyTransfer) Encode(w *aper.AperWriter) (err erro
 	}
 	w.WriteBits(optionals, 3)
 	if ie.QosFlowNotifyList != nil {
-		if err = ie.QosFlowNotifyList.Encode(w); err != nil {
-			return
+		if len(ie.QosFlowNotifyList) > 0 {
+			tmp := Sequence[*QosFlowNotifyItem]{
+				Value: []*QosFlowNotifyItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+				ext:   false,
+			}
+			for _, i := range ie.QosFlowNotifyList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	if ie.QosFlowReleasedList != nil {
-		if err = ie.QosFlowReleasedList.Encode(w); err != nil {
-			return
+		if len(ie.QosFlowReleasedList) > 0 {
+			tmp := Sequence[*QosFlowWithCauseItem]{
+				Value: []*QosFlowWithCauseItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+				ext:   false,
+			}
+			for _, i := range ie.QosFlowReleasedList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
@@ -40,16 +60,32 @@ func (ie *PDUSessionResourceNotifyTransfer) Decode(r *aper.AperReader) (err erro
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.QosFlowNotifyList = new(QosFlowNotifyList)
-	ie.QosFlowReleasedList = new(QosFlowListWithCause)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.QosFlowNotifyList.Decode(r); err != nil {
+		tmp_QosFlowNotifyList := Sequence[*QosFlowNotifyItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		fn := func() *QosFlowNotifyItem { return new(QosFlowNotifyItem) }
+		if err = tmp_QosFlowNotifyList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.QosFlowNotifyList = []QosFlowNotifyItem{}
+		for _, i := range tmp_QosFlowNotifyList.Value {
+			ie.QosFlowNotifyList = append(ie.QosFlowNotifyList, *i)
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.QosFlowReleasedList.Decode(r); err != nil {
+		tmp_QosFlowReleasedList := Sequence[*QosFlowWithCauseItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
+		if err = tmp_QosFlowReleasedList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.QosFlowReleasedList = []QosFlowWithCauseItem{}
+		for _, i := range tmp_QosFlowReleasedList.Value {
+			ie.QosFlowReleasedList = append(ie.QosFlowReleasedList, *i)
 		}
 	}
 	return

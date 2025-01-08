@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type AssistanceDataForPaging struct {
-	AssistanceDataForRecommendedCells *AssistanceDataForRecommendedCells `True,OPTIONAL`
-	PagingAttemptInformation          *PagingAttemptInformation          `True,OPTIONAL`
-	// IEExtensions AssistanceDataForPagingExtIEs `False,OPTIONAL`
+	AssistanceDataForRecommendedCells *AssistanceDataForRecommendedCells `optional`
+	PagingAttemptInformation          *PagingAttemptInformation          `optional`
+	// IEExtensions *AssistanceDataForPagingExtIEs `optional`
 }
 
 func (ie *AssistanceDataForPaging) Encode(w *aper.AperWriter) (err error) {
@@ -40,8 +40,6 @@ func (ie *AssistanceDataForPaging) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.AssistanceDataForRecommendedCells = new(AssistanceDataForRecommendedCells)
-	ie.PagingAttemptInformation = new(PagingAttemptInformation)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.AssistanceDataForRecommendedCells.Decode(r); err != nil {
 			return

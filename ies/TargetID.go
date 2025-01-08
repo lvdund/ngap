@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	TargetIDPresentNothing uint64 = iota /* No components present */
-	TargetIDPresentTargetRANNodeID
-	TargetIDPresentTargeteNBID
+	TargetIDPresentNothing uint64 = iota
+	TargetIDPresentTargetrannodeid
+	TargetIDPresentTargetenbId
 	TargetIDPresentChoiceExtensions
 )
 
 type TargetID struct {
 	Choice          uint64
-	TargetRANNodeID *TargetRANNodeID `True,,,`
-	TargeteNBID     *TargeteNBID     `True,,,`
-	// ChoiceExtensions *TargetIDExtIEs `False,,,`
+	TargetRANNodeID *TargetRANNodeID
+	TargeteNBID     *TargeteNBID
+	// ChoiceExtensions *TargetIDExtIEs
 }
 
 func (ie *TargetID) Encode(w *aper.AperWriter) (err error) {
@@ -21,9 +21,9 @@ func (ie *TargetID) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case TargetIDPresentTargetRANNodeID:
+	case TargetIDPresentTargetrannodeid:
 		err = ie.TargetRANNodeID.Encode(w)
-	case TargetIDPresentTargeteNBID:
+	case TargetIDPresentTargetenbId:
 		err = ie.TargeteNBID.Encode(w)
 	}
 	return
@@ -33,13 +33,13 @@ func (ie *TargetID) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case TargetIDPresentTargetRANNodeID:
+	case TargetIDPresentTargetrannodeid:
 		var tmp TargetRANNodeID
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.TargetRANNodeID = &tmp
-	case TargetIDPresentTargeteNBID:
+	case TargetIDPresentTargetenbId:
 		var tmp TargeteNBID
 		if err = tmp.Decode(r); err != nil {
 			return

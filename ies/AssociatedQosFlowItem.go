@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type AssociatedQosFlowItem struct {
-	QosFlowIdentifier        *QosFlowIdentifier `False,`
-	QosFlowMappingIndication *aper.Enumerated   `True,OPTIONAL,0,1"`
-	// IEExtensions AssociatedQosFlowItemExtIEs `False,OPTIONAL`
+	QosFlowIdentifier        int64
+	QosFlowMappingIndication *int64 `optional`
+	// IEExtensions *AssociatedQosFlowItemExtIEs `optional`
 }
 
 func (ie *AssociatedQosFlowItem) Encode(w *aper.AperWriter) (err error) {
@@ -13,14 +13,19 @@ func (ie *AssociatedQosFlowItem) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	optionals := []byte{0x0}
+	if ie.QosFlowMappingIndication != nil {
+		aper.SetBit(optionals, 1)
+	}
 	w.WriteBits(optionals, 2)
-	if ie.QosFlowIdentifier != nil {
-		if err = ie.QosFlowIdentifier.Encode(w); err != nil {
-			return
-		}
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
+		return
 	}
 	if ie.QosFlowMappingIndication != nil {
-		err = w.WriteEnumerate(uint64(*ie.QosFlowMappingIndication), aper.Constraint{Lb: 0, Ub: 1}, true)
+		tmp_QosFlowMappingIndication := NewENUMERATED(*ie.QosFlowMappingIndication, aper.Constraint{Lb: 0, Ub: 0}, false)
+		if err = tmp_QosFlowMappingIndication.Encode(w); err != nil {
+			return
+		}
 	}
 	return
 }
@@ -32,18 +37,23 @@ func (ie *AssociatedQosFlowItem) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.QosFlowIdentifier = new(QosFlowIdentifier)
-	if err = ie.QosFlowIdentifier.Decode(r); err != nil {
+	tmp_QosFlowIdentifier := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 63},
+		ext: false,
+	}
+	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		return
 	}
-	if aper.IsBitSet(optionals, 3) {
-		var v uint64
-		v, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 1}, true)
-		if err != nil {
+	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
+	if aper.IsBitSet(optionals, 1) {
+		tmp_QosFlowMappingIndication := ENUMERATED{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
+		if err = tmp_QosFlowMappingIndication.Decode(r); err != nil {
 			return
 		}
-		*ie.QosFlowMappingIndication = aper.Enumerated(v)
+		ie.QosFlowMappingIndication = (*int64)(&tmp_QosFlowMappingIndication.Value)
 	}
-
 	return
 }

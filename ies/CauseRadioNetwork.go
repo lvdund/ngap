@@ -50,18 +50,19 @@ const (
 	CauseRadioNetworkReleaseduetocndetectedmobility                           aper.Enumerated = 44
 	CauseRadioNetworkN26Interfacenotavailable                                 aper.Enumerated = 45
 	CauseRadioNetworkReleaseduetopreemption                                   aper.Enumerated = 46
+	CauseRadioNetworkMultiplelocationreportingreferenceidinstances            aper.Enumerated = 47
 )
 
 type CauseRadioNetwork struct {
-	Value aper.Enumerated `True,0,46`
+	Value aper.Enumerated
 }
 
 func (ie *CauseRadioNetwork) Encode(w *aper.AperWriter) (err error) {
-	err = w.WriteEnumerate(uint64(ie.Value), aper.Constraint{Lb: 0, Ub: 46}, true)
+	err = w.WriteEnumerate(uint64(ie.Value), aper.Constraint{Lb: 0, Ub: 47}, true)
 	return
 }
 func (ie *CauseRadioNetwork) Decode(r *aper.AperReader) (err error) {
-	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 46}, true)
+	v, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 47}, true)
 	ie.Value = aper.Enumerated(v)
 	return
 }

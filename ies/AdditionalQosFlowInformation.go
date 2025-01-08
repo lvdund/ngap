@@ -7,7 +7,7 @@ const (
 )
 
 type AdditionalQosFlowInformation struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *AdditionalQosFlowInformation) Encode(w *aper.AperWriter) (err error) {

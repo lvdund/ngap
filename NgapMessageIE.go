@@ -52,8 +52,8 @@ func createMessage(present uint8, procedureCode ies.ProcedureCode) MessageUnmars
 			return new(ies.NGSetupRequest)
 		case ies.ProcedureCode_OverloadStart:
 			return new(ies.OverloadStart)
-		case ies.ProcedureCode_OverloadStop:
-			return new(ies.OverloadStop)
+		// case ies.ProcedureCode_OverloadStop:
+		// 	return new(ies.OverloadStop)
 		case ies.ProcedureCode_Paging:
 			return new(ies.Paging)
 		case ies.ProcedureCode_PathSwitchRequest:
@@ -68,8 +68,8 @@ func createMessage(present uint8, procedureCode ies.ProcedureCode) MessageUnmars
 			return new(ies.PDUSessionResourceReleaseCommand)
 		case ies.ProcedureCode_PDUSessionResourceSetup:
 			return new(ies.PDUSessionResourceSetupRequest)
-		case ies.ProcedureCode_PrivateMessage:
-			return new(ies.PrivateMessage)
+		// case ies.ProcedureCode_PrivateMessage:
+		// 	return new(ies.PrivateMessage)
 		case ies.ProcedureCode_PWSCancel:
 			return new(ies.PWSCancelRequest)
 		case ies.ProcedureCode_PWSFailureIndication:

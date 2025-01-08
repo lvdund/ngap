@@ -3,15 +3,15 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	OverloadResponsePresentNothing uint64 = iota /* No components present */
-	OverloadResponsePresentOverloadAction
+	OverloadResponsePresentNothing uint64 = iota
+	OverloadResponsePresentOverloadaction
 	OverloadResponsePresentChoiceExtensions
 )
 
 type OverloadResponse struct {
 	Choice         uint64
-	OverloadAction *OverloadAction `False,,,`
-	// ChoiceExtensions *OverloadResponseExtIEs `False,,,`
+	OverloadAction *OverloadAction
+	// ChoiceExtensions *OverloadResponseExtIEs
 }
 
 func (ie *OverloadResponse) Encode(w *aper.AperWriter) (err error) {
@@ -19,7 +19,7 @@ func (ie *OverloadResponse) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case OverloadResponsePresentOverloadAction:
+	case OverloadResponsePresentOverloadaction:
 		err = ie.OverloadAction.Encode(w)
 	}
 	return
@@ -29,7 +29,7 @@ func (ie *OverloadResponse) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case OverloadResponsePresentOverloadAction:
+	case OverloadResponsePresentOverloadaction:
 		var tmp OverloadAction
 		if err = tmp.Decode(r); err != nil {
 			return

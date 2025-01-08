@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	ResetTypePresentNothing uint64 = iota /* No components present */
-	ResetTypePresentNGInterface
-	ResetTypePresentPartOfNGInterface
+	ResetTypePresentNothing uint64 = iota
+	ResetTypePresentNgInterface
+	ResetTypePresentPartofngInterface
 	ResetTypePresentChoiceExtensions
 )
 
 type ResetType struct {
 	Choice            uint64
-	NGInterface       *ResetAll                            `False,,,`
-	PartOfNGInterface *UEassociatedLogicalNGconnectionList `False,,,`
-	// ChoiceExtensions *ResetTypeExtIEs `False,,,`
+	NGInterface       *ResetAll
+	PartOfNGInterface []UEassociatedLogicalNGconnectionItem
+	// ChoiceExtensions *ResetTypeExtIEs
 }
 
 func (ie *ResetType) Encode(w *aper.AperWriter) (err error) {
@@ -21,10 +21,17 @@ func (ie *ResetType) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case ResetTypePresentNGInterface:
+	case ResetTypePresentNgInterface:
 		err = ie.NGInterface.Encode(w)
-	case ResetTypePresentPartOfNGInterface:
-		err = ie.PartOfNGInterface.Encode(w)
+	case ResetTypePresentPartofngInterface:
+		tmp := Sequence[*UEassociatedLogicalNGconnectionItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofNGConnectionsToReset},
+			ext: false,
+		}
+		for _, i := range ie.PartOfNGInterface {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -33,18 +40,23 @@ func (ie *ResetType) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case ResetTypePresentNGInterface:
+	case ResetTypePresentNgInterface:
 		var tmp ResetAll
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.NGInterface = &tmp
-	case ResetTypePresentPartOfNGInterface:
-		var tmp UEassociatedLogicalNGconnectionList
-		if err = tmp.Decode(r); err != nil {
+	case ResetTypePresentPartofngInterface:
+		tmp := NewSequence[*UEassociatedLogicalNGconnectionItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofNGConnectionsToReset}, false)
+		fn := func() *UEassociatedLogicalNGconnectionItem {
+			return new(UEassociatedLogicalNGconnectionItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.PartOfNGInterface = &tmp
+		for _, i := range tmp.Value {
+			ie.PartOfNGInterface = append(ie.PartOfNGInterface, *i)
+		}
 	}
 	return
 }

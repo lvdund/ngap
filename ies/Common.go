@@ -180,9 +180,13 @@ func (ie *ProtocolIEID) Encode(r *aper.AperWriter) (err error) {
 	return nil
 }
 
-func BuildDiagnostics(present uint8, procedureCode ProcedureCode, criticality Criticality, diagnosticsItems []CriticalityDiagnostics) (diagnostics *CriticalityDiagnostics) {
-	//TODO: build diagnostic content
-	return
+func BuildDiagnostics(present uint8, procedureCode ProcedureCode, criticality Criticality, diagnosticsItems []CriticalityDiagnosticsIEItem) *CriticalityDiagnostics {
+	return &CriticalityDiagnostics{
+		ProcedureCode:             &procedureCode,
+		TriggeringMessage:         &TriggeringMessage{Value: aper.Enumerated(present)},
+		ProcedureCriticality:      &criticality,
+		IEsCriticalityDiagnostics: diagnosticsItems,
+	}
 }
 
 // NgapPdu - Present

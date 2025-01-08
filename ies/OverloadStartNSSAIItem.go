@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type OverloadStartNSSAIItem struct {
-	SliceOverloadList                   *SliceOverloadList              `False,`
-	SliceOverloadResponse               *OverloadResponse               `False,OPTIONAL`
-	SliceTrafficLoadReductionIndication *TrafficLoadReductionIndication `False,OPTIONAL`
-	// IEExtensions OverloadStartNSSAIItemExtIEs `False,OPTIONAL`
+	SliceOverloadList                   []SliceOverloadItem
+	SliceOverloadResponse               *OverloadResponse `optional`
+	SliceTrafficLoadReductionIndication *int64            `optional`
+	// IEExtensions *OverloadStartNSSAIItemExtIEs `optional`
 }
 
 func (ie *OverloadStartNSSAIItem) Encode(w *aper.AperWriter) (err error) {
@@ -21,8 +21,16 @@ func (ie *OverloadStartNSSAIItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	if ie.SliceOverloadList != nil {
-		if err = ie.SliceOverloadList.Encode(w); err != nil {
+	if len(ie.SliceOverloadList) > 0 {
+		tmp := Sequence[*SliceOverloadItem]{
+			Value: []*SliceOverloadItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofSliceItems},
+			ext:   false,
+		}
+		for _, i := range ie.SliceOverloadList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -32,7 +40,8 @@ func (ie *OverloadStartNSSAIItem) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.SliceTrafficLoadReductionIndication != nil {
-		if err = ie.SliceTrafficLoadReductionIndication.Encode(w); err != nil {
+		tmp_SliceTrafficLoadReductionIndication := NewINTEGER(*ie.SliceTrafficLoadReductionIndication, aper.Constraint{Lb: 1, Ub: 99}, false)
+		if err = tmp_SliceTrafficLoadReductionIndication.Encode(w); err != nil {
 			return
 		}
 	}
@@ -46,11 +55,17 @@ func (ie *OverloadStartNSSAIItem) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.SliceOverloadList = new(SliceOverloadList)
-	ie.SliceOverloadResponse = new(OverloadResponse)
-	ie.SliceTrafficLoadReductionIndication = new(TrafficLoadReductionIndication)
-	if err = ie.SliceOverloadList.Decode(r); err != nil {
+	tmp_SliceOverloadList := Sequence[*SliceOverloadItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofSliceItems},
+		ext: false,
+	}
+	fn := func() *SliceOverloadItem { return new(SliceOverloadItem) }
+	if err = tmp_SliceOverloadList.Decode(r, fn); err != nil {
 		return
+	}
+	ie.SliceOverloadList = []SliceOverloadItem{}
+	for _, i := range tmp_SliceOverloadList.Value {
+		ie.SliceOverloadList = append(ie.SliceOverloadList, *i)
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.SliceOverloadResponse.Decode(r); err != nil {
@@ -58,9 +73,14 @@ func (ie *OverloadStartNSSAIItem) Decode(r *aper.AperReader) (err error) {
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.SliceTrafficLoadReductionIndication.Decode(r); err != nil {
+		tmp_SliceTrafficLoadReductionIndication := INTEGER{
+			c:   aper.Constraint{Lb: 1, Ub: 99},
+			ext: false,
+		}
+		if err = tmp_SliceTrafficLoadReductionIndication.Decode(r); err != nil {
 			return
 		}
+		ie.SliceTrafficLoadReductionIndication = (*int64)(&tmp_SliceTrafficLoadReductionIndication.Value)
 	}
 	return
 }

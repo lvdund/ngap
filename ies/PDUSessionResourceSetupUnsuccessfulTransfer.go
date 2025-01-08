@@ -1,19 +1,14 @@
 package ies
 
-import (
-	"bytes"
-
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceSetupUnsuccessfulTransfer struct {
-	Cause                  *Cause                  `False,`
-	CriticalityDiagnostics *CriticalityDiagnostics `True,OPTIONAL`
-	// IEExtensions PDUSessionResourceSetupUnsuccessfulTransferExtIEs `False,OPTIONAL`
+	Cause                  Cause
+	CriticalityDiagnostics *CriticalityDiagnostics `optional`
+	// IEExtensions *PDUSessionResourceSetupUnsuccessfulTransferExtIEs `optional`
 }
 
-func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -22,10 +17,8 @@ func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Encode() (b []byte, err e
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.Cause != nil {
-		if err = ie.Cause.Encode(w); err != nil {
-			return
-		}
+	if err = ie.Cause.Encode(w); err != nil {
+		return
 	}
 	if ie.CriticalityDiagnostics != nil {
 		if err = ie.CriticalityDiagnostics.Encode(w); err != nil {
@@ -34,8 +27,7 @@ func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Encode() (b []byte, err e
 	}
 	return
 }
-func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}
@@ -43,8 +35,6 @@ func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Decode(wire []byte) (err 
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.Cause = new(Cause)
-	ie.CriticalityDiagnostics = new(CriticalityDiagnostics)
 	if err = ie.Cause.Decode(r); err != nil {
 		return
 	}

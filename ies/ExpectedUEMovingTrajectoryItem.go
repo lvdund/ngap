@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type ExpectedUEMovingTrajectoryItem struct {
-	NGRANCGI         *NGRANCGI     `False,`
-	TimeStayedInCell *aper.Integer `True,OPTIONAL`
-	// IEExtensions ExpectedUEMovingTrajectoryItemExtIEs `False,OPTIONAL`
+	NGRANCGI         NGRANCGI
+	TimeStayedInCell *int64 `optional`
+	// IEExtensions *ExpectedUEMovingTrajectoryItemExtIEs `optional`
 }
 
 func (ie *ExpectedUEMovingTrajectoryItem) Encode(w *aper.AperWriter) (err error) {
@@ -17,13 +17,12 @@ func (ie *ExpectedUEMovingTrajectoryItem) Encode(w *aper.AperWriter) (err error)
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	if ie.NGRANCGI != nil {
-		if err = ie.NGRANCGI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.NGRANCGI.Encode(w); err != nil {
+		return
 	}
 	if ie.TimeStayedInCell != nil {
-		if err = w.WriteInteger(int64(*ie.TimeStayedInCell), &aper.Constraint{Lb: 0, Ub: 4095}, true); err != nil {
+		tmp_TimeStayedInCell := NewINTEGER(*ie.TimeStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, false)
+		if err = tmp_TimeStayedInCell.Encode(w); err != nil {
 			return
 		}
 	}
@@ -37,17 +36,18 @@ func (ie *ExpectedUEMovingTrajectoryItem) Decode(r *aper.AperReader) (err error)
 	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
-	ie.NGRANCGI = new(NGRANCGI)
-	var v int64
 	if err = ie.NGRANCGI.Decode(r); err != nil {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if v, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: 4095}, true); err != nil {
-			return
-		} else {
-			ie.TimeStayedInCell = (*aper.Integer)(&v)
+		tmp_TimeStayedInCell := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 4095},
+			ext: false,
 		}
+		if err = tmp_TimeStayedInCell.Decode(r); err != nil {
+			return
+		}
+		ie.TimeStayedInCell = (*int64)(&tmp_TimeStayedInCell.Value)
 	}
 	return
 }

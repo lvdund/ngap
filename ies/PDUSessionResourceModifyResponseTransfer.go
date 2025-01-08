@@ -1,22 +1,17 @@
 package ies
 
-import (
-	"bytes"
-
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceModifyResponseTransfer struct {
-	DLNGUUPTNLInformation                *UPTransportLayerInformation    `False,OPTIONAL`
-	ULNGUUPTNLInformation                *UPTransportLayerInformation    `False,OPTIONAL`
-	QosFlowAddOrModifyResponseList       *QosFlowAddOrModifyResponseList `False,OPTIONAL`
-	AdditionalDLQosFlowPerTNLInformation *QosFlowPerTNLInformationList   `False,OPTIONAL`
-	QosFlowFailedToAddOrModifyList       *QosFlowListWithCause           `False,OPTIONAL`
-	// IEExtensions PDUSessionResourceModifyResponseTransferExtIEs `False,OPTIONAL`
+	DLNGUUPTNLInformation                *UPTransportLayerInformation     `optional`
+	ULNGUUPTNLInformation                *UPTransportLayerInformation     `optional`
+	QosFlowAddOrModifyResponseList       []QosFlowAddOrModifyResponseItem `optional`
+	AdditionalDLQosFlowPerTNLInformation []QosFlowPerTNLInformationItem   `optional`
+	QosFlowFailedToAddOrModifyList       []QosFlowWithCauseItem           `optional`
+	// IEExtensions *PDUSessionResourceModifyResponseTransferExtIEs `optional`
 }
 
-func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *PDUSessionResourceModifyResponseTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -48,24 +43,53 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err erro
 		}
 	}
 	if ie.QosFlowAddOrModifyResponseList != nil {
-		if err = ie.QosFlowAddOrModifyResponseList.Encode(w); err != nil {
-			return
+		if len(ie.QosFlowAddOrModifyResponseList) > 0 {
+			tmp := Sequence[*QosFlowAddOrModifyResponseItem]{
+				Value: []*QosFlowAddOrModifyResponseItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+				ext:   false,
+			}
+			for _, i := range ie.QosFlowAddOrModifyResponseList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Encode(w); err != nil {
-			return
+		if len(ie.AdditionalDLQosFlowPerTNLInformation) > 0 {
+			tmp := Sequence[*QosFlowPerTNLInformationItem]{
+				Value: []*QosFlowPerTNLInformationItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+				ext:   false,
+			}
+			for _, i := range ie.AdditionalDLQosFlowPerTNLInformation {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	if ie.QosFlowFailedToAddOrModifyList != nil {
-		if err = ie.QosFlowFailedToAddOrModifyList.Encode(w); err != nil {
-			return
+		if len(ie.QosFlowFailedToAddOrModifyList) > 0 {
+			tmp := Sequence[*QosFlowWithCauseItem]{
+				Value: []*QosFlowWithCauseItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+				ext:   false,
+			}
+			for _, i := range ie.QosFlowFailedToAddOrModifyList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
 }
-func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *PDUSessionResourceModifyResponseTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}
@@ -73,11 +97,6 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 	if optionals, err = r.ReadBits(6); err != nil {
 		return
 	}
-	ie.DLNGUUPTNLInformation = new(UPTransportLayerInformation)
-	ie.ULNGUUPTNLInformation = new(UPTransportLayerInformation)
-	ie.QosFlowAddOrModifyResponseList = new(QosFlowAddOrModifyResponseList)
-	ie.AdditionalDLQosFlowPerTNLInformation = new(QosFlowPerTNLInformationList)
-	ie.QosFlowFailedToAddOrModifyList = new(QosFlowListWithCause)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
 			return
@@ -89,18 +108,45 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 		}
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.QosFlowAddOrModifyResponseList.Decode(r); err != nil {
+		tmp_QosFlowAddOrModifyResponseList := Sequence[*QosFlowAddOrModifyResponseItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		fn := func() *QosFlowAddOrModifyResponseItem { return new(QosFlowAddOrModifyResponseItem) }
+		if err = tmp_QosFlowAddOrModifyResponseList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.QosFlowAddOrModifyResponseList = []QosFlowAddOrModifyResponseItem{}
+		for _, i := range tmp_QosFlowAddOrModifyResponseList.Value {
+			ie.QosFlowAddOrModifyResponseList = append(ie.QosFlowAddOrModifyResponseList, *i)
 		}
 	}
 	if aper.IsBitSet(optionals, 4) {
-		if err = ie.AdditionalDLQosFlowPerTNLInformation.Decode(r); err != nil {
+		tmp_AdditionalDLQosFlowPerTNLInformation := Sequence[*QosFlowPerTNLInformationItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+			ext: false,
+		}
+		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
+		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
 			return
+		}
+		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
+		for _, i := range tmp_AdditionalDLQosFlowPerTNLInformation.Value {
+			ie.AdditionalDLQosFlowPerTNLInformation = append(ie.AdditionalDLQosFlowPerTNLInformation, *i)
 		}
 	}
 	if aper.IsBitSet(optionals, 5) {
-		if err = ie.QosFlowFailedToAddOrModifyList.Decode(r); err != nil {
+		tmp_QosFlowFailedToAddOrModifyList := Sequence[*QosFlowWithCauseItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
+		if err = tmp_QosFlowFailedToAddOrModifyList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.QosFlowFailedToAddOrModifyList = []QosFlowWithCauseItem{}
+		for _, i := range tmp_QosFlowFailedToAddOrModifyList.Value {
+			ie.QosFlowFailedToAddOrModifyList = append(ie.QosFlowFailedToAddOrModifyList, *i)
 		}
 	}
 	return

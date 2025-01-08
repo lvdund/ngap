@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UERadioCapabilityForPaging struct {
-	UERadioCapabilityForPagingOfNR    *UERadioCapabilityForPagingOfNR    `False,OPTIONAL`
-	UERadioCapabilityForPagingOfEUTRA *UERadioCapabilityForPagingOfEUTRA `False,OPTIONAL`
-	// IEExtensions UERadioCapabilityForPagingExtIEs `False,OPTIONAL`
+	UERadioCapabilityForPagingOfNR    []byte
+	UERadioCapabilityForPagingOfEUTRA []byte
+	// IEExtensions *UERadioCapabilityForPagingExtIEs `optional`
 }
 
 func (ie *UERadioCapabilityForPaging) Encode(w *aper.AperWriter) (err error) {
@@ -21,12 +21,14 @@ func (ie *UERadioCapabilityForPaging) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if ie.UERadioCapabilityForPagingOfNR != nil {
-		if err = ie.UERadioCapabilityForPagingOfNR.Encode(w); err != nil {
+		tmp_UERadioCapabilityForPagingOfNR := NewOCTETSTRING(ie.UERadioCapabilityForPagingOfNR, aper.Constraint{Lb: 0, Ub: 0}, false)
+		if err = tmp_UERadioCapabilityForPagingOfNR.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.UERadioCapabilityForPagingOfEUTRA != nil {
-		if err = ie.UERadioCapabilityForPagingOfEUTRA.Encode(w); err != nil {
+		tmp_UERadioCapabilityForPagingOfEUTRA := NewOCTETSTRING(ie.UERadioCapabilityForPagingOfEUTRA, aper.Constraint{Lb: 0, Ub: 0}, false)
+		if err = tmp_UERadioCapabilityForPagingOfEUTRA.Encode(w); err != nil {
 			return
 		}
 	}
@@ -40,17 +42,25 @@ func (ie *UERadioCapabilityForPaging) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.UERadioCapabilityForPagingOfNR = new(UERadioCapabilityForPagingOfNR)
-	ie.UERadioCapabilityForPagingOfEUTRA = new(UERadioCapabilityForPagingOfEUTRA)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.UERadioCapabilityForPagingOfNR.Decode(r); err != nil {
+		tmp_UERadioCapabilityForPagingOfNR := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
+		if err = tmp_UERadioCapabilityForPagingOfNR.Decode(r); err != nil {
 			return
 		}
+		ie.UERadioCapabilityForPagingOfNR = tmp_UERadioCapabilityForPagingOfNR.Value
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.UERadioCapabilityForPagingOfEUTRA.Decode(r); err != nil {
+		tmp_UERadioCapabilityForPagingOfEUTRA := OCTETSTRING{
+			c:   aper.Constraint{Lb: 0, Ub: 0},
+			ext: false,
+		}
+		if err = tmp_UERadioCapabilityForPagingOfEUTRA.Decode(r); err != nil {
 			return
 		}
+		ie.UERadioCapabilityForPagingOfEUTRA = tmp_UERadioCapabilityForPagingOfEUTRA.Value
 	}
 	return
 }

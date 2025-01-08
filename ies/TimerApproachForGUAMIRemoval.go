@@ -7,7 +7,7 @@ const (
 )
 
 type TimerApproachForGUAMIRemoval struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *TimerApproachForGUAMIRemoval) Encode(w *aper.AperWriter) (err error) {

@@ -1,19 +1,17 @@
 package ies
 
-import (
-	"github.com/lvdund/ngap/aper"
-)
+import "github.com/lvdund/ngap/aper"
 
 const (
-	N3IWFIDPresentNothing uint64 = iota /* No components present */
-	N3IWFIDPresentN3IWFID
+	N3IWFIDPresentNothing uint64 = iota
+	N3IWFIDPresentN3IwfId
 	N3IWFIDPresentChoiceExtensions
 )
 
 type N3IWFID struct {
 	Choice  uint64
-	N3IWFID *aper.BitString `False,,16,16`
-	// ChoiceExtensions *N3IWFIDExtIEs `False,,,`
+	N3IWFID []byte
+	// ChoiceExtensions *N3IWFIDExtIEs
 }
 
 func (ie *N3IWFID) Encode(w *aper.AperWriter) (err error) {
@@ -21,8 +19,9 @@ func (ie *N3IWFID) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case N3IWFIDPresentN3IWFID:
-		err = w.WriteBitString(ie.N3IWFID.Bytes, uint(ie.N3IWFID.NumBits), &aper.Constraint{Lb: 16, Ub: 16}, false)
+	case N3IWFIDPresentN3IwfId:
+		tmp := NewBITSTRING(ie.N3IWFID, aper.Constraint{Lb: 16, Ub: 16}, false)
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -31,13 +30,12 @@ func (ie *N3IWFID) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case N3IWFIDPresentN3IWFID:
-		var b []byte
-		var n uint
-		if b, n, err = r.ReadBitString(&aper.Constraint{Lb: 16, Ub: 16}, false); err != nil {
+	case N3IWFIDPresentN3IwfId:
+		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 16, Ub: 16}, false)
+		if err = tmp.Decode(r); err != nil {
 			return
 		}
-		ie.N3IWFID = &aper.BitString{Bytes: b, NumBits: uint64(n)}
+		ie.N3IWFID = tmp.Value.Bytes
 	}
 	return
 }

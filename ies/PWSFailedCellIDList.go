@@ -3,17 +3,17 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	PWSFailedCellIDListPresentNothing uint64 = iota /* No components present */
-	PWSFailedCellIDListPresentEUTRACGIPWSFailedList
-	PWSFailedCellIDListPresentNRCGIPWSFailedList
+	PWSFailedCellIDListPresentNothing uint64 = iota
+	PWSFailedCellIDListPresentEutraCgiPwsfailedlist
+	PWSFailedCellIDListPresentNrCgiPwsfailedlist
 	PWSFailedCellIDListPresentChoiceExtensions
 )
 
 type PWSFailedCellIDList struct {
 	Choice                uint64
-	EUTRACGIPWSFailedList *EUTRACGIList `False,,,`
-	NRCGIPWSFailedList    *NRCGIList    `False,,,`
-	// ChoiceExtensions *PWSFailedCellIDListExtIEs `False,,,`
+	EUTRACGIPWSFailedList []EUTRACGI
+	NRCGIPWSFailedList    []NRCGI
+	// ChoiceExtensions *PWSFailedCellIDListExtIEs
 }
 
 func (ie *PWSFailedCellIDList) Encode(w *aper.AperWriter) (err error) {
@@ -21,10 +21,24 @@ func (ie *PWSFailedCellIDList) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case PWSFailedCellIDListPresentEUTRACGIPWSFailedList:
-		err = ie.EUTRACGIPWSFailedList.Encode(w)
-	case PWSFailedCellIDListPresentNRCGIPWSFailedList:
-		err = ie.NRCGIPWSFailedList.Encode(w)
+	case PWSFailedCellIDListPresentEutraCgiPwsfailedlist:
+		tmp := Sequence[*EUTRACGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinngeNB},
+			ext: false,
+		}
+		for _, i := range ie.EUTRACGIPWSFailedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
+	case PWSFailedCellIDListPresentNrCgiPwsfailedlist:
+		tmp := Sequence[*NRCGI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsingNB},
+			ext: false,
+		}
+		for _, i := range ie.NRCGIPWSFailedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -33,18 +47,28 @@ func (ie *PWSFailedCellIDList) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case PWSFailedCellIDListPresentEUTRACGIPWSFailedList:
-		var tmp EUTRACGIList
-		if err = tmp.Decode(r); err != nil {
+	case PWSFailedCellIDListPresentEutraCgiPwsfailedlist:
+		tmp := NewSequence[*EUTRACGI](nil, aper.Constraint{Lb: 1, Ub: maxnoofCellsinngeNB}, false)
+		fn := func() *EUTRACGI {
+			return new(EUTRACGI)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.EUTRACGIPWSFailedList = &tmp
-	case PWSFailedCellIDListPresentNRCGIPWSFailedList:
-		var tmp NRCGIList
-		if err = tmp.Decode(r); err != nil {
+		for _, i := range tmp.Value {
+			ie.EUTRACGIPWSFailedList = append(ie.EUTRACGIPWSFailedList, *i)
+		}
+	case PWSFailedCellIDListPresentNrCgiPwsfailedlist:
+		tmp := NewSequence[*NRCGI](nil, aper.Constraint{Lb: 1, Ub: maxnoofCellsingNB}, false)
+		fn := func() *NRCGI {
+			return new(NRCGI)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.NRCGIPWSFailedList = &tmp
+		for _, i := range tmp.Value {
+			ie.NRCGIPWSFailedList = append(ie.NRCGIPWSFailedList, *i)
+		}
 	}
 	return
 }

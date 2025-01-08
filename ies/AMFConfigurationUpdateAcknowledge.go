@@ -6,12 +6,13 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
 )
 
 type AMFConfigurationUpdateAcknowledge struct {
-	AMFTNLAssociationSetupList         *AMFTNLAssociationSetupList `,ignore,optional`
-	AMFTNLAssociationFailedToSetupList *TNLAssociationList         `,ignore,optional`
-	CriticalityDiagnostics             *CriticalityDiagnostics     `,ignore,optional`
+	AMFTNLAssociationSetupList         []AMFTNLAssociationSetupItem `optional`
+	AMFTNLAssociationFailedToSetupList []TNLAssociationItem         `optional`
+	CriticalityDiagnostics             *CriticalityDiagnostics      `optional`
 }
 
 func (msg *AMFConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {
@@ -20,74 +21,137 @@ func (msg *AMFConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {
 func (msg *AMFConfigurationUpdateAcknowledge) toIes() (ies []NgapMessageIE) {
 	ies = []NgapMessageIE{}
 	if msg.AMFTNLAssociationSetupList != nil {
+		tmp_AMFTNLAssociationSetupList := Sequence[*AMFTNLAssociationSetupItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		for _, i := range msg.AMFTNLAssociationSetupList {
+			tmp_AMFTNLAssociationSetupList.Value = append(tmp_AMFTNLAssociationSetupList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFTNLAssociationSetupList},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.AMFTNLAssociationSetupList})
+			Value:       &tmp_AMFTNLAssociationSetupList,
+		})
 	}
 	if msg.AMFTNLAssociationFailedToSetupList != nil {
+		tmp_AMFTNLAssociationFailedToSetupList := Sequence[*TNLAssociationItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		for _, i := range msg.AMFTNLAssociationFailedToSetupList {
+			tmp_AMFTNLAssociationFailedToSetupList.Value = append(tmp_AMFTNLAssociationFailedToSetupList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFTNLAssociationFailedToSetupList},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.AMFTNLAssociationFailedToSetupList})
+			Value:       &tmp_AMFTNLAssociationFailedToSetupList,
+		})
 	}
 	if msg.CriticalityDiagnostics != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_CriticalityDiagnostics},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.CriticalityDiagnostics})
+			Value:       msg.CriticalityDiagnostics,
+		})
 	}
 	return
 }
-func (msg *AMFConfigurationUpdateAcknowledge) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
+func (msg *AMFConfigurationUpdateAcknowledge) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+	decoder := AMFConfigurationUpdateAcknowledgeDecoder{
+		msg:  msg,
+		list: make(map[aper.Integer]*NgapMessageIE),
+	}
+	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	_ = ies
 	return
 }
-func (msg *AMFConfigurationUpdateAcknowledge) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
-	if err != nil {
+
+type AMFConfigurationUpdateAcknowledgeDecoder struct {
+	msg      *AMFConfigurationUpdateAcknowledge
+	diagList []CriticalityDiagnosticsIEItem
+	list     map[aper.Integer]*NgapMessageIE
+}
+
+func (decoder *AMFConfigurationUpdateAcknowledgeDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
+	var id int64
+	var c uint64
+	var buf []byte
+	if id, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false); err != nil {
 		return
 	}
 	msgIe = new(NgapMessageIE)
 	msgIe.Id.Value = aper.Integer(id)
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
-	if err != nil {
+	if c, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false); err != nil {
 		return
 	}
 	msgIe.Criticality.Value = aper.Enumerated(c)
-	var buf []byte
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
+	ieId := msgIe.Id.Value
+	if _, ok := decoder.list[ieId]; ok {
+		err = fmt.Errorf("Duplicated protocol IEID[%d] found", ieId)
+		return
+	}
+	decoder.list[ieId] = msgIe
 	ieR := aper.NewReader(bytes.NewReader(buf))
+	msg := decoder.msg
 	switch msgIe.Id.Value {
 	case ProtocolIEID_AMFTNLAssociationSetupList:
-		var tmp AMFTNLAssociationSetupList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*AMFTNLAssociationSetupItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		fn := func() *AMFTNLAssociationSetupItem { return new(AMFTNLAssociationSetupItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read AMFTNLAssociationSetupList", err)
 			return
 		}
-		msg.AMFTNLAssociationSetupList = &tmp
+		msg.AMFTNLAssociationSetupList = []AMFTNLAssociationSetupItem{}
+		for _, i := range tmp.Value {
+			msg.AMFTNLAssociationSetupList = append(msg.AMFTNLAssociationSetupList, *i)
+		}
 	case ProtocolIEID_AMFTNLAssociationFailedToSetupList:
-		var tmp TNLAssociationList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*TNLAssociationItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		fn := func() *TNLAssociationItem { return new(TNLAssociationItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read AMFTNLAssociationFailedToSetupList", err)
 			return
 		}
-		msg.AMFTNLAssociationFailedToSetupList = &tmp
+		msg.AMFTNLAssociationFailedToSetupList = []TNLAssociationItem{}
+		for _, i := range tmp.Value {
+			msg.AMFTNLAssociationFailedToSetupList = append(msg.AMFTNLAssociationFailedToSetupList, *i)
+		}
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read CriticalityDiagnostics", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp
 	default:
-		err = fmt.Errorf("temporary error")
-		return
+		switch msgIe.Criticality.Value {
+		case Criticality_PresentReject:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: reject)", msgIe.Id.Value)
+		case Criticality_PresentIgnore:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: ignore)", msgIe.Id.Value)
+		case Criticality_PresentNotify:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: notify)", msgIe.Id.Value)
+		}
+		if msgIe.Criticality.Value != Criticality_PresentIgnore {
+			decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+				IECriticality: msgIe.Criticality,
+				IEID:          msgIe.Id,
+				TypeOfError:   TypeOfError{Value: TypeOfErrorNotunderstood},
+			})
+		}
 	}
 	return
 }

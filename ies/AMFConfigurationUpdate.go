@@ -6,16 +6,17 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
 )
 
 type AMFConfigurationUpdate struct {
-	AMFName                       *AMFName                       `,reject,optional`
-	ServedGUAMIList               *ServedGUAMIList               `,reject,optional`
-	RelativeAMFCapacity           *RelativeAMFCapacity           `,ignore,optional`
-	PLMNSupportList               *PLMNSupportList               `,reject,optional`
-	AMFTNLAssociationToAddList    *AMFTNLAssociationToAddList    `,ignore,optional`
-	AMFTNLAssociationToRemoveList *AMFTNLAssociationToRemoveList `,ignore,optional`
-	AMFTNLAssociationToUpdateList *AMFTNLAssociationToUpdateList `,ignore,optional`
+	AMFName                       []byte                          `optional`
+	ServedGUAMIList               []ServedGUAMIItem               `optional`
+	RelativeAMFCapacity           *int64                          `optional`
+	PLMNSupportList               []PLMNSupportItem               `optional`
+	AMFTNLAssociationToAddList    []AMFTNLAssociationToAddItem    `optional`
+	AMFTNLAssociationToRemoveList []AMFTNLAssociationToRemoveItem `optional`
+	AMFTNLAssociationToUpdateList []AMFTNLAssociationToUpdateItem `optional`
 }
 
 func (msg *AMFConfigurationUpdate) Encode(w io.Writer) (err error) {
@@ -27,119 +28,244 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFName},
 			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.AMFName})
+			Value: &OCTETSTRING{
+				c:     aper.Constraint{Lb: 1, Ub: 150},
+				ext:   true,
+				Value: msg.AMFName,
+			}})
 	}
 	if msg.ServedGUAMIList != nil {
+		tmp_ServedGUAMIList := Sequence[*ServedGUAMIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
+			ext: false,
+		}
+		for _, i := range msg.ServedGUAMIList {
+			tmp_ServedGUAMIList.Value = append(tmp_ServedGUAMIList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_ServedGUAMIList},
 			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.ServedGUAMIList})
+			Value:       &tmp_ServedGUAMIList,
+		})
 	}
 	if msg.RelativeAMFCapacity != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_RelativeAMFCapacity},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.RelativeAMFCapacity})
+			Value: &INTEGER{
+				c:     aper.Constraint{Lb: 0, Ub: 255},
+				ext:   false,
+				Value: aper.Integer(*msg.RelativeAMFCapacity),
+			}})
 	}
 	if msg.PLMNSupportList != nil {
+		tmp_PLMNSupportList := Sequence[*PLMNSupportItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPLMNs},
+			ext: false,
+		}
+		for _, i := range msg.PLMNSupportList {
+			tmp_PLMNSupportList.Value = append(tmp_PLMNSupportList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_PLMNSupportList},
 			Criticality: Criticality{Value: Criticality_PresentReject},
-			Value:       msg.PLMNSupportList})
+			Value:       &tmp_PLMNSupportList,
+		})
 	}
 	if msg.AMFTNLAssociationToAddList != nil {
+		tmp_AMFTNLAssociationToAddList := Sequence[*AMFTNLAssociationToAddItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		for _, i := range msg.AMFTNLAssociationToAddList {
+			tmp_AMFTNLAssociationToAddList.Value = append(tmp_AMFTNLAssociationToAddList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFTNLAssociationToAddList},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.AMFTNLAssociationToAddList})
+			Value:       &tmp_AMFTNLAssociationToAddList,
+		})
 	}
 	if msg.AMFTNLAssociationToRemoveList != nil {
+		tmp_AMFTNLAssociationToRemoveList := Sequence[*AMFTNLAssociationToRemoveItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		for _, i := range msg.AMFTNLAssociationToRemoveList {
+			tmp_AMFTNLAssociationToRemoveList.Value = append(tmp_AMFTNLAssociationToRemoveList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFTNLAssociationToRemoveList},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.AMFTNLAssociationToRemoveList})
+			Value:       &tmp_AMFTNLAssociationToRemoveList,
+		})
 	}
 	if msg.AMFTNLAssociationToUpdateList != nil {
+		tmp_AMFTNLAssociationToUpdateList := Sequence[*AMFTNLAssociationToUpdateItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		for _, i := range msg.AMFTNLAssociationToUpdateList {
+			tmp_AMFTNLAssociationToUpdateList.Value = append(tmp_AMFTNLAssociationToUpdateList.Value, &i)
+		}
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_AMFTNLAssociationToUpdateList},
 			Criticality: Criticality{Value: Criticality_PresentIgnore},
-			Value:       msg.AMFTNLAssociationToUpdateList})
+			Value:       &tmp_AMFTNLAssociationToUpdateList,
+		})
 	}
 	return
 }
-func (msg *AMFConfigurationUpdate) Decode(wire []byte) (err error, diagList []CriticalityDiagnostics) {
+func (msg *AMFConfigurationUpdate) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
-	var ies []NgapMessageIE
-	if ies, err = aper.ReadSequenceOf[NgapMessageIE](msg.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
+	decoder := AMFConfigurationUpdateDecoder{
+		msg:  msg,
+		list: make(map[aper.Integer]*NgapMessageIE),
+	}
+	if _, err = aper.ReadSequenceOf[NgapMessageIE](decoder.decodeIE, r, &aper.Constraint{Lb: 0, Ub: int64(aper.POW_16 - 1)}, false); err != nil {
 		return
 	}
-	_ = ies
 	return
 }
-func (msg *AMFConfigurationUpdate) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
-	id, err := r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false)
-	if err != nil {
+
+type AMFConfigurationUpdateDecoder struct {
+	msg      *AMFConfigurationUpdate
+	diagList []CriticalityDiagnosticsIEItem
+	list     map[aper.Integer]*NgapMessageIE
+}
+
+func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE, err error) {
+	var id int64
+	var c uint64
+	var buf []byte
+	if id, err = r.ReadInteger(&aper.Constraint{Lb: 0, Ub: int64(aper.POW_16) - 1}, false); err != nil {
 		return
 	}
 	msgIe = new(NgapMessageIE)
 	msgIe.Id.Value = aper.Integer(id)
-	c, err := r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false)
-	if err != nil {
+	if c, err = r.ReadEnumerate(aper.Constraint{Lb: 0, Ub: 2}, false); err != nil {
 		return
 	}
 	msgIe.Criticality.Value = aper.Enumerated(c)
-	var buf []byte
 	if buf, err = r.ReadOpenType(); err != nil {
 		return
 	}
+	ieId := msgIe.Id.Value
+	if _, ok := decoder.list[ieId]; ok {
+		err = fmt.Errorf("Duplicated protocol IEID[%d] found", ieId)
+		return
+	}
+	decoder.list[ieId] = msgIe
 	ieR := aper.NewReader(bytes.NewReader(buf))
+	msg := decoder.msg
 	switch msgIe.Id.Value {
 	case ProtocolIEID_AMFName:
-		var tmp AMFName
+		tmp := OCTETSTRING{
+			c:   aper.Constraint{Lb: 1, Ub: 150},
+			ext: true,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read AMFName", err)
 			return
 		}
-		msg.AMFName = &tmp
+		msg.AMFName = tmp.Value
 	case ProtocolIEID_ServedGUAMIList:
-		var tmp ServedGUAMIList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*ServedGUAMIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
+			ext: false,
+		}
+		fn := func() *ServedGUAMIItem { return new(ServedGUAMIItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read ServedGUAMIList", err)
 			return
 		}
-		msg.ServedGUAMIList = &tmp
+		msg.ServedGUAMIList = []ServedGUAMIItem{}
+		for _, i := range tmp.Value {
+			msg.ServedGUAMIList = append(msg.ServedGUAMIList, *i)
+		}
 	case ProtocolIEID_RelativeAMFCapacity:
-		var tmp RelativeAMFCapacity
+		tmp := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 255},
+			ext: false,
+		}
 		if err = tmp.Decode(ieR); err != nil {
+			err = utils.WrapError("Read RelativeAMFCapacity", err)
 			return
 		}
-		msg.RelativeAMFCapacity = &tmp
+		*msg.RelativeAMFCapacity = int64(tmp.Value)
 	case ProtocolIEID_PLMNSupportList:
-		var tmp PLMNSupportList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*PLMNSupportItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPLMNs},
+			ext: false,
+		}
+		fn := func() *PLMNSupportItem { return new(PLMNSupportItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read PLMNSupportList", err)
 			return
 		}
-		msg.PLMNSupportList = &tmp
+		msg.PLMNSupportList = []PLMNSupportItem{}
+		for _, i := range tmp.Value {
+			msg.PLMNSupportList = append(msg.PLMNSupportList, *i)
+		}
 	case ProtocolIEID_AMFTNLAssociationToAddList:
-		var tmp AMFTNLAssociationToAddList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*AMFTNLAssociationToAddItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		fn := func() *AMFTNLAssociationToAddItem { return new(AMFTNLAssociationToAddItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read AMFTNLAssociationToAddList", err)
 			return
 		}
-		msg.AMFTNLAssociationToAddList = &tmp
+		msg.AMFTNLAssociationToAddList = []AMFTNLAssociationToAddItem{}
+		for _, i := range tmp.Value {
+			msg.AMFTNLAssociationToAddList = append(msg.AMFTNLAssociationToAddList, *i)
+		}
 	case ProtocolIEID_AMFTNLAssociationToRemoveList:
-		var tmp AMFTNLAssociationToRemoveList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*AMFTNLAssociationToRemoveItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		fn := func() *AMFTNLAssociationToRemoveItem { return new(AMFTNLAssociationToRemoveItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read AMFTNLAssociationToRemoveList", err)
 			return
 		}
-		msg.AMFTNLAssociationToRemoveList = &tmp
+		msg.AMFTNLAssociationToRemoveList = []AMFTNLAssociationToRemoveItem{}
+		for _, i := range tmp.Value {
+			msg.AMFTNLAssociationToRemoveList = append(msg.AMFTNLAssociationToRemoveList, *i)
+		}
 	case ProtocolIEID_AMFTNLAssociationToUpdateList:
-		var tmp AMFTNLAssociationToUpdateList
-		if err = tmp.Decode(ieR); err != nil {
+		tmp := Sequence[*AMFTNLAssociationToUpdateItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
+			ext: false,
+		}
+		fn := func() *AMFTNLAssociationToUpdateItem { return new(AMFTNLAssociationToUpdateItem) }
+		if err = tmp.Decode(ieR, fn); err != nil {
+			err = utils.WrapError("Read AMFTNLAssociationToUpdateList", err)
 			return
 		}
-		msg.AMFTNLAssociationToUpdateList = &tmp
+		msg.AMFTNLAssociationToUpdateList = []AMFTNLAssociationToUpdateItem{}
+		for _, i := range tmp.Value {
+			msg.AMFTNLAssociationToUpdateList = append(msg.AMFTNLAssociationToUpdateList, *i)
+		}
 	default:
-		err = fmt.Errorf("temporary error")
-		return
+		switch msgIe.Criticality.Value {
+		case Criticality_PresentReject:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: reject)", msgIe.Id.Value)
+		case Criticality_PresentIgnore:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: ignore)", msgIe.Id.Value)
+		case Criticality_PresentNotify:
+			fmt.Errorf("Not comprehended IE ID 0x%04x (criticality: notify)", msgIe.Id.Value)
+		}
+		if msgIe.Criticality.Value != Criticality_PresentIgnore {
+			decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
+				IECriticality: msgIe.Criticality,
+				IEID:          msgIe.Id,
+				TypeOfError:   TypeOfError{Value: TypeOfErrorNotunderstood},
+			})
+		}
 	}
 	return
 }

@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type RecommendedCellsForPaging struct {
-	RecommendedCellList *RecommendedCellList `False,`
-	// IEExtensions RecommendedCellsForPagingExtIEs `False,OPTIONAL`
+	RecommendedCellList []RecommendedCellItem
+	// IEExtensions *RecommendedCellsForPagingExtIEs `optional`
 }
 
 func (ie *RecommendedCellsForPaging) Encode(w *aper.AperWriter) (err error) {
@@ -13,8 +13,16 @@ func (ie *RecommendedCellsForPaging) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.RecommendedCellList != nil {
-		if err = ie.RecommendedCellList.Encode(w); err != nil {
+	if len(ie.RecommendedCellList) > 0 {
+		tmp := Sequence[*RecommendedCellItem]{
+			Value: []*RecommendedCellItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofRecommendedCells},
+			ext:   false,
+		}
+		for _, i := range ie.RecommendedCellList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -27,9 +35,17 @@ func (ie *RecommendedCellsForPaging) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.RecommendedCellList = new(RecommendedCellList)
-	if err = ie.RecommendedCellList.Decode(r); err != nil {
+	tmp_RecommendedCellList := Sequence[*RecommendedCellItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofRecommendedCells},
+		ext: false,
+	}
+	fn := func() *RecommendedCellItem { return new(RecommendedCellItem) }
+	if err = tmp_RecommendedCellList.Decode(r, fn); err != nil {
 		return
+	}
+	ie.RecommendedCellList = []RecommendedCellItem{}
+	for _, i := range tmp_RecommendedCellList.Value {
+		ie.RecommendedCellList = append(ie.RecommendedCellList, *i)
 	}
 	return
 }

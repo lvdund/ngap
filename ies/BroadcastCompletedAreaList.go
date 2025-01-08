@@ -3,25 +3,25 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	BroadcastCompletedAreaListPresentNothing uint64 = iota /* No components present */
-	BroadcastCompletedAreaListPresentCellIDBroadcastEUTRA
-	BroadcastCompletedAreaListPresentTAIBroadcastEUTRA
-	BroadcastCompletedAreaListPresentEmergencyAreaIDBroadcastEUTRA
-	BroadcastCompletedAreaListPresentCellIDBroadcastNR
-	BroadcastCompletedAreaListPresentTAIBroadcastNR
-	BroadcastCompletedAreaListPresentEmergencyAreaIDBroadcastNR
+	BroadcastCompletedAreaListPresentNothing uint64 = iota
+	BroadcastCompletedAreaListPresentCellidbroadcasteutra
+	BroadcastCompletedAreaListPresentTaibroadcasteutra
+	BroadcastCompletedAreaListPresentEmergencyareaidbroadcasteutra
+	BroadcastCompletedAreaListPresentCellidbroadcastnr
+	BroadcastCompletedAreaListPresentTaibroadcastnr
+	BroadcastCompletedAreaListPresentEmergencyareaidbroadcastnr
 	BroadcastCompletedAreaListPresentChoiceExtensions
 )
 
 type BroadcastCompletedAreaList struct {
 	Choice                        uint64
-	CellIDBroadcastEUTRA          *CellIDBroadcastEUTRA          `False,,,`
-	TAIBroadcastEUTRA             *TAIBroadcastEUTRA             `False,,,`
-	EmergencyAreaIDBroadcastEUTRA *EmergencyAreaIDBroadcastEUTRA `False,,,`
-	CellIDBroadcastNR             *CellIDBroadcastNR             `False,,,`
-	TAIBroadcastNR                *TAIBroadcastNR                `False,,,`
-	EmergencyAreaIDBroadcastNR    *EmergencyAreaIDBroadcastNR    `False,,,`
-	// ChoiceExtensions *BroadcastCompletedAreaListExtIEs `False,,,`
+	CellIDBroadcastEUTRA          []CellIDBroadcastEUTRAItem
+	TAIBroadcastEUTRA             []TAIBroadcastEUTRAItem
+	EmergencyAreaIDBroadcastEUTRA []EmergencyAreaIDBroadcastEUTRAItem
+	CellIDBroadcastNR             []CellIDBroadcastNRItem
+	TAIBroadcastNR                []TAIBroadcastNRItem
+	EmergencyAreaIDBroadcastNR    []EmergencyAreaIDBroadcastNRItem
+	// ChoiceExtensions *BroadcastCompletedAreaListExtIEs
 }
 
 func (ie *BroadcastCompletedAreaList) Encode(w *aper.AperWriter) (err error) {
@@ -29,18 +29,60 @@ func (ie *BroadcastCompletedAreaList) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case BroadcastCompletedAreaListPresentCellIDBroadcastEUTRA:
-		err = ie.CellIDBroadcastEUTRA.Encode(w)
-	case BroadcastCompletedAreaListPresentTAIBroadcastEUTRA:
-		err = ie.TAIBroadcastEUTRA.Encode(w)
-	case BroadcastCompletedAreaListPresentEmergencyAreaIDBroadcastEUTRA:
-		err = ie.EmergencyAreaIDBroadcastEUTRA.Encode(w)
-	case BroadcastCompletedAreaListPresentCellIDBroadcastNR:
-		err = ie.CellIDBroadcastNR.Encode(w)
-	case BroadcastCompletedAreaListPresentTAIBroadcastNR:
-		err = ie.TAIBroadcastNR.Encode(w)
-	case BroadcastCompletedAreaListPresentEmergencyAreaIDBroadcastNR:
-		err = ie.EmergencyAreaIDBroadcastNR.Encode(w)
+	case BroadcastCompletedAreaListPresentCellidbroadcasteutra:
+		tmp := Sequence[*CellIDBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range ie.CellIDBroadcastEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
+	case BroadcastCompletedAreaListPresentTaibroadcasteutra:
+		tmp := Sequence[*TAIBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range ie.TAIBroadcastEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
+	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcasteutra:
+		tmp := Sequence[*EmergencyAreaIDBroadcastEUTRAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range ie.EmergencyAreaIDBroadcastEUTRA {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
+	case BroadcastCompletedAreaListPresentCellidbroadcastnr:
+		tmp := Sequence[*CellIDBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning},
+			ext: false,
+		}
+		for _, i := range ie.CellIDBroadcastNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
+	case BroadcastCompletedAreaListPresentTaibroadcastnr:
+		tmp := Sequence[*TAIBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning},
+			ext: false,
+		}
+		for _, i := range ie.TAIBroadcastNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
+	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcastnr:
+		tmp := Sequence[*EmergencyAreaIDBroadcastNRItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID},
+			ext: false,
+		}
+		for _, i := range ie.EmergencyAreaIDBroadcastNR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		err = tmp.Encode(w)
 	}
 	return
 }
@@ -49,42 +91,72 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case BroadcastCompletedAreaListPresentCellIDBroadcastEUTRA:
-		var tmp CellIDBroadcastEUTRA
-		if err = tmp.Decode(r); err != nil {
+	case BroadcastCompletedAreaListPresentCellidbroadcasteutra:
+		tmp := NewSequence[*CellIDBroadcastEUTRAItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning}, false)
+		fn := func() *CellIDBroadcastEUTRAItem {
+			return new(CellIDBroadcastEUTRAItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.CellIDBroadcastEUTRA = &tmp
-	case BroadcastCompletedAreaListPresentTAIBroadcastEUTRA:
-		var tmp TAIBroadcastEUTRA
-		if err = tmp.Decode(r); err != nil {
+		for _, i := range tmp.Value {
+			ie.CellIDBroadcastEUTRA = append(ie.CellIDBroadcastEUTRA, *i)
+		}
+	case BroadcastCompletedAreaListPresentTaibroadcasteutra:
+		tmp := NewSequence[*TAIBroadcastEUTRAItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning}, false)
+		fn := func() *TAIBroadcastEUTRAItem {
+			return new(TAIBroadcastEUTRAItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.TAIBroadcastEUTRA = &tmp
-	case BroadcastCompletedAreaListPresentEmergencyAreaIDBroadcastEUTRA:
-		var tmp EmergencyAreaIDBroadcastEUTRA
-		if err = tmp.Decode(r); err != nil {
+		for _, i := range tmp.Value {
+			ie.TAIBroadcastEUTRA = append(ie.TAIBroadcastEUTRA, *i)
+		}
+	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcasteutra:
+		tmp := NewSequence[*EmergencyAreaIDBroadcastEUTRAItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID}, false)
+		fn := func() *EmergencyAreaIDBroadcastEUTRAItem {
+			return new(EmergencyAreaIDBroadcastEUTRAItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDBroadcastEUTRA = &tmp
-	case BroadcastCompletedAreaListPresentCellIDBroadcastNR:
-		var tmp CellIDBroadcastNR
-		if err = tmp.Decode(r); err != nil {
+		for _, i := range tmp.Value {
+			ie.EmergencyAreaIDBroadcastEUTRA = append(ie.EmergencyAreaIDBroadcastEUTRA, *i)
+		}
+	case BroadcastCompletedAreaListPresentCellidbroadcastnr:
+		tmp := NewSequence[*CellIDBroadcastNRItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofCellIDforWarning}, false)
+		fn := func() *CellIDBroadcastNRItem {
+			return new(CellIDBroadcastNRItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.CellIDBroadcastNR = &tmp
-	case BroadcastCompletedAreaListPresentTAIBroadcastNR:
-		var tmp TAIBroadcastNR
-		if err = tmp.Decode(r); err != nil {
+		for _, i := range tmp.Value {
+			ie.CellIDBroadcastNR = append(ie.CellIDBroadcastNR, *i)
+		}
+	case BroadcastCompletedAreaListPresentTaibroadcastnr:
+		tmp := NewSequence[*TAIBroadcastNRItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofTAIforWarning}, false)
+		fn := func() *TAIBroadcastNRItem {
+			return new(TAIBroadcastNRItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.TAIBroadcastNR = &tmp
-	case BroadcastCompletedAreaListPresentEmergencyAreaIDBroadcastNR:
-		var tmp EmergencyAreaIDBroadcastNR
-		if err = tmp.Decode(r); err != nil {
+		for _, i := range tmp.Value {
+			ie.TAIBroadcastNR = append(ie.TAIBroadcastNR, *i)
+		}
+	case BroadcastCompletedAreaListPresentEmergencyareaidbroadcastnr:
+		tmp := NewSequence[*EmergencyAreaIDBroadcastNRItem](nil, aper.Constraint{Lb: 1, Ub: maxnoofEmergencyAreaID}, false)
+		fn := func() *EmergencyAreaIDBroadcastNRItem {
+			return new(EmergencyAreaIDBroadcastNRItem)
+		}
+		if err = tmp.Decode(r, fn); err != nil {
 			return
 		}
-		ie.EmergencyAreaIDBroadcastNR = &tmp
+		for _, i := range tmp.Value {
+			ie.EmergencyAreaIDBroadcastNR = append(ie.EmergencyAreaIDBroadcastNR, *i)
+		}
 	}
 	return
 }

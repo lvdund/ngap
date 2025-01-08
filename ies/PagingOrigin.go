@@ -7,7 +7,7 @@ const (
 )
 
 type PagingOrigin struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *PagingOrigin) Encode(w *aper.AperWriter) (err error) {

@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type AMFTNLAssociationToAddItem struct {
-	AMFTNLAssociationAddress *CPTransportLayerInformation `False,`
-	TNLAssociationUsage      *TNLAssociationUsage         `False,OPTIONAL`
-	TNLAddressWeightFactor   *TNLAddressWeightFactor      `False,`
-	// IEExtensions AMFTNLAssociationToAddItemExtIEs `False,OPTIONAL`
+	AMFTNLAssociationAddress CPTransportLayerInformation
+	TNLAssociationUsage      *TNLAssociationUsage `optional`
+	TNLAddressWeightFactor   *int64               `optional`
+	// IEExtensions *AMFTNLAssociationToAddItemExtIEs `optional`
 }
 
 func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
@@ -17,11 +17,12 @@ func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
 	if ie.TNLAssociationUsage != nil {
 		aper.SetBit(optionals, 1)
 	}
-	w.WriteBits(optionals, 2)
-	if ie.AMFTNLAssociationAddress != nil {
-		if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
-			return
-		}
+	if ie.TNLAddressWeightFactor != nil {
+		aper.SetBit(optionals, 2)
+	}
+	w.WriteBits(optionals, 3)
+	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
+		return
 	}
 	if ie.TNLAssociationUsage != nil {
 		if err = ie.TNLAssociationUsage.Encode(w); err != nil {
@@ -29,7 +30,8 @@ func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
 		}
 	}
 	if ie.TNLAddressWeightFactor != nil {
-		if err = ie.TNLAddressWeightFactor.Encode(w); err != nil {
+		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
+		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
 			return
 		}
 	}
@@ -40,12 +42,9 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(2); err != nil {
+	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.AMFTNLAssociationAddress = new(CPTransportLayerInformation)
-	ie.TNLAssociationUsage = new(TNLAssociationUsage)
-	ie.TNLAddressWeightFactor = new(TNLAddressWeightFactor)
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
 		return
 	}
@@ -54,8 +53,15 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 			return
 		}
 	}
-	if err = ie.TNLAddressWeightFactor.Decode(r); err != nil {
-		return
+	if aper.IsBitSet(optionals, 2) {
+		tmp_TNLAddressWeightFactor := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 255},
+			ext: false,
+		}
+		if err = tmp_TNLAddressWeightFactor.Decode(r); err != nil {
+			return
+		}
+		ie.TNLAddressWeightFactor = (*int64)(&tmp_TNLAddressWeightFactor.Value)
 	}
 	return
 }

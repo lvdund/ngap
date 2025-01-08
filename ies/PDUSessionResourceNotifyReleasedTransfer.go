@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceNotifyReleasedTransfer struct {
-	Cause *Cause `False,`
-	// IEExtensions PDUSessionResourceNotifyReleasedTransferExtIEs `False,OPTIONAL`
+	Cause Cause
+	// IEExtensions *PDUSessionResourceNotifyReleasedTransferExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceNotifyReleasedTransfer) Encode(w *aper.AperWriter) (err error) {
@@ -13,10 +13,8 @@ func (ie *PDUSessionResourceNotifyReleasedTransfer) Encode(w *aper.AperWriter) (
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.Cause != nil {
-		if err = ie.Cause.Encode(w); err != nil {
-			return
-		}
+	if err = ie.Cause.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -27,7 +25,6 @@ func (ie *PDUSessionResourceNotifyReleasedTransfer) Decode(r *aper.AperReader) (
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.Cause = new(Cause)
 	if err = ie.Cause.Decode(r); err != nil {
 		return
 	}

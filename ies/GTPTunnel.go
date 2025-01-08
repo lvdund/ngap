@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type GTPTunnel struct {
-	TransportLayerAddress *TransportLayerAddress `False,`
-	GTPTEID               *GTPTEID               `False,`
-	// IEExtensions GTPTunnelExtIEs `False,OPTIONAL`
+	TransportLayerAddress []byte
+	GTPTEID               []byte
+	// IEExtensions *GTPTunnelExtIEs `optional`
 }
 
 func (ie *GTPTunnel) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *GTPTunnel) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.TransportLayerAddress != nil {
-		if err = ie.TransportLayerAddress.Encode(w); err != nil {
-			return
-		}
+	tmp_TransportLayerAddress := NewBITSTRING(ie.TransportLayerAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
+	if err = tmp_TransportLayerAddress.Encode(w); err != nil {
+		return
 	}
-	if ie.GTPTEID != nil {
-		if err = ie.GTPTEID.Encode(w); err != nil {
-			return
-		}
+	tmp_GTPTEID := NewOCTETSTRING(ie.GTPTEID, aper.Constraint{Lb: 4, Ub: 4}, false)
+	if err = tmp_GTPTEID.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,13 +31,21 @@ func (ie *GTPTunnel) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.TransportLayerAddress = new(TransportLayerAddress)
-	ie.GTPTEID = new(GTPTEID)
-	if err = ie.TransportLayerAddress.Decode(r); err != nil {
+	tmp_TransportLayerAddress := BITSTRING{
+		c:   aper.Constraint{Lb: 1, Ub: 160},
+		ext: false,
+	}
+	if err = tmp_TransportLayerAddress.Decode(r); err != nil {
 		return
 	}
-	if err = ie.GTPTEID.Decode(r); err != nil {
+	ie.TransportLayerAddress = tmp_TransportLayerAddress.Value.Bytes
+	tmp_GTPTEID := OCTETSTRING{
+		c:   aper.Constraint{Lb: 4, Ub: 4},
+		ext: false,
+	}
+	if err = tmp_GTPTEID.Decode(r); err != nil {
 		return
 	}
+	ie.GTPTEID = tmp_GTPTEID.Value
 	return
 }

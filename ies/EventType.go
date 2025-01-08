@@ -12,7 +12,7 @@ const (
 )
 
 type EventType struct {
-	Value aper.Enumerated `True,0,5`
+	Value aper.Enumerated
 }
 
 func (ie *EventType) Encode(w *aper.AperWriter) (err error) {

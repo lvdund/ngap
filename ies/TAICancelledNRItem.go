@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type TAICancelledNRItem struct {
-	TAI                   *TAI                   `True,`
-	CancelledCellsInTAINR *CancelledCellsInTAINR `False,`
-	// IEExtensions TAICancelledNRItemExtIEs `False,OPTIONAL`
+	TAI                   TAI
+	CancelledCellsInTAINR []CancelledCellsInTAINRItem
+	// IEExtensions *TAICancelledNRItemExtIEs `optional`
 }
 
 func (ie *TAICancelledNRItem) Encode(w *aper.AperWriter) (err error) {
@@ -14,13 +14,19 @@ func (ie *TAICancelledNRItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.TAI != nil {
-		if err = ie.TAI.Encode(w); err != nil {
-			return
-		}
+	if err = ie.TAI.Encode(w); err != nil {
+		return
 	}
-	if ie.CancelledCellsInTAINR != nil {
-		if err = ie.CancelledCellsInTAINR.Encode(w); err != nil {
+	if len(ie.CancelledCellsInTAINR) > 0 {
+		tmp := Sequence[*CancelledCellsInTAINRItem]{
+			Value: []*CancelledCellsInTAINRItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinTAI},
+			ext:   false,
+		}
+		for _, i := range ie.CancelledCellsInTAINR {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -33,13 +39,20 @@ func (ie *TAICancelledNRItem) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.TAI = new(TAI)
-	ie.CancelledCellsInTAINR = new(CancelledCellsInTAINR)
 	if err = ie.TAI.Decode(r); err != nil {
 		return
 	}
-	if err = ie.CancelledCellsInTAINR.Decode(r); err != nil {
+	tmp_CancelledCellsInTAINR := Sequence[*CancelledCellsInTAINRItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofCellinTAI},
+		ext: false,
+	}
+	fn := func() *CancelledCellsInTAINRItem { return new(CancelledCellsInTAINRItem) }
+	if err = tmp_CancelledCellsInTAINR.Decode(r, fn); err != nil {
 		return
+	}
+	ie.CancelledCellsInTAINR = []CancelledCellsInTAINRItem{}
+	for _, i := range tmp_CancelledCellsInTAINR.Value {
+		ie.CancelledCellsInTAINR = append(ie.CancelledCellsInTAINR, *i)
 	}
 	return
 }

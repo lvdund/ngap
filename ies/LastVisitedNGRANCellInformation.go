@@ -3,12 +3,12 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type LastVisitedNGRANCellInformation struct {
-	GlobalCellID                          *NGRANCGI                              `False,`
-	CellType                              *CellType                              `True,`
-	TimeUEStayedInCell                    *TimeUEStayedInCell                    `False,`
-	TimeUEStayedInCellEnhancedGranularity *TimeUEStayedInCellEnhancedGranularity `False,OPTIONAL`
-	HOCauseValue                          *Cause                                 `False,OPTIONAL`
-	// IEExtensions LastVisitedNGRANCellInformationExtIEs `False,OPTIONAL`
+	GlobalCellID                          NGRANCGI
+	CellType                              CellType
+	TimeUEStayedInCell                    int64
+	TimeUEStayedInCellEnhancedGranularity *int64 `optional`
+	HOCauseValue                          *Cause `optional`
+	// IEExtensions *LastVisitedNGRANCellInformationExtIEs `optional`
 }
 
 func (ie *LastVisitedNGRANCellInformation) Encode(w *aper.AperWriter) (err error) {
@@ -23,23 +23,19 @@ func (ie *LastVisitedNGRANCellInformation) Encode(w *aper.AperWriter) (err error
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	if ie.GlobalCellID != nil {
-		if err = ie.GlobalCellID.Encode(w); err != nil {
-			return
-		}
+	if err = ie.GlobalCellID.Encode(w); err != nil {
+		return
 	}
-	if ie.CellType != nil {
-		if err = ie.CellType.Encode(w); err != nil {
-			return
-		}
+	if err = ie.CellType.Encode(w); err != nil {
+		return
 	}
-	if ie.TimeUEStayedInCell != nil {
-		if err = ie.TimeUEStayedInCell.Encode(w); err != nil {
-			return
-		}
+	tmp_TimeUEStayedInCell := NewINTEGER(ie.TimeUEStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, false)
+	if err = tmp_TimeUEStayedInCell.Encode(w); err != nil {
+		return
 	}
 	if ie.TimeUEStayedInCellEnhancedGranularity != nil {
-		if err = ie.TimeUEStayedInCellEnhancedGranularity.Encode(w); err != nil {
+		tmp_TimeUEStayedInCellEnhancedGranularity := NewINTEGER(*ie.TimeUEStayedInCellEnhancedGranularity, aper.Constraint{Lb: 0, Ub: 40950}, false)
+		if err = tmp_TimeUEStayedInCellEnhancedGranularity.Encode(w); err != nil {
 			return
 		}
 	}
@@ -58,24 +54,29 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.GlobalCellID = new(NGRANCGI)
-	ie.CellType = new(CellType)
-	ie.TimeUEStayedInCell = new(TimeUEStayedInCell)
-	ie.TimeUEStayedInCellEnhancedGranularity = new(TimeUEStayedInCellEnhancedGranularity)
-	ie.HOCauseValue = new(Cause)
 	if err = ie.GlobalCellID.Decode(r); err != nil {
 		return
 	}
 	if err = ie.CellType.Decode(r); err != nil {
 		return
 	}
-	if err = ie.TimeUEStayedInCell.Decode(r); err != nil {
+	tmp_TimeUEStayedInCell := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 4095},
+		ext: false,
+	}
+	if err = tmp_TimeUEStayedInCell.Decode(r); err != nil {
 		return
 	}
+	ie.TimeUEStayedInCell = int64(tmp_TimeUEStayedInCell.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.TimeUEStayedInCellEnhancedGranularity.Decode(r); err != nil {
+		tmp_TimeUEStayedInCellEnhancedGranularity := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 40950},
+			ext: false,
+		}
+		if err = tmp_TimeUEStayedInCellEnhancedGranularity.Decode(r); err != nil {
 			return
 		}
+		ie.TimeUEStayedInCellEnhancedGranularity = (*int64)(&tmp_TimeUEStayedInCellEnhancedGranularity.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.HOCauseValue.Decode(r); err != nil {

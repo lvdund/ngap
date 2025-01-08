@@ -3,19 +3,19 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	UserLocationInformationPresentNothing uint64 = iota /* No components present */
-	UserLocationInformationPresentUserLocationInformationEUTRA
-	UserLocationInformationPresentUserLocationInformationNR
-	UserLocationInformationPresentUserLocationInformationN3IWF
+	UserLocationInformationPresentNothing uint64 = iota
+	UserLocationInformationPresentUserlocationinformationeutra
+	UserLocationInformationPresentUserlocationinformationnr
+	UserLocationInformationPresentUserlocationinformationn3Iwf
 	UserLocationInformationPresentChoiceExtensions
 )
 
 type UserLocationInformation struct {
 	Choice                       uint64
-	UserLocationInformationEUTRA *UserLocationInformationEUTRA `True,,,`
-	UserLocationInformationNR    *UserLocationInformationNR    `True,,,`
-	UserLocationInformationN3IWF *UserLocationInformationN3IWF `True,,,`
-	// ChoiceExtensions *UserLocationInformationExtIEs `False,,,`
+	UserLocationInformationEUTRA *UserLocationInformationEUTRA
+	UserLocationInformationNR    *UserLocationInformationNR
+	UserLocationInformationN3IWF *UserLocationInformationN3IWF
+	// ChoiceExtensions *UserLocationInformationExtIEs
 }
 
 func (ie *UserLocationInformation) Encode(w *aper.AperWriter) (err error) {
@@ -23,11 +23,11 @@ func (ie *UserLocationInformation) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UserLocationInformationPresentUserLocationInformationEUTRA:
+	case UserLocationInformationPresentUserlocationinformationeutra:
 		err = ie.UserLocationInformationEUTRA.Encode(w)
-	case UserLocationInformationPresentUserLocationInformationNR:
+	case UserLocationInformationPresentUserlocationinformationnr:
 		err = ie.UserLocationInformationNR.Encode(w)
-	case UserLocationInformationPresentUserLocationInformationN3IWF:
+	case UserLocationInformationPresentUserlocationinformationn3Iwf:
 		err = ie.UserLocationInformationN3IWF.Encode(w)
 	}
 	return
@@ -37,19 +37,19 @@ func (ie *UserLocationInformation) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case UserLocationInformationPresentUserLocationInformationEUTRA:
+	case UserLocationInformationPresentUserlocationinformationeutra:
 		var tmp UserLocationInformationEUTRA
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.UserLocationInformationEUTRA = &tmp
-	case UserLocationInformationPresentUserLocationInformationNR:
+	case UserLocationInformationPresentUserlocationinformationnr:
 		var tmp UserLocationInformationNR
 		if err = tmp.Decode(r); err != nil {
 			return
 		}
 		ie.UserLocationInformationNR = &tmp
-	case UserLocationInformationPresentUserLocationInformationN3IWF:
+	case UserLocationInformationPresentUserlocationinformationn3Iwf:
 		var tmp UserLocationInformationN3IWF
 		if err = tmp.Decode(r); err != nil {
 			return

@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type UEassociatedLogicalNGconnectionItem struct {
-	AMFUENGAPID *AMFUENGAPID `False,OPTIONAL`
-	RANUENGAPID *RANUENGAPID `False,OPTIONAL`
-	// IEExtensions UEassociatedLogicalNGconnectionItemExtIEs `False,OPTIONAL`
+	AMFUENGAPID *int64 `optional`
+	RANUENGAPID *int64 `optional`
+	// IEExtensions *UEassociatedLogicalNGconnectionItemExtIEs `optional`
 }
 
 func (ie *UEassociatedLogicalNGconnectionItem) Encode(w *aper.AperWriter) (err error) {
@@ -21,12 +21,14 @@ func (ie *UEassociatedLogicalNGconnectionItem) Encode(w *aper.AperWriter) (err e
 	}
 	w.WriteBits(optionals, 3)
 	if ie.AMFUENGAPID != nil {
-		if err = ie.AMFUENGAPID.Encode(w); err != nil {
+		tmp_AMFUENGAPID := NewINTEGER(*ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, false)
+		if err = tmp_AMFUENGAPID.Encode(w); err != nil {
 			return
 		}
 	}
 	if ie.RANUENGAPID != nil {
-		if err = ie.RANUENGAPID.Encode(w); err != nil {
+		tmp_RANUENGAPID := NewINTEGER(*ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, false)
+		if err = tmp_RANUENGAPID.Encode(w); err != nil {
 			return
 		}
 	}
@@ -40,17 +42,25 @@ func (ie *UEassociatedLogicalNGconnectionItem) Decode(r *aper.AperReader) (err e
 	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
-	ie.AMFUENGAPID = new(AMFUENGAPID)
-	ie.RANUENGAPID = new(RANUENGAPID)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.AMFUENGAPID.Decode(r); err != nil {
+		tmp_AMFUENGAPID := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 1099511627775},
+			ext: false,
+		}
+		if err = tmp_AMFUENGAPID.Decode(r); err != nil {
 			return
 		}
+		ie.AMFUENGAPID = (*int64)(&tmp_AMFUENGAPID.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.RANUENGAPID.Decode(r); err != nil {
+		tmp_RANUENGAPID := INTEGER{
+			c:   aper.Constraint{Lb: 0, Ub: 4294967295},
+			ext: false,
+		}
+		if err = tmp_RANUENGAPID.Decode(r); err != nil {
 			return
 		}
+		ie.RANUENGAPID = (*int64)(&tmp_RANUENGAPID.Value)
 	}
 	return
 }

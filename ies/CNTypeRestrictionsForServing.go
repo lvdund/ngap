@@ -7,7 +7,7 @@ const (
 )
 
 type CNTypeRestrictionsForServing struct {
-	Value aper.Enumerated `True,0,0`
+	Value aper.Enumerated
 }
 
 func (ie *CNTypeRestrictionsForServing) Encode(w *aper.AperWriter) (err error) {

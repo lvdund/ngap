@@ -3,9 +3,9 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type PDUSessionResourceSetupItemSURes struct {
-	PDUSessionID                            *PDUSessionID     `False,`
-	PDUSessionResourceSetupResponseTransfer *aper.OctetString `False,`
-	// IEExtensions PDUSessionResourceSetupItemSUResExtIEs `False,OPTIONAL`
+	PDUSessionID                            int64
+	PDUSessionResourceSetupResponseTransfer []byte
+	// IEExtensions *PDUSessionResourceSetupItemSUResExtIEs `optional`
 }
 
 func (ie *PDUSessionResourceSetupItemSURes) Encode(w *aper.AperWriter) (err error) {
@@ -14,15 +14,13 @@ func (ie *PDUSessionResourceSetupItemSURes) Encode(w *aper.AperWriter) (err erro
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.PDUSessionID != nil {
-		if err = ie.PDUSessionID.Encode(w); err != nil {
-			return
-		}
+	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		return
 	}
-	if ie.PDUSessionResourceSetupResponseTransfer != nil {
-		if err = w.WriteOctetString(*ie.PDUSessionResourceSetupResponseTransfer, &aper.Constraint{Lb: 0, Ub: 0}, false); err != nil {
-			return
-		}
+	tmp_PDUSessionResourceSetupResponseTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupResponseTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_PDUSessionResourceSetupResponseTransfer.Encode(w); err != nil {
+		return
 	}
 	return
 }
@@ -33,15 +31,21 @@ func (ie *PDUSessionResourceSetupItemSURes) Decode(r *aper.AperReader) (err erro
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.PDUSessionID = new(PDUSessionID)
-	var o []byte
-	if err = ie.PDUSessionID.Decode(r); err != nil {
+	tmp_PDUSessionID := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
+	}
+	if err = tmp_PDUSessionID.Decode(r); err != nil {
 		return
 	}
-	if o, err = r.ReadOctetString(nil, false); err != nil {
-		return
-	} else {
-		ie.PDUSessionResourceSetupResponseTransfer = (*aper.OctetString)(&o)
+	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
+	tmp_PDUSessionResourceSetupResponseTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_PDUSessionResourceSetupResponseTransfer.Decode(r); err != nil {
+		return
+	}
+	ie.PDUSessionResourceSetupResponseTransfer = tmp_PDUSessionResourceSetupResponseTransfer.Value
 	return
 }

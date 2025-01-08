@@ -1,2 +1,4 @@
 github.com/ishidawataru/sctp v0.0.0-20230406120618-7ff4192f6ff2 h1:i2fYnDurfLlJH8AyyMOnkLHnHeP8Ff/DDpuZA/D3bPo=
 github.com/ishidawataru/sctp v0.0.0-20230406120618-7ff4192f6ff2/go.mod h1:co9pwDoBCm1kGxawmb4sPq0cSIOOWNPT4KnHotMP1Zg=
+github.com/reogac/utils v1.0.0 h1:fjjtOltRo/biNMzDfCPDKdKo4UzHB8AT1I60rqPCBjU=
+github.com/reogac/utils v1.0.0/go.mod h1:orVeEpycNZnCi9woKZaz/2At/kVUWHW2BIHw2m1pjBg=

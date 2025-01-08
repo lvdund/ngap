@@ -3,10 +3,10 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type AreaOfInterest struct {
-	AreaOfInterestTAIList     *AreaOfInterestTAIList     `False,OPTIONAL`
-	AreaOfInterestCellList    *AreaOfInterestCellList    `False,OPTIONAL`
-	AreaOfInterestRANNodeList *AreaOfInterestRANNodeList `False,OPTIONAL`
-	// IEExtensions AreaOfInterestExtIEs `False,OPTIONAL`
+	AreaOfInterestTAIList     []AreaOfInterestTAIItem     `optional`
+	AreaOfInterestCellList    []AreaOfInterestCellItem    `optional`
+	AreaOfInterestRANNodeList []AreaOfInterestRANNodeItem `optional`
+	// IEExtensions *AreaOfInterestExtIEs `optional`
 }
 
 func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
@@ -25,18 +25,48 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if ie.AreaOfInterestTAIList != nil {
-		if err = ie.AreaOfInterestTAIList.Encode(w); err != nil {
-			return
+		if len(ie.AreaOfInterestTAIList) > 0 {
+			tmp := Sequence[*AreaOfInterestTAIItem]{
+				Value: []*AreaOfInterestTAIItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofTAIinAoI},
+				ext:   false,
+			}
+			for _, i := range ie.AreaOfInterestTAIList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	if ie.AreaOfInterestCellList != nil {
-		if err = ie.AreaOfInterestCellList.Encode(w); err != nil {
-			return
+		if len(ie.AreaOfInterestCellList) > 0 {
+			tmp := Sequence[*AreaOfInterestCellItem]{
+				Value: []*AreaOfInterestCellItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinAoI},
+				ext:   false,
+			}
+			for _, i := range ie.AreaOfInterestCellList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	if ie.AreaOfInterestRANNodeList != nil {
-		if err = ie.AreaOfInterestRANNodeList.Encode(w); err != nil {
-			return
+		if len(ie.AreaOfInterestRANNodeList) > 0 {
+			tmp := Sequence[*AreaOfInterestRANNodeItem]{
+				Value: []*AreaOfInterestRANNodeItem{},
+				c:     aper.Constraint{Lb: 1, Ub: maxnoofRANNodeinAoI},
+				ext:   false,
+			}
+			for _, i := range ie.AreaOfInterestRANNodeList {
+				tmp.Value = append(tmp.Value, &i)
+			}
+			if err = tmp.Encode(w); err != nil {
+				return
+			}
 		}
 	}
 	return
@@ -49,22 +79,46 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
-	ie.AreaOfInterestTAIList = new(AreaOfInterestTAIList)
-	ie.AreaOfInterestCellList = new(AreaOfInterestCellList)
-	ie.AreaOfInterestRANNodeList = new(AreaOfInterestRANNodeList)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.AreaOfInterestTAIList.Decode(r); err != nil {
+		tmp_AreaOfInterestTAIList := Sequence[*AreaOfInterestTAIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIinAoI},
+			ext: false,
+		}
+		fn := func() *AreaOfInterestTAIItem { return new(AreaOfInterestTAIItem) }
+		if err = tmp_AreaOfInterestTAIList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.AreaOfInterestTAIList = []AreaOfInterestTAIItem{}
+		for _, i := range tmp_AreaOfInterestTAIList.Value {
+			ie.AreaOfInterestTAIList = append(ie.AreaOfInterestTAIList, *i)
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.AreaOfInterestCellList.Decode(r); err != nil {
+		tmp_AreaOfInterestCellList := Sequence[*AreaOfInterestCellItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellinAoI},
+			ext: false,
+		}
+		fn := func() *AreaOfInterestCellItem { return new(AreaOfInterestCellItem) }
+		if err = tmp_AreaOfInterestCellList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.AreaOfInterestCellList = []AreaOfInterestCellItem{}
+		for _, i := range tmp_AreaOfInterestCellList.Value {
+			ie.AreaOfInterestCellList = append(ie.AreaOfInterestCellList, *i)
 		}
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.AreaOfInterestRANNodeList.Decode(r); err != nil {
+		tmp_AreaOfInterestRANNodeList := Sequence[*AreaOfInterestRANNodeItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofRANNodeinAoI},
+			ext: false,
+		}
+		fn := func() *AreaOfInterestRANNodeItem { return new(AreaOfInterestRANNodeItem) }
+		if err = tmp_AreaOfInterestRANNodeList.Decode(r, fn); err != nil {
 			return
+		}
+		ie.AreaOfInterestRANNodeList = []AreaOfInterestRANNodeItem{}
+		for _, i := range tmp_AreaOfInterestRANNodeList.Value {
+			ie.AreaOfInterestRANNodeList = append(ie.AreaOfInterestRANNodeList, *i)
 		}
 	}
 	return

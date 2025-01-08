@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 type RANStatusTransferTransparentContainer struct {
-	DRBsSubjectToStatusTransferList *DRBsSubjectToStatusTransferList `False,`
-	// IEExtensions RANStatusTransferTransparentContainerExtIEs `False,OPTIONAL`
+	DRBsSubjectToStatusTransferList []DRBsSubjectToStatusTransferItem
+	// IEExtensions *RANStatusTransferTransparentContainerExtIEs `optional`
 }
 
 func (ie *RANStatusTransferTransparentContainer) Encode(w *aper.AperWriter) (err error) {
@@ -13,8 +13,16 @@ func (ie *RANStatusTransferTransparentContainer) Encode(w *aper.AperWriter) (err
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	if ie.DRBsSubjectToStatusTransferList != nil {
-		if err = ie.DRBsSubjectToStatusTransferList.Encode(w); err != nil {
+	if len(ie.DRBsSubjectToStatusTransferList) > 0 {
+		tmp := Sequence[*DRBsSubjectToStatusTransferItem]{
+			Value: []*DRBsSubjectToStatusTransferItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
+			ext:   false,
+		}
+		for _, i := range ie.DRBsSubjectToStatusTransferList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
 			return
 		}
 	}
@@ -27,9 +35,17 @@ func (ie *RANStatusTransferTransparentContainer) Decode(r *aper.AperReader) (err
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	ie.DRBsSubjectToStatusTransferList = new(DRBsSubjectToStatusTransferList)
-	if err = ie.DRBsSubjectToStatusTransferList.Decode(r); err != nil {
+	tmp_DRBsSubjectToStatusTransferList := Sequence[*DRBsSubjectToStatusTransferItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
+		ext: false,
+	}
+	fn := func() *DRBsSubjectToStatusTransferItem { return new(DRBsSubjectToStatusTransferItem) }
+	if err = tmp_DRBsSubjectToStatusTransferList.Decode(r, fn); err != nil {
 		return
+	}
+	ie.DRBsSubjectToStatusTransferList = []DRBsSubjectToStatusTransferItem{}
+	for _, i := range tmp_DRBsSubjectToStatusTransferList.Value {
+		ie.DRBsSubjectToStatusTransferList = append(ie.DRBsSubjectToStatusTransferList, *i)
 	}
 	return
 }

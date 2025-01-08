@@ -3,8 +3,8 @@ package ies
 import "github.com/lvdund/ngap/aper"
 
 const (
-	CausePresentNothing uint64 = iota /* No components present */
-	CausePresentRadioNetwork
+	CausePresentNothing uint64 = iota
+	CausePresentRadionetwork
 	CausePresentTransport
 	CausePresentNas
 	CausePresentProtocol
@@ -14,12 +14,12 @@ const (
 
 type Cause struct {
 	Choice       uint64
-	RadioNetwork *CauseRadioNetwork `False,,,`
-	Transport    *CauseTransport    `False,,,`
-	Nas          *CauseNas          `False,,,`
-	Protocol     *CauseProtocol     `False,,,`
-	Misc         *CauseMisc         `False,,,`
-	// ChoiceExtensions *CauseExtIEs `False,,,`
+	RadioNetwork *CauseRadioNetwork
+	Transport    *CauseTransport
+	Nas          *CauseNas
+	Protocol     *CauseProtocol
+	Misc         *CauseMisc
+	// ChoiceExtensions *CauseExtIEs
 }
 
 func (ie *Cause) Encode(w *aper.AperWriter) (err error) {
@@ -27,7 +27,7 @@ func (ie *Cause) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case CausePresentRadioNetwork:
+	case CausePresentRadionetwork:
 		err = ie.RadioNetwork.Encode(w)
 	case CausePresentTransport:
 		err = ie.Transport.Encode(w)
@@ -45,7 +45,7 @@ func (ie *Cause) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	switch ie.Choice {
-	case CausePresentRadioNetwork:
+	case CausePresentRadionetwork:
 		var tmp CauseRadioNetwork
 		if err = tmp.Decode(r); err != nil {
 			return

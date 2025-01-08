@@ -8,7 +8,7 @@ const (
 )
 
 type MaximumIntegrityProtectedDataRate struct {
-	Value aper.Enumerated `True,0,1`
+	Value aper.Enumerated
 }
 
 func (ie *MaximumIntegrityProtectedDataRate) Encode(w *aper.AperWriter) (err error) {

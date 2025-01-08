@@ -2,11 +2,12 @@ package aper
 
 import (
 	"fmt"
+	"github.com/reogac/utils"
 )
 
 func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint, e bool) (err error) {
 	defer func() {
-		err = aperError("WriteSequenceOf", err)
+		err = utils.WrapError("WriteSequenceOf", err)
 	}()
 
 	numElems := len(items)
