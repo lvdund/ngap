@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type SecurityIndication struct {
 	IntegrityProtectionIndication       IntegrityProtectionIndication
@@ -19,13 +22,16 @@ func (ie *SecurityIndication) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.IntegrityProtectionIndication.Encode(w); err != nil {
+		err = utils.WrapError("Read IntegrityProtectionIndication", err)
 		return
 	}
 	if err = ie.ConfidentialityProtectionIndication.Encode(w); err != nil {
+		err = utils.WrapError("Read ConfidentialityProtectionIndication", err)
 		return
 	}
 	if ie.MaximumIntegrityProtectedDataRateUL != nil {
 		if err = ie.MaximumIntegrityProtectedDataRateUL.Encode(w); err != nil {
+			err = utils.WrapError("Read MaximumIntegrityProtectedDataRateUL", err)
 			return
 		}
 	}
@@ -40,13 +46,16 @@ func (ie *SecurityIndication) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.IntegrityProtectionIndication.Decode(r); err != nil {
+		err = utils.WrapError("Read IntegrityProtectionIndication", err)
 		return
 	}
 	if err = ie.ConfidentialityProtectionIndication.Decode(r); err != nil {
+		err = utils.WrapError("Read ConfidentialityProtectionIndication", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.MaximumIntegrityProtectedDataRateUL.Decode(r); err != nil {
+			err = utils.WrapError("Read MaximumIntegrityProtectedDataRateUL", err)
 			return
 		}
 	}

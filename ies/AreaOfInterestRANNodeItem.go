@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type AreaOfInterestRANNodeItem struct {
 	GlobalRANNodeID GlobalRANNodeID
@@ -14,6 +17,7 @@ func (ie *AreaOfInterestRANNodeItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.GlobalRANNodeID.Encode(w); err != nil {
+		err = utils.WrapError("Read GlobalRANNodeID", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *AreaOfInterestRANNodeItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.GlobalRANNodeID.Decode(r); err != nil {
+		err = utils.WrapError("Read GlobalRANNodeID", err)
 		return
 	}
 	return

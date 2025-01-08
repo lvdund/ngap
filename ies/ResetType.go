@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	ResetTypePresentNothing uint64 = iota
@@ -43,6 +46,7 @@ func (ie *ResetType) Decode(r *aper.AperReader) (err error) {
 	case ResetTypePresentNgInterface:
 		var tmp ResetAll
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read NGInterface", err)
 			return
 		}
 		ie.NGInterface = &tmp
@@ -52,6 +56,7 @@ func (ie *ResetType) Decode(r *aper.AperReader) (err error) {
 			return new(UEassociatedLogicalNGconnectionItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read PartOfNGInterface", err)
 			return
 		}
 		for _, i := range tmp.Value {

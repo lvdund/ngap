@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceModifyConfirmTransfer struct {
 	QosFlowModifyConfirmList      []QosFlowModifyConfirmItem
@@ -32,10 +35,12 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode(w *aper.AperWriter) (e
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read QosFlowModifyConfirmList", err)
 			return
 		}
 	}
 	if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 		return
 	}
 	if ie.AdditionalNGUUPTNLInformation != nil {
@@ -49,6 +54,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode(w *aper.AperWriter) (e
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AdditionalNGUUPTNLInformation", err)
 				return
 			}
 		}
@@ -64,6 +70,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode(w *aper.AperWriter) (e
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowFailedToModifyList", err)
 				return
 			}
 		}
@@ -84,6 +91,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(r *aper.AperReader) (e
 	}
 	fn := func() *QosFlowModifyConfirmItem { return new(QosFlowModifyConfirmItem) }
 	if err = tmp_QosFlowModifyConfirmList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read QosFlowModifyConfirmList", err)
 		return
 	}
 	ie.QosFlowModifyConfirmList = []QosFlowModifyConfirmItem{}
@@ -91,6 +99,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(r *aper.AperReader) (e
 		ie.QosFlowModifyConfirmList = append(ie.QosFlowModifyConfirmList, *i)
 	}
 	if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -100,6 +109,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(r *aper.AperReader) (e
 		}
 		fn := func() *UPTransportLayerInformationPairItem { return new(UPTransportLayerInformationPairItem) }
 		if err = tmp_AdditionalNGUUPTNLInformation.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AdditionalNGUUPTNLInformation", err)
 			return
 		}
 		ie.AdditionalNGUUPTNLInformation = []UPTransportLayerInformationPairItem{}
@@ -114,6 +124,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(r *aper.AperReader) (e
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToModifyList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowFailedToModifyList", err)
 			return
 		}
 		ie.QosFlowFailedToModifyList = []QosFlowWithCauseItem{}

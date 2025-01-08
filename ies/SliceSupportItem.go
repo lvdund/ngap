@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type SliceSupportItem struct {
 	SNSSAI SNSSAI
@@ -14,6 +17,7 @@ func (ie *SliceSupportItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.SNSSAI.Encode(w); err != nil {
+		err = utils.WrapError("Read SNSSAI", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *SliceSupportItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.SNSSAI.Decode(r); err != nil {
+		err = utils.WrapError("Read SNSSAI", err)
 		return
 	}
 	return

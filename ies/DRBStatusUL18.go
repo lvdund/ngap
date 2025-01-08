@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type DRBStatusUL18 struct {
 	ULCOUNTValue              COUNTValueForPDCPSN18
@@ -18,11 +21,13 @@ func (ie *DRBStatusUL18) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.ULCOUNTValue.Encode(w); err != nil {
+		err = utils.WrapError("Read ULCOUNTValue", err)
 		return
 	}
 	if ie.ReceiveStatusOfULPDCPSDUs != nil {
 		tmp_ReceiveStatusOfULPDCPSDUs := NewBITSTRING(ie.ReceiveStatusOfULPDCPSDUs, aper.Constraint{Lb: 1, Ub: 131072}, false)
 		if err = tmp_ReceiveStatusOfULPDCPSDUs.Encode(w); err != nil {
+			err = utils.WrapError("Read ReceiveStatusOfULPDCPSDUs", err)
 			return
 		}
 	}
@@ -37,6 +42,7 @@ func (ie *DRBStatusUL18) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.ULCOUNTValue.Decode(r); err != nil {
+		err = utils.WrapError("Read ULCOUNTValue", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -45,6 +51,7 @@ func (ie *DRBStatusUL18) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_ReceiveStatusOfULPDCPSDUs.Decode(r); err != nil {
+			err = utils.WrapError("Read ReceiveStatusOfULPDCPSDUs", err)
 			return
 		}
 		ie.ReceiveStatusOfULPDCPSDUs = tmp_ReceiveStatusOfULPDCPSDUs.Value.Bytes

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type AreaOfInterest struct {
 	AreaOfInterestTAIList     []AreaOfInterestTAIItem     `optional`
@@ -35,6 +38,7 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AreaOfInterestTAIList", err)
 				return
 			}
 		}
@@ -50,6 +54,7 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AreaOfInterestCellList", err)
 				return
 			}
 		}
@@ -65,6 +70,7 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AreaOfInterestRANNodeList", err)
 				return
 			}
 		}
@@ -86,6 +92,7 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestTAIItem { return new(AreaOfInterestTAIItem) }
 		if err = tmp_AreaOfInterestTAIList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AreaOfInterestTAIList", err)
 			return
 		}
 		ie.AreaOfInterestTAIList = []AreaOfInterestTAIItem{}
@@ -100,6 +107,7 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestCellItem { return new(AreaOfInterestCellItem) }
 		if err = tmp_AreaOfInterestCellList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AreaOfInterestCellList", err)
 			return
 		}
 		ie.AreaOfInterestCellList = []AreaOfInterestCellItem{}
@@ -114,6 +122,7 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestRANNodeItem { return new(AreaOfInterestRANNodeItem) }
 		if err = tmp_AreaOfInterestRANNodeList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AreaOfInterestRANNodeList", err)
 			return
 		}
 		ie.AreaOfInterestRANNodeList = []AreaOfInterestRANNodeItem{}

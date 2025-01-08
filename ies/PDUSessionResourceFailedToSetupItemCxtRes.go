@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceFailedToSetupItemCxtRes struct {
 	PDUSessionID                                int64
@@ -16,10 +19,12 @@ func (ie *PDUSessionResourceFailedToSetupItemCxtRes) Encode(w *aper.AperWriter) 
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	tmp_PDUSessionResourceSetupUnsuccessfulTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceSetupUnsuccessfulTransfer.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionResourceSetupUnsuccessfulTransfer", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *PDUSessionResourceFailedToSetupItemCxtRes) Decode(r *aper.AperReader) 
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -44,6 +50,7 @@ func (ie *PDUSessionResourceFailedToSetupItemCxtRes) Decode(r *aper.AperReader) 
 		ext: false,
 	}
 	if err = tmp_PDUSessionResourceSetupUnsuccessfulTransfer.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionResourceSetupUnsuccessfulTransfer", err)
 		return
 	}
 	ie.PDUSessionResourceSetupUnsuccessfulTransfer = tmp_PDUSessionResourceSetupUnsuccessfulTransfer.Value

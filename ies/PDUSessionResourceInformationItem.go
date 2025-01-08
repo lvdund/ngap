@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceInformationItem struct {
 	PDUSessionID              int64
@@ -20,6 +23,7 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 	w.WriteBits(optionals, 2)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	if len(ie.QosFlowInformationList) > 0 {
@@ -32,6 +36,7 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read QosFlowInformationList", err)
 			return
 		}
 	}
@@ -46,6 +51,7 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read DRBsToQosFlowsMappingList", err)
 				return
 			}
 		}
@@ -65,6 +71,7 @@ func (ie *PDUSessionResourceInformationItem) Decode(r *aper.AperReader) (err err
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -74,6 +81,7 @@ func (ie *PDUSessionResourceInformationItem) Decode(r *aper.AperReader) (err err
 	}
 	fn := func() *QosFlowInformationItem { return new(QosFlowInformationItem) }
 	if err = tmp_QosFlowInformationList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read QosFlowInformationList", err)
 		return
 	}
 	ie.QosFlowInformationList = []QosFlowInformationItem{}
@@ -87,6 +95,7 @@ func (ie *PDUSessionResourceInformationItem) Decode(r *aper.AperReader) (err err
 		}
 		fn := func() *DRBsToQosFlowsMappingItem { return new(DRBsToQosFlowsMappingItem) }
 		if err = tmp_DRBsToQosFlowsMappingList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read DRBsToQosFlowsMappingList", err)
 			return
 		}
 		ie.DRBsToQosFlowsMappingList = []DRBsToQosFlowsMappingItem{}

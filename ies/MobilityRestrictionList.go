@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type MobilityRestrictionList struct {
 	ServingPLMN              []byte
@@ -31,6 +34,7 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	tmp_ServingPLMN := NewOCTETSTRING(ie.ServingPLMN, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_ServingPLMN.Encode(w); err != nil {
+		err = utils.WrapError("Read ServingPLMN", err)
 		return
 	}
 	if ie.EquivalentPLMNs != nil {
@@ -44,6 +48,7 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read EquivalentPLMNs", err)
 				return
 			}
 		}
@@ -59,6 +64,7 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read RATRestrictions", err)
 				return
 			}
 		}
@@ -74,6 +80,7 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read ForbiddenAreaInformation", err)
 				return
 			}
 		}
@@ -89,6 +96,7 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read ServiceAreaInformation", err)
 				return
 			}
 		}
@@ -108,6 +116,7 @@ func (ie *MobilityRestrictionList) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_ServingPLMN.Decode(r); err != nil {
+		err = utils.WrapError("Read ServingPLMN", err)
 		return
 	}
 	ie.ServingPLMN = tmp_ServingPLMN.Value
@@ -118,6 +127,7 @@ func (ie *MobilityRestrictionList) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *PLMNIdentity { return new(PLMNIdentity) }
 		if err = tmp_EquivalentPLMNs.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read EquivalentPLMNs", err)
 			return
 		}
 		ie.EquivalentPLMNs = []PLMNIdentity{}
@@ -132,6 +142,7 @@ func (ie *MobilityRestrictionList) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *RATRestrictionsItem { return new(RATRestrictionsItem) }
 		if err = tmp_RATRestrictions.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read RATRestrictions", err)
 			return
 		}
 		ie.RATRestrictions = []RATRestrictionsItem{}
@@ -146,6 +157,7 @@ func (ie *MobilityRestrictionList) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *ForbiddenAreaInformationItem { return new(ForbiddenAreaInformationItem) }
 		if err = tmp_ForbiddenAreaInformation.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read ForbiddenAreaInformation", err)
 			return
 		}
 		ie.ForbiddenAreaInformation = []ForbiddenAreaInformationItem{}
@@ -160,6 +172,7 @@ func (ie *MobilityRestrictionList) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *ServiceAreaInformationItem { return new(ServiceAreaInformationItem) }
 		if err = tmp_ServiceAreaInformation.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read ServiceAreaInformation", err)
 			return
 		}
 		ie.ServiceAreaInformation = []ServiceAreaInformationItem{}

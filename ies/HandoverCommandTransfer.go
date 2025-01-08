@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type HandoverCommandTransfer struct {
 	DLForwardingUPTNLInformation  *UPTransportLayerInformation    `optional`
@@ -26,6 +29,7 @@ func (ie *HandoverCommandTransfer) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 4)
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
 			return
 		}
 	}
@@ -40,6 +44,7 @@ func (ie *HandoverCommandTransfer) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowToBeForwardedList", err)
 				return
 			}
 		}
@@ -55,6 +60,7 @@ func (ie *HandoverCommandTransfer) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read DataForwardingResponseDRBList", err)
 				return
 			}
 		}
@@ -71,6 +77,7 @@ func (ie *HandoverCommandTransfer) Decode(r *aper.AperReader) (err error) {
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLForwardingUPTNLInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
 			return
 		}
 	}
@@ -81,6 +88,7 @@ func (ie *HandoverCommandTransfer) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *QosFlowToBeForwardedItem { return new(QosFlowToBeForwardedItem) }
 		if err = tmp_QosFlowToBeForwardedList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowToBeForwardedList", err)
 			return
 		}
 		ie.QosFlowToBeForwardedList = []QosFlowToBeForwardedItem{}
@@ -95,6 +103,7 @@ func (ie *HandoverCommandTransfer) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *DataForwardingResponseDRBItem { return new(DataForwardingResponseDRBItem) }
 		if err = tmp_DataForwardingResponseDRBList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read DataForwardingResponseDRBList", err)
 			return
 		}
 		ie.DataForwardingResponseDRBList = []DataForwardingResponseDRBItem{}

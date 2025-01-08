@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type RecommendedCellItem struct {
 	NGRANCGI         NGRANCGI
@@ -18,11 +21,13 @@ func (ie *RecommendedCellItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.NGRANCGI.Encode(w); err != nil {
+		err = utils.WrapError("Read NGRANCGI", err)
 		return
 	}
 	if ie.TimeStayedInCell != nil {
 		tmp_TimeStayedInCell := NewINTEGER(*ie.TimeStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_TimeStayedInCell.Encode(w); err != nil {
+			err = utils.WrapError("Read TimeStayedInCell", err)
 			return
 		}
 	}
@@ -37,6 +42,7 @@ func (ie *RecommendedCellItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.NGRANCGI.Decode(r); err != nil {
+		err = utils.WrapError("Read NGRANCGI", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -45,6 +51,7 @@ func (ie *RecommendedCellItem) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_TimeStayedInCell.Decode(r); err != nil {
+			err = utils.WrapError("Read TimeStayedInCell", err)
 			return
 		}
 		ie.TimeStayedInCell = (*int64)(&tmp_TimeStayedInCell.Value)

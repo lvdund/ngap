@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type TargeteNBID struct {
 	GlobalENBID    GlobalNgENBID
@@ -15,9 +18,11 @@ func (ie *TargeteNBID) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.GlobalENBID.Encode(w); err != nil {
+		err = utils.WrapError("Read GlobalENBID", err)
 		return
 	}
 	if err = ie.SelectedEPSTAI.Encode(w); err != nil {
+		err = utils.WrapError("Read SelectedEPSTAI", err)
 		return
 	}
 	return
@@ -30,9 +35,11 @@ func (ie *TargeteNBID) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.GlobalENBID.Decode(r); err != nil {
+		err = utils.WrapError("Read GlobalENBID", err)
 		return
 	}
 	if err = ie.SelectedEPSTAI.Decode(r); err != nil {
+		err = utils.WrapError("Read SelectedEPSTAI", err)
 		return
 	}
 	return

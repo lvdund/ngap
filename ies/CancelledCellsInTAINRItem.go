@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type CancelledCellsInTAINRItem struct {
 	NRCGI              NRCGI
@@ -15,10 +18,12 @@ func (ie *CancelledCellsInTAINRItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NRCGI.Encode(w); err != nil {
+		err = utils.WrapError("Read NRCGI", err)
 		return
 	}
 	tmp_NumberOfBroadcasts := NewINTEGER(ie.NumberOfBroadcasts, aper.Constraint{Lb: 0, Ub: 65535}, false)
 	if err = tmp_NumberOfBroadcasts.Encode(w); err != nil {
+		err = utils.WrapError("Read NumberOfBroadcasts", err)
 		return
 	}
 	return
@@ -31,6 +36,7 @@ func (ie *CancelledCellsInTAINRItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.NRCGI.Decode(r); err != nil {
+		err = utils.WrapError("Read NRCGI", err)
 		return
 	}
 	tmp_NumberOfBroadcasts := INTEGER{
@@ -38,6 +44,7 @@ func (ie *CancelledCellsInTAINRItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_NumberOfBroadcasts.Decode(r); err != nil {
+		err = utils.WrapError("Read NumberOfBroadcasts", err)
 		return
 	}
 	ie.NumberOfBroadcasts = int64(tmp_NumberOfBroadcasts.Value)

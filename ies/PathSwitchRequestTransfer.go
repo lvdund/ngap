@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PathSwitchRequestTransfer struct {
 	DLNGUUPTNLInformation        UPTransportLayerInformation
@@ -26,15 +29,18 @@ func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 		return
 	}
 	if ie.DLNGUTNLInformationReused != nil {
 		if err = ie.DLNGUTNLInformationReused.Encode(w); err != nil {
+			err = utils.WrapError("Read DLNGUTNLInformationReused", err)
 			return
 		}
 	}
 	if ie.UserPlaneSecurityInformation != nil {
 		if err = ie.UserPlaneSecurityInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read UserPlaneSecurityInformation", err)
 			return
 		}
 	}
@@ -49,6 +55,7 @@ func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowAcceptedList", err)
 				return
 			}
 		}
@@ -64,15 +71,18 @@ func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLNGUTNLInformationReused.Decode(r); err != nil {
+			err = utils.WrapError("Read DLNGUTNLInformationReused", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.UserPlaneSecurityInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read UserPlaneSecurityInformation", err)
 			return
 		}
 	}
@@ -83,6 +93,7 @@ func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *QosFlowAcceptedItem { return new(QosFlowAcceptedItem) }
 		if err = tmp_QosFlowAcceptedList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowAcceptedList", err)
 			return
 		}
 		ie.QosFlowAcceptedList = []QosFlowAcceptedItem{}

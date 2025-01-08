@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type ServiceAreaInformationItem struct {
 	PLMNIdentity   []byte
@@ -23,6 +26,7 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	if ie.AllowedTACs != nil {
@@ -36,6 +40,7 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AllowedTACs", err)
 				return
 			}
 		}
@@ -51,6 +56,7 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read NotAllowedTACs", err)
 				return
 			}
 		}
@@ -70,6 +76,7 @@ func (ie *ServiceAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -80,6 +87,7 @@ func (ie *ServiceAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *TAC { return new(TAC) }
 		if err = tmp_AllowedTACs.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AllowedTACs", err)
 			return
 		}
 		ie.AllowedTACs = []TAC{}
@@ -94,6 +102,7 @@ func (ie *ServiceAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *TAC { return new(TAC) }
 		if err = tmp_NotAllowedTACs.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read NotAllowedTACs", err)
 			return
 		}
 		ie.NotAllowedTACs = []TAC{}

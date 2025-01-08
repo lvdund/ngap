@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type ExpectedUEActivityBehaviour struct {
 	ExpectedActivityPeriod                 *int64                                  `optional`
@@ -27,17 +30,20 @@ func (ie *ExpectedUEActivityBehaviour) Encode(w *aper.AperWriter) (err error) {
 	if ie.ExpectedActivityPeriod != nil {
 		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, false)
 		if err = tmp_ExpectedActivityPeriod.Encode(w); err != nil {
+			err = utils.WrapError("Read ExpectedActivityPeriod", err)
 			return
 		}
 	}
 	if ie.ExpectedIdlePeriod != nil {
 		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, false)
 		if err = tmp_ExpectedIdlePeriod.Encode(w); err != nil {
+			err = utils.WrapError("Read ExpectedIdlePeriod", err)
 			return
 		}
 	}
 	if ie.SourceOfUEActivityBehaviourInformation != nil {
 		if err = ie.SourceOfUEActivityBehaviourInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read SourceOfUEActivityBehaviourInformation", err)
 			return
 		}
 	}
@@ -57,6 +63,7 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_ExpectedActivityPeriod.Decode(r); err != nil {
+			err = utils.WrapError("Read ExpectedActivityPeriod", err)
 			return
 		}
 		ie.ExpectedActivityPeriod = (*int64)(&tmp_ExpectedActivityPeriod.Value)
@@ -67,12 +74,14 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_ExpectedIdlePeriod.Decode(r); err != nil {
+			err = utils.WrapError("Read ExpectedIdlePeriod", err)
 			return
 		}
 		ie.ExpectedIdlePeriod = (*int64)(&tmp_ExpectedIdlePeriod.Value)
 	}
 	if aper.IsBitSet(optionals, 3) {
 		if err = ie.SourceOfUEActivityBehaviourInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read SourceOfUEActivityBehaviourInformation", err)
 			return
 		}
 	}

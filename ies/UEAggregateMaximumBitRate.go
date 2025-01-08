@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type UEAggregateMaximumBitRate struct {
 	UEAggregateMaximumBitRateDL int64
@@ -16,10 +19,12 @@ func (ie *UEAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_UEAggregateMaximumBitRateDL := NewINTEGER(ie.UEAggregateMaximumBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_UEAggregateMaximumBitRateDL.Encode(w); err != nil {
+		err = utils.WrapError("Read UEAggregateMaximumBitRateDL", err)
 		return
 	}
 	tmp_UEAggregateMaximumBitRateUL := NewINTEGER(ie.UEAggregateMaximumBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_UEAggregateMaximumBitRateUL.Encode(w); err != nil {
+		err = utils.WrapError("Read UEAggregateMaximumBitRateUL", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *UEAggregateMaximumBitRate) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_UEAggregateMaximumBitRateDL.Decode(r); err != nil {
+		err = utils.WrapError("Read UEAggregateMaximumBitRateDL", err)
 		return
 	}
 	ie.UEAggregateMaximumBitRateDL = int64(tmp_UEAggregateMaximumBitRateDL.Value)
@@ -44,6 +50,7 @@ func (ie *UEAggregateMaximumBitRate) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_UEAggregateMaximumBitRateUL.Decode(r); err != nil {
+		err = utils.WrapError("Read UEAggregateMaximumBitRateUL", err)
 		return
 	}
 	ie.UEAggregateMaximumBitRateUL = int64(tmp_UEAggregateMaximumBitRateUL.Value)

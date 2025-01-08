@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type GlobalGNBID struct {
 	PLMNIdentity []byte
@@ -16,9 +19,11 @@ func (ie *GlobalGNBID) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	if err = ie.GNBID.Encode(w); err != nil {
+		err = utils.WrapError("Read GNBID", err)
 		return
 	}
 	return
@@ -35,10 +40,12 @@ func (ie *GlobalGNBID) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
 	if err = ie.GNBID.Decode(r); err != nil {
+		err = utils.WrapError("Read GNBID", err)
 		return
 	}
 	return

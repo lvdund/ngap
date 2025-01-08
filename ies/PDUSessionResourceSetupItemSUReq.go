@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceSetupItemSUReq struct {
 	PDUSessionID                           int64
@@ -27,22 +30,26 @@ func (ie *PDUSessionResourceSetupItemSUReq) Encode(w *aper.AperWriter) (err erro
 	w.WriteBits(optionals, 4)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	if ie.PDUSessionNASPDU != nil {
 		tmp_PDUSessionNASPDU := NewOCTETSTRING(ie.PDUSessionNASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionNASPDU.Encode(w); err != nil {
+			err = utils.WrapError("Read PDUSessionNASPDU", err)
 			return
 		}
 	}
 	if ie.SNSSAI != nil {
 		if err = ie.SNSSAI.Encode(w); err != nil {
+			err = utils.WrapError("Read SNSSAI", err)
 			return
 		}
 	}
 	if ie.PDUSessionResourceSetupRequestTransfer != nil {
 		tmp_PDUSessionResourceSetupRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionResourceSetupRequestTransfer.Encode(w); err != nil {
+			err = utils.WrapError("Read PDUSessionResourceSetupRequestTransfer", err)
 			return
 		}
 	}
@@ -61,6 +68,7 @@ func (ie *PDUSessionResourceSetupItemSUReq) Decode(r *aper.AperReader) (err erro
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -70,12 +78,14 @@ func (ie *PDUSessionResourceSetupItemSUReq) Decode(r *aper.AperReader) (err erro
 			ext: false,
 		}
 		if err = tmp_PDUSessionNASPDU.Decode(r); err != nil {
+			err = utils.WrapError("Read PDUSessionNASPDU", err)
 			return
 		}
 		ie.PDUSessionNASPDU = tmp_PDUSessionNASPDU.Value
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.SNSSAI.Decode(r); err != nil {
+			err = utils.WrapError("Read SNSSAI", err)
 			return
 		}
 	}
@@ -85,6 +95,7 @@ func (ie *PDUSessionResourceSetupItemSUReq) Decode(r *aper.AperReader) (err erro
 			ext: false,
 		}
 		if err = tmp_PDUSessionResourceSetupRequestTransfer.Decode(r); err != nil {
+			err = utils.WrapError("Read PDUSessionResourceSetupRequestTransfer", err)
 			return
 		}
 		ie.PDUSessionResourceSetupRequestTransfer = tmp_PDUSessionResourceSetupRequestTransfer.Value

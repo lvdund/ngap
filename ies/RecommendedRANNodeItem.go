@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type RecommendedRANNodeItem struct {
 	AMFPagingTarget AMFPagingTarget
@@ -14,6 +17,7 @@ func (ie *RecommendedRANNodeItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AMFPagingTarget.Encode(w); err != nil {
+		err = utils.WrapError("Read AMFPagingTarget", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *RecommendedRANNodeItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.AMFPagingTarget.Decode(r); err != nil {
+		err = utils.WrapError("Read AMFPagingTarget", err)
 		return
 	}
 	return

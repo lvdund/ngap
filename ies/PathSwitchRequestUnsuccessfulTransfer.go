@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PathSwitchRequestUnsuccessfulTransfer struct {
 	Cause Cause
@@ -14,6 +17,7 @@ func (ie *PathSwitchRequestUnsuccessfulTransfer) Encode(w *aper.AperWriter) (err
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.Cause.Encode(w); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *PathSwitchRequestUnsuccessfulTransfer) Decode(r *aper.AperReader) (err
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	return

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type RANStatusTransferTransparentContainer struct {
 	DRBsSubjectToStatusTransferList []DRBsSubjectToStatusTransferItem
@@ -23,6 +26,7 @@ func (ie *RANStatusTransferTransparentContainer) Encode(w *aper.AperWriter) (err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read DRBsSubjectToStatusTransferList", err)
 			return
 		}
 	}
@@ -41,6 +45,7 @@ func (ie *RANStatusTransferTransparentContainer) Decode(r *aper.AperReader) (err
 	}
 	fn := func() *DRBsSubjectToStatusTransferItem { return new(DRBsSubjectToStatusTransferItem) }
 	if err = tmp_DRBsSubjectToStatusTransferList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read DRBsSubjectToStatusTransferList", err)
 		return
 	}
 	ie.DRBsSubjectToStatusTransferList = []DRBsSubjectToStatusTransferItem{}

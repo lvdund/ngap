@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	UPTransportLayerInformationPresentNothing uint64 = iota
@@ -32,6 +35,7 @@ func (ie *UPTransportLayerInformation) Decode(r *aper.AperReader) (err error) {
 	case UPTransportLayerInformationPresentGtptunnel:
 		var tmp GTPTunnel
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read GTPTunnel", err)
 			return
 		}
 		ie.GTPTunnel = &tmp

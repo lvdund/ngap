@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	UEPagingIdentityPresentNothing uint64 = iota
@@ -32,6 +35,7 @@ func (ie *UEPagingIdentity) Decode(r *aper.AperReader) (err error) {
 	case UEPagingIdentityPresentFivegSTmsi:
 		var tmp FiveGSTMSI
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read FiveGSTMSI", err)
 			return
 		}
 		ie.FiveGSTMSI = &tmp

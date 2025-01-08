@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	CausePresentNothing uint64 = iota
@@ -48,30 +51,35 @@ func (ie *Cause) Decode(r *aper.AperReader) (err error) {
 	case CausePresentRadionetwork:
 		var tmp CauseRadioNetwork
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read RadioNetwork", err)
 			return
 		}
 		ie.RadioNetwork = &tmp
 	case CausePresentTransport:
 		var tmp CauseTransport
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read Transport", err)
 			return
 		}
 		ie.Transport = &tmp
 	case CausePresentNas:
 		var tmp CauseNas
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read Nas", err)
 			return
 		}
 		ie.Nas = &tmp
 	case CausePresentProtocol:
 		var tmp CauseProtocol
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read Protocol", err)
 			return
 		}
 		ie.Protocol = &tmp
 	case CausePresentMisc:
 		var tmp CauseMisc
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read Misc", err)
 			return
 		}
 		ie.Misc = &tmp

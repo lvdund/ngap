@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	CellIDListForRestartPresentNothing uint64 = iota
@@ -53,6 +56,7 @@ func (ie *CellIDListForRestart) Decode(r *aper.AperReader) (err error) {
 			return new(EUTRACGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read EUTRACGIListforRestart", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -64,6 +68,7 @@ func (ie *CellIDListForRestart) Decode(r *aper.AperReader) (err error) {
 			return new(NRCGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read NRCGIListforRestart", err)
 			return
 		}
 		for _, i := range tmp.Value {

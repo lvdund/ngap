@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type NonDynamic5QIDescriptor struct {
 	FiveQI                 int64
@@ -27,23 +30,27 @@ func (ie *NonDynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 4)
 	tmp_FiveQI := NewINTEGER(ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_FiveQI.Encode(w); err != nil {
+		err = utils.WrapError("Read FiveQI", err)
 		return
 	}
 	if ie.PriorityLevelQos != nil {
 		tmp_PriorityLevelQos := NewINTEGER(*ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, false)
 		if err = tmp_PriorityLevelQos.Encode(w); err != nil {
+			err = utils.WrapError("Read PriorityLevelQos", err)
 			return
 		}
 	}
 	if ie.AveragingWindow != nil {
 		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_AveragingWindow.Encode(w); err != nil {
+			err = utils.WrapError("Read AveragingWindow", err)
 			return
 		}
 	}
 	if ie.MaximumDataBurstVolume != nil {
 		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_MaximumDataBurstVolume.Encode(w); err != nil {
+			err = utils.WrapError("Read MaximumDataBurstVolume", err)
 			return
 		}
 	}
@@ -62,6 +69,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_FiveQI.Decode(r); err != nil {
+		err = utils.WrapError("Read FiveQI", err)
 		return
 	}
 	ie.FiveQI = int64(tmp_FiveQI.Value)
@@ -71,6 +79,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_PriorityLevelQos.Decode(r); err != nil {
+			err = utils.WrapError("Read PriorityLevelQos", err)
 			return
 		}
 		ie.PriorityLevelQos = (*int64)(&tmp_PriorityLevelQos.Value)
@@ -81,6 +90,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_AveragingWindow.Decode(r); err != nil {
+			err = utils.WrapError("Read AveragingWindow", err)
 			return
 		}
 		ie.AveragingWindow = (*int64)(&tmp_AveragingWindow.Value)
@@ -91,6 +101,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_MaximumDataBurstVolume.Decode(r); err != nil {
+			err = utils.WrapError("Read MaximumDataBurstVolume", err)
 			return
 		}
 		ie.MaximumDataBurstVolume = (*int64)(&tmp_MaximumDataBurstVolume.Value)

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type UserPlaneSecurityInformation struct {
 	SecurityResult     SecurityResult
@@ -15,9 +18,11 @@ func (ie *UserPlaneSecurityInformation) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.SecurityResult.Encode(w); err != nil {
+		err = utils.WrapError("Read SecurityResult", err)
 		return
 	}
 	if err = ie.SecurityIndication.Encode(w); err != nil {
+		err = utils.WrapError("Read SecurityIndication", err)
 		return
 	}
 	return
@@ -30,9 +35,11 @@ func (ie *UserPlaneSecurityInformation) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.SecurityResult.Decode(r); err != nil {
+		err = utils.WrapError("Read SecurityResult", err)
 		return
 	}
 	if err = ie.SecurityIndication.Decode(r); err != nil {
+		err = utils.WrapError("Read SecurityIndication", err)
 		return
 	}
 	return

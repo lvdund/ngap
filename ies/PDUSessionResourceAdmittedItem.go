@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceAdmittedItem struct {
 	PDUSessionID                       int64
@@ -16,10 +19,12 @@ func (ie *PDUSessionResourceAdmittedItem) Encode(w *aper.AperWriter) (err error)
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	tmp_HandoverRequestAcknowledgeTransfer := NewOCTETSTRING(ie.HandoverRequestAcknowledgeTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverRequestAcknowledgeTransfer.Encode(w); err != nil {
+		err = utils.WrapError("Read HandoverRequestAcknowledgeTransfer", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *PDUSessionResourceAdmittedItem) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -44,6 +50,7 @@ func (ie *PDUSessionResourceAdmittedItem) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_HandoverRequestAcknowledgeTransfer.Decode(r); err != nil {
+		err = utils.WrapError("Read HandoverRequestAcknowledgeTransfer", err)
 		return
 	}
 	ie.HandoverRequestAcknowledgeTransfer = tmp_HandoverRequestAcknowledgeTransfer.Value

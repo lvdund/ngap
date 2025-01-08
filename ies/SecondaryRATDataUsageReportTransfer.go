@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type SecondaryRATDataUsageReportTransfer struct {
 	SecondaryRATUsageInformation *SecondaryRATUsageInformation `optional`
@@ -18,6 +21,7 @@ func (ie *SecondaryRATDataUsageReportTransfer) Encode(w *aper.AperWriter) (err e
 	w.WriteBits(optionals, 2)
 	if ie.SecondaryRATUsageInformation != nil {
 		if err = ie.SecondaryRATUsageInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read SecondaryRATUsageInformation", err)
 			return
 		}
 	}
@@ -33,6 +37,7 @@ func (ie *SecondaryRATDataUsageReportTransfer) Decode(r *aper.AperReader) (err e
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.SecondaryRATUsageInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read SecondaryRATUsageInformation", err)
 			return
 		}
 	}

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type DRBStatusDL12 struct {
 	DLCOUNTValue COUNTValueForPDCPSN12
@@ -14,6 +17,7 @@ func (ie *DRBStatusDL12) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.DLCOUNTValue.Encode(w); err != nil {
+		err = utils.WrapError("Read DLCOUNTValue", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *DRBStatusDL12) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.DLCOUNTValue.Decode(r); err != nil {
+		err = utils.WrapError("Read DLCOUNTValue", err)
 		return
 	}
 	return

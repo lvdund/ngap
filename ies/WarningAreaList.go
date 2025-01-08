@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	WarningAreaListPresentNothing uint64 = iota
@@ -75,6 +78,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EUTRACGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read EUTRACGIListForWarning", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -86,6 +90,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(NRCGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read NRCGIListForWarning", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -97,6 +102,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read TAIListForWarning", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -108,6 +114,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaID)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read EmergencyAreaIDList", err)
 			return
 		}
 		for _, i := range tmp.Value {

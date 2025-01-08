@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type NRCGI struct {
 	PLMNIdentity   []byte
@@ -16,10 +19,12 @@ func (ie *NRCGI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	tmp_NRCellIdentity := NewBITSTRING(ie.NRCellIdentity, aper.Constraint{Lb: 36, Ub: 36}, false)
 	if err = tmp_NRCellIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read NRCellIdentity", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *NRCGI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -44,6 +50,7 @@ func (ie *NRCGI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_NRCellIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read NRCellIdentity", err)
 		return
 	}
 	ie.NRCellIdentity = tmp_NRCellIdentity.Value.Bytes

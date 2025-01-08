@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type CellType struct {
 	CellSize CellSize
@@ -14,6 +17,7 @@ func (ie *CellType) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.CellSize.Encode(w); err != nil {
+		err = utils.WrapError("Read CellSize", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *CellType) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.CellSize.Decode(r); err != nil {
+		err = utils.WrapError("Read CellSize", err)
 		return
 	}
 	return

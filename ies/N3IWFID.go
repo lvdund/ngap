@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	N3IWFIDPresentNothing uint64 = iota
@@ -33,6 +36,7 @@ func (ie *N3IWFID) Decode(r *aper.AperReader) (err error) {
 	case N3IWFIDPresentN3IwfId:
 		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 16, Ub: 16}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read N3IWFID", err)
 			return
 		}
 		ie.N3IWFID = tmp.Value.Bytes

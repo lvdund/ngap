@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type AdditionalDLUPTNLInformationForHOItem struct {
 	AdditionalDLNGUUPTNLInformation        UPTransportLayerInformation
@@ -19,6 +22,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.AdditionalDLNGUUPTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read AdditionalDLNGUUPTNLInformation", err)
 		return
 	}
 	if len(ie.AdditionalQosFlowSetupResponseList) > 0 {
@@ -31,11 +35,13 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read AdditionalQosFlowSetupResponseList", err)
 			return
 		}
 	}
 	if ie.AdditionalDLForwardingUPTNLInformation != nil {
 		if err = ie.AdditionalDLForwardingUPTNLInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read AdditionalDLForwardingUPTNLInformation", err)
 			return
 		}
 	}
@@ -50,6 +56,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 		return
 	}
 	if err = ie.AdditionalDLNGUUPTNLInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read AdditionalDLNGUUPTNLInformation", err)
 		return
 	}
 	tmp_AdditionalQosFlowSetupResponseList := Sequence[*QosFlowItemWithDataForwarding]{
@@ -58,6 +65,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 	}
 	fn := func() *QosFlowItemWithDataForwarding { return new(QosFlowItemWithDataForwarding) }
 	if err = tmp_AdditionalQosFlowSetupResponseList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read AdditionalQosFlowSetupResponseList", err)
 		return
 	}
 	ie.AdditionalQosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
@@ -66,6 +74,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.AdditionalDLForwardingUPTNLInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read AdditionalDLForwardingUPTNLInformation", err)
 			return
 		}
 	}

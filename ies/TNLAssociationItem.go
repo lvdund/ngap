@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type TNLAssociationItem struct {
 	TNLAssociationAddress CPTransportLayerInformation
@@ -15,9 +18,11 @@ func (ie *TNLAssociationItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TNLAssociationAddress.Encode(w); err != nil {
+		err = utils.WrapError("Read TNLAssociationAddress", err)
 		return
 	}
 	if err = ie.Cause.Encode(w); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	return
@@ -30,9 +35,11 @@ func (ie *TNLAssociationItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TNLAssociationAddress.Decode(r); err != nil {
+		err = utils.WrapError("Read TNLAssociationAddress", err)
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	return

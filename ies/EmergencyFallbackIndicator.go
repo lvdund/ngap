@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type EmergencyFallbackIndicator struct {
 	EmergencyFallbackRequestIndicator EmergencyFallbackRequestIndicator
@@ -18,10 +21,12 @@ func (ie *EmergencyFallbackIndicator) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.EmergencyFallbackRequestIndicator.Encode(w); err != nil {
+		err = utils.WrapError("Read EmergencyFallbackRequestIndicator", err)
 		return
 	}
 	if ie.EmergencyServiceTargetCN != nil {
 		if err = ie.EmergencyServiceTargetCN.Encode(w); err != nil {
+			err = utils.WrapError("Read EmergencyServiceTargetCN", err)
 			return
 		}
 	}
@@ -36,10 +41,12 @@ func (ie *EmergencyFallbackIndicator) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.EmergencyFallbackRequestIndicator.Decode(r); err != nil {
+		err = utils.WrapError("Read EmergencyFallbackRequestIndicator", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.EmergencyServiceTargetCN.Decode(r); err != nil {
+			err = utils.WrapError("Read EmergencyServiceTargetCN", err)
 			return
 		}
 	}

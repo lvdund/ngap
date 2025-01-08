@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type XnExtTLAItem struct {
 	IPsecTLA []byte
@@ -23,6 +26,7 @@ func (ie *XnExtTLAItem) Encode(w *aper.AperWriter) (err error) {
 	if ie.IPsecTLA != nil {
 		tmp_IPsecTLA := NewBITSTRING(ie.IPsecTLA, aper.Constraint{Lb: 1, Ub: 160}, false)
 		if err = tmp_IPsecTLA.Encode(w); err != nil {
+			err = utils.WrapError("Read IPsecTLA", err)
 			return
 		}
 	}
@@ -37,6 +41,7 @@ func (ie *XnExtTLAItem) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read GTPTLAs", err)
 				return
 			}
 		}
@@ -57,6 +62,7 @@ func (ie *XnExtTLAItem) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_IPsecTLA.Decode(r); err != nil {
+			err = utils.WrapError("Read IPsecTLA", err)
 			return
 		}
 		ie.IPsecTLA = tmp_IPsecTLA.Value.Bytes
@@ -68,6 +74,7 @@ func (ie *XnExtTLAItem) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *TransportLayerAddress { return new(TransportLayerAddress) }
 		if err = tmp_GTPTLAs.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read GTPTLAs", err)
 			return
 		}
 		ie.GTPTLAs = []TransportLayerAddress{}

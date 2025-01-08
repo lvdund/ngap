@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceSetupResponseTransfer struct {
 	DLQosFlowPerTNLInformation           QosFlowPerTNLInformation
@@ -26,6 +29,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w *aper.AperWriter) (e
 	}
 	w.WriteBits(optionals, 4)
 	if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read DLQosFlowPerTNLInformation", err)
 		return
 	}
 	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
@@ -39,12 +43,14 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w *aper.AperWriter) (e
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
 				return
 			}
 		}
 	}
 	if ie.SecurityResult != nil {
 		if err = ie.SecurityResult.Encode(w); err != nil {
+			err = utils.WrapError("Read SecurityResult", err)
 			return
 		}
 	}
@@ -59,6 +65,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode(w *aper.AperWriter) (e
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowFailedToSetupList", err)
 				return
 			}
 		}
@@ -74,6 +81,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(r *aper.AperReader) (e
 		return
 	}
 	if err = ie.DLQosFlowPerTNLInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read DLQosFlowPerTNLInformation", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -83,6 +91,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(r *aper.AperReader) (e
 		}
 		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
 		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
 			return
 		}
 		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
@@ -92,6 +101,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(r *aper.AperReader) (e
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.SecurityResult.Decode(r); err != nil {
+			err = utils.WrapError("Read SecurityResult", err)
 			return
 		}
 	}
@@ -102,6 +112,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(r *aper.AperReader) (e
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToSetupList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowFailedToSetupList", err)
 			return
 		}
 		ie.QosFlowFailedToSetupList = []QosFlowWithCauseItem{}

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PathSwitchRequestAcknowledgeTransfer struct {
 	ULNGUUPTNLInformation *UPTransportLayerInformation `optional`
@@ -22,11 +25,13 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err 
 	w.WriteBits(optionals, 3)
 	if ie.ULNGUUPTNLInformation != nil {
 		if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 			return
 		}
 	}
 	if ie.SecurityIndication != nil {
 		if err = ie.SecurityIndication.Encode(w); err != nil {
+			err = utils.WrapError("Read SecurityIndication", err)
 			return
 		}
 	}
@@ -42,11 +47,13 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err 
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.SecurityIndication.Decode(r); err != nil {
+			err = utils.WrapError("Read SecurityIndication", err)
 			return
 		}
 	}

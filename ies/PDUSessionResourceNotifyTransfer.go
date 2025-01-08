@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceNotifyTransfer struct {
 	QosFlowNotifyList   []QosFlowNotifyItem    `optional`
@@ -31,6 +34,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Encode(w *aper.AperWriter) (err erro
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowNotifyList", err)
 				return
 			}
 		}
@@ -46,6 +50,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Encode(w *aper.AperWriter) (err erro
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowReleasedList", err)
 				return
 			}
 		}
@@ -67,6 +72,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Decode(r *aper.AperReader) (err erro
 		}
 		fn := func() *QosFlowNotifyItem { return new(QosFlowNotifyItem) }
 		if err = tmp_QosFlowNotifyList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowNotifyList", err)
 			return
 		}
 		ie.QosFlowNotifyList = []QosFlowNotifyItem{}
@@ -81,6 +87,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Decode(r *aper.AperReader) (err erro
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowReleasedList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowReleasedList", err)
 			return
 		}
 		ie.QosFlowReleasedList = []QosFlowWithCauseItem{}

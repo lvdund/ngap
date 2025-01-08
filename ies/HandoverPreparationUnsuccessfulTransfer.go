@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type HandoverPreparationUnsuccessfulTransfer struct {
 	Cause Cause
@@ -14,6 +17,7 @@ func (ie *HandoverPreparationUnsuccessfulTransfer) Encode(w *aper.AperWriter) (e
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.Cause.Encode(w); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *HandoverPreparationUnsuccessfulTransfer) Decode(r *aper.AperReader) (e
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	return

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type DRBsToQosFlowsMappingItem struct {
 	DRBID                 int64
@@ -16,6 +19,7 @@ func (ie *DRBsToQosFlowsMappingItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, false)
 	if err = tmp_DRBID.Encode(w); err != nil {
+		err = utils.WrapError("Read DRBID", err)
 		return
 	}
 	if len(ie.AssociatedQosFlowList) > 0 {
@@ -28,6 +32,7 @@ func (ie *DRBsToQosFlowsMappingItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read AssociatedQosFlowList", err)
 			return
 		}
 	}
@@ -45,6 +50,7 @@ func (ie *DRBsToQosFlowsMappingItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_DRBID.Decode(r); err != nil {
+		err = utils.WrapError("Read DRBID", err)
 		return
 	}
 	ie.DRBID = int64(tmp_DRBID.Value)
@@ -54,6 +60,7 @@ func (ie *DRBsToQosFlowsMappingItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *AssociatedQosFlowItem { return new(AssociatedQosFlowItem) }
 	if err = tmp_AssociatedQosFlowList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read AssociatedQosFlowList", err)
 		return
 	}
 	ie.AssociatedQosFlowList = []AssociatedQosFlowItem{}

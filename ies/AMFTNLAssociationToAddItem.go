@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type AMFTNLAssociationToAddItem struct {
 	AMFTNLAssociationAddress CPTransportLayerInformation
@@ -22,16 +25,19 @@ func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
+		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
 		return
 	}
 	if ie.TNLAssociationUsage != nil {
 		if err = ie.TNLAssociationUsage.Encode(w); err != nil {
+			err = utils.WrapError("Read TNLAssociationUsage", err)
 			return
 		}
 	}
 	if ie.TNLAddressWeightFactor != nil {
 		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
 		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
+			err = utils.WrapError("Read TNLAddressWeightFactor", err)
 			return
 		}
 	}
@@ -46,10 +52,12 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
+		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.TNLAssociationUsage.Decode(r); err != nil {
+			err = utils.WrapError("Read TNLAssociationUsage", err)
 			return
 		}
 	}
@@ -59,6 +67,7 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_TNLAddressWeightFactor.Decode(r); err != nil {
+			err = utils.WrapError("Read TNLAddressWeightFactor", err)
 			return
 		}
 		ie.TNLAddressWeightFactor = (*int64)(&tmp_TNLAddressWeightFactor.Value)

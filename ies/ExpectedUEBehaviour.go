@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type ExpectedUEBehaviour struct {
 	ExpectedUEActivityBehaviour *ExpectedUEActivityBehaviour     `optional`
@@ -30,16 +33,19 @@ func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	if ie.ExpectedUEActivityBehaviour != nil {
 		if err = ie.ExpectedUEActivityBehaviour.Encode(w); err != nil {
+			err = utils.WrapError("Read ExpectedUEActivityBehaviour", err)
 			return
 		}
 	}
 	if ie.ExpectedHOInterval != nil {
 		if err = ie.ExpectedHOInterval.Encode(w); err != nil {
+			err = utils.WrapError("Read ExpectedHOInterval", err)
 			return
 		}
 	}
 	if ie.ExpectedUEMobility != nil {
 		if err = ie.ExpectedUEMobility.Encode(w); err != nil {
+			err = utils.WrapError("Read ExpectedUEMobility", err)
 			return
 		}
 	}
@@ -54,6 +60,7 @@ func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read ExpectedUEMovingTrajectory", err)
 				return
 			}
 		}
@@ -70,16 +77,19 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ExpectedUEActivityBehaviour.Decode(r); err != nil {
+			err = utils.WrapError("Read ExpectedUEActivityBehaviour", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.ExpectedHOInterval.Decode(r); err != nil {
+			err = utils.WrapError("Read ExpectedHOInterval", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 3) {
 		if err = ie.ExpectedUEMobility.Decode(r); err != nil {
+			err = utils.WrapError("Read ExpectedUEMobility", err)
 			return
 		}
 	}
@@ -90,6 +100,7 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *ExpectedUEMovingTrajectoryItem { return new(ExpectedUEMovingTrajectoryItem) }
 		if err = tmp_ExpectedUEMovingTrajectory.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read ExpectedUEMovingTrajectory", err)
 			return
 		}
 		ie.ExpectedUEMovingTrajectory = []ExpectedUEMovingTrajectoryItem{}

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceModifyIndicationTransfer struct {
 	DLQosFlowPerTNLInformation           QosFlowPerTNLInformation
@@ -18,6 +21,7 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Encode(w *aper.AperWriter)
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read DLQosFlowPerTNLInformation", err)
 		return
 	}
 	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
@@ -31,6 +35,7 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Encode(w *aper.AperWriter)
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
 				return
 			}
 		}
@@ -46,6 +51,7 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Decode(r *aper.AperReader)
 		return
 	}
 	if err = ie.DLQosFlowPerTNLInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read DLQosFlowPerTNLInformation", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -55,6 +61,7 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Decode(r *aper.AperReader)
 		}
 		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
 		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
 			return
 		}
 		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}

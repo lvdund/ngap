@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type UnavailableGUAMIItem struct {
 	GUAMI                        GUAMI
@@ -22,16 +25,19 @@ func (ie *UnavailableGUAMIItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.GUAMI.Encode(w); err != nil {
+		err = utils.WrapError("Read GUAMI", err)
 		return
 	}
 	if ie.TimerApproachForGUAMIRemoval != nil {
 		if err = ie.TimerApproachForGUAMIRemoval.Encode(w); err != nil {
+			err = utils.WrapError("Read TimerApproachForGUAMIRemoval", err)
 			return
 		}
 	}
 	if ie.BackupAMFName != nil {
 		tmp_BackupAMFName := NewOCTETSTRING(ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, false)
 		if err = tmp_BackupAMFName.Encode(w); err != nil {
+			err = utils.WrapError("Read BackupAMFName", err)
 			return
 		}
 	}
@@ -46,10 +52,12 @@ func (ie *UnavailableGUAMIItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.GUAMI.Decode(r); err != nil {
+		err = utils.WrapError("Read GUAMI", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.TimerApproachForGUAMIRemoval.Decode(r); err != nil {
+			err = utils.WrapError("Read TimerApproachForGUAMIRemoval", err)
 			return
 		}
 	}
@@ -59,6 +67,7 @@ func (ie *UnavailableGUAMIItem) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_BackupAMFName.Decode(r); err != nil {
+			err = utils.WrapError("Read BackupAMFName", err)
 			return
 		}
 		ie.BackupAMFName = tmp_BackupAMFName.Value

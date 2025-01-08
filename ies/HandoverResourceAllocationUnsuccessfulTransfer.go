@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type HandoverResourceAllocationUnsuccessfulTransfer struct {
 	Cause                  Cause
@@ -18,10 +21,12 @@ func (ie *HandoverResourceAllocationUnsuccessfulTransfer) Encode(w *aper.AperWri
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.Cause.Encode(w); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	if ie.CriticalityDiagnostics != nil {
 		if err = ie.CriticalityDiagnostics.Encode(w); err != nil {
+			err = utils.WrapError("Read CriticalityDiagnostics", err)
 			return
 		}
 	}
@@ -36,10 +41,12 @@ func (ie *HandoverResourceAllocationUnsuccessfulTransfer) Decode(r *aper.AperRea
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
+		err = utils.WrapError("Read Cause", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.CriticalityDiagnostics.Decode(r); err != nil {
+			err = utils.WrapError("Read CriticalityDiagnostics", err)
 			return
 		}
 	}

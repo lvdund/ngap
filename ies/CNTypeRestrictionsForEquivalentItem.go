@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type CNTypeRestrictionsForEquivalentItem struct {
 	PlmnIdentity []byte
@@ -16,10 +19,12 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Encode(w *aper.AperWriter) (err e
 	w.WriteBits(optionals, 1)
 	tmp_PlmnIdentity := NewOCTETSTRING(ie.PlmnIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PlmnIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PlmnIdentity", err)
 		return
 	}
 	tmp_CnType := NewENUMERATED(ie.CnType, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_CnType.Encode(w); err != nil {
+		err = utils.WrapError("Read CnType", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Decode(r *aper.AperReader) (err e
 		ext: false,
 	}
 	if err = tmp_PlmnIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PlmnIdentity", err)
 		return
 	}
 	ie.PlmnIdentity = tmp_PlmnIdentity.Value
@@ -44,6 +50,7 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Decode(r *aper.AperReader) (err e
 		ext: false,
 	}
 	if err = tmp_CnType.Decode(r); err != nil {
+		err = utils.WrapError("Read CnType", err)
 		return
 	}
 	ie.CnType = int64(tmp_CnType.Value)

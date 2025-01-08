@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	BroadcastCompletedAreaListPresentNothing uint64 = iota
@@ -97,6 +100,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(CellIDBroadcastEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read CellIDBroadcastEUTRA", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -108,6 +112,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAIBroadcastEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read TAIBroadcastEUTRA", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -119,6 +124,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaIDBroadcastEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read EmergencyAreaIDBroadcastEUTRA", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -130,6 +136,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(CellIDBroadcastNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read CellIDBroadcastNR", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -141,6 +148,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAIBroadcastNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read TAIBroadcastNR", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -152,6 +160,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaIDBroadcastNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read EmergencyAreaIDBroadcastNR", err)
 			return
 		}
 		for _, i := range tmp.Value {

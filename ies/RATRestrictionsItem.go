@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type RATRestrictionsItem struct {
 	PLMNIdentity              []byte
@@ -16,10 +19,12 @@ func (ie *RATRestrictionsItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	tmp_RATRestrictionInformation := NewBITSTRING(ie.RATRestrictionInformation, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_RATRestrictionInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read RATRestrictionInformation", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *RATRestrictionsItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -44,6 +50,7 @@ func (ie *RATRestrictionsItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_RATRestrictionInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read RATRestrictionInformation", err)
 		return
 	}
 	ie.RATRestrictionInformation = tmp_RATRestrictionInformation.Value.Bytes

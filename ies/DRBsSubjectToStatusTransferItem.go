@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type DRBsSubjectToStatusTransferItem struct {
 	DRBID       int64
@@ -17,12 +20,15 @@ func (ie *DRBsSubjectToStatusTransferItem) Encode(w *aper.AperWriter) (err error
 	w.WriteBits(optionals, 1)
 	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, false)
 	if err = tmp_DRBID.Encode(w); err != nil {
+		err = utils.WrapError("Read DRBID", err)
 		return
 	}
 	if err = ie.DRBStatusUL.Encode(w); err != nil {
+		err = utils.WrapError("Read DRBStatusUL", err)
 		return
 	}
 	if err = ie.DRBStatusDL.Encode(w); err != nil {
+		err = utils.WrapError("Read DRBStatusDL", err)
 		return
 	}
 	return
@@ -39,13 +45,16 @@ func (ie *DRBsSubjectToStatusTransferItem) Decode(r *aper.AperReader) (err error
 		ext: false,
 	}
 	if err = tmp_DRBID.Decode(r); err != nil {
+		err = utils.WrapError("Read DRBID", err)
 		return
 	}
 	ie.DRBID = int64(tmp_DRBID.Value)
 	if err = ie.DRBStatusUL.Decode(r); err != nil {
+		err = utils.WrapError("Read DRBStatusUL", err)
 		return
 	}
 	if err = ie.DRBStatusDL.Decode(r); err != nil {
+		err = utils.WrapError("Read DRBStatusDL", err)
 		return
 	}
 	return

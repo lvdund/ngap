@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type HandoverRequestAcknowledgeTransfer struct {
 	DLNGUUPTNLInformation         UPTransportLayerInformation
@@ -34,15 +37,18 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err er
 	}
 	w.WriteBits(optionals, 6)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 		return
 	}
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
 			return
 		}
 	}
 	if ie.SecurityResult != nil {
 		if err = ie.SecurityResult.Encode(w); err != nil {
+			err = utils.WrapError("Read SecurityResult", err)
 			return
 		}
 	}
@@ -57,6 +63,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err er
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowSetupResponseList", err)
 				return
 			}
 		}
@@ -72,6 +79,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err er
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowFailedToSetupList", err)
 				return
 			}
 		}
@@ -87,6 +95,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err er
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read DataForwardingResponseDRBList", err)
 				return
 			}
 		}
@@ -102,15 +111,18 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
+		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLForwardingUPTNLInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.SecurityResult.Decode(r); err != nil {
+			err = utils.WrapError("Read SecurityResult", err)
 			return
 		}
 	}
@@ -121,6 +133,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 		}
 		fn := func() *QosFlowItemWithDataForwarding { return new(QosFlowItemWithDataForwarding) }
 		if err = tmp_QosFlowSetupResponseList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowSetupResponseList", err)
 			return
 		}
 		ie.QosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
@@ -135,6 +148,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToSetupList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowFailedToSetupList", err)
 			return
 		}
 		ie.QosFlowFailedToSetupList = []QosFlowWithCauseItem{}
@@ -149,6 +163,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 		}
 		fn := func() *DataForwardingResponseDRBItem { return new(DataForwardingResponseDRBItem) }
 		if err = tmp_DataForwardingResponseDRBList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read DataForwardingResponseDRBList", err)
 			return
 		}
 		ie.DataForwardingResponseDRBList = []DataForwardingResponseDRBItem{}

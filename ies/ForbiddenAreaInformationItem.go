@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type ForbiddenAreaInformationItem struct {
 	PLMNIdentity  []byte
@@ -16,6 +19,7 @@ func (ie *ForbiddenAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	if len(ie.ForbiddenTACs) > 0 {
@@ -28,6 +32,7 @@ func (ie *ForbiddenAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read ForbiddenTACs", err)
 			return
 		}
 	}
@@ -45,6 +50,7 @@ func (ie *ForbiddenAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -54,6 +60,7 @@ func (ie *ForbiddenAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *TAC { return new(TAC) }
 	if err = tmp_ForbiddenTACs.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read ForbiddenTACs", err)
 		return
 	}
 	ie.ForbiddenTACs = []TAC{}

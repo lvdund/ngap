@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	QosCharacteristicsPresentNothing uint64 = iota
@@ -36,12 +39,14 @@ func (ie *QosCharacteristics) Decode(r *aper.AperReader) (err error) {
 	case QosCharacteristicsPresentNondynamic5Qi:
 		var tmp NonDynamic5QIDescriptor
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read NonDynamic5QI", err)
 			return
 		}
 		ie.NonDynamic5QI = &tmp
 	case QosCharacteristicsPresentDynamic5Qi:
 		var tmp Dynamic5QIDescriptor
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read Dynamic5QI", err)
 			return
 		}
 		ie.Dynamic5QI = &tmp

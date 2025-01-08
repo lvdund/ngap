@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceModifyResponseTransfer struct {
 	DLNGUUPTNLInformation                *UPTransportLayerInformation     `optional`
@@ -34,11 +37,13 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode(w *aper.AperWriter) (
 	w.WriteBits(optionals, 6)
 	if ie.DLNGUUPTNLInformation != nil {
 		if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 			return
 		}
 	}
 	if ie.ULNGUUPTNLInformation != nil {
 		if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
+			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 			return
 		}
 	}
@@ -53,6 +58,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode(w *aper.AperWriter) (
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowAddOrModifyResponseList", err)
 				return
 			}
 		}
@@ -68,6 +74,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode(w *aper.AperWriter) (
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
 				return
 			}
 		}
@@ -83,6 +90,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode(w *aper.AperWriter) (
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read QosFlowFailedToAddOrModifyList", err)
 				return
 			}
 		}
@@ -99,11 +107,13 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(r *aper.AperReader) (
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
+			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 			return
 		}
 	}
@@ -114,6 +124,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(r *aper.AperReader) (
 		}
 		fn := func() *QosFlowAddOrModifyResponseItem { return new(QosFlowAddOrModifyResponseItem) }
 		if err = tmp_QosFlowAddOrModifyResponseList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowAddOrModifyResponseList", err)
 			return
 		}
 		ie.QosFlowAddOrModifyResponseList = []QosFlowAddOrModifyResponseItem{}
@@ -128,6 +139,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(r *aper.AperReader) (
 		}
 		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
 		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
 			return
 		}
 		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
@@ -142,6 +154,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(r *aper.AperReader) (
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToAddOrModifyList.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read QosFlowFailedToAddOrModifyList", err)
 			return
 		}
 		ie.QosFlowFailedToAddOrModifyList = []QosFlowWithCauseItem{}

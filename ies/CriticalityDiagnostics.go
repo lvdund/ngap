@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type CriticalityDiagnostics struct {
 	ProcedureCode             *ProcedureCode                 `optional`
@@ -30,16 +33,19 @@ func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	if ie.ProcedureCode != nil {
 		if err = ie.ProcedureCode.Encode(w); err != nil {
+			err = utils.WrapError("Read ProcedureCode", err)
 			return
 		}
 	}
 	if ie.TriggeringMessage != nil {
 		if err = ie.TriggeringMessage.Encode(w); err != nil {
+			err = utils.WrapError("Read TriggeringMessage", err)
 			return
 		}
 	}
 	if ie.ProcedureCriticality != nil {
 		if err = ie.ProcedureCriticality.Encode(w); err != nil {
+			err = utils.WrapError("Read ProcedureCriticality", err)
 			return
 		}
 	}
@@ -54,6 +60,7 @@ func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read IEsCriticalityDiagnostics", err)
 				return
 			}
 		}
@@ -70,16 +77,19 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.ProcedureCode.Decode(r); err != nil {
+			err = utils.WrapError("Read ProcedureCode", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.TriggeringMessage.Decode(r); err != nil {
+			err = utils.WrapError("Read TriggeringMessage", err)
 			return
 		}
 	}
 	if aper.IsBitSet(optionals, 3) {
 		if err = ie.ProcedureCriticality.Decode(r); err != nil {
+			err = utils.WrapError("Read ProcedureCriticality", err)
 			return
 		}
 	}
@@ -90,6 +100,7 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *CriticalityDiagnosticsIEItem { return new(CriticalityDiagnosticsIEItem) }
 		if err = tmp_IEsCriticalityDiagnostics.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read IEsCriticalityDiagnostics", err)
 			return
 		}
 		ie.IEsCriticalityDiagnostics = []CriticalityDiagnosticsIEItem{}

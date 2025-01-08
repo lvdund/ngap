@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type UEPresenceInAreaOfInterestItem struct {
 	LocationReportingReferenceID int64
@@ -16,9 +19,11 @@ func (ie *UEPresenceInAreaOfInterestItem) Encode(w *aper.AperWriter) (err error)
 	w.WriteBits(optionals, 1)
 	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, false)
 	if err = tmp_LocationReportingReferenceID.Encode(w); err != nil {
+		err = utils.WrapError("Read LocationReportingReferenceID", err)
 		return
 	}
 	if err = ie.UEPresence.Encode(w); err != nil {
+		err = utils.WrapError("Read UEPresence", err)
 		return
 	}
 	return
@@ -35,10 +40,12 @@ func (ie *UEPresenceInAreaOfInterestItem) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_LocationReportingReferenceID.Decode(r); err != nil {
+		err = utils.WrapError("Read LocationReportingReferenceID", err)
 		return
 	}
 	ie.LocationReportingReferenceID = int64(tmp_LocationReportingReferenceID.Value)
 	if err = ie.UEPresence.Decode(r); err != nil {
+		err = utils.WrapError("Read UEPresence", err)
 		return
 	}
 	return

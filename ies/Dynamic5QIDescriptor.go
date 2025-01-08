@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type Dynamic5QIDescriptor struct {
 	PriorityLevelQos       int64
@@ -33,35 +36,42 @@ func (ie *Dynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	tmp_PriorityLevelQos := NewINTEGER(ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, false)
 	if err = tmp_PriorityLevelQos.Encode(w); err != nil {
+		err = utils.WrapError("Read PriorityLevelQos", err)
 		return
 	}
 	tmp_PacketDelayBudget := NewINTEGER(ie.PacketDelayBudget, aper.Constraint{Lb: 0, Ub: 1023}, false)
 	if err = tmp_PacketDelayBudget.Encode(w); err != nil {
+		err = utils.WrapError("Read PacketDelayBudget", err)
 		return
 	}
 	if err = ie.PacketErrorRate.Encode(w); err != nil {
+		err = utils.WrapError("Read PacketErrorRate", err)
 		return
 	}
 	if ie.FiveQI != nil {
 		tmp_FiveQI := NewINTEGER(*ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, false)
 		if err = tmp_FiveQI.Encode(w); err != nil {
+			err = utils.WrapError("Read FiveQI", err)
 			return
 		}
 	}
 	if ie.DelayCritical != nil {
 		if err = ie.DelayCritical.Encode(w); err != nil {
+			err = utils.WrapError("Read DelayCritical", err)
 			return
 		}
 	}
 	if ie.AveragingWindow != nil {
 		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_AveragingWindow.Encode(w); err != nil {
+			err = utils.WrapError("Read AveragingWindow", err)
 			return
 		}
 	}
 	if ie.MaximumDataBurstVolume != nil {
 		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, false)
 		if err = tmp_MaximumDataBurstVolume.Encode(w); err != nil {
+			err = utils.WrapError("Read MaximumDataBurstVolume", err)
 			return
 		}
 	}
@@ -80,6 +90,7 @@ func (ie *Dynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PriorityLevelQos.Decode(r); err != nil {
+		err = utils.WrapError("Read PriorityLevelQos", err)
 		return
 	}
 	ie.PriorityLevelQos = int64(tmp_PriorityLevelQos.Value)
@@ -88,10 +99,12 @@ func (ie *Dynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PacketDelayBudget.Decode(r); err != nil {
+		err = utils.WrapError("Read PacketDelayBudget", err)
 		return
 	}
 	ie.PacketDelayBudget = int64(tmp_PacketDelayBudget.Value)
 	if err = ie.PacketErrorRate.Decode(r); err != nil {
+		err = utils.WrapError("Read PacketErrorRate", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -100,12 +113,14 @@ func (ie *Dynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_FiveQI.Decode(r); err != nil {
+			err = utils.WrapError("Read FiveQI", err)
 			return
 		}
 		ie.FiveQI = (*int64)(&tmp_FiveQI.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
 		if err = ie.DelayCritical.Decode(r); err != nil {
+			err = utils.WrapError("Read DelayCritical", err)
 			return
 		}
 	}
@@ -115,6 +130,7 @@ func (ie *Dynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_AveragingWindow.Decode(r); err != nil {
+			err = utils.WrapError("Read AveragingWindow", err)
 			return
 		}
 		ie.AveragingWindow = (*int64)(&tmp_AveragingWindow.Value)
@@ -125,6 +141,7 @@ func (ie *Dynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_MaximumDataBurstVolume.Decode(r); err != nil {
+			err = utils.WrapError("Read MaximumDataBurstVolume", err)
 			return
 		}
 		ie.MaximumDataBurstVolume = (*int64)(&tmp_MaximumDataBurstVolume.Value)

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type VolumeTimedReportItem struct {
 	StartTimeStamp []byte
@@ -18,18 +21,22 @@ func (ie *VolumeTimedReportItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_StartTimeStamp := NewOCTETSTRING(ie.StartTimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_StartTimeStamp.Encode(w); err != nil {
+		err = utils.WrapError("Read StartTimeStamp", err)
 		return
 	}
 	tmp_EndTimeStamp := NewOCTETSTRING(ie.EndTimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_EndTimeStamp.Encode(w); err != nil {
+		err = utils.WrapError("Read EndTimeStamp", err)
 		return
 	}
 	tmp_UsageCountUL := NewINTEGER(ie.UsageCountUL, aper.Constraint{Lb: 0, Ub: 1844674407370955161}, false)
 	if err = tmp_UsageCountUL.Encode(w); err != nil {
+		err = utils.WrapError("Read UsageCountUL", err)
 		return
 	}
 	tmp_UsageCountDL := NewINTEGER(ie.UsageCountDL, aper.Constraint{Lb: 0, Ub: 1844674407370955161}, false)
 	if err = tmp_UsageCountDL.Encode(w); err != nil {
+		err = utils.WrapError("Read UsageCountDL", err)
 		return
 	}
 	return
@@ -46,6 +53,7 @@ func (ie *VolumeTimedReportItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_StartTimeStamp.Decode(r); err != nil {
+		err = utils.WrapError("Read StartTimeStamp", err)
 		return
 	}
 	ie.StartTimeStamp = tmp_StartTimeStamp.Value
@@ -54,6 +62,7 @@ func (ie *VolumeTimedReportItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_EndTimeStamp.Decode(r); err != nil {
+		err = utils.WrapError("Read EndTimeStamp", err)
 		return
 	}
 	ie.EndTimeStamp = tmp_EndTimeStamp.Value
@@ -62,6 +71,7 @@ func (ie *VolumeTimedReportItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_UsageCountUL.Decode(r); err != nil {
+		err = utils.WrapError("Read UsageCountUL", err)
 		return
 	}
 	ie.UsageCountUL = int64(tmp_UsageCountUL.Value)
@@ -70,6 +80,7 @@ func (ie *VolumeTimedReportItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_UsageCountDL.Decode(r); err != nil {
+		err = utils.WrapError("Read UsageCountDL", err)
 		return
 	}
 	ie.UsageCountDL = int64(tmp_UsageCountDL.Value)

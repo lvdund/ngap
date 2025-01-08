@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	TargetIDPresentNothing uint64 = iota
@@ -36,12 +39,14 @@ func (ie *TargetID) Decode(r *aper.AperReader) (err error) {
 	case TargetIDPresentTargetrannodeid:
 		var tmp TargetRANNodeID
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read TargetRANNodeID", err)
 			return
 		}
 		ie.TargetRANNodeID = &tmp
 	case TargetIDPresentTargetenbId:
 		var tmp TargeteNBID
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read TargeteNBID", err)
 			return
 		}
 		ie.TargeteNBID = &tmp

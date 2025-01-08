@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceModifyItemModReq struct {
 	PDUSessionID                            int64
@@ -23,17 +26,20 @@ func (ie *PDUSessionResourceModifyItemModReq) Encode(w *aper.AperWriter) (err er
 	w.WriteBits(optionals, 3)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	if ie.NASPDU != nil {
 		tmp_NASPDU := NewOCTETSTRING(ie.NASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_NASPDU.Encode(w); err != nil {
+			err = utils.WrapError("Read NASPDU", err)
 			return
 		}
 	}
 	if ie.PDUSessionResourceModifyRequestTransfer != nil {
 		tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionResourceModifyRequestTransfer.Encode(w); err != nil {
+			err = utils.WrapError("Read PDUSessionResourceModifyRequestTransfer", err)
 			return
 		}
 	}
@@ -52,6 +58,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -61,6 +68,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 			ext: false,
 		}
 		if err = tmp_NASPDU.Decode(r); err != nil {
+			err = utils.WrapError("Read NASPDU", err)
 			return
 		}
 		ie.NASPDU = tmp_NASPDU.Value
@@ -71,6 +79,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 			ext: false,
 		}
 		if err = tmp_PDUSessionResourceModifyRequestTransfer.Decode(r); err != nil {
+			err = utils.WrapError("Read PDUSessionResourceModifyRequestTransfer", err)
 			return
 		}
 		ie.PDUSessionResourceModifyRequestTransfer = tmp_PDUSessionResourceModifyRequestTransfer.Value

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type AMFTNLAssociationSetupItem struct {
 	AMFTNLAssociationAddress CPTransportLayerInformation
@@ -14,6 +17,7 @@ func (ie *AMFTNLAssociationSetupItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
+		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *AMFTNLAssociationSetupItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
+		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
 		return
 	}
 	return

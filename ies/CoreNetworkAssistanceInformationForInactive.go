@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type CoreNetworkAssistanceInformationForInactive struct {
 	UEIdentityIndexValue            UEIdentityIndexValue
@@ -34,21 +37,25 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 	}
 	w.WriteBits(optionals, 6)
 	if err = ie.UEIdentityIndexValue.Encode(w); err != nil {
+		err = utils.WrapError("Read UEIdentityIndexValue", err)
 		return
 	}
 	if ie.UESpecificDRX != nil {
 		if err = ie.UESpecificDRX.Encode(w); err != nil {
+			err = utils.WrapError("Read UESpecificDRX", err)
 			return
 		}
 	}
 	if ie.PeriodicRegistrationUpdateTimer != nil {
 		tmp_PeriodicRegistrationUpdateTimer := NewBITSTRING(ie.PeriodicRegistrationUpdateTimer, aper.Constraint{Lb: 8, Ub: 8}, false)
 		if err = tmp_PeriodicRegistrationUpdateTimer.Encode(w); err != nil {
+			err = utils.WrapError("Read PeriodicRegistrationUpdateTimer", err)
 			return
 		}
 	}
 	if ie.MICOModeIndication != nil {
 		if err = ie.MICOModeIndication.Encode(w); err != nil {
+			err = utils.WrapError("Read MICOModeIndication", err)
 			return
 		}
 	}
@@ -63,12 +70,14 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read TAIListForInactive", err)
 				return
 			}
 		}
 	}
 	if ie.ExpectedUEBehaviour != nil {
 		if err = ie.ExpectedUEBehaviour.Encode(w); err != nil {
+			err = utils.WrapError("Read ExpectedUEBehaviour", err)
 			return
 		}
 	}
@@ -83,10 +92,12 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		return
 	}
 	if err = ie.UEIdentityIndexValue.Decode(r); err != nil {
+		err = utils.WrapError("Read UEIdentityIndexValue", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.UESpecificDRX.Decode(r); err != nil {
+			err = utils.WrapError("Read UESpecificDRX", err)
 			return
 		}
 	}
@@ -96,12 +107,14 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 			ext: false,
 		}
 		if err = tmp_PeriodicRegistrationUpdateTimer.Decode(r); err != nil {
+			err = utils.WrapError("Read PeriodicRegistrationUpdateTimer", err)
 			return
 		}
 		ie.PeriodicRegistrationUpdateTimer = tmp_PeriodicRegistrationUpdateTimer.Value.Bytes
 	}
 	if aper.IsBitSet(optionals, 3) {
 		if err = ie.MICOModeIndication.Decode(r); err != nil {
+			err = utils.WrapError("Read MICOModeIndication", err)
 			return
 		}
 	}
@@ -112,6 +125,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		}
 		fn := func() *TAIListForInactiveItem { return new(TAIListForInactiveItem) }
 		if err = tmp_TAIListForInactive.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read TAIListForInactive", err)
 			return
 		}
 		ie.TAIListForInactive = []TAIListForInactiveItem{}
@@ -121,6 +135,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 	}
 	if aper.IsBitSet(optionals, 5) {
 		if err = ie.ExpectedUEBehaviour.Decode(r); err != nil {
+			err = utils.WrapError("Read ExpectedUEBehaviour", err)
 			return
 		}
 	}

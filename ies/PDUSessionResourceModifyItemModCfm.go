@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type PDUSessionResourceModifyItemModCfm struct {
 	PDUSessionID                            int64
@@ -16,10 +19,12 @@ func (ie *PDUSessionResourceModifyItemModCfm) Encode(w *aper.AperWriter) (err er
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	tmp_PDUSessionResourceModifyConfirmTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyConfirmTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceModifyConfirmTransfer.Encode(w); err != nil {
+		err = utils.WrapError("Read PDUSessionResourceModifyConfirmTransfer", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *PDUSessionResourceModifyItemModCfm) Decode(r *aper.AperReader) (err er
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionID", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -44,6 +50,7 @@ func (ie *PDUSessionResourceModifyItemModCfm) Decode(r *aper.AperReader) (err er
 		ext: false,
 	}
 	if err = tmp_PDUSessionResourceModifyConfirmTransfer.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionResourceModifyConfirmTransfer", err)
 		return
 	}
 	ie.PDUSessionResourceModifyConfirmTransfer = tmp_PDUSessionResourceModifyConfirmTransfer.Value

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type AllocationAndRetentionPriority struct {
 	PriorityLevelARP        int64
@@ -17,12 +20,15 @@ func (ie *AllocationAndRetentionPriority) Encode(w *aper.AperWriter) (err error)
 	w.WriteBits(optionals, 1)
 	tmp_PriorityLevelARP := NewINTEGER(ie.PriorityLevelARP, aper.Constraint{Lb: 1, Ub: 15}, false)
 	if err = tmp_PriorityLevelARP.Encode(w); err != nil {
+		err = utils.WrapError("Read PriorityLevelARP", err)
 		return
 	}
 	if err = ie.PreemptionCapability.Encode(w); err != nil {
+		err = utils.WrapError("Read PreemptionCapability", err)
 		return
 	}
 	if err = ie.PreemptionVulnerability.Encode(w); err != nil {
+		err = utils.WrapError("Read PreemptionVulnerability", err)
 		return
 	}
 	return
@@ -39,13 +45,16 @@ func (ie *AllocationAndRetentionPriority) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_PriorityLevelARP.Decode(r); err != nil {
+		err = utils.WrapError("Read PriorityLevelARP", err)
 		return
 	}
 	ie.PriorityLevelARP = int64(tmp_PriorityLevelARP.Value)
 	if err = ie.PreemptionCapability.Decode(r); err != nil {
+		err = utils.WrapError("Read PreemptionCapability", err)
 		return
 	}
 	if err = ie.PreemptionVulnerability.Decode(r); err != nil {
+		err = utils.WrapError("Read PreemptionVulnerability", err)
 		return
 	}
 	return

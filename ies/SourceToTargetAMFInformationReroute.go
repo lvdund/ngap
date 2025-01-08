@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type SourceToTargetAMFInformationReroute struct {
 	ConfiguredNSSAI     []byte
@@ -27,18 +30,21 @@ func (ie *SourceToTargetAMFInformationReroute) Encode(w *aper.AperWriter) (err e
 	if ie.ConfiguredNSSAI != nil {
 		tmp_ConfiguredNSSAI := NewOCTETSTRING(ie.ConfiguredNSSAI, aper.Constraint{Lb: 128, Ub: 128}, false)
 		if err = tmp_ConfiguredNSSAI.Encode(w); err != nil {
+			err = utils.WrapError("Read ConfiguredNSSAI", err)
 			return
 		}
 	}
 	if ie.RejectedNSSAIinPLMN != nil {
 		tmp_RejectedNSSAIinPLMN := NewOCTETSTRING(ie.RejectedNSSAIinPLMN, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinPLMN.Encode(w); err != nil {
+			err = utils.WrapError("Read RejectedNSSAIinPLMN", err)
 			return
 		}
 	}
 	if ie.RejectedNSSAIinTA != nil {
 		tmp_RejectedNSSAIinTA := NewOCTETSTRING(ie.RejectedNSSAIinTA, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinTA.Encode(w); err != nil {
+			err = utils.WrapError("Read RejectedNSSAIinTA", err)
 			return
 		}
 	}
@@ -58,6 +64,7 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_ConfiguredNSSAI.Decode(r); err != nil {
+			err = utils.WrapError("Read ConfiguredNSSAI", err)
 			return
 		}
 		ie.ConfiguredNSSAI = tmp_ConfiguredNSSAI.Value
@@ -68,6 +75,7 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_RejectedNSSAIinPLMN.Decode(r); err != nil {
+			err = utils.WrapError("Read RejectedNSSAIinPLMN", err)
 			return
 		}
 		ie.RejectedNSSAIinPLMN = tmp_RejectedNSSAIinPLMN.Value
@@ -78,6 +86,7 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_RejectedNSSAIinTA.Decode(r); err != nil {
+			err = utils.WrapError("Read RejectedNSSAIinTA", err)
 			return
 		}
 		ie.RejectedNSSAIinTA = tmp_RejectedNSSAIinTA.Value

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type TAIListForPagingItem struct {
 	TAI TAI
@@ -14,6 +17,7 @@ func (ie *TAIListForPagingItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
+		err = utils.WrapError("Read TAI", err)
 		return
 	}
 	return
@@ -26,6 +30,7 @@ func (ie *TAIListForPagingItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TAI.Decode(r); err != nil {
+		err = utils.WrapError("Read TAI", err)
 		return
 	}
 	return

@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	NgENBIDPresentNothing uint64 = iota
@@ -43,18 +46,21 @@ func (ie *NgENBID) Decode(r *aper.AperReader) (err error) {
 	case NgENBIDPresentMacrongenbId:
 		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 20, Ub: 20}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read MacroNgENBID", err)
 			return
 		}
 		ie.MacroNgENBID = tmp.Value.Bytes
 	case NgENBIDPresentShortmacrongenbId:
 		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 18, Ub: 18}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read ShortMacroNgENBID", err)
 			return
 		}
 		ie.ShortMacroNgENBID = tmp.Value.Bytes
 	case NgENBIDPresentLongmacrongenbId:
 		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 21, Ub: 21}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read LongMacroNgENBID", err)
 			return
 		}
 		ie.LongMacroNgENBID = tmp.Value.Bytes

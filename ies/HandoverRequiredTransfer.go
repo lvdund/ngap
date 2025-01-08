@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type HandoverRequiredTransfer struct {
 	DirectForwardingPathAvailability *DirectForwardingPathAvailability `optional`
@@ -18,6 +21,7 @@ func (ie *HandoverRequiredTransfer) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	if ie.DirectForwardingPathAvailability != nil {
 		if err = ie.DirectForwardingPathAvailability.Encode(w); err != nil {
+			err = utils.WrapError("Read DirectForwardingPathAvailability", err)
 			return
 		}
 	}
@@ -33,6 +37,7 @@ func (ie *HandoverRequiredTransfer) Decode(r *aper.AperReader) (err error) {
 	}
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.DirectForwardingPathAvailability.Decode(r); err != nil {
+			err = utils.WrapError("Read DirectForwardingPathAvailability", err)
 			return
 		}
 	}

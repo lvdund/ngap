@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type XnTNLConfigurationInfo struct {
 	XnTransportLayerAddresses         []TransportLayerAddress
@@ -27,6 +30,7 @@ func (ie *XnTNLConfigurationInfo) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read XnTransportLayerAddresses", err)
 			return
 		}
 	}
@@ -41,6 +45,7 @@ func (ie *XnTNLConfigurationInfo) Encode(w *aper.AperWriter) (err error) {
 				tmp.Value = append(tmp.Value, &i)
 			}
 			if err = tmp.Encode(w); err != nil {
+				err = utils.WrapError("Read XnExtendedTransportLayerAddresses", err)
 				return
 			}
 		}
@@ -61,6 +66,7 @@ func (ie *XnTNLConfigurationInfo) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *TransportLayerAddress { return new(TransportLayerAddress) }
 	if err = tmp_XnTransportLayerAddresses.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read XnTransportLayerAddresses", err)
 		return
 	}
 	ie.XnTransportLayerAddresses = []TransportLayerAddress{}
@@ -74,6 +80,7 @@ func (ie *XnTNLConfigurationInfo) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *XnExtTLAItem { return new(XnExtTLAItem) }
 		if err = tmp_XnExtendedTransportLayerAddresses.Decode(r, fn); err != nil {
+			err = utils.WrapError("Read XnExtendedTransportLayerAddresses", err)
 			return
 		}
 		ie.XnExtendedTransportLayerAddresses = []XnExtTLAItem{}

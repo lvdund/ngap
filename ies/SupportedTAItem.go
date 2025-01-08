@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type SupportedTAItem struct {
 	TAC               []byte
@@ -16,6 +19,7 @@ func (ie *SupportedTAItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_TAC := NewOCTETSTRING(ie.TAC, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_TAC.Encode(w); err != nil {
+		err = utils.WrapError("Read TAC", err)
 		return
 	}
 	if len(ie.BroadcastPLMNList) > 0 {
@@ -28,6 +32,7 @@ func (ie *SupportedTAItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Read BroadcastPLMNList", err)
 			return
 		}
 	}
@@ -45,6 +50,7 @@ func (ie *SupportedTAItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_TAC.Decode(r); err != nil {
+		err = utils.WrapError("Read TAC", err)
 		return
 	}
 	ie.TAC = tmp_TAC.Value
@@ -54,6 +60,7 @@ func (ie *SupportedTAItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *BroadcastPLMNItem { return new(BroadcastPLMNItem) }
 	if err = tmp_BroadcastPLMNList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read BroadcastPLMNList", err)
 		return
 	}
 	ie.BroadcastPLMNList = []BroadcastPLMNItem{}

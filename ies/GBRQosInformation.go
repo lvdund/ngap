@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type GBRQosInformation struct {
 	MaximumFlowBitRateDL    int64
@@ -30,34 +33,41 @@ func (ie *GBRQosInformation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 4)
 	tmp_MaximumFlowBitRateDL := NewINTEGER(ie.MaximumFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_MaximumFlowBitRateDL.Encode(w); err != nil {
+		err = utils.WrapError("Read MaximumFlowBitRateDL", err)
 		return
 	}
 	tmp_MaximumFlowBitRateUL := NewINTEGER(ie.MaximumFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_MaximumFlowBitRateUL.Encode(w); err != nil {
+		err = utils.WrapError("Read MaximumFlowBitRateUL", err)
 		return
 	}
 	tmp_GuaranteedFlowBitRateDL := NewINTEGER(ie.GuaranteedFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_GuaranteedFlowBitRateDL.Encode(w); err != nil {
+		err = utils.WrapError("Read GuaranteedFlowBitRateDL", err)
 		return
 	}
 	tmp_GuaranteedFlowBitRateUL := NewINTEGER(ie.GuaranteedFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
 	if err = tmp_GuaranteedFlowBitRateUL.Encode(w); err != nil {
+		err = utils.WrapError("Read GuaranteedFlowBitRateUL", err)
 		return
 	}
 	if ie.NotificationControl != nil {
 		if err = ie.NotificationControl.Encode(w); err != nil {
+			err = utils.WrapError("Read NotificationControl", err)
 			return
 		}
 	}
 	if ie.MaximumPacketLossRateDL != nil {
 		tmp_MaximumPacketLossRateDL := NewINTEGER(*ie.MaximumPacketLossRateDL, aper.Constraint{Lb: 0, Ub: 1000}, false)
 		if err = tmp_MaximumPacketLossRateDL.Encode(w); err != nil {
+			err = utils.WrapError("Read MaximumPacketLossRateDL", err)
 			return
 		}
 	}
 	if ie.MaximumPacketLossRateUL != nil {
 		tmp_MaximumPacketLossRateUL := NewINTEGER(*ie.MaximumPacketLossRateUL, aper.Constraint{Lb: 0, Ub: 1000}, false)
 		if err = tmp_MaximumPacketLossRateUL.Encode(w); err != nil {
+			err = utils.WrapError("Read MaximumPacketLossRateUL", err)
 			return
 		}
 	}
@@ -76,6 +86,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_MaximumFlowBitRateDL.Decode(r); err != nil {
+		err = utils.WrapError("Read MaximumFlowBitRateDL", err)
 		return
 	}
 	ie.MaximumFlowBitRateDL = int64(tmp_MaximumFlowBitRateDL.Value)
@@ -84,6 +95,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_MaximumFlowBitRateUL.Decode(r); err != nil {
+		err = utils.WrapError("Read MaximumFlowBitRateUL", err)
 		return
 	}
 	ie.MaximumFlowBitRateUL = int64(tmp_MaximumFlowBitRateUL.Value)
@@ -92,6 +104,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_GuaranteedFlowBitRateDL.Decode(r); err != nil {
+		err = utils.WrapError("Read GuaranteedFlowBitRateDL", err)
 		return
 	}
 	ie.GuaranteedFlowBitRateDL = int64(tmp_GuaranteedFlowBitRateDL.Value)
@@ -100,11 +113,13 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_GuaranteedFlowBitRateUL.Decode(r); err != nil {
+		err = utils.WrapError("Read GuaranteedFlowBitRateUL", err)
 		return
 	}
 	ie.GuaranteedFlowBitRateUL = int64(tmp_GuaranteedFlowBitRateUL.Value)
 	if aper.IsBitSet(optionals, 1) {
 		if err = ie.NotificationControl.Decode(r); err != nil {
+			err = utils.WrapError("Read NotificationControl", err)
 			return
 		}
 	}
@@ -114,6 +129,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_MaximumPacketLossRateDL.Decode(r); err != nil {
+			err = utils.WrapError("Read MaximumPacketLossRateDL", err)
 			return
 		}
 		ie.MaximumPacketLossRateDL = (*int64)(&tmp_MaximumPacketLossRateDL.Value)
@@ -124,6 +140,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_MaximumPacketLossRateUL.Decode(r); err != nil {
+			err = utils.WrapError("Read MaximumPacketLossRateUL", err)
 			return
 		}
 		ie.MaximumPacketLossRateUL = (*int64)(&tmp_MaximumPacketLossRateUL.Value)

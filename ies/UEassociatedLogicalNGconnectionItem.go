@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type UEassociatedLogicalNGconnectionItem struct {
 	AMFUENGAPID *int64 `optional`
@@ -23,12 +26,14 @@ func (ie *UEassociatedLogicalNGconnectionItem) Encode(w *aper.AperWriter) (err e
 	if ie.AMFUENGAPID != nil {
 		tmp_AMFUENGAPID := NewINTEGER(*ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, false)
 		if err = tmp_AMFUENGAPID.Encode(w); err != nil {
+			err = utils.WrapError("Read AMFUENGAPID", err)
 			return
 		}
 	}
 	if ie.RANUENGAPID != nil {
 		tmp_RANUENGAPID := NewINTEGER(*ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, false)
 		if err = tmp_RANUENGAPID.Encode(w); err != nil {
+			err = utils.WrapError("Read RANUENGAPID", err)
 			return
 		}
 	}
@@ -48,6 +53,7 @@ func (ie *UEassociatedLogicalNGconnectionItem) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_AMFUENGAPID.Decode(r); err != nil {
+			err = utils.WrapError("Read AMFUENGAPID", err)
 			return
 		}
 		ie.AMFUENGAPID = (*int64)(&tmp_AMFUENGAPID.Value)
@@ -58,6 +64,7 @@ func (ie *UEassociatedLogicalNGconnectionItem) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_RANUENGAPID.Decode(r); err != nil {
+			err = utils.WrapError("Read RANUENGAPID", err)
 			return
 		}
 		ie.RANUENGAPID = (*int64)(&tmp_RANUENGAPID.Value)

@@ -51,10 +51,16 @@ func Test_NGSetupRequest(t *testing.T) {
 	fmt.Println("Decode:")
 
 	var pdu NgapPdu
-	if pdu, err, _ = NgapDecode(b); err != nil {
+	var cridia *ies.CriticalityDiagnostics
+	if pdu, err, cridia = NgapDecode(b); err != nil {
 		fmt.Println("NgapDecode err:", err)
 		return
 	}
+	fmt.Println("================================")
+	fmt.Println(cridia.ProcedureCode)
+	fmt.Println(cridia.TriggeringMessage)
+	fmt.Println(cridia.ProcedureCriticality)
+	fmt.Println(cridia.IEsCriticalityDiagnostics)
 	fmt.Println("================================")
 	fmt.Println("Decoded:", pdu)
 	decode_msg := pdu.Message.Msg.(*ies.NGSetupRequest)

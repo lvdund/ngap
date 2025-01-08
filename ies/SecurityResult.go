@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type SecurityResult struct {
 	IntegrityProtectionResult       IntegrityProtectionResult
@@ -15,9 +18,11 @@ func (ie *SecurityResult) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.IntegrityProtectionResult.Encode(w); err != nil {
+		err = utils.WrapError("Read IntegrityProtectionResult", err)
 		return
 	}
 	if err = ie.ConfidentialityProtectionResult.Encode(w); err != nil {
+		err = utils.WrapError("Read ConfidentialityProtectionResult", err)
 		return
 	}
 	return
@@ -30,9 +35,11 @@ func (ie *SecurityResult) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.IntegrityProtectionResult.Decode(r); err != nil {
+		err = utils.WrapError("Read IntegrityProtectionResult", err)
 		return
 	}
 	if err = ie.ConfidentialityProtectionResult.Decode(r); err != nil {
+		err = utils.WrapError("Read ConfidentialityProtectionResult", err)
 		return
 	}
 	return

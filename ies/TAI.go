@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 type TAI struct {
 	PLMNIdentity []byte
@@ -16,10 +19,12 @@ func (ie *TAI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	tmp_TAC := NewOCTETSTRING(ie.TAC, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_TAC.Encode(w); err != nil {
+		err = utils.WrapError("Read TAC", err)
 		return
 	}
 	return
@@ -36,6 +41,7 @@ func (ie *TAI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
+		err = utils.WrapError("Read PLMNIdentity", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -44,6 +50,7 @@ func (ie *TAI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_TAC.Decode(r); err != nil {
+		err = utils.WrapError("Read TAC", err)
 		return
 	}
 	ie.TAC = tmp_TAC.Value

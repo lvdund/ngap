@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	AMFPagingTargetPresentNothing uint64 = iota
@@ -36,12 +39,14 @@ func (ie *AMFPagingTarget) Decode(r *aper.AperReader) (err error) {
 	case AMFPagingTargetPresentGlobalrannodeid:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read GlobalRANNodeID", err)
 			return
 		}
 		ie.GlobalRANNodeID = &tmp
 	case AMFPagingTargetPresentTai:
 		var tmp TAI
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read TAI", err)
 			return
 		}
 		ie.TAI = &tmp

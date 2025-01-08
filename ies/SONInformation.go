@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	SONInformationPresentNothing uint64 = iota
@@ -36,12 +39,14 @@ func (ie *SONInformation) Decode(r *aper.AperReader) (err error) {
 	case SONInformationPresentSoninformationrequest:
 		var tmp SONInformationRequest
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read SONInformationRequest", err)
 			return
 		}
 		ie.SONInformationRequest = &tmp
 	case SONInformationPresentSoninformationreply:
 		var tmp SONInformationReply
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read SONInformationReply", err)
 			return
 		}
 		ie.SONInformationReply = &tmp

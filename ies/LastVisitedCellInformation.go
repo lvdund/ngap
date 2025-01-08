@@ -1,6 +1,9 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+	"github.com/reogac/utils"
+)
 
 const (
 	LastVisitedCellInformationPresentNothing uint64 = iota
@@ -47,24 +50,28 @@ func (ie *LastVisitedCellInformation) Decode(r *aper.AperReader) (err error) {
 	case LastVisitedCellInformationPresentNgrancell:
 		var tmp LastVisitedNGRANCellInformation
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read NGRANCell", err)
 			return
 		}
 		ie.NGRANCell = &tmp
 	case LastVisitedCellInformationPresentEutrancell:
 		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read EUTRANCell", err)
 			return
 		}
 		ie.EUTRANCell = tmp.Value
 	case LastVisitedCellInformationPresentUtrancell:
 		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read UTRANCell", err)
 			return
 		}
 		ie.UTRANCell = tmp.Value
 	case LastVisitedCellInformationPresentGerancell:
 		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
+			err = utils.WrapError("Read GERANCell", err)
 			return
 		}
 		ie.GERANCell = tmp.Value
