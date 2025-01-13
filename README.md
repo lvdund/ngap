@@ -30,14 +30,14 @@ decode_msg := pdu.Message.Msg.(*ies.NGSetupRequest)
 
 - Transfer IE:
 ```go
-msg := ies.PDUSessionResourceSetupResponseTransfer{
+ie := ies.PDUSessionResourceSetupResponseTransfer{
   // check mandatory fields
 }
 
 // encode
 var b []byte
 var err error
-b, err = msg.Encode()
+b, err = ie.Encode()
 
 // decode
 var decode_transfer ies.PDUSessionResourceSetupResponseTransfer{}
