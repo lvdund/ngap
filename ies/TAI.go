@@ -6,8 +6,8 @@ import (
 )
 
 type TAI struct {
-	PLMNIdentity []byte
-	TAC          []byte
+	PLMNIdentity []byte `lb:3,ub:3,madatory`
+	TAC          []byte `lb:3,ub:3,madatory`
 	// IEExtensions *TAIExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *TAI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	tmp_TAC := NewOCTETSTRING(ie.TAC, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_TAC.Encode(w); err != nil {
-		err = utils.WrapError("Read TAC", err)
+		err = utils.WrapError("Encode TAC", err)
 		return
 	}
 	return

@@ -6,8 +6,8 @@ import (
 )
 
 type UPTransportLayerInformationPairItem struct {
-	ULNGUUPTNLInformation UPTransportLayerInformation
-	DLNGUUPTNLInformation UPTransportLayerInformation
+	ULNGUUPTNLInformation UPTransportLayerInformation `madatory`
+	DLNGUUPTNLInformation UPTransportLayerInformation `madatory`
 	// IEExtensions *UPTransportLayerInformationPairItemExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *UPTransportLayerInformationPairItem) Encode(w *aper.AperWriter) (err e
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+		err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
+		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
 		return
 	}
 	return

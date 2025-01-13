@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceItemHORqd struct {
-	PDUSessionID             int64
-	HandoverRequiredTransfer []byte
+	PDUSessionID             int64  `lb:0,ub:255,madatory`
+	HandoverRequiredTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceItemHORqdExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceItemHORqd) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_HandoverRequiredTransfer := NewOCTETSTRING(ie.HandoverRequiredTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverRequiredTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read HandoverRequiredTransfer", err)
+		err = utils.WrapError("Encode HandoverRequiredTransfer", err)
 		return
 	}
 	return

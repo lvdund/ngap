@@ -6,8 +6,8 @@ import (
 )
 
 type UserLocationInformationN3IWF struct {
-	IPAddress  []byte
-	PortNumber []byte
+	IPAddress  []byte `lb:1,ub:160,madatory,valExt`
+	PortNumber []byte `lb:2,ub:2,madatory`
 	// IEExtensions *UserLocationInformationN3IWFExtIEs `optional`
 }
 
@@ -17,14 +17,14 @@ func (ie *UserLocationInformationN3IWF) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_IPAddress := NewBITSTRING(ie.IPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
+	tmp_IPAddress := NewBITSTRING(ie.IPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_IPAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read IPAddress", err)
+		err = utils.WrapError("Encode IPAddress", err)
 		return
 	}
 	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_PortNumber.Encode(w); err != nil {
-		err = utils.WrapError("Read PortNumber", err)
+		err = utils.WrapError("Encode PortNumber", err)
 		return
 	}
 	return
@@ -38,7 +38,7 @@ func (ie *UserLocationInformationN3IWF) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_IPAddress := BITSTRING{
 		c:   aper.Constraint{Lb: 1, Ub: 160},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_IPAddress.Decode(r); err != nil {
 		err = utils.WrapError("Read IPAddress", err)

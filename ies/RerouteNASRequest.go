@@ -10,18 +10,22 @@ import (
 )
 
 type RerouteNASRequest struct {
-	RANUENGAPID                         int64
-	AMFUENGAPID                         *int64 `optional`
-	NGAPMessage                         []byte
-	AMFSetID                            []byte
-	AllowedNSSAI                        []AllowedNSSAIItem                   `optional`
-	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional`
+	RANUENGAPID                         int64                                `lb:0,ub:4294967295,mandatory,reject`
+	AMFUENGAPID                         *int64                               `lb:0,ub:1099511627775,optional,ignore`
+	NGAPMessage                         []byte                               `lb:0,ub:0,mandatory,reject`
+	AMFSetID                            []byte                               `lb:10,ub:10,mandatory,reject`
+	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
+	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,ignore`
 }
 
 func (msg *RerouteNASRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RerouteNASRequest, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RerouteNASRequest, Criticality_PresentReject, ies)
 }
-func (msg *RerouteNASRequest) toIes() (ies []NgapMessageIE) {
+func (msg *RerouteNASRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
@@ -58,7 +62,7 @@ func (msg *RerouteNASRequest) toIes() (ies []NgapMessageIE) {
 			Value: aper.BitString{
 				Bytes: msg.AMFSetID},
 		}})
-	if msg.AllowedNSSAI != nil {
+	if len(msg.AllowedNSSAI) > 0 {
 		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
 			ext: false,

@@ -10,18 +10,22 @@ import (
 )
 
 type NGSetupResponse struct {
-	AMFName                []byte
-	ServedGUAMIList        []ServedGUAMIItem
-	RelativeAMFCapacity    int64
-	PLMNSupportList        []PLMNSupportItem
-	CriticalityDiagnostics *CriticalityDiagnostics `optional`
-	UERetentionInformation *UERetentionInformation `optional`
+	AMFName                []byte                  `lb:1,ub:150,mandatory,reject,valueExt`
+	ServedGUAMIList        []ServedGUAMIItem       `lb:1,ub:maxnoofServedGUAMIs,mandatory,reject`
+	RelativeAMFCapacity    int64                   `lb:0,ub:255,mandatory,ignore`
+	PLMNSupportList        []PLMNSupportItem       `lb:1,ub:maxnoofPLMNs,mandatory,reject`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
+	UERetentionInformation *UERetentionInformation `optional,ignore`
 }
 
 func (msg *NGSetupResponse) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_NGSetup, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_NGSetup, Criticality_PresentReject, ies)
 }
-func (msg *NGSetupResponse) toIes() (ies []NgapMessageIE) {
+func (msg *NGSetupResponse) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFName},
@@ -31,18 +35,23 @@ func (msg *NGSetupResponse) toIes() (ies []NgapMessageIE) {
 			ext:   true,
 			Value: msg.AMFName,
 		}})
-	tmp_ServedGUAMIList := Sequence[*ServedGUAMIItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
-		ext: false,
+	if len(msg.ServedGUAMIList) > 0 {
+		tmp_ServedGUAMIList := Sequence[*ServedGUAMIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
+			ext: false,
+		}
+		for _, i := range msg.ServedGUAMIList {
+			tmp_ServedGUAMIList.Value = append(tmp_ServedGUAMIList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_ServedGUAMIList},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_ServedGUAMIList,
+		})
+	} else {
+		err = utils.WrapError("ServedGUAMIList is nil", err)
+		return
 	}
-	for _, i := range msg.ServedGUAMIList {
-		tmp_ServedGUAMIList.Value = append(tmp_ServedGUAMIList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_ServedGUAMIList},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_ServedGUAMIList,
-	})
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_RelativeAMFCapacity},
 		Criticality: Criticality{Value: Criticality_PresentIgnore},
@@ -51,18 +60,23 @@ func (msg *NGSetupResponse) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RelativeAMFCapacity),
 		}})
-	tmp_PLMNSupportList := Sequence[*PLMNSupportItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPLMNs},
-		ext: false,
+	if len(msg.PLMNSupportList) > 0 {
+		tmp_PLMNSupportList := Sequence[*PLMNSupportItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPLMNs},
+			ext: false,
+		}
+		for _, i := range msg.PLMNSupportList {
+			tmp_PLMNSupportList.Value = append(tmp_PLMNSupportList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PLMNSupportList},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PLMNSupportList,
+		})
+	} else {
+		err = utils.WrapError("PLMNSupportList is nil", err)
+		return
 	}
-	for _, i := range msg.PLMNSupportList {
-		tmp_PLMNSupportList.Value = append(tmp_PLMNSupportList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PLMNSupportList},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PLMNSupportList,
-	})
 	if msg.CriticalityDiagnostics != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_CriticalityDiagnostics},

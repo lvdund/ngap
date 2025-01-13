@@ -6,8 +6,8 @@ import (
 )
 
 type ForbiddenAreaInformationItem struct {
-	PLMNIdentity  []byte
-	ForbiddenTACs []TAC
+	PLMNIdentity  []byte `lb:3,ub:3,madatory`
+	ForbiddenTACs []TAC  `lb:1,ub:maxnoofForbTACs,madatory`
 	// IEExtensions *ForbiddenAreaInformationItemExtIEs `optional`
 }
 
@@ -19,7 +19,7 @@ func (ie *ForbiddenAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	if len(ie.ForbiddenTACs) > 0 {
@@ -32,9 +32,12 @@ func (ie *ForbiddenAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read ForbiddenTACs", err)
+			err = utils.WrapError("Encode ForbiddenTACs", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("ForbiddenTACs is nil", err)
+		return
 	}
 	return
 }

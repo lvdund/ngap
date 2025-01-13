@@ -10,22 +10,26 @@ import (
 )
 
 type InitialUEMessage struct {
-	RANUENGAPID                         int64
-	NASPDU                              []byte
-	UserLocationInformation             UserLocationInformation
-	RRCEstablishmentCause               RRCEstablishmentCause
-	FiveGSTMSI                          *FiveGSTMSI                          `optional`
-	AMFSetID                            []byte                               `optional`
-	UEContextRequest                    *UEContextRequest                    `optional`
-	AllowedNSSAI                        []AllowedNSSAIItem                   `optional`
-	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional`
-	SelectedPLMNIdentity                []byte                               `optional`
+	RANUENGAPID                         int64                                `lb:0,ub:4294967295,mandatory,reject`
+	NASPDU                              []byte                               `lb:0,ub:0,mandatory,reject`
+	UserLocationInformation             UserLocationInformation              `mandatory,reject`
+	RRCEstablishmentCause               RRCEstablishmentCause                `mandatory,ignore`
+	FiveGSTMSI                          *FiveGSTMSI                          `optional,reject`
+	AMFSetID                            []byte                               `lb:10,ub:10,optional,ignore`
+	UEContextRequest                    *UEContextRequest                    `optional,ignore`
+	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
+	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,ignore`
+	SelectedPLMNIdentity                []byte                               `lb:3,ub:3,optional,ignore`
 }
 
 func (msg *InitialUEMessage) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_InitialUEMessage, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_InitialUEMessage, Criticality_PresentIgnore, ies)
 }
-func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE) {
+func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
@@ -78,7 +82,7 @@ func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE) {
 			Value:       msg.UEContextRequest,
 		})
 	}
-	if msg.AllowedNSSAI != nil {
+	if len(msg.AllowedNSSAI) > 0 {
 		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
 			ext: false,

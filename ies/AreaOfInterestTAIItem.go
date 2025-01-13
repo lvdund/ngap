@@ -6,7 +6,7 @@ import (
 )
 
 type AreaOfInterestTAIItem struct {
-	TAI TAI
+	TAI TAI `madatory`
 	// IEExtensions *AreaOfInterestTAIItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *AreaOfInterestTAIItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = utils.WrapError("Encode TAI", err)
 		return
 	}
 	return

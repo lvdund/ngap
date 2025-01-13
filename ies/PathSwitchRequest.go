@@ -10,18 +10,22 @@ import (
 )
 
 type PathSwitchRequest struct {
-	RANUENGAPID                              int64
-	SourceAMFUENGAPID                        int64
-	UserLocationInformation                  UserLocationInformation
-	UESecurityCapabilities                   UESecurityCapabilities
-	PDUSessionResourceToBeSwitchedDLList     []PDUSessionResourceToBeSwitchedDLItem
-	PDUSessionResourceFailedToSetupListPSReq []PDUSessionResourceFailedToSetupItemPSReq `optional`
+	RANUENGAPID                              int64                                      `lb:0,ub:4294967295,mandatory,reject`
+	SourceAMFUENGAPID                        int64                                      `lb:0,ub:1099511627775,mandatory,reject`
+	UserLocationInformation                  UserLocationInformation                    `mandatory,ignore`
+	UESecurityCapabilities                   UESecurityCapabilities                     `mandatory,ignore`
+	PDUSessionResourceToBeSwitchedDLList     []PDUSessionResourceToBeSwitchedDLItem     `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
+	PDUSessionResourceFailedToSetupListPSReq []PDUSessionResourceFailedToSetupItemPSReq `lb:1,ub:maxnoofPDUSessions,optional,ignore`
 }
 
 func (msg *PathSwitchRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, ies)
 }
-func (msg *PathSwitchRequest) toIes() (ies []NgapMessageIE) {
+func (msg *PathSwitchRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_RANUENGAPID},
@@ -49,19 +53,24 @@ func (msg *PathSwitchRequest) toIes() (ies []NgapMessageIE) {
 		Criticality: Criticality{Value: Criticality_PresentIgnore},
 		Value:       &msg.UESecurityCapabilities,
 	})
-	tmp_PDUSessionResourceToBeSwitchedDLList := Sequence[*PDUSessionResourceToBeSwitchedDLItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceToBeSwitchedDLList) > 0 {
+		tmp_PDUSessionResourceToBeSwitchedDLList := Sequence[*PDUSessionResourceToBeSwitchedDLItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceToBeSwitchedDLList {
+			tmp_PDUSessionResourceToBeSwitchedDLList.Value = append(tmp_PDUSessionResourceToBeSwitchedDLList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceToBeSwitchedDLList},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PDUSessionResourceToBeSwitchedDLList,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceToBeSwitchedDLList is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceToBeSwitchedDLList {
-		tmp_PDUSessionResourceToBeSwitchedDLList.Value = append(tmp_PDUSessionResourceToBeSwitchedDLList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceToBeSwitchedDLList},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PDUSessionResourceToBeSwitchedDLList,
-	})
-	if msg.PDUSessionResourceFailedToSetupListPSReq != nil {
+	if len(msg.PDUSessionResourceFailedToSetupListPSReq) > 0 {
 		tmp_PDUSessionResourceFailedToSetupListPSReq := Sequence[*PDUSessionResourceFailedToSetupItemPSReq]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

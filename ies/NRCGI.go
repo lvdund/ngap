@@ -6,8 +6,8 @@ import (
 )
 
 type NRCGI struct {
-	PLMNIdentity   []byte
-	NRCellIdentity []byte
+	PLMNIdentity   []byte `lb:3,ub:3,madatory`
+	NRCellIdentity []byte `lb:36,ub:36,madatory`
 	// IEExtensions *NRCGIExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *NRCGI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	tmp_NRCellIdentity := NewBITSTRING(ie.NRCellIdentity, aper.Constraint{Lb: 36, Ub: 36}, false)
 	if err = tmp_NRCellIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read NRCellIdentity", err)
+		err = utils.WrapError("Encode NRCellIdentity", err)
 		return
 	}
 	return

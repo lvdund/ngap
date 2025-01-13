@@ -6,8 +6,8 @@ import (
 )
 
 type UserPlaneSecurityInformation struct {
-	SecurityResult     SecurityResult
-	SecurityIndication SecurityIndication
+	SecurityResult     SecurityResult     `madatory`
+	SecurityIndication SecurityIndication `madatory`
 	// IEExtensions *UserPlaneSecurityInformationExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *UserPlaneSecurityInformation) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.SecurityResult.Encode(w); err != nil {
-		err = utils.WrapError("Read SecurityResult", err)
+		err = utils.WrapError("Encode SecurityResult", err)
 		return
 	}
 	if err = ie.SecurityIndication.Encode(w); err != nil {
-		err = utils.WrapError("Read SecurityIndication", err)
+		err = utils.WrapError("Encode SecurityIndication", err)
 		return
 	}
 	return

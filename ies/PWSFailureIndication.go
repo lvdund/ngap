@@ -10,14 +10,18 @@ import (
 )
 
 type PWSFailureIndication struct {
-	PWSFailedCellIDList PWSFailedCellIDList
-	GlobalRANNodeID     GlobalRANNodeID
+	PWSFailedCellIDList PWSFailedCellIDList `mandatory,reject`
+	GlobalRANNodeID     GlobalRANNodeID     `mandatory,reject`
 }
 
 func (msg *PWSFailureIndication) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSFailureIndication, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSFailureIndication, Criticality_PresentIgnore, ies)
 }
-func (msg *PWSFailureIndication) toIes() (ies []NgapMessageIE) {
+func (msg *PWSFailureIndication) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_PWSFailedCellIDList},

@@ -6,10 +6,10 @@ import (
 )
 
 type GUAMI struct {
-	PLMNIdentity []byte
-	AMFRegionID  []byte
-	AMFSetID     []byte
-	AMFPointer   []byte
+	PLMNIdentity []byte `lb:3,ub:3,madatory`
+	AMFRegionID  []byte `lb:8,ub:8,madatory`
+	AMFSetID     []byte `lb:10,ub:10,madatory`
+	AMFPointer   []byte `lb:6,ub:6,madatory`
 	// IEExtensions *GUAMIExtIEs `optional`
 }
 
@@ -21,22 +21,22 @@ func (ie *GUAMI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	tmp_AMFRegionID := NewBITSTRING(ie.AMFRegionID, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_AMFRegionID.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFRegionID", err)
+		err = utils.WrapError("Encode AMFRegionID", err)
 		return
 	}
 	tmp_AMFSetID := NewBITSTRING(ie.AMFSetID, aper.Constraint{Lb: 10, Ub: 10}, false)
 	if err = tmp_AMFSetID.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFSetID", err)
+		err = utils.WrapError("Encode AMFSetID", err)
 		return
 	}
 	tmp_AMFPointer := NewBITSTRING(ie.AMFPointer, aper.Constraint{Lb: 6, Ub: 6}, false)
 	if err = tmp_AMFPointer.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFPointer", err)
+		err = utils.WrapError("Encode AMFPointer", err)
 		return
 	}
 	return

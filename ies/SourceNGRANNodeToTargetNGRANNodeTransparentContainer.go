@@ -6,12 +6,12 @@ import (
 )
 
 type SourceNGRANNodeToTargetNGRANNodeTransparentContainer struct {
-	RRCContainer                      []byte
-	PDUSessionResourceInformationList []PDUSessionResourceInformationItem `optional`
-	ERABInformationList               []ERABInformationItem               `optional`
+	RRCContainer                      []byte                              `lb:0,ub:0,madatory`
+	PDUSessionResourceInformationList []PDUSessionResourceInformationItem `lb:1,ub:maxnoofPDUSessions,optional`
+	ERABInformationList               []ERABInformationItem               `lb:1,ub:maxnoofERABs,optional`
 	TargetCellID                      *NGRANCGI                           `optional`
-	IndexToRFSP                       *int64                              `optional`
-	UEHistoryInformation              []LastVisitedCellItem               `optional`
+	IndexToRFSP                       *int64                              `lb:1,ub:256,optional,valExt`
+	UEHistoryInformation              []LastVisitedCellItem               `lb:1,ub:maxnoofCellsinUEHistoryInfo,optional`
 	// IEExtensions *SourceNGRANNodeToTargetNGRANNodeTransparentContainerExtIEs `optional`
 }
 
@@ -38,68 +38,62 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.A
 	w.WriteBits(optionals, 6)
 	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
-		err = utils.WrapError("Read RRCContainer", err)
+		err = utils.WrapError("Encode RRCContainer", err)
 		return
 	}
-	if ie.PDUSessionResourceInformationList != nil {
-		if len(ie.PDUSessionResourceInformationList) > 0 {
-			tmp := Sequence[*PDUSessionResourceInformationItem]{
-				Value: []*PDUSessionResourceInformationItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-				ext:   false,
-			}
-			for _, i := range ie.PDUSessionResourceInformationList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read PDUSessionResourceInformationList", err)
-				return
-			}
+	if len(ie.PDUSessionResourceInformationList) > 0 {
+		tmp := Sequence[*PDUSessionResourceInformationItem]{
+			Value: []*PDUSessionResourceInformationItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext:   false,
+		}
+		for _, i := range ie.PDUSessionResourceInformationList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode PDUSessionResourceInformationList", err)
+			return
 		}
 	}
-	if ie.ERABInformationList != nil {
-		if len(ie.ERABInformationList) > 0 {
-			tmp := Sequence[*ERABInformationItem]{
-				Value: []*ERABInformationItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofERABs},
-				ext:   false,
-			}
-			for _, i := range ie.ERABInformationList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read ERABInformationList", err)
-				return
-			}
+	if len(ie.ERABInformationList) > 0 {
+		tmp := Sequence[*ERABInformationItem]{
+			Value: []*ERABInformationItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofERABs},
+			ext:   false,
+		}
+		for _, i := range ie.ERABInformationList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode ERABInformationList", err)
+			return
 		}
 	}
 	if ie.TargetCellID != nil {
 		if err = ie.TargetCellID.Encode(w); err != nil {
-			err = utils.WrapError("Read TargetCellID", err)
+			err = utils.WrapError("Encode TargetCellID", err)
 			return
 		}
 	}
 	if ie.IndexToRFSP != nil {
-		tmp_IndexToRFSP := NewINTEGER(*ie.IndexToRFSP, aper.Constraint{Lb: 1, Ub: 256}, false)
+		tmp_IndexToRFSP := NewINTEGER(*ie.IndexToRFSP, aper.Constraint{Lb: 1, Ub: 256}, true)
 		if err = tmp_IndexToRFSP.Encode(w); err != nil {
-			err = utils.WrapError("Read IndexToRFSP", err)
+			err = utils.WrapError("Encode IndexToRFSP", err)
 			return
 		}
 	}
-	if ie.UEHistoryInformation != nil {
-		if len(ie.UEHistoryInformation) > 0 {
-			tmp := Sequence[*LastVisitedCellItem]{
-				Value: []*LastVisitedCellItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofCellsinUEHistoryInfo},
-				ext:   false,
-			}
-			for _, i := range ie.UEHistoryInformation {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read UEHistoryInformation", err)
-				return
-			}
+	if len(ie.UEHistoryInformation) > 0 {
+		tmp := Sequence[*LastVisitedCellItem]{
+			Value: []*LastVisitedCellItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellsinUEHistoryInfo},
+			ext:   false,
+		}
+		for _, i := range ie.UEHistoryInformation {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode UEHistoryInformation", err)
+			return
 		}
 	}
 	return
@@ -160,7 +154,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(r *aper.A
 	if aper.IsBitSet(optionals, 4) {
 		tmp_IndexToRFSP := INTEGER{
 			c:   aper.Constraint{Lb: 1, Ub: 256},
-			ext: false,
+			ext: true,
 		}
 		if err = tmp_IndexToRFSP.Decode(r); err != nil {
 			err = utils.WrapError("Read IndexToRFSP", err)

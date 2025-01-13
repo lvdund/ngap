@@ -6,9 +6,9 @@ import (
 )
 
 type OverloadStartNSSAIItem struct {
-	SliceOverloadList                   []SliceOverloadItem
-	SliceOverloadResponse               *OverloadResponse `optional`
-	SliceTrafficLoadReductionIndication *int64            `optional`
+	SliceOverloadList                   []SliceOverloadItem `lb:1,ub:maxnoofSliceItems,madatory`
+	SliceOverloadResponse               *OverloadResponse   `optional`
+	SliceTrafficLoadReductionIndication *int64              `lb:1,ub:99,optional`
 	// IEExtensions *OverloadStartNSSAIItemExtIEs `optional`
 }
 
@@ -34,20 +34,23 @@ func (ie *OverloadStartNSSAIItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read SliceOverloadList", err)
+			err = utils.WrapError("Encode SliceOverloadList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("SliceOverloadList is nil", err)
+		return
 	}
 	if ie.SliceOverloadResponse != nil {
 		if err = ie.SliceOverloadResponse.Encode(w); err != nil {
-			err = utils.WrapError("Read SliceOverloadResponse", err)
+			err = utils.WrapError("Encode SliceOverloadResponse", err)
 			return
 		}
 	}
 	if ie.SliceTrafficLoadReductionIndication != nil {
 		tmp_SliceTrafficLoadReductionIndication := NewINTEGER(*ie.SliceTrafficLoadReductionIndication, aper.Constraint{Lb: 1, Ub: 99}, false)
 		if err = tmp_SliceTrafficLoadReductionIndication.Encode(w); err != nil {
-			err = utils.WrapError("Read SliceTrafficLoadReductionIndication", err)
+			err = utils.WrapError("Encode SliceTrafficLoadReductionIndication", err)
 			return
 		}
 	}

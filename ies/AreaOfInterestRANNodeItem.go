@@ -6,7 +6,7 @@ import (
 )
 
 type AreaOfInterestRANNodeItem struct {
-	GlobalRANNodeID GlobalRANNodeID
+	GlobalRANNodeID GlobalRANNodeID `madatory`
 	// IEExtensions *AreaOfInterestRANNodeItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *AreaOfInterestRANNodeItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.GlobalRANNodeID.Encode(w); err != nil {
-		err = utils.WrapError("Read GlobalRANNodeID", err)
+		err = utils.WrapError("Encode GlobalRANNodeID", err)
 		return
 	}
 	return

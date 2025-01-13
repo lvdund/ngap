@@ -6,9 +6,9 @@ import (
 )
 
 type UnavailableGUAMIItem struct {
-	GUAMI                        GUAMI
+	GUAMI                        GUAMI                         `madatory`
 	TimerApproachForGUAMIRemoval *TimerApproachForGUAMIRemoval `optional`
-	BackupAMFName                []byte
+	BackupAMFName                []byte                        `lb:1,ub:150,optional,valExt`
 	// IEExtensions *UnavailableGUAMIItemExtIEs `optional`
 }
 
@@ -25,19 +25,19 @@ func (ie *UnavailableGUAMIItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.GUAMI.Encode(w); err != nil {
-		err = utils.WrapError("Read GUAMI", err)
+		err = utils.WrapError("Encode GUAMI", err)
 		return
 	}
 	if ie.TimerApproachForGUAMIRemoval != nil {
 		if err = ie.TimerApproachForGUAMIRemoval.Encode(w); err != nil {
-			err = utils.WrapError("Read TimerApproachForGUAMIRemoval", err)
+			err = utils.WrapError("Encode TimerApproachForGUAMIRemoval", err)
 			return
 		}
 	}
 	if ie.BackupAMFName != nil {
-		tmp_BackupAMFName := NewOCTETSTRING(ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, false)
+		tmp_BackupAMFName := NewOCTETSTRING(ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, true)
 		if err = tmp_BackupAMFName.Encode(w); err != nil {
-			err = utils.WrapError("Read BackupAMFName", err)
+			err = utils.WrapError("Encode BackupAMFName", err)
 			return
 		}
 	}
@@ -64,7 +64,7 @@ func (ie *UnavailableGUAMIItem) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp_BackupAMFName := OCTETSTRING{
 			c:   aper.Constraint{Lb: 1, Ub: 150},
-			ext: false,
+			ext: true,
 		}
 		if err = tmp_BackupAMFName.Decode(r); err != nil {
 			err = utils.WrapError("Read BackupAMFName", err)

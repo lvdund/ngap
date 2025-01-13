@@ -6,9 +6,9 @@ import (
 )
 
 type QosFlowSetupRequestItem struct {
-	QosFlowIdentifier         int64
-	QosFlowLevelQosParameters QosFlowLevelQosParameters
-	ERABID                    *int64 `optional`
+	QosFlowIdentifier         int64                     `lb:0,ub:63,madatory,valExt`
+	QosFlowLevelQosParameters QosFlowLevelQosParameters `madatory`
+	ERABID                    *int64                    `lb:0,ub:15,optional,valExt`
 	// IEExtensions *QosFlowSetupRequestItemExtIEs `optional`
 }
 
@@ -21,19 +21,19 @@ func (ie *QosFlowSetupRequestItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = utils.WrapError("Encode QosFlowIdentifier", err)
 		return
 	}
 	if err = ie.QosFlowLevelQosParameters.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowLevelQosParameters", err)
+		err = utils.WrapError("Encode QosFlowLevelQosParameters", err)
 		return
 	}
 	if ie.ERABID != nil {
-		tmp_ERABID := NewINTEGER(*ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, false)
+		tmp_ERABID := NewINTEGER(*ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, true)
 		if err = tmp_ERABID.Encode(w); err != nil {
-			err = utils.WrapError("Read ERABID", err)
+			err = utils.WrapError("Encode ERABID", err)
 			return
 		}
 	}
@@ -49,7 +49,7 @@ func (ie *QosFlowSetupRequestItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_QosFlowIdentifier := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 63},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		err = utils.WrapError("Read QosFlowIdentifier", err)
@@ -63,7 +63,7 @@ func (ie *QosFlowSetupRequestItem) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp_ERABID := INTEGER{
 			c:   aper.Constraint{Lb: 0, Ub: 15},
-			ext: false,
+			ext: true,
 		}
 		if err = tmp_ERABID.Decode(r); err != nil {
 			err = utils.WrapError("Read ERABID", err)

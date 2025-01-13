@@ -6,7 +6,7 @@ import (
 )
 
 type AssistanceDataForRecommendedCells struct {
-	RecommendedCellsForPaging RecommendedCellsForPaging
+	RecommendedCellsForPaging RecommendedCellsForPaging `madatory`
 	// IEExtensions *AssistanceDataForRecommendedCellsExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *AssistanceDataForRecommendedCells) Encode(w *aper.AperWriter) (err err
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.RecommendedCellsForPaging.Encode(w); err != nil {
-		err = utils.WrapError("Read RecommendedCellsForPaging", err)
+		err = utils.WrapError("Encode RecommendedCellsForPaging", err)
 		return
 	}
 	return

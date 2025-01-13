@@ -10,19 +10,24 @@ import (
 )
 
 type PDUSessionResourceModifyRequestTransfer struct {
-	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional`
-	ULNGUUPTNLModifyList              []ULNGUUPTNLModifyItem             `optional`
-	NetworkInstance                   *int64                             `optional`
-	QosFlowAddOrModifyRequestList     []QosFlowAddOrModifyRequestItem    `optional`
-	QosFlowToReleaseList              []QosFlowWithCauseItem             `optional`
-	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `optional`
-	CommonNetworkInstance             []byte                             `optional`
+	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional,reject`
+	ULNGUUPTNLModifyList              []ULNGUUPTNLModifyItem             `lb:1,ub:maxnoofMultiConnectivity,optional,reject`
+	NetworkInstance                   *int64                             `lb:1,ub:256,optional,reject,valueExt`
+	QosFlowAddOrModifyRequestList     []QosFlowAddOrModifyRequestItem    `lb:1,ub:maxnoofQosFlows,optional,reject`
+	QosFlowToReleaseList              []QosFlowWithCauseItem             `lb:1,ub:maxnoofQosFlows,optional,reject`
+	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional,reject`
+	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,ignore`
 }
 
-func (msg *PDUSessionResourceModifyRequestTransfer) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceModify, Criticality_PresentReject, msg.toIes())
+func (msg *PDUSessionResourceModifyRequestTransfer) Encode(w io.Writer) ([]byte, error) {
+	var ies []NgapMessageIE
+	var err error
+	if ies, err = msg.toIes(); err != nil {
+		return nil, err
+	}
+	return encodeTransferMessage(ies)
 }
-func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.PDUSessionAggregateMaximumBitRate != nil {
 		ies = append(ies, NgapMessageIE{
@@ -31,7 +36,7 @@ func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE
 			Value:       msg.PDUSessionAggregateMaximumBitRate,
 		})
 	}
-	if msg.ULNGUUPTNLModifyList != nil {
+	if len(msg.ULNGUUPTNLModifyList) > 0 {
 		tmp_ULNGUUPTNLModifyList := Sequence[*ULNGUUPTNLModifyItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivity},
 			ext: false,
@@ -55,7 +60,7 @@ func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE
 				Value: aper.Integer(*msg.NetworkInstance),
 			}})
 	}
-	if msg.QosFlowAddOrModifyRequestList != nil {
+	if len(msg.QosFlowAddOrModifyRequestList) > 0 {
 		tmp_QosFlowAddOrModifyRequestList := Sequence[*QosFlowAddOrModifyRequestItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
 			ext: false,
@@ -69,7 +74,7 @@ func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE
 			Value:       &tmp_QosFlowAddOrModifyRequestList,
 		})
 	}
-	if msg.QosFlowToReleaseList != nil {
+	if len(msg.QosFlowToReleaseList) > 0 {
 		tmp_QosFlowToReleaseList := Sequence[*QosFlowWithCauseItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
 			ext: false,
@@ -83,7 +88,7 @@ func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE
 			Value:       &tmp_QosFlowToReleaseList,
 		})
 	}
-	if msg.AdditionalULNGUUPTNLInformation != nil {
+	if len(msg.AdditionalULNGUUPTNLInformation) > 0 {
 		tmp_AdditionalULNGUUPTNLInformation := Sequence[*UPTransportLayerInformationItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
 			ext: false,

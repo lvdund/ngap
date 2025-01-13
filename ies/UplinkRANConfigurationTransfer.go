@@ -10,14 +10,18 @@ import (
 )
 
 type UplinkRANConfigurationTransfer struct {
-	SONConfigurationTransferUL     *SONConfigurationTransfer `optional`
-	ENDCSONConfigurationTransferUL []byte                    `optional`
+	SONConfigurationTransferUL     *SONConfigurationTransfer `optional,ignore`
+	ENDCSONConfigurationTransferUL []byte                    `lb:0,ub:0,optional,ignore`
 }
 
 func (msg *UplinkRANConfigurationTransfer) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkRANConfigurationTransfer, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkRANConfigurationTransfer, Criticality_PresentIgnore, ies)
 }
-func (msg *UplinkRANConfigurationTransfer) toIes() (ies []NgapMessageIE) {
+func (msg *UplinkRANConfigurationTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.SONConfigurationTransferUL != nil {
 		ies = append(ies, NgapMessageIE{

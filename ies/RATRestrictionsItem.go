@@ -6,8 +6,8 @@ import (
 )
 
 type RATRestrictionsItem struct {
-	PLMNIdentity              []byte
-	RATRestrictionInformation []byte
+	PLMNIdentity              []byte `lb:3,ub:3,madatory`
+	RATRestrictionInformation []byte `lb:8,ub:8,madatory,valExt`
 	// IEExtensions *RATRestrictionsItemExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *RATRestrictionsItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
-	tmp_RATRestrictionInformation := NewBITSTRING(ie.RATRestrictionInformation, aper.Constraint{Lb: 8, Ub: 8}, false)
+	tmp_RATRestrictionInformation := NewBITSTRING(ie.RATRestrictionInformation, aper.Constraint{Lb: 8, Ub: 8}, true)
 	if err = tmp_RATRestrictionInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read RATRestrictionInformation", err)
+		err = utils.WrapError("Encode RATRestrictionInformation", err)
 		return
 	}
 	return
@@ -47,7 +47,7 @@ func (ie *RATRestrictionsItem) Decode(r *aper.AperReader) (err error) {
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
 	tmp_RATRestrictionInformation := BITSTRING{
 		c:   aper.Constraint{Lb: 8, Ub: 8},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_RATRestrictionInformation.Decode(r); err != nil {
 		err = utils.WrapError("Read RATRestrictionInformation", err)

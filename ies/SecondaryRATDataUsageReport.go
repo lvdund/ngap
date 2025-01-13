@@ -10,17 +10,21 @@ import (
 )
 
 type SecondaryRATDataUsageReport struct {
-	AMFUENGAPID                             int64
-	RANUENGAPID                             int64
-	PDUSessionResourceSecondaryRATUsageList []PDUSessionResourceSecondaryRATUsageItem
-	HandoverFlag                            *HandoverFlag            `optional`
-	UserLocationInformation                 *UserLocationInformation `optional`
+	AMFUENGAPID                             int64                                     `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                             int64                                     `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceSecondaryRATUsageList []PDUSessionResourceSecondaryRATUsageItem `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
+	HandoverFlag                            *HandoverFlag                             `optional,ignore`
+	UserLocationInformation                 *UserLocationInformation                  `optional,ignore`
 }
 
 func (msg *SecondaryRATDataUsageReport) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_SecondaryRATDataUsageReport, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_SecondaryRATDataUsageReport, Criticality_PresentIgnore, ies)
 }
-func (msg *SecondaryRATDataUsageReport) toIes() (ies []NgapMessageIE) {
+func (msg *SecondaryRATDataUsageReport) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -38,18 +42,23 @@ func (msg *SecondaryRATDataUsageReport) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	tmp_PDUSessionResourceSecondaryRATUsageList := Sequence[*PDUSessionResourceSecondaryRATUsageItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceSecondaryRATUsageList) > 0 {
+		tmp_PDUSessionResourceSecondaryRATUsageList := Sequence[*PDUSessionResourceSecondaryRATUsageItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceSecondaryRATUsageList {
+			tmp_PDUSessionResourceSecondaryRATUsageList.Value = append(tmp_PDUSessionResourceSecondaryRATUsageList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSecondaryRATUsageList},
+			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Value:       &tmp_PDUSessionResourceSecondaryRATUsageList,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceSecondaryRATUsageList is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceSecondaryRATUsageList {
-		tmp_PDUSessionResourceSecondaryRATUsageList.Value = append(tmp_PDUSessionResourceSecondaryRATUsageList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSecondaryRATUsageList},
-		Criticality: Criticality{Value: Criticality_PresentIgnore},
-		Value:       &tmp_PDUSessionResourceSecondaryRATUsageList,
-	})
 	if msg.HandoverFlag != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_HandoverFlag},

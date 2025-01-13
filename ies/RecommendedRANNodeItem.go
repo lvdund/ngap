@@ -6,7 +6,7 @@ import (
 )
 
 type RecommendedRANNodeItem struct {
-	AMFPagingTarget AMFPagingTarget
+	AMFPagingTarget AMFPagingTarget `madatory`
 	// IEExtensions *RecommendedRANNodeItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *RecommendedRANNodeItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AMFPagingTarget.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFPagingTarget", err)
+		err = utils.WrapError("Encode AMFPagingTarget", err)
 		return
 	}
 	return

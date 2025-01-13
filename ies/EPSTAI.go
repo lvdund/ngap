@@ -6,8 +6,8 @@ import (
 )
 
 type EPSTAI struct {
-	PLMNIdentity []byte
-	EPSTAC       []byte
+	PLMNIdentity []byte `lb:3,ub:3,madatory`
+	EPSTAC       []byte `lb:2,ub:2,madatory`
 	// IEExtensions *EPSTAIExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *EPSTAI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	tmp_EPSTAC := NewOCTETSTRING(ie.EPSTAC, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_EPSTAC.Encode(w); err != nil {
-		err = utils.WrapError("Read EPSTAC", err)
+		err = utils.WrapError("Encode EPSTAC", err)
 		return
 	}
 	return

@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceNotifyTransfer struct {
-	QosFlowNotifyList   []QosFlowNotifyItem    `optional`
-	QosFlowReleasedList []QosFlowWithCauseItem `optional`
+	QosFlowNotifyList   []QosFlowNotifyItem    `lb:1,ub:maxnoofQosFlows,optional`
+	QosFlowReleasedList []QosFlowWithCauseItem `lb:1,ub:maxnoofQosFlows,optional`
 	// IEExtensions *PDUSessionResourceNotifyTransferExtIEs `optional`
 }
 
@@ -23,36 +23,32 @@ func (ie *PDUSessionResourceNotifyTransfer) Encode(w *aper.AperWriter) (err erro
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	if ie.QosFlowNotifyList != nil {
-		if len(ie.QosFlowNotifyList) > 0 {
-			tmp := Sequence[*QosFlowNotifyItem]{
-				Value: []*QosFlowNotifyItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-				ext:   false,
-			}
-			for _, i := range ie.QosFlowNotifyList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read QosFlowNotifyList", err)
-				return
-			}
+	if len(ie.QosFlowNotifyList) > 0 {
+		tmp := Sequence[*QosFlowNotifyItem]{
+			Value: []*QosFlowNotifyItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.QosFlowNotifyList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowNotifyList", err)
+			return
 		}
 	}
-	if ie.QosFlowReleasedList != nil {
-		if len(ie.QosFlowReleasedList) > 0 {
-			tmp := Sequence[*QosFlowWithCauseItem]{
-				Value: []*QosFlowWithCauseItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-				ext:   false,
-			}
-			for _, i := range ie.QosFlowReleasedList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read QosFlowReleasedList", err)
-				return
-			}
+	if len(ie.QosFlowReleasedList) > 0 {
+		tmp := Sequence[*QosFlowWithCauseItem]{
+			Value: []*QosFlowWithCauseItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.QosFlowReleasedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowReleasedList", err)
+			return
 		}
 	}
 	return

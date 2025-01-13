@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceToReleaseItemHOCmd struct {
-	PDUSessionID                            int64
-	HandoverPreparationUnsuccessfulTransfer []byte
+	PDUSessionID                            int64  `lb:0,ub:255,madatory`
+	HandoverPreparationUnsuccessfulTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceToReleaseItemHOCmdExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceToReleaseItemHOCmd) Encode(w *aper.AperWriter) (err 
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_HandoverPreparationUnsuccessfulTransfer := NewOCTETSTRING(ie.HandoverPreparationUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverPreparationUnsuccessfulTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read HandoverPreparationUnsuccessfulTransfer", err)
+		err = utils.WrapError("Encode HandoverPreparationUnsuccessfulTransfer", err)
 		return
 	}
 	return

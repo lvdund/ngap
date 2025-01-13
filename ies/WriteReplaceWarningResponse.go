@@ -10,16 +10,20 @@ import (
 )
 
 type WriteReplaceWarningResponse struct {
-	MessageIdentifier          []byte
-	SerialNumber               []byte
-	BroadcastCompletedAreaList *BroadcastCompletedAreaList `optional`
-	CriticalityDiagnostics     *CriticalityDiagnostics     `optional`
+	MessageIdentifier          []byte                      `lb:16,ub:16,mandatory,reject`
+	SerialNumber               []byte                      `lb:16,ub:16,mandatory,reject`
+	BroadcastCompletedAreaList *BroadcastCompletedAreaList `optional,ignore`
+	CriticalityDiagnostics     *CriticalityDiagnostics     `optional,ignore`
 }
 
 func (msg *WriteReplaceWarningResponse) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_WriteReplaceWarning, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_WriteReplaceWarning, Criticality_PresentReject, ies)
 }
-func (msg *WriteReplaceWarningResponse) toIes() (ies []NgapMessageIE) {
+func (msg *WriteReplaceWarningResponse) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_MessageIdentifier},

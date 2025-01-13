@@ -6,9 +6,9 @@ import (
 )
 
 type PDUSessionResourceSetupItemHOReq struct {
-	PDUSessionID            int64
-	SNSSAI                  SNSSAI
-	HandoverRequestTransfer []byte
+	PDUSessionID            int64  `lb:0,ub:255,madatory`
+	SNSSAI                  SNSSAI `madatory`
+	HandoverRequestTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceSetupItemHOReqExtIEs `optional`
 }
 
@@ -20,16 +20,16 @@ func (ie *PDUSessionResourceSetupItemHOReq) Encode(w *aper.AperWriter) (err erro
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	if err = ie.SNSSAI.Encode(w); err != nil {
-		err = utils.WrapError("Read SNSSAI", err)
+		err = utils.WrapError("Encode SNSSAI", err)
 		return
 	}
 	tmp_HandoverRequestTransfer := NewOCTETSTRING(ie.HandoverRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverRequestTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read HandoverRequestTransfer", err)
+		err = utils.WrapError("Encode HandoverRequestTransfer", err)
 		return
 	}
 	return

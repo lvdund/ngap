@@ -6,9 +6,9 @@ import (
 )
 
 type SONConfigurationTransfer struct {
-	TargetRANNodeID        TargetRANNodeID
-	SourceRANNodeID        SourceRANNodeID
-	SONInformation         SONInformation
+	TargetRANNodeID        TargetRANNodeID         `madatory`
+	SourceRANNodeID        SourceRANNodeID         `madatory`
+	SONInformation         SONInformation          `madatory`
 	XnTNLConfigurationInfo *XnTNLConfigurationInfo `optional`
 	// IEExtensions *SONConfigurationTransferExtIEs `optional`
 }
@@ -23,20 +23,20 @@ func (ie *SONConfigurationTransfer) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.TargetRANNodeID.Encode(w); err != nil {
-		err = utils.WrapError("Read TargetRANNodeID", err)
+		err = utils.WrapError("Encode TargetRANNodeID", err)
 		return
 	}
 	if err = ie.SourceRANNodeID.Encode(w); err != nil {
-		err = utils.WrapError("Read SourceRANNodeID", err)
+		err = utils.WrapError("Encode SourceRANNodeID", err)
 		return
 	}
 	if err = ie.SONInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read SONInformation", err)
+		err = utils.WrapError("Encode SONInformation", err)
 		return
 	}
 	if ie.XnTNLConfigurationInfo != nil {
 		if err = ie.XnTNLConfigurationInfo.Encode(w); err != nil {
-			err = utils.WrapError("Read XnTNLConfigurationInfo", err)
+			err = utils.WrapError("Encode XnTNLConfigurationInfo", err)
 			return
 		}
 	}

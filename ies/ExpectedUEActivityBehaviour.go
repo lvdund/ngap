@@ -6,8 +6,8 @@ import (
 )
 
 type ExpectedUEActivityBehaviour struct {
-	ExpectedActivityPeriod                 *int64                                  `optional`
-	ExpectedIdlePeriod                     *int64                                  `optional`
+	ExpectedActivityPeriod                 *int64                                  `lb:1,ub:181,optional,valExt`
+	ExpectedIdlePeriod                     *int64                                  `lb:1,ub:181,optional,valExt`
 	SourceOfUEActivityBehaviourInformation *SourceOfUEActivityBehaviourInformation `optional`
 	// IEExtensions *ExpectedUEActivityBehaviourExtIEs `optional`
 }
@@ -28,22 +28,22 @@ func (ie *ExpectedUEActivityBehaviour) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if ie.ExpectedActivityPeriod != nil {
-		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, false)
+		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
 		if err = tmp_ExpectedActivityPeriod.Encode(w); err != nil {
-			err = utils.WrapError("Read ExpectedActivityPeriod", err)
+			err = utils.WrapError("Encode ExpectedActivityPeriod", err)
 			return
 		}
 	}
 	if ie.ExpectedIdlePeriod != nil {
-		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, false)
+		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
 		if err = tmp_ExpectedIdlePeriod.Encode(w); err != nil {
-			err = utils.WrapError("Read ExpectedIdlePeriod", err)
+			err = utils.WrapError("Encode ExpectedIdlePeriod", err)
 			return
 		}
 	}
 	if ie.SourceOfUEActivityBehaviourInformation != nil {
 		if err = ie.SourceOfUEActivityBehaviourInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read SourceOfUEActivityBehaviourInformation", err)
+			err = utils.WrapError("Encode SourceOfUEActivityBehaviourInformation", err)
 			return
 		}
 	}
@@ -60,7 +60,7 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp_ExpectedActivityPeriod := INTEGER{
 			c:   aper.Constraint{Lb: 1, Ub: 181},
-			ext: false,
+			ext: true,
 		}
 		if err = tmp_ExpectedActivityPeriod.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedActivityPeriod", err)
@@ -71,7 +71,7 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp_ExpectedIdlePeriod := INTEGER{
 			c:   aper.Constraint{Lb: 1, Ub: 181},
-			ext: false,
+			ext: true,
 		}
 		if err = tmp_ExpectedIdlePeriod.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedIdlePeriod", err)

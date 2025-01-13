@@ -6,7 +6,7 @@ import (
 )
 
 type ERABInformationItem struct {
-	ERABID       int64
+	ERABID       int64         `lb:0,ub:15,madatory,valExt`
 	DLForwarding *DLForwarding `optional`
 	// IEExtensions *ERABInformationItemExtIEs `optional`
 }
@@ -20,14 +20,14 @@ func (ie *ERABInformationItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_ERABID := NewINTEGER(ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, false)
+	tmp_ERABID := NewINTEGER(ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, true)
 	if err = tmp_ERABID.Encode(w); err != nil {
-		err = utils.WrapError("Read ERABID", err)
+		err = utils.WrapError("Encode ERABID", err)
 		return
 	}
 	if ie.DLForwarding != nil {
 		if err = ie.DLForwarding.Encode(w); err != nil {
-			err = utils.WrapError("Read DLForwarding", err)
+			err = utils.WrapError("Encode DLForwarding", err)
 			return
 		}
 	}
@@ -43,7 +43,7 @@ func (ie *ERABInformationItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_ERABID := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 15},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_ERABID.Decode(r); err != nil {
 		err = utils.WrapError("Read ERABID", err)

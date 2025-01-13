@@ -6,11 +6,11 @@ import (
 )
 
 type MobilityRestrictionList struct {
-	ServingPLMN              []byte
-	EquivalentPLMNs          []PLMNIdentity                 `optional`
-	RATRestrictions          []RATRestrictionsItem          `optional`
-	ForbiddenAreaInformation []ForbiddenAreaInformationItem `optional`
-	ServiceAreaInformation   []ServiceAreaInformationItem   `optional`
+	ServingPLMN              []byte                         `lb:3,ub:3,madatory`
+	EquivalentPLMNs          []PLMNIdentity                 `lb:1,ub:maxnoofEPLMNs,optional`
+	RATRestrictions          []RATRestrictionsItem          `lb:1,ub:maxnoofEPLMNsPlusOne,optional`
+	ForbiddenAreaInformation []ForbiddenAreaInformationItem `lb:1,ub:maxnoofEPLMNsPlusOne,optional`
+	ServiceAreaInformation   []ServiceAreaInformationItem   `lb:1,ub:maxnoofEPLMNsPlusOne,optional`
 	// IEExtensions *MobilityRestrictionListExtIEs `optional`
 }
 
@@ -34,71 +34,63 @@ func (ie *MobilityRestrictionList) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	tmp_ServingPLMN := NewOCTETSTRING(ie.ServingPLMN, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_ServingPLMN.Encode(w); err != nil {
-		err = utils.WrapError("Read ServingPLMN", err)
+		err = utils.WrapError("Encode ServingPLMN", err)
 		return
 	}
-	if ie.EquivalentPLMNs != nil {
-		if len(ie.EquivalentPLMNs) > 0 {
-			tmp := Sequence[*PLMNIdentity]{
-				Value: []*PLMNIdentity{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNs},
-				ext:   false,
-			}
-			for _, i := range ie.EquivalentPLMNs {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read EquivalentPLMNs", err)
-				return
-			}
+	if len(ie.EquivalentPLMNs) > 0 {
+		tmp := Sequence[*PLMNIdentity]{
+			Value: []*PLMNIdentity{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNs},
+			ext:   false,
+		}
+		for _, i := range ie.EquivalentPLMNs {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode EquivalentPLMNs", err)
+			return
 		}
 	}
-	if ie.RATRestrictions != nil {
-		if len(ie.RATRestrictions) > 0 {
-			tmp := Sequence[*RATRestrictionsItem]{
-				Value: []*RATRestrictionsItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},
-				ext:   false,
-			}
-			for _, i := range ie.RATRestrictions {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read RATRestrictions", err)
-				return
-			}
+	if len(ie.RATRestrictions) > 0 {
+		tmp := Sequence[*RATRestrictionsItem]{
+			Value: []*RATRestrictionsItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},
+			ext:   false,
+		}
+		for _, i := range ie.RATRestrictions {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode RATRestrictions", err)
+			return
 		}
 	}
-	if ie.ForbiddenAreaInformation != nil {
-		if len(ie.ForbiddenAreaInformation) > 0 {
-			tmp := Sequence[*ForbiddenAreaInformationItem]{
-				Value: []*ForbiddenAreaInformationItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},
-				ext:   false,
-			}
-			for _, i := range ie.ForbiddenAreaInformation {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read ForbiddenAreaInformation", err)
-				return
-			}
+	if len(ie.ForbiddenAreaInformation) > 0 {
+		tmp := Sequence[*ForbiddenAreaInformationItem]{
+			Value: []*ForbiddenAreaInformationItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},
+			ext:   false,
+		}
+		for _, i := range ie.ForbiddenAreaInformation {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode ForbiddenAreaInformation", err)
+			return
 		}
 	}
-	if ie.ServiceAreaInformation != nil {
-		if len(ie.ServiceAreaInformation) > 0 {
-			tmp := Sequence[*ServiceAreaInformationItem]{
-				Value: []*ServiceAreaInformationItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},
-				ext:   false,
-			}
-			for _, i := range ie.ServiceAreaInformation {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read ServiceAreaInformation", err)
-				return
-			}
+	if len(ie.ServiceAreaInformation) > 0 {
+		tmp := Sequence[*ServiceAreaInformationItem]{
+			Value: []*ServiceAreaInformationItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofEPLMNsPlusOne},
+			ext:   false,
+		}
+		for _, i := range ie.ServiceAreaInformation {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode ServiceAreaInformation", err)
+			return
 		}
 	}
 	return

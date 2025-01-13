@@ -10,26 +10,35 @@ import (
 )
 
 type AMFStatusIndication struct {
-	UnavailableGUAMIList []UnavailableGUAMIItem
+	UnavailableGUAMIList []UnavailableGUAMIItem `lb:1,ub:maxnoofServedGUAMIs,mandatory,reject`
 }
 
 func (msg *AMFStatusIndication) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_AMFStatusIndication, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_AMFStatusIndication, Criticality_PresentIgnore, ies)
 }
-func (msg *AMFStatusIndication) toIes() (ies []NgapMessageIE) {
+func (msg *AMFStatusIndication) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
-	tmp_UnavailableGUAMIList := Sequence[*UnavailableGUAMIItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
-		ext: false,
+	if len(msg.UnavailableGUAMIList) > 0 {
+		tmp_UnavailableGUAMIList := Sequence[*UnavailableGUAMIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
+			ext: false,
+		}
+		for _, i := range msg.UnavailableGUAMIList {
+			tmp_UnavailableGUAMIList.Value = append(tmp_UnavailableGUAMIList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_UnavailableGUAMIList},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_UnavailableGUAMIList,
+		})
+	} else {
+		err = utils.WrapError("UnavailableGUAMIList is nil", err)
+		return
 	}
-	for _, i := range msg.UnavailableGUAMIList {
-		tmp_UnavailableGUAMIList.Value = append(tmp_UnavailableGUAMIList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_UnavailableGUAMIList},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_UnavailableGUAMIList,
-	})
 	return
 }
 func (msg *AMFStatusIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {

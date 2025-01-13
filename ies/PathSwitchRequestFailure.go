@@ -10,16 +10,20 @@ import (
 )
 
 type PathSwitchRequestFailure struct {
-	AMFUENGAPID                          int64
-	RANUENGAPID                          int64
-	PDUSessionResourceReleasedListPSFail []PDUSessionResourceReleasedItemPSFail
-	CriticalityDiagnostics               *CriticalityDiagnostics `optional`
+	AMFUENGAPID                          int64                                  `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                          int64                                  `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceReleasedListPSFail []PDUSessionResourceReleasedItemPSFail `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
+	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,ignore`
 }
 
 func (msg *PathSwitchRequestFailure) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, ies)
 }
-func (msg *PathSwitchRequestFailure) toIes() (ies []NgapMessageIE) {
+func (msg *PathSwitchRequestFailure) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -37,18 +41,23 @@ func (msg *PathSwitchRequestFailure) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	tmp_PDUSessionResourceReleasedListPSFail := Sequence[*PDUSessionResourceReleasedItemPSFail]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceReleasedListPSFail) > 0 {
+		tmp_PDUSessionResourceReleasedListPSFail := Sequence[*PDUSessionResourceReleasedItemPSFail]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceReleasedListPSFail {
+			tmp_PDUSessionResourceReleasedListPSFail.Value = append(tmp_PDUSessionResourceReleasedListPSFail.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceReleasedListPSFail},
+			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Value:       &tmp_PDUSessionResourceReleasedListPSFail,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceReleasedListPSFail is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceReleasedListPSFail {
-		tmp_PDUSessionResourceReleasedListPSFail.Value = append(tmp_PDUSessionResourceReleasedListPSFail.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceReleasedListPSFail},
-		Criticality: Criticality{Value: Criticality_PresentIgnore},
-		Value:       &tmp_PDUSessionResourceReleasedListPSFail,
-	})
 	if msg.CriticalityDiagnostics != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_CriticalityDiagnostics},

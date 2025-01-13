@@ -6,7 +6,7 @@ import (
 )
 
 type AreaOfInterestCellItem struct {
-	NGRANCGI NGRANCGI
+	NGRANCGI NGRANCGI `madatory`
 	// IEExtensions *AreaOfInterestCellItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *AreaOfInterestCellItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NGRANCGI.Encode(w); err != nil {
-		err = utils.WrapError("Read NGRANCGI", err)
+		err = utils.WrapError("Encode NGRANCGI", err)
 		return
 	}
 	return

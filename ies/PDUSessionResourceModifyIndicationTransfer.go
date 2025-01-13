@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceModifyIndicationTransfer struct {
-	DLQosFlowPerTNLInformation           QosFlowPerTNLInformation
-	AdditionalDLQosFlowPerTNLInformation []QosFlowPerTNLInformationItem `optional`
+	DLQosFlowPerTNLInformation           QosFlowPerTNLInformation       `madatory`
+	AdditionalDLQosFlowPerTNLInformation []QosFlowPerTNLInformationItem `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional`
 	// IEExtensions *PDUSessionResourceModifyIndicationTransferExtIEs `optional`
 }
 
@@ -21,23 +21,21 @@ func (ie *PDUSessionResourceModifyIndicationTransfer) Encode(w *aper.AperWriter)
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read DLQosFlowPerTNLInformation", err)
+		err = utils.WrapError("Encode DLQosFlowPerTNLInformation", err)
 		return
 	}
-	if ie.AdditionalDLQosFlowPerTNLInformation != nil {
-		if len(ie.AdditionalDLQosFlowPerTNLInformation) > 0 {
-			tmp := Sequence[*QosFlowPerTNLInformationItem]{
-				Value: []*QosFlowPerTNLInformationItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
-				ext:   false,
-			}
-			for _, i := range ie.AdditionalDLQosFlowPerTNLInformation {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
-				return
-			}
+	if len(ie.AdditionalDLQosFlowPerTNLInformation) > 0 {
+		tmp := Sequence[*QosFlowPerTNLInformationItem]{
+			Value: []*QosFlowPerTNLInformationItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+			ext:   false,
+		}
+		for _, i := range ie.AdditionalDLQosFlowPerTNLInformation {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode AdditionalDLQosFlowPerTNLInformation", err)
+			return
 		}
 	}
 	return

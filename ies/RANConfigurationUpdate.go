@@ -10,17 +10,21 @@ import (
 )
 
 type RANConfigurationUpdate struct {
-	RANNodeName                     []byte                            `optional`
-	SupportedTAList                 []SupportedTAItem                 `optional`
-	DefaultPagingDRX                *PagingDRX                        `optional`
-	GlobalRANNodeID                 *GlobalRANNodeID                  `optional`
-	NGRANTNLAssociationToRemoveList []NGRANTNLAssociationToRemoveItem `optional`
+	RANNodeName                     []byte                            `lb:1,ub:150,optional,ignore,valueExt`
+	SupportedTAList                 []SupportedTAItem                 `lb:1,ub:maxnoofTACs,optional,reject`
+	DefaultPagingDRX                *PagingDRX                        `optional,ignore`
+	GlobalRANNodeID                 *GlobalRANNodeID                  `optional,ignore`
+	NGRANTNLAssociationToRemoveList []NGRANTNLAssociationToRemoveItem `lb:1,ub:maxnoofTNLAssociations,optional,reject`
 }
 
 func (msg *RANConfigurationUpdate) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, ies)
 }
-func (msg *RANConfigurationUpdate) toIes() (ies []NgapMessageIE) {
+func (msg *RANConfigurationUpdate) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.RANNodeName != nil {
 		ies = append(ies, NgapMessageIE{
@@ -32,7 +36,7 @@ func (msg *RANConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 				Value: msg.RANNodeName,
 			}})
 	}
-	if msg.SupportedTAList != nil {
+	if len(msg.SupportedTAList) > 0 {
 		tmp_SupportedTAList := Sequence[*SupportedTAItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTACs},
 			ext: false,
@@ -60,7 +64,7 @@ func (msg *RANConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 			Value:       msg.GlobalRANNodeID,
 		})
 	}
-	if msg.NGRANTNLAssociationToRemoveList != nil {
+	if len(msg.NGRANTNLAssociationToRemoveList) > 0 {
 		tmp_NGRANTNLAssociationToRemoveList := Sequence[*NGRANTNLAssociationToRemoveItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
 			ext: false,

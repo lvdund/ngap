@@ -6,9 +6,9 @@ import (
 )
 
 type AreaOfInterest struct {
-	AreaOfInterestTAIList     []AreaOfInterestTAIItem     `optional`
-	AreaOfInterestCellList    []AreaOfInterestCellItem    `optional`
-	AreaOfInterestRANNodeList []AreaOfInterestRANNodeItem `optional`
+	AreaOfInterestTAIList     []AreaOfInterestTAIItem     `lb:1,ub:maxnoofTAIinAoI,optional`
+	AreaOfInterestCellList    []AreaOfInterestCellItem    `lb:1,ub:maxnoofCellinAoI,optional`
+	AreaOfInterestRANNodeList []AreaOfInterestRANNodeItem `lb:1,ub:maxnoofRANNodeinAoI,optional`
 	// IEExtensions *AreaOfInterestExtIEs `optional`
 }
 
@@ -27,52 +27,46 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 3)
 	}
 	w.WriteBits(optionals, 4)
-	if ie.AreaOfInterestTAIList != nil {
-		if len(ie.AreaOfInterestTAIList) > 0 {
-			tmp := Sequence[*AreaOfInterestTAIItem]{
-				Value: []*AreaOfInterestTAIItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofTAIinAoI},
-				ext:   false,
-			}
-			for _, i := range ie.AreaOfInterestTAIList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read AreaOfInterestTAIList", err)
-				return
-			}
+	if len(ie.AreaOfInterestTAIList) > 0 {
+		tmp := Sequence[*AreaOfInterestTAIItem]{
+			Value: []*AreaOfInterestTAIItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofTAIinAoI},
+			ext:   false,
+		}
+		for _, i := range ie.AreaOfInterestTAIList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode AreaOfInterestTAIList", err)
+			return
 		}
 	}
-	if ie.AreaOfInterestCellList != nil {
-		if len(ie.AreaOfInterestCellList) > 0 {
-			tmp := Sequence[*AreaOfInterestCellItem]{
-				Value: []*AreaOfInterestCellItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinAoI},
-				ext:   false,
-			}
-			for _, i := range ie.AreaOfInterestCellList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read AreaOfInterestCellList", err)
-				return
-			}
+	if len(ie.AreaOfInterestCellList) > 0 {
+		tmp := Sequence[*AreaOfInterestCellItem]{
+			Value: []*AreaOfInterestCellItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellinAoI},
+			ext:   false,
+		}
+		for _, i := range ie.AreaOfInterestCellList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode AreaOfInterestCellList", err)
+			return
 		}
 	}
-	if ie.AreaOfInterestRANNodeList != nil {
-		if len(ie.AreaOfInterestRANNodeList) > 0 {
-			tmp := Sequence[*AreaOfInterestRANNodeItem]{
-				Value: []*AreaOfInterestRANNodeItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofRANNodeinAoI},
-				ext:   false,
-			}
-			for _, i := range ie.AreaOfInterestRANNodeList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read AreaOfInterestRANNodeList", err)
-				return
-			}
+	if len(ie.AreaOfInterestRANNodeList) > 0 {
+		tmp := Sequence[*AreaOfInterestRANNodeItem]{
+			Value: []*AreaOfInterestRANNodeItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofRANNodeinAoI},
+			ext:   false,
+		}
+		for _, i := range ie.AreaOfInterestRANNodeList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode AreaOfInterestRANNodeList", err)
+			return
 		}
 	}
 	return

@@ -21,7 +21,7 @@ func (ie *SONInformationReply) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	if ie.XnTNLConfigurationInfo != nil {
 		if err = ie.XnTNLConfigurationInfo.Encode(w); err != nil {
-			err = utils.WrapError("Read XnTNLConfigurationInfo", err)
+			err = utils.WrapError("Encode XnTNLConfigurationInfo", err)
 			return
 		}
 	}

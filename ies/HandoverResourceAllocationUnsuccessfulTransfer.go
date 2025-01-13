@@ -6,7 +6,7 @@ import (
 )
 
 type HandoverResourceAllocationUnsuccessfulTransfer struct {
-	Cause                  Cause
+	Cause                  Cause                   `madatory`
 	CriticalityDiagnostics *CriticalityDiagnostics `optional`
 	// IEExtensions *HandoverResourceAllocationUnsuccessfulTransferExtIEs `optional`
 }
@@ -21,12 +21,12 @@ func (ie *HandoverResourceAllocationUnsuccessfulTransfer) Encode(w *aper.AperWri
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = utils.WrapError("Encode Cause", err)
 		return
 	}
 	if ie.CriticalityDiagnostics != nil {
 		if err = ie.CriticalityDiagnostics.Encode(w); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = utils.WrapError("Encode CriticalityDiagnostics", err)
 			return
 		}
 	}

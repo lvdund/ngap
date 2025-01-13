@@ -1,6 +1,8 @@
 package ies
 
-import "github.com/lvdund/ngap/aper"
+import (
+	"github.com/lvdund/ngap/aper"
+)
 
 type PDUSessionResourceReleaseResponseTransfer struct {
 	// IEExtensions *PDUSessionResourceReleaseResponseTransferExtIEs `optional`

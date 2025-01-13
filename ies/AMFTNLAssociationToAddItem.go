@@ -6,9 +6,9 @@ import (
 )
 
 type AMFTNLAssociationToAddItem struct {
-	AMFTNLAssociationAddress CPTransportLayerInformation
-	TNLAssociationUsage      *TNLAssociationUsage `optional`
-	TNLAddressWeightFactor   *int64               `optional`
+	AMFTNLAssociationAddress CPTransportLayerInformation `madatory`
+	TNLAssociationUsage      *TNLAssociationUsage        `optional`
+	TNLAddressWeightFactor   *int64                      `lb:0,ub:255,optional`
 	// IEExtensions *AMFTNLAssociationToAddItemExtIEs `optional`
 }
 
@@ -25,19 +25,19 @@ func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
+		err = utils.WrapError("Encode AMFTNLAssociationAddress", err)
 		return
 	}
 	if ie.TNLAssociationUsage != nil {
 		if err = ie.TNLAssociationUsage.Encode(w); err != nil {
-			err = utils.WrapError("Read TNLAssociationUsage", err)
+			err = utils.WrapError("Encode TNLAssociationUsage", err)
 			return
 		}
 	}
 	if ie.TNLAddressWeightFactor != nil {
 		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
 		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
-			err = utils.WrapError("Read TNLAddressWeightFactor", err)
+			err = utils.WrapError("Encode TNLAddressWeightFactor", err)
 			return
 		}
 	}

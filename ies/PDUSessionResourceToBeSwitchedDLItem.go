@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceToBeSwitchedDLItem struct {
-	PDUSessionID              int64
-	PathSwitchRequestTransfer []byte
+	PDUSessionID              int64  `lb:0,ub:255,madatory`
+	PathSwitchRequestTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceToBeSwitchedDLItemExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceToBeSwitchedDLItem) Encode(w *aper.AperWriter) (err 
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_PathSwitchRequestTransfer := NewOCTETSTRING(ie.PathSwitchRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PathSwitchRequestTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read PathSwitchRequestTransfer", err)
+		err = utils.WrapError("Encode PathSwitchRequestTransfer", err)
 		return
 	}
 	return

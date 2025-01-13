@@ -10,14 +10,18 @@ import (
 )
 
 type DownlinkRANConfigurationTransfer struct {
-	SONConfigurationTransferDL     *SONConfigurationTransfer `optional`
-	ENDCSONConfigurationTransferDL []byte                    `optional`
+	SONConfigurationTransferDL     *SONConfigurationTransfer `optional,ignore`
+	ENDCSONConfigurationTransferDL []byte                    `lb:0,ub:0,optional,ignore`
 }
 
 func (msg *DownlinkRANConfigurationTransfer) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkRANConfigurationTransfer, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkRANConfigurationTransfer, Criticality_PresentIgnore, ies)
 }
-func (msg *DownlinkRANConfigurationTransfer) toIes() (ies []NgapMessageIE) {
+func (msg *DownlinkRANConfigurationTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.SONConfigurationTransferDL != nil {
 		ies = append(ies, NgapMessageIE{

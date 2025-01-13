@@ -6,7 +6,7 @@ import (
 )
 
 type SliceOverloadItem struct {
-	SNSSAI SNSSAI
+	SNSSAI SNSSAI `madatory`
 	// IEExtensions *SliceOverloadItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *SliceOverloadItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.SNSSAI.Encode(w); err != nil {
-		err = utils.WrapError("Read SNSSAI", err)
+		err = utils.WrapError("Encode SNSSAI", err)
 		return
 	}
 	return

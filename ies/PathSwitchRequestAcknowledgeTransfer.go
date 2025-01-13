@@ -1,6 +1,8 @@
 package ies
 
 import (
+	"bytes"
+
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
@@ -11,7 +13,8 @@ type PathSwitchRequestAcknowledgeTransfer struct {
 	// IEExtensions *PathSwitchRequestAcknowledgeTransferExtIEs `optional`
 }
 
-func (ie *PathSwitchRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err error) {
+func (ie *PathSwitchRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -25,19 +28,20 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err 
 	w.WriteBits(optionals, 3)
 	if ie.ULNGUUPTNLInformation != nil {
 		if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+			err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
 			return
 		}
 	}
 	if ie.SecurityIndication != nil {
 		if err = ie.SecurityIndication.Encode(w); err != nil {
-			err = utils.WrapError("Read SecurityIndication", err)
+			err = utils.WrapError("Encode SecurityIndication", err)
 			return
 		}
 	}
 	return
 }
-func (ie *PathSwitchRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err error) {
+func (ie *PathSwitchRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {
+	r := aper.NewReader(bytes.NewBuffer(wire))
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

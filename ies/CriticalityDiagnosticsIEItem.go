@@ -6,9 +6,9 @@ import (
 )
 
 type CriticalityDiagnosticsIEItem struct {
-	IECriticality Criticality
-	IEID          ProtocolIEID
-	TypeOfError   TypeOfError
+	IECriticality Criticality  `madatory`
+	IEID          ProtocolIEID `madatory`
+	TypeOfError   TypeOfError  `madatory`
 	// IEExtensions *CriticalityDiagnosticsIEItemExtIEs `optional`
 }
 
@@ -19,15 +19,15 @@ func (ie *CriticalityDiagnosticsIEItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.IECriticality.Encode(w); err != nil {
-		err = utils.WrapError("Read IECriticality", err)
+		err = utils.WrapError("Encode IECriticality", err)
 		return
 	}
 	if err = ie.IEID.Encode(w); err != nil {
-		err = utils.WrapError("Read IEID", err)
+		err = utils.WrapError("Encode IEID", err)
 		return
 	}
 	if err = ie.TypeOfError.Encode(w); err != nil {
-		err = utils.WrapError("Read TypeOfError", err)
+		err = utils.WrapError("Encode TypeOfError", err)
 		return
 	}
 	return

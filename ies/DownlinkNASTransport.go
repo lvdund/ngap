@@ -10,21 +10,25 @@ import (
 )
 
 type DownlinkNASTransport struct {
-	AMFUENGAPID               int64
-	RANUENGAPID               int64
-	OldAMF                    []byte `optional`
-	RANPagingPriority         *int64 `optional`
-	NASPDU                    []byte
-	MobilityRestrictionList   *MobilityRestrictionList   `optional`
-	IndexToRFSP               *int64                     `optional`
-	UEAggregateMaximumBitRate *UEAggregateMaximumBitRate `optional`
-	AllowedNSSAI              []AllowedNSSAIItem         `optional`
+	AMFUENGAPID               int64                      `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID               int64                      `lb:0,ub:4294967295,mandatory,reject`
+	OldAMF                    []byte                     `lb:1,ub:150,optional,reject,valueExt`
+	RANPagingPriority         *int64                     `lb:1,ub:256,optional,ignore`
+	NASPDU                    []byte                     `lb:0,ub:0,mandatory,reject`
+	MobilityRestrictionList   *MobilityRestrictionList   `optional,ignore`
+	IndexToRFSP               *int64                     `lb:1,ub:256,optional,ignore,valueExt`
+	UEAggregateMaximumBitRate *UEAggregateMaximumBitRate `optional,ignore`
+	AllowedNSSAI              []AllowedNSSAIItem         `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
 }
 
 func (msg *DownlinkNASTransport) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkNASTransport, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkNASTransport, Criticality_PresentIgnore, ies)
 }
-func (msg *DownlinkNASTransport) toIes() (ies []NgapMessageIE) {
+func (msg *DownlinkNASTransport) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -94,7 +98,7 @@ func (msg *DownlinkNASTransport) toIes() (ies []NgapMessageIE) {
 			Value:       msg.UEAggregateMaximumBitRate,
 		})
 	}
-	if msg.AllowedNSSAI != nil {
+	if len(msg.AllowedNSSAI) > 0 {
 		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
 			ext: false,

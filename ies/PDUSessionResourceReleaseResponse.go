@@ -10,17 +10,21 @@ import (
 )
 
 type PDUSessionResourceReleaseResponse struct {
-	AMFUENGAPID                          int64
-	RANUENGAPID                          int64
-	PDUSessionResourceReleasedListRelRes []PDUSessionResourceReleasedItemRelRes
-	UserLocationInformation              *UserLocationInformation `optional`
-	CriticalityDiagnostics               *CriticalityDiagnostics  `optional`
+	AMFUENGAPID                          int64                                  `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                          int64                                  `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceReleasedListRelRes []PDUSessionResourceReleasedItemRelRes `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
+	UserLocationInformation              *UserLocationInformation               `optional,ignore`
+	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,ignore`
 }
 
 func (msg *PDUSessionResourceReleaseResponse) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceRelease, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceRelease, Criticality_PresentReject, ies)
 }
-func (msg *PDUSessionResourceReleaseResponse) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceReleaseResponse) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -38,18 +42,23 @@ func (msg *PDUSessionResourceReleaseResponse) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	tmp_PDUSessionResourceReleasedListRelRes := Sequence[*PDUSessionResourceReleasedItemRelRes]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceReleasedListRelRes) > 0 {
+		tmp_PDUSessionResourceReleasedListRelRes := Sequence[*PDUSessionResourceReleasedItemRelRes]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceReleasedListRelRes {
+			tmp_PDUSessionResourceReleasedListRelRes.Value = append(tmp_PDUSessionResourceReleasedListRelRes.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceReleasedListRelRes},
+			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Value:       &tmp_PDUSessionResourceReleasedListRelRes,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceReleasedListRelRes is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceReleasedListRelRes {
-		tmp_PDUSessionResourceReleasedListRelRes.Value = append(tmp_PDUSessionResourceReleasedListRelRes.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceReleasedListRelRes},
-		Criticality: Criticality{Value: Criticality_PresentIgnore},
-		Value:       &tmp_PDUSessionResourceReleasedListRelRes,
-	})
 	if msg.UserLocationInformation != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_UserLocationInformation},

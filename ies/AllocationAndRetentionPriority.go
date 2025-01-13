@@ -6,9 +6,9 @@ import (
 )
 
 type AllocationAndRetentionPriority struct {
-	PriorityLevelARP        int64
-	PreemptionCapability    PreemptionCapability
-	PreemptionVulnerability PreemptionVulnerability
+	PriorityLevelARP        int64                   `lb:1,ub:15,madatory`
+	PreemptionCapability    PreemptionCapability    `madatory`
+	PreemptionVulnerability PreemptionVulnerability `madatory`
 	// IEExtensions *AllocationAndRetentionPriorityExtIEs `optional`
 }
 
@@ -20,15 +20,15 @@ func (ie *AllocationAndRetentionPriority) Encode(w *aper.AperWriter) (err error)
 	w.WriteBits(optionals, 1)
 	tmp_PriorityLevelARP := NewINTEGER(ie.PriorityLevelARP, aper.Constraint{Lb: 1, Ub: 15}, false)
 	if err = tmp_PriorityLevelARP.Encode(w); err != nil {
-		err = utils.WrapError("Read PriorityLevelARP", err)
+		err = utils.WrapError("Encode PriorityLevelARP", err)
 		return
 	}
 	if err = ie.PreemptionCapability.Encode(w); err != nil {
-		err = utils.WrapError("Read PreemptionCapability", err)
+		err = utils.WrapError("Encode PreemptionCapability", err)
 		return
 	}
 	if err = ie.PreemptionVulnerability.Encode(w); err != nil {
-		err = utils.WrapError("Read PreemptionVulnerability", err)
+		err = utils.WrapError("Encode PreemptionVulnerability", err)
 		return
 	}
 	return

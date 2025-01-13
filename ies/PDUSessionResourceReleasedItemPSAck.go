@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceReleasedItemPSAck struct {
-	PDUSessionID                          int64
-	PathSwitchRequestUnsuccessfulTransfer []byte
+	PDUSessionID                          int64  `lb:0,ub:255,madatory`
+	PathSwitchRequestUnsuccessfulTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceReleasedItemPSAckExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceReleasedItemPSAck) Encode(w *aper.AperWriter) (err e
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_PathSwitchRequestUnsuccessfulTransfer := NewOCTETSTRING(ie.PathSwitchRequestUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PathSwitchRequestUnsuccessfulTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read PathSwitchRequestUnsuccessfulTransfer", err)
+		err = utils.WrapError("Encode PathSwitchRequestUnsuccessfulTransfer", err)
 		return
 	}
 	return

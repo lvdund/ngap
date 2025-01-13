@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceModifyItemModRes struct {
-	PDUSessionID                             int64
-	PDUSessionResourceModifyResponseTransfer []byte
+	PDUSessionID                             int64  `lb:0,ub:255,madatory`
+	PDUSessionResourceModifyResponseTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceModifyItemModResExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceModifyItemModRes) Encode(w *aper.AperWriter) (err er
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_PDUSessionResourceModifyResponseTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyResponseTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceModifyResponseTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionResourceModifyResponseTransfer", err)
+		err = utils.WrapError("Encode PDUSessionResourceModifyResponseTransfer", err)
 		return
 	}
 	return

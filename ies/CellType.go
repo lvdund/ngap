@@ -6,7 +6,7 @@ import (
 )
 
 type CellType struct {
-	CellSize CellSize
+	CellSize CellSize `madatory`
 	// IEExtensions *CellTypeExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *CellType) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.CellSize.Encode(w); err != nil {
-		err = utils.WrapError("Read CellSize", err)
+		err = utils.WrapError("Encode CellSize", err)
 		return
 	}
 	return

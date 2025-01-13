@@ -6,9 +6,9 @@ import (
 )
 
 type SecurityIndication struct {
-	IntegrityProtectionIndication       IntegrityProtectionIndication
-	ConfidentialityProtectionIndication ConfidentialityProtectionIndication
-	MaximumIntegrityProtectedDataRateUL *MaximumIntegrityProtectedDataRate `optional`
+	IntegrityProtectionIndication       IntegrityProtectionIndication       `madatory`
+	ConfidentialityProtectionIndication ConfidentialityProtectionIndication `madatory`
+	MaximumIntegrityProtectedDataRateUL *MaximumIntegrityProtectedDataRate  `optional`
 	// IEExtensions *SecurityIndicationExtIEs `optional`
 }
 
@@ -22,16 +22,16 @@ func (ie *SecurityIndication) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.IntegrityProtectionIndication.Encode(w); err != nil {
-		err = utils.WrapError("Read IntegrityProtectionIndication", err)
+		err = utils.WrapError("Encode IntegrityProtectionIndication", err)
 		return
 	}
 	if err = ie.ConfidentialityProtectionIndication.Encode(w); err != nil {
-		err = utils.WrapError("Read ConfidentialityProtectionIndication", err)
+		err = utils.WrapError("Encode ConfidentialityProtectionIndication", err)
 		return
 	}
 	if ie.MaximumIntegrityProtectedDataRateUL != nil {
 		if err = ie.MaximumIntegrityProtectedDataRateUL.Encode(w); err != nil {
-			err = utils.WrapError("Read MaximumIntegrityProtectedDataRateUL", err)
+			err = utils.WrapError("Encode MaximumIntegrityProtectedDataRateUL", err)
 			return
 		}
 	}

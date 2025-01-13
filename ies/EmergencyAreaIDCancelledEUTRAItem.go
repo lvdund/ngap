@@ -6,8 +6,8 @@ import (
 )
 
 type EmergencyAreaIDCancelledEUTRAItem struct {
-	EmergencyAreaID          []byte
-	CancelledCellsInEAIEUTRA []CancelledCellsInEAIEUTRAItem
+	EmergencyAreaID          []byte                         `lb:3,ub:3,madatory`
+	CancelledCellsInEAIEUTRA []CancelledCellsInEAIEUTRAItem `lb:1,ub:maxnoofCellinEAI,madatory`
 	// IEExtensions *EmergencyAreaIDCancelledEUTRAItemExtIEs `optional`
 }
 
@@ -19,7 +19,7 @@ func (ie *EmergencyAreaIDCancelledEUTRAItem) Encode(w *aper.AperWriter) (err err
 	w.WriteBits(optionals, 1)
 	tmp_EmergencyAreaID := NewOCTETSTRING(ie.EmergencyAreaID, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_EmergencyAreaID.Encode(w); err != nil {
-		err = utils.WrapError("Read EmergencyAreaID", err)
+		err = utils.WrapError("Encode EmergencyAreaID", err)
 		return
 	}
 	if len(ie.CancelledCellsInEAIEUTRA) > 0 {
@@ -32,9 +32,12 @@ func (ie *EmergencyAreaIDCancelledEUTRAItem) Encode(w *aper.AperWriter) (err err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read CancelledCellsInEAIEUTRA", err)
+			err = utils.WrapError("Encode CancelledCellsInEAIEUTRA", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("CancelledCellsInEAIEUTRA is nil", err)
+		return
 	}
 	return
 }

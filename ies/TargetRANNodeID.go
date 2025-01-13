@@ -6,8 +6,8 @@ import (
 )
 
 type TargetRANNodeID struct {
-	GlobalRANNodeID GlobalRANNodeID
-	SelectedTAI     TAI
+	GlobalRANNodeID GlobalRANNodeID `madatory`
+	SelectedTAI     TAI             `madatory`
 	// IEExtensions *TargetRANNodeIDExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *TargetRANNodeID) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.GlobalRANNodeID.Encode(w); err != nil {
-		err = utils.WrapError("Read GlobalRANNodeID", err)
+		err = utils.WrapError("Encode GlobalRANNodeID", err)
 		return
 	}
 	if err = ie.SelectedTAI.Encode(w); err != nil {
-		err = utils.WrapError("Read SelectedTAI", err)
+		err = utils.WrapError("Encode SelectedTAI", err)
 		return
 	}
 	return

@@ -10,14 +10,18 @@ import (
 )
 
 type UEContextReleaseCommand struct {
-	UENGAPIDs UENGAPIDs
-	Cause     Cause
+	UENGAPIDs UENGAPIDs `mandatory,reject`
+	Cause     Cause     `mandatory,ignore`
 }
 
 func (msg *UEContextReleaseCommand) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UEContextRelease, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UEContextRelease, Criticality_PresentReject, ies)
 }
-func (msg *UEContextReleaseCommand) toIes() (ies []NgapMessageIE) {
+func (msg *UEContextReleaseCommand) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_UENGAPIDs},

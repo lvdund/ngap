@@ -10,16 +10,20 @@ import (
 )
 
 type RRCInactiveTransitionReport struct {
-	AMFUENGAPID             int64
-	RANUENGAPID             int64
-	RRCState                RRCState
-	UserLocationInformation UserLocationInformation
+	AMFUENGAPID             int64                   `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID             int64                   `lb:0,ub:4294967295,mandatory,reject`
+	RRCState                RRCState                `mandatory,ignore`
+	UserLocationInformation UserLocationInformation `mandatory,ignore`
 }
 
 func (msg *RRCInactiveTransitionReport) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RRCInactiveTransitionReport, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RRCInactiveTransitionReport, Criticality_PresentIgnore, ies)
 }
-func (msg *RRCInactiveTransitionReport) toIes() (ies []NgapMessageIE) {
+func (msg *RRCInactiveTransitionReport) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

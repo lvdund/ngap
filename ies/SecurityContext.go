@@ -6,8 +6,8 @@ import (
 )
 
 type SecurityContext struct {
-	NextHopChainingCount int64
-	NextHopNH            []byte
+	NextHopChainingCount int64  `lb:0,ub:7,madatory`
+	NextHopNH            []byte `lb:256,ub:256,madatory`
 	// IEExtensions *SecurityContextExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *SecurityContext) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_NextHopChainingCount := NewINTEGER(ie.NextHopChainingCount, aper.Constraint{Lb: 0, Ub: 7}, false)
 	if err = tmp_NextHopChainingCount.Encode(w); err != nil {
-		err = utils.WrapError("Read NextHopChainingCount", err)
+		err = utils.WrapError("Encode NextHopChainingCount", err)
 		return
 	}
 	tmp_NextHopNH := NewBITSTRING(ie.NextHopNH, aper.Constraint{Lb: 256, Ub: 256}, false)
 	if err = tmp_NextHopNH.Encode(w); err != nil {
-		err = utils.WrapError("Read NextHopNH", err)
+		err = utils.WrapError("Encode NextHopNH", err)
 		return
 	}
 	return

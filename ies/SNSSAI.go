@@ -6,8 +6,8 @@ import (
 )
 
 type SNSSAI struct {
-	SST []byte
-	SD  []byte
+	SST []byte `lb:1,ub:1,madatory`
+	SD  []byte `lb:3,ub:3,optional`
 	// IEExtensions *SNSSAIExtIEs `optional`
 }
 
@@ -22,13 +22,13 @@ func (ie *SNSSAI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	tmp_SST := NewOCTETSTRING(ie.SST, aper.Constraint{Lb: 1, Ub: 1}, false)
 	if err = tmp_SST.Encode(w); err != nil {
-		err = utils.WrapError("Read SST", err)
+		err = utils.WrapError("Encode SST", err)
 		return
 	}
 	if ie.SD != nil {
 		tmp_SD := NewOCTETSTRING(ie.SD, aper.Constraint{Lb: 3, Ub: 3}, false)
 		if err = tmp_SD.Encode(w); err != nil {
-			err = utils.WrapError("Read SD", err)
+			err = utils.WrapError("Encode SD", err)
 			return
 		}
 	}

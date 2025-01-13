@@ -6,8 +6,8 @@ import (
 )
 
 type UENGAPIDpair struct {
-	AMFUENGAPID int64
-	RANUENGAPID int64
+	AMFUENGAPID int64 `lb:0,ub:1099511627775,madatory`
+	RANUENGAPID int64 `lb:0,ub:4294967295,madatory`
 	// IEExtensions *UENGAPIDpairExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *UENGAPIDpair) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_AMFUENGAPID := NewINTEGER(ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, false)
 	if err = tmp_AMFUENGAPID.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFUENGAPID", err)
+		err = utils.WrapError("Encode AMFUENGAPID", err)
 		return
 	}
 	tmp_RANUENGAPID := NewINTEGER(ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, false)
 	if err = tmp_RANUENGAPID.Encode(w); err != nil {
-		err = utils.WrapError("Read RANUENGAPID", err)
+		err = utils.WrapError("Encode RANUENGAPID", err)
 		return
 	}
 	return

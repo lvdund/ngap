@@ -9,7 +9,7 @@ type CriticalityDiagnostics struct {
 	ProcedureCode             *ProcedureCode                 `optional`
 	TriggeringMessage         *TriggeringMessage             `optional`
 	ProcedureCriticality      *Criticality                   `optional`
-	IEsCriticalityDiagnostics []CriticalityDiagnosticsIEItem `optional`
+	IEsCriticalityDiagnostics []CriticalityDiagnosticsIEItem `lb:1,ub:maxnoofErrors,optional`
 	// IEExtensions *CriticalityDiagnosticsExtIEs `optional`
 }
 
@@ -33,36 +33,34 @@ func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	if ie.ProcedureCode != nil {
 		if err = ie.ProcedureCode.Encode(w); err != nil {
-			err = utils.WrapError("Read ProcedureCode", err)
+			err = utils.WrapError("Encode ProcedureCode", err)
 			return
 		}
 	}
 	if ie.TriggeringMessage != nil {
 		if err = ie.TriggeringMessage.Encode(w); err != nil {
-			err = utils.WrapError("Read TriggeringMessage", err)
+			err = utils.WrapError("Encode TriggeringMessage", err)
 			return
 		}
 	}
 	if ie.ProcedureCriticality != nil {
 		if err = ie.ProcedureCriticality.Encode(w); err != nil {
-			err = utils.WrapError("Read ProcedureCriticality", err)
+			err = utils.WrapError("Encode ProcedureCriticality", err)
 			return
 		}
 	}
-	if ie.IEsCriticalityDiagnostics != nil {
-		if len(ie.IEsCriticalityDiagnostics) > 0 {
-			tmp := Sequence[*CriticalityDiagnosticsIEItem]{
-				Value: []*CriticalityDiagnosticsIEItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofErrors},
-				ext:   false,
-			}
-			for _, i := range ie.IEsCriticalityDiagnostics {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read IEsCriticalityDiagnostics", err)
-				return
-			}
+	if len(ie.IEsCriticalityDiagnostics) > 0 {
+		tmp := Sequence[*CriticalityDiagnosticsIEItem]{
+			Value: []*CriticalityDiagnosticsIEItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofErrors},
+			ext:   false,
+		}
+		for _, i := range ie.IEsCriticalityDiagnostics {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode IEsCriticalityDiagnostics", err)
+			return
 		}
 	}
 	return

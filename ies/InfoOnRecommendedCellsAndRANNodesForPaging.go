@@ -6,8 +6,8 @@ import (
 )
 
 type InfoOnRecommendedCellsAndRANNodesForPaging struct {
-	RecommendedCellsForPaging  RecommendedCellsForPaging
-	RecommendRANNodesForPaging RecommendedRANNodesForPaging
+	RecommendedCellsForPaging  RecommendedCellsForPaging    `madatory`
+	RecommendRANNodesForPaging RecommendedRANNodesForPaging `madatory`
 	// IEExtensions *InfoOnRecommendedCellsAndRANNodesForPagingExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *InfoOnRecommendedCellsAndRANNodesForPaging) Encode(w *aper.AperWriter)
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.RecommendedCellsForPaging.Encode(w); err != nil {
-		err = utils.WrapError("Read RecommendedCellsForPaging", err)
+		err = utils.WrapError("Encode RecommendedCellsForPaging", err)
 		return
 	}
 	if err = ie.RecommendRANNodesForPaging.Encode(w); err != nil {
-		err = utils.WrapError("Read RecommendRANNodesForPaging", err)
+		err = utils.WrapError("Encode RecommendRANNodesForPaging", err)
 		return
 	}
 	return

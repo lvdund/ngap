@@ -6,7 +6,7 @@ import (
 )
 
 type LastVisitedCellItem struct {
-	LastVisitedCellInformation LastVisitedCellInformation
+	LastVisitedCellInformation LastVisitedCellInformation `madatory`
 	// IEExtensions *LastVisitedCellItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *LastVisitedCellItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.LastVisitedCellInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read LastVisitedCellInformation", err)
+		err = utils.WrapError("Encode LastVisitedCellInformation", err)
 		return
 	}
 	return

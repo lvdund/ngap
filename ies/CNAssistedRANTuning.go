@@ -21,7 +21,7 @@ func (ie *CNAssistedRANTuning) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	if ie.ExpectedUEBehaviour != nil {
 		if err = ie.ExpectedUEBehaviour.Encode(w); err != nil {
-			err = utils.WrapError("Read ExpectedUEBehaviour", err)
+			err = utils.WrapError("Encode ExpectedUEBehaviour", err)
 			return
 		}
 	}

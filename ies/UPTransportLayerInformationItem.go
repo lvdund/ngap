@@ -6,7 +6,7 @@ import (
 )
 
 type UPTransportLayerInformationItem struct {
-	NGUUPTNLInformation UPTransportLayerInformation
+	NGUUPTNLInformation UPTransportLayerInformation `madatory`
 	// IEExtensions *UPTransportLayerInformationItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *UPTransportLayerInformationItem) Encode(w *aper.AperWriter) (err error
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read NGUUPTNLInformation", err)
+		err = utils.WrapError("Encode NGUUPTNLInformation", err)
 		return
 	}
 	return

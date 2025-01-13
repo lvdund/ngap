@@ -6,8 +6,8 @@ import (
 )
 
 type GlobalN3IWFID struct {
-	PLMNIdentity []byte
-	N3IWFID      N3IWFID
+	PLMNIdentity []byte  `lb:3,ub:3,madatory`
+	N3IWFID      N3IWFID `madatory`
 	// IEExtensions *GlobalN3IWFIDExtIEs `optional`
 }
 
@@ -19,11 +19,11 @@ func (ie *GlobalN3IWFID) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	if err = ie.N3IWFID.Encode(w); err != nil {
-		err = utils.WrapError("Read N3IWFID", err)
+		err = utils.WrapError("Encode N3IWFID", err)
 		return
 	}
 	return

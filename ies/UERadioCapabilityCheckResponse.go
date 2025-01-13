@@ -10,16 +10,20 @@ import (
 )
 
 type UERadioCapabilityCheckResponse struct {
-	AMFUENGAPID              int64
-	RANUENGAPID              int64
-	IMSVoiceSupportIndicator IMSVoiceSupportIndicator
-	CriticalityDiagnostics   *CriticalityDiagnostics `optional`
+	AMFUENGAPID              int64                    `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID              int64                    `lb:0,ub:4294967295,mandatory,ignore`
+	IMSVoiceSupportIndicator IMSVoiceSupportIndicator `mandatory,reject`
+	CriticalityDiagnostics   *CriticalityDiagnostics  `optional,ignore`
 }
 
 func (msg *UERadioCapabilityCheckResponse) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UERadioCapabilityCheck, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UERadioCapabilityCheck, Criticality_PresentReject, ies)
 }
-func (msg *UERadioCapabilityCheckResponse) toIes() (ies []NgapMessageIE) {
+func (msg *UERadioCapabilityCheckResponse) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

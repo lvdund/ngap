@@ -10,17 +10,21 @@ import (
 )
 
 type LocationReport struct {
-	AMFUENGAPID                    int64
-	RANUENGAPID                    int64
-	UserLocationInformation        UserLocationInformation
-	UEPresenceInAreaOfInterestList []UEPresenceInAreaOfInterestItem `optional`
-	LocationReportingRequestType   LocationReportingRequestType
+	AMFUENGAPID                    int64                            `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                    int64                            `lb:0,ub:4294967295,mandatory,reject`
+	UserLocationInformation        UserLocationInformation          `mandatory,ignore`
+	UEPresenceInAreaOfInterestList []UEPresenceInAreaOfInterestItem `lb:1,ub:maxnoofAoI,optional,ignore`
+	LocationReportingRequestType   LocationReportingRequestType     `mandatory,ignore`
 }
 
 func (msg *LocationReport) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_LocationReport, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_LocationReport, Criticality_PresentIgnore, ies)
 }
-func (msg *LocationReport) toIes() (ies []NgapMessageIE) {
+func (msg *LocationReport) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -43,7 +47,7 @@ func (msg *LocationReport) toIes() (ies []NgapMessageIE) {
 		Criticality: Criticality{Value: Criticality_PresentIgnore},
 		Value:       &msg.UserLocationInformation,
 	})
-	if msg.UEPresenceInAreaOfInterestList != nil {
+	if len(msg.UEPresenceInAreaOfInterestList) > 0 {
 		tmp_UEPresenceInAreaOfInterestList := Sequence[*UEPresenceInAreaOfInterestItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofAoI},
 			ext: false,

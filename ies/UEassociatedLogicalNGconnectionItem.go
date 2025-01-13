@@ -6,8 +6,8 @@ import (
 )
 
 type UEassociatedLogicalNGconnectionItem struct {
-	AMFUENGAPID *int64 `optional`
-	RANUENGAPID *int64 `optional`
+	AMFUENGAPID *int64 `lb:0,ub:1099511627775,optional`
+	RANUENGAPID *int64 `lb:0,ub:4294967295,optional`
 	// IEExtensions *UEassociatedLogicalNGconnectionItemExtIEs `optional`
 }
 
@@ -26,14 +26,14 @@ func (ie *UEassociatedLogicalNGconnectionItem) Encode(w *aper.AperWriter) (err e
 	if ie.AMFUENGAPID != nil {
 		tmp_AMFUENGAPID := NewINTEGER(*ie.AMFUENGAPID, aper.Constraint{Lb: 0, Ub: 1099511627775}, false)
 		if err = tmp_AMFUENGAPID.Encode(w); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = utils.WrapError("Encode AMFUENGAPID", err)
 			return
 		}
 	}
 	if ie.RANUENGAPID != nil {
 		tmp_RANUENGAPID := NewINTEGER(*ie.RANUENGAPID, aper.Constraint{Lb: 0, Ub: 4294967295}, false)
 		if err = tmp_RANUENGAPID.Encode(w); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = utils.WrapError("Encode RANUENGAPID", err)
 			return
 		}
 	}

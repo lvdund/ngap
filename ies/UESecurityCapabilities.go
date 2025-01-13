@@ -6,10 +6,10 @@ import (
 )
 
 type UESecurityCapabilities struct {
-	NRencryptionAlgorithms             []byte
-	NRintegrityProtectionAlgorithms    []byte
-	EUTRAencryptionAlgorithms          []byte
-	EUTRAintegrityProtectionAlgorithms []byte
+	NRencryptionAlgorithms             []byte `lb:16,ub:16,madatory,valExt`
+	NRintegrityProtectionAlgorithms    []byte `lb:16,ub:16,madatory,valExt`
+	EUTRAencryptionAlgorithms          []byte `lb:16,ub:16,madatory,valExt`
+	EUTRAintegrityProtectionAlgorithms []byte `lb:16,ub:16,madatory,valExt`
 	// IEExtensions *UESecurityCapabilitiesExtIEs `optional`
 }
 
@@ -19,24 +19,24 @@ func (ie *UESecurityCapabilities) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_NRencryptionAlgorithms := NewBITSTRING(ie.NRencryptionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, false)
+	tmp_NRencryptionAlgorithms := NewBITSTRING(ie.NRencryptionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, true)
 	if err = tmp_NRencryptionAlgorithms.Encode(w); err != nil {
-		err = utils.WrapError("Read NRencryptionAlgorithms", err)
+		err = utils.WrapError("Encode NRencryptionAlgorithms", err)
 		return
 	}
-	tmp_NRintegrityProtectionAlgorithms := NewBITSTRING(ie.NRintegrityProtectionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, false)
+	tmp_NRintegrityProtectionAlgorithms := NewBITSTRING(ie.NRintegrityProtectionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, true)
 	if err = tmp_NRintegrityProtectionAlgorithms.Encode(w); err != nil {
-		err = utils.WrapError("Read NRintegrityProtectionAlgorithms", err)
+		err = utils.WrapError("Encode NRintegrityProtectionAlgorithms", err)
 		return
 	}
-	tmp_EUTRAencryptionAlgorithms := NewBITSTRING(ie.EUTRAencryptionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, false)
+	tmp_EUTRAencryptionAlgorithms := NewBITSTRING(ie.EUTRAencryptionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, true)
 	if err = tmp_EUTRAencryptionAlgorithms.Encode(w); err != nil {
-		err = utils.WrapError("Read EUTRAencryptionAlgorithms", err)
+		err = utils.WrapError("Encode EUTRAencryptionAlgorithms", err)
 		return
 	}
-	tmp_EUTRAintegrityProtectionAlgorithms := NewBITSTRING(ie.EUTRAintegrityProtectionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, false)
+	tmp_EUTRAintegrityProtectionAlgorithms := NewBITSTRING(ie.EUTRAintegrityProtectionAlgorithms, aper.Constraint{Lb: 16, Ub: 16}, true)
 	if err = tmp_EUTRAintegrityProtectionAlgorithms.Encode(w); err != nil {
-		err = utils.WrapError("Read EUTRAintegrityProtectionAlgorithms", err)
+		err = utils.WrapError("Encode EUTRAintegrityProtectionAlgorithms", err)
 		return
 	}
 	return
@@ -50,7 +50,7 @@ func (ie *UESecurityCapabilities) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_NRencryptionAlgorithms := BITSTRING{
 		c:   aper.Constraint{Lb: 16, Ub: 16},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_NRencryptionAlgorithms.Decode(r); err != nil {
 		err = utils.WrapError("Read NRencryptionAlgorithms", err)
@@ -59,7 +59,7 @@ func (ie *UESecurityCapabilities) Decode(r *aper.AperReader) (err error) {
 	ie.NRencryptionAlgorithms = tmp_NRencryptionAlgorithms.Value.Bytes
 	tmp_NRintegrityProtectionAlgorithms := BITSTRING{
 		c:   aper.Constraint{Lb: 16, Ub: 16},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_NRintegrityProtectionAlgorithms.Decode(r); err != nil {
 		err = utils.WrapError("Read NRintegrityProtectionAlgorithms", err)
@@ -68,7 +68,7 @@ func (ie *UESecurityCapabilities) Decode(r *aper.AperReader) (err error) {
 	ie.NRintegrityProtectionAlgorithms = tmp_NRintegrityProtectionAlgorithms.Value.Bytes
 	tmp_EUTRAencryptionAlgorithms := BITSTRING{
 		c:   aper.Constraint{Lb: 16, Ub: 16},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_EUTRAencryptionAlgorithms.Decode(r); err != nil {
 		err = utils.WrapError("Read EUTRAencryptionAlgorithms", err)
@@ -77,7 +77,7 @@ func (ie *UESecurityCapabilities) Decode(r *aper.AperReader) (err error) {
 	ie.EUTRAencryptionAlgorithms = tmp_EUTRAencryptionAlgorithms.Value.Bytes
 	tmp_EUTRAintegrityProtectionAlgorithms := BITSTRING{
 		c:   aper.Constraint{Lb: 16, Ub: 16},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_EUTRAintegrityProtectionAlgorithms.Decode(r); err != nil {
 		err = utils.WrapError("Read EUTRAintegrityProtectionAlgorithms", err)

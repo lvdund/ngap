@@ -6,9 +6,9 @@ import (
 )
 
 type SourceToTargetAMFInformationReroute struct {
-	ConfiguredNSSAI     []byte
-	RejectedNSSAIinPLMN []byte
-	RejectedNSSAIinTA   []byte
+	ConfiguredNSSAI     []byte `lb:128,ub:128,optional`
+	RejectedNSSAIinPLMN []byte `lb:32,ub:32,optional`
+	RejectedNSSAIinTA   []byte `lb:32,ub:32,optional`
 	// IEExtensions *SourceToTargetAMFInformationRerouteExtIEs `optional`
 }
 
@@ -30,21 +30,21 @@ func (ie *SourceToTargetAMFInformationReroute) Encode(w *aper.AperWriter) (err e
 	if ie.ConfiguredNSSAI != nil {
 		tmp_ConfiguredNSSAI := NewOCTETSTRING(ie.ConfiguredNSSAI, aper.Constraint{Lb: 128, Ub: 128}, false)
 		if err = tmp_ConfiguredNSSAI.Encode(w); err != nil {
-			err = utils.WrapError("Read ConfiguredNSSAI", err)
+			err = utils.WrapError("Encode ConfiguredNSSAI", err)
 			return
 		}
 	}
 	if ie.RejectedNSSAIinPLMN != nil {
 		tmp_RejectedNSSAIinPLMN := NewOCTETSTRING(ie.RejectedNSSAIinPLMN, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinPLMN.Encode(w); err != nil {
-			err = utils.WrapError("Read RejectedNSSAIinPLMN", err)
+			err = utils.WrapError("Encode RejectedNSSAIinPLMN", err)
 			return
 		}
 	}
 	if ie.RejectedNSSAIinTA != nil {
 		tmp_RejectedNSSAIinTA := NewOCTETSTRING(ie.RejectedNSSAIinTA, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinTA.Encode(w); err != nil {
-			err = utils.WrapError("Read RejectedNSSAIinTA", err)
+			err = utils.WrapError("Encode RejectedNSSAIinTA", err)
 			return
 		}
 	}

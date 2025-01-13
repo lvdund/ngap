@@ -6,7 +6,7 @@ import (
 )
 
 type RecommendedCellsForPaging struct {
-	RecommendedCellList []RecommendedCellItem
+	RecommendedCellList []RecommendedCellItem `lb:1,ub:maxnoofRecommendedCells,madatory`
 	// IEExtensions *RecommendedCellsForPagingExtIEs `optional`
 }
 
@@ -26,9 +26,12 @@ func (ie *RecommendedCellsForPaging) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read RecommendedCellList", err)
+			err = utils.WrapError("Encode RecommendedCellList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("RecommendedCellList is nil", err)
+		return
 	}
 	return
 }

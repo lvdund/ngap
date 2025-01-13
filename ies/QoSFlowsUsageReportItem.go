@@ -6,9 +6,9 @@ import (
 )
 
 type QoSFlowsUsageReportItem struct {
-	QosFlowIdentifier       int64
-	RATType                 int64
-	QoSFlowsTimedReportList []VolumeTimedReportItem
+	QosFlowIdentifier       int64                   `lb:0,ub:63,madatory,valExt`
+	RATType                 RATType                 `madatory`
+	QoSFlowsTimedReportList []VolumeTimedReportItem `lb:1,ub:maxnoofTimePeriods,madatory`
 	// IEExtensions *QoSFlowsUsageReportItemExtIEs `optional`
 }
 
@@ -18,14 +18,13 @@ func (ie *QoSFlowsUsageReportItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = utils.WrapError("Encode QosFlowIdentifier", err)
 		return
 	}
-	tmp_RATType := NewENUMERATED(ie.RATType, aper.Constraint{Lb: 0, Ub: 0}, false)
-	if err = tmp_RATType.Encode(w); err != nil {
-		err = utils.WrapError("Read RATType", err)
+	if err = ie.RATType.Encode(w); err != nil {
+		err = utils.WrapError("Encode RATType", err)
 		return
 	}
 	if len(ie.QoSFlowsTimedReportList) > 0 {
@@ -38,9 +37,12 @@ func (ie *QoSFlowsUsageReportItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read QoSFlowsTimedReportList", err)
+			err = utils.WrapError("Encode QoSFlowsTimedReportList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("QoSFlowsTimedReportList is nil", err)
+		return
 	}
 	return
 }
@@ -53,22 +55,17 @@ func (ie *QoSFlowsUsageReportItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_QosFlowIdentifier := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 63},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		err = utils.WrapError("Read QosFlowIdentifier", err)
 		return
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
-	tmp_RATType := ENUMERATED{
-		c:   aper.Constraint{Lb: 0, Ub: 0},
-		ext: false,
-	}
-	if err = tmp_RATType.Decode(r); err != nil {
+	if err = ie.RATType.Decode(r); err != nil {
 		err = utils.WrapError("Read RATType", err)
 		return
 	}
-	ie.RATType = int64(tmp_RATType.Value)
 	tmp_QoSFlowsTimedReportList := Sequence[*VolumeTimedReportItem]{
 		c:   aper.Constraint{Lb: 1, Ub: maxnoofTimePeriods},
 		ext: false,

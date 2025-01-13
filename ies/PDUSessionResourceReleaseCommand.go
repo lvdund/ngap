@@ -10,17 +10,21 @@ import (
 )
 
 type PDUSessionResourceReleaseCommand struct {
-	AMFUENGAPID                           int64
-	RANUENGAPID                           int64
-	RANPagingPriority                     *int64 `optional`
-	NASPDU                                []byte `optional`
-	PDUSessionResourceToReleaseListRelCmd []PDUSessionResourceToReleaseItemRelCmd
+	AMFUENGAPID                           int64                                   `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                           int64                                   `lb:0,ub:4294967295,mandatory,reject`
+	RANPagingPriority                     *int64                                  `lb:1,ub:256,optional,ignore`
+	NASPDU                                []byte                                  `lb:0,ub:0,optional,ignore`
+	PDUSessionResourceToReleaseListRelCmd []PDUSessionResourceToReleaseItemRelCmd `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
 }
 
 func (msg *PDUSessionResourceReleaseCommand) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceRelease, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceRelease, Criticality_PresentReject, ies)
 }
-func (msg *PDUSessionResourceReleaseCommand) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceReleaseCommand) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -58,18 +62,23 @@ func (msg *PDUSessionResourceReleaseCommand) toIes() (ies []NgapMessageIE) {
 				Value: msg.NASPDU,
 			}})
 	}
-	tmp_PDUSessionResourceToReleaseListRelCmd := Sequence[*PDUSessionResourceToReleaseItemRelCmd]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceToReleaseListRelCmd) > 0 {
+		tmp_PDUSessionResourceToReleaseListRelCmd := Sequence[*PDUSessionResourceToReleaseItemRelCmd]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceToReleaseListRelCmd {
+			tmp_PDUSessionResourceToReleaseListRelCmd.Value = append(tmp_PDUSessionResourceToReleaseListRelCmd.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceToReleaseListRelCmd},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PDUSessionResourceToReleaseListRelCmd,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceToReleaseListRelCmd is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceToReleaseListRelCmd {
-		tmp_PDUSessionResourceToReleaseListRelCmd.Value = append(tmp_PDUSessionResourceToReleaseListRelCmd.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceToReleaseListRelCmd},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PDUSessionResourceToReleaseListRelCmd,
-	})
 	return
 }
 func (msg *PDUSessionResourceReleaseCommand) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {

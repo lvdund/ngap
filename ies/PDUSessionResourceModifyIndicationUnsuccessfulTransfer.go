@@ -6,7 +6,7 @@ import (
 )
 
 type PDUSessionResourceModifyIndicationUnsuccessfulTransfer struct {
-	Cause Cause
+	Cause Cause `madatory`
 	// IEExtensions *PDUSessionResourceModifyIndicationUnsuccessfulTransferExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *PDUSessionResourceModifyIndicationUnsuccessfulTransfer) Encode(w *aper
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = utils.WrapError("Encode Cause", err)
 		return
 	}
 	return

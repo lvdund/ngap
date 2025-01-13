@@ -6,7 +6,7 @@ import (
 )
 
 type AMFTNLAssociationToRemoveItem struct {
-	AMFTNLAssociationAddress CPTransportLayerInformation
+	AMFTNLAssociationAddress CPTransportLayerInformation `madatory`
 	// IEExtensions *AMFTNLAssociationToRemoveItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *AMFTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error) 
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
+		err = utils.WrapError("Encode AMFTNLAssociationAddress", err)
 		return
 	}
 	return

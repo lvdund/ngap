@@ -10,20 +10,24 @@ import (
 )
 
 type HandoverRequired struct {
-	AMFUENGAPID                        int64
-	RANUENGAPID                        int64
-	HandoverType                       HandoverType
-	Cause                              Cause
-	TargetID                           TargetID
-	DirectForwardingPathAvailability   *DirectForwardingPathAvailability `optional`
-	PDUSessionResourceListHORqd        []PDUSessionResourceItemHORqd
-	SourceToTargetTransparentContainer []byte
+	AMFUENGAPID                        int64                             `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                        int64                             `lb:0,ub:4294967295,mandatory,reject`
+	HandoverType                       HandoverType                      `mandatory,reject`
+	Cause                              Cause                             `mandatory,ignore`
+	TargetID                           TargetID                          `mandatory,reject`
+	DirectForwardingPathAvailability   *DirectForwardingPathAvailability `optional,ignore`
+	PDUSessionResourceListHORqd        []PDUSessionResourceItemHORqd     `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
+	SourceToTargetTransparentContainer []byte                            `lb:0,ub:0,mandatory,reject`
 }
 
 func (msg *HandoverRequired) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_HandoverPreparation, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_HandoverPreparation, Criticality_PresentReject, ies)
 }
-func (msg *HandoverRequired) toIes() (ies []NgapMessageIE) {
+func (msg *HandoverRequired) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -63,18 +67,23 @@ func (msg *HandoverRequired) toIes() (ies []NgapMessageIE) {
 			Value:       msg.DirectForwardingPathAvailability,
 		})
 	}
-	tmp_PDUSessionResourceListHORqd := Sequence[*PDUSessionResourceItemHORqd]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceListHORqd) > 0 {
+		tmp_PDUSessionResourceListHORqd := Sequence[*PDUSessionResourceItemHORqd]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceListHORqd {
+			tmp_PDUSessionResourceListHORqd.Value = append(tmp_PDUSessionResourceListHORqd.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceListHORqd},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PDUSessionResourceListHORqd,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceListHORqd is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceListHORqd {
-		tmp_PDUSessionResourceListHORqd.Value = append(tmp_PDUSessionResourceListHORqd.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceListHORqd},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PDUSessionResourceListHORqd,
-	})
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_SourceToTargetTransparentContainer},
 		Criticality: Criticality{Value: Criticality_PresentReject},

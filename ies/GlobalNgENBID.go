@@ -6,8 +6,8 @@ import (
 )
 
 type GlobalNgENBID struct {
-	PLMNIdentity []byte
-	NgENBID      NgENBID
+	PLMNIdentity []byte  `lb:3,ub:3,madatory`
+	NgENBID      NgENBID `madatory`
 	// IEExtensions *GlobalNgENBIDExtIEs `optional`
 }
 
@@ -19,11 +19,11 @@ func (ie *GlobalNgENBID) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	if err = ie.NgENBID.Encode(w); err != nil {
-		err = utils.WrapError("Read NgENBID", err)
+		err = utils.WrapError("Encode NgENBID", err)
 		return
 	}
 	return

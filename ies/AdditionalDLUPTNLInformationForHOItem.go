@@ -6,9 +6,9 @@ import (
 )
 
 type AdditionalDLUPTNLInformationForHOItem struct {
-	AdditionalDLNGUUPTNLInformation        UPTransportLayerInformation
-	AdditionalQosFlowSetupResponseList     []QosFlowItemWithDataForwarding
-	AdditionalDLForwardingUPTNLInformation *UPTransportLayerInformation `optional`
+	AdditionalDLNGUUPTNLInformation        UPTransportLayerInformation     `madatory`
+	AdditionalQosFlowSetupResponseList     []QosFlowItemWithDataForwarding `lb:1,ub:maxnoofQosFlows,madatory`
+	AdditionalDLForwardingUPTNLInformation *UPTransportLayerInformation    `optional`
 	// IEExtensions *AdditionalDLUPTNLInformationForHOItemExtIEs `optional`
 }
 
@@ -22,7 +22,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.AdditionalDLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read AdditionalDLNGUUPTNLInformation", err)
+		err = utils.WrapError("Encode AdditionalDLNGUUPTNLInformation", err)
 		return
 	}
 	if len(ie.AdditionalQosFlowSetupResponseList) > 0 {
@@ -35,13 +35,16 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read AdditionalQosFlowSetupResponseList", err)
+			err = utils.WrapError("Encode AdditionalQosFlowSetupResponseList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("AdditionalQosFlowSetupResponseList is nil", err)
+		return
 	}
 	if ie.AdditionalDLForwardingUPTNLInformation != nil {
 		if err = ie.AdditionalDLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read AdditionalDLForwardingUPTNLInformation", err)
+			err = utils.WrapError("Encode AdditionalDLForwardingUPTNLInformation", err)
 			return
 		}
 	}

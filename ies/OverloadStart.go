@@ -10,15 +10,19 @@ import (
 )
 
 type OverloadStart struct {
-	AMFOverloadResponse               *OverloadResponse        `optional`
-	AMFTrafficLoadReductionIndication *int64                   `optional`
-	OverloadStartNSSAIList            []OverloadStartNSSAIItem `optional`
+	AMFOverloadResponse               *OverloadResponse        `optional,reject`
+	AMFTrafficLoadReductionIndication *int64                   `lb:1,ub:99,optional,ignore`
+	OverloadStartNSSAIList            []OverloadStartNSSAIItem `lb:1,ub:maxnoofSliceItems,optional,ignore`
 }
 
 func (msg *OverloadStart) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_OverloadStart, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_OverloadStart, Criticality_PresentIgnore, ies)
 }
-func (msg *OverloadStart) toIes() (ies []NgapMessageIE) {
+func (msg *OverloadStart) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.AMFOverloadResponse != nil {
 		ies = append(ies, NgapMessageIE{
@@ -37,7 +41,7 @@ func (msg *OverloadStart) toIes() (ies []NgapMessageIE) {
 				Value: aper.Integer(*msg.AMFTrafficLoadReductionIndication),
 			}})
 	}
-	if msg.OverloadStartNSSAIList != nil {
+	if len(msg.OverloadStartNSSAIList) > 0 {
 		tmp_OverloadStartNSSAIList := Sequence[*OverloadStartNSSAIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofSliceItems},
 			ext: false,

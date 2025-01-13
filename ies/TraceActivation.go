@@ -6,10 +6,10 @@ import (
 )
 
 type TraceActivation struct {
-	NGRANTraceID                   []byte
-	InterfacesToTrace              []byte
-	TraceDepth                     TraceDepth
-	TraceCollectionEntityIPAddress []byte
+	NGRANTraceID                   []byte     `lb:8,ub:8,madatory`
+	InterfacesToTrace              []byte     `lb:8,ub:8,madatory`
+	TraceDepth                     TraceDepth `madatory`
+	TraceCollectionEntityIPAddress []byte     `lb:1,ub:160,madatory,valExt`
 	// IEExtensions *TraceActivationExtIEs `optional`
 }
 
@@ -21,21 +21,21 @@ func (ie *TraceActivation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_NGRANTraceID := NewOCTETSTRING(ie.NGRANTraceID, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_NGRANTraceID.Encode(w); err != nil {
-		err = utils.WrapError("Read NGRANTraceID", err)
+		err = utils.WrapError("Encode NGRANTraceID", err)
 		return
 	}
 	tmp_InterfacesToTrace := NewBITSTRING(ie.InterfacesToTrace, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_InterfacesToTrace.Encode(w); err != nil {
-		err = utils.WrapError("Read InterfacesToTrace", err)
+		err = utils.WrapError("Encode InterfacesToTrace", err)
 		return
 	}
 	if err = ie.TraceDepth.Encode(w); err != nil {
-		err = utils.WrapError("Read TraceDepth", err)
+		err = utils.WrapError("Encode TraceDepth", err)
 		return
 	}
-	tmp_TraceCollectionEntityIPAddress := NewBITSTRING(ie.TraceCollectionEntityIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
+	tmp_TraceCollectionEntityIPAddress := NewBITSTRING(ie.TraceCollectionEntityIPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_TraceCollectionEntityIPAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read TraceCollectionEntityIPAddress", err)
+		err = utils.WrapError("Encode TraceCollectionEntityIPAddress", err)
 		return
 	}
 	return
@@ -71,7 +71,7 @@ func (ie *TraceActivation) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_TraceCollectionEntityIPAddress := BITSTRING{
 		c:   aper.Constraint{Lb: 1, Ub: 160},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_TraceCollectionEntityIPAddress.Decode(r); err != nil {
 		err = utils.WrapError("Read TraceCollectionEntityIPAddress", err)

@@ -6,7 +6,7 @@ import (
 )
 
 type QosFlowInformationItem struct {
-	QosFlowIdentifier int64
+	QosFlowIdentifier int64         `lb:0,ub:63,madatory,valExt`
 	DLForwarding      *DLForwarding `optional`
 	// IEExtensions *QosFlowInformationItemExtIEs `optional`
 }
@@ -20,14 +20,14 @@ func (ie *QosFlowInformationItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = utils.WrapError("Encode QosFlowIdentifier", err)
 		return
 	}
 	if ie.DLForwarding != nil {
 		if err = ie.DLForwarding.Encode(w); err != nil {
-			err = utils.WrapError("Read DLForwarding", err)
+			err = utils.WrapError("Encode DLForwarding", err)
 			return
 		}
 	}
@@ -43,7 +43,7 @@ func (ie *QosFlowInformationItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_QosFlowIdentifier := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 63},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		err = utils.WrapError("Read QosFlowIdentifier", err)

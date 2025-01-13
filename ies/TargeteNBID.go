@@ -6,8 +6,8 @@ import (
 )
 
 type TargeteNBID struct {
-	GlobalENBID    GlobalNgENBID
-	SelectedEPSTAI EPSTAI
+	GlobalENBID    GlobalNgENBID `madatory`
+	SelectedEPSTAI EPSTAI        `madatory`
 	// IEExtensions *TargeteNBIDExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *TargeteNBID) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.GlobalENBID.Encode(w); err != nil {
-		err = utils.WrapError("Read GlobalENBID", err)
+		err = utils.WrapError("Encode GlobalENBID", err)
 		return
 	}
 	if err = ie.SelectedEPSTAI.Encode(w); err != nil {
-		err = utils.WrapError("Read SelectedEPSTAI", err)
+		err = utils.WrapError("Encode SelectedEPSTAI", err)
 		return
 	}
 	return

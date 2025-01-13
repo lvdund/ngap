@@ -7,7 +7,7 @@ import (
 
 type SecondaryRATUsageInformation struct {
 	PDUSessionUsageReport   *PDUSessionUsageReport    `optional`
-	QosFlowsUsageReportList []QoSFlowsUsageReportItem `optional`
+	QosFlowsUsageReportList []QoSFlowsUsageReportItem `lb:1,ub:maxnoofQosFlows,optional`
 	// IEExtension *SecondaryRATUsageInformationExtIEs `optional`
 }
 
@@ -25,24 +25,22 @@ func (ie *SecondaryRATUsageInformation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	if ie.PDUSessionUsageReport != nil {
 		if err = ie.PDUSessionUsageReport.Encode(w); err != nil {
-			err = utils.WrapError("Read PDUSessionUsageReport", err)
+			err = utils.WrapError("Encode PDUSessionUsageReport", err)
 			return
 		}
 	}
-	if ie.QosFlowsUsageReportList != nil {
-		if len(ie.QosFlowsUsageReportList) > 0 {
-			tmp := Sequence[*QoSFlowsUsageReportItem]{
-				Value: []*QoSFlowsUsageReportItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-				ext:   false,
-			}
-			for _, i := range ie.QosFlowsUsageReportList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read QosFlowsUsageReportList", err)
-				return
-			}
+	if len(ie.QosFlowsUsageReportList) > 0 {
+		tmp := Sequence[*QoSFlowsUsageReportItem]{
+			Value: []*QoSFlowsUsageReportItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.QosFlowsUsageReportList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowsUsageReportList", err)
+			return
 		}
 	}
 	return

@@ -6,8 +6,8 @@ import (
 )
 
 type TAIBroadcastEUTRAItem struct {
-	TAI                      TAI
-	CompletedCellsInTAIEUTRA []CompletedCellsInTAIEUTRAItem
+	TAI                      TAI                            `madatory`
+	CompletedCellsInTAIEUTRA []CompletedCellsInTAIEUTRAItem `lb:1,ub:maxnoofCellinTAI,madatory`
 	// IEExtensions *TAIBroadcastEUTRAItemExtIEs `optional`
 }
 
@@ -18,7 +18,7 @@ func (ie *TAIBroadcastEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = utils.WrapError("Encode TAI", err)
 		return
 	}
 	if len(ie.CompletedCellsInTAIEUTRA) > 0 {
@@ -31,9 +31,12 @@ func (ie *TAIBroadcastEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read CompletedCellsInTAIEUTRA", err)
+			err = utils.WrapError("Encode CompletedCellsInTAIEUTRA", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("CompletedCellsInTAIEUTRA is nil", err)
+		return
 	}
 	return
 }

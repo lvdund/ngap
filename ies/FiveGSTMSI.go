@@ -6,9 +6,9 @@ import (
 )
 
 type FiveGSTMSI struct {
-	AMFSetID   []byte
-	AMFPointer []byte
-	FiveGTMSI  []byte
+	AMFSetID   []byte `lb:10,ub:10,madatory`
+	AMFPointer []byte `lb:6,ub:6,madatory`
+	FiveGTMSI  []byte `lb:4,ub:4,madatory`
 	// IEExtensions *FiveGSTMSIExtIEs `optional`
 }
 
@@ -20,17 +20,17 @@ func (ie *FiveGSTMSI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_AMFSetID := NewBITSTRING(ie.AMFSetID, aper.Constraint{Lb: 10, Ub: 10}, false)
 	if err = tmp_AMFSetID.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFSetID", err)
+		err = utils.WrapError("Encode AMFSetID", err)
 		return
 	}
 	tmp_AMFPointer := NewBITSTRING(ie.AMFPointer, aper.Constraint{Lb: 6, Ub: 6}, false)
 	if err = tmp_AMFPointer.Encode(w); err != nil {
-		err = utils.WrapError("Read AMFPointer", err)
+		err = utils.WrapError("Encode AMFPointer", err)
 		return
 	}
 	tmp_FiveGTMSI := NewOCTETSTRING(ie.FiveGTMSI, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_FiveGTMSI.Encode(w); err != nil {
-		err = utils.WrapError("Read FiveGTMSI", err)
+		err = utils.WrapError("Encode FiveGTMSI", err)
 		return
 	}
 	return

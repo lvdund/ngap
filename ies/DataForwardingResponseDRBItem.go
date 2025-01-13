@@ -6,7 +6,7 @@ import (
 )
 
 type DataForwardingResponseDRBItem struct {
-	DRBID                        int64
+	DRBID                        int64                        `lb:1,ub:32,madatory,valExt`
 	DLForwardingUPTNLInformation *UPTransportLayerInformation `optional`
 	ULForwardingUPTNLInformation *UPTransportLayerInformation `optional`
 	// IEExtensions *DataForwardingResponseDRBItemExtIEs `optional`
@@ -24,20 +24,20 @@ func (ie *DataForwardingResponseDRBItem) Encode(w *aper.AperWriter) (err error) 
 		aper.SetBit(optionals, 2)
 	}
 	w.WriteBits(optionals, 3)
-	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, false)
+	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, true)
 	if err = tmp_DRBID.Encode(w); err != nil {
-		err = utils.WrapError("Read DRBID", err)
+		err = utils.WrapError("Encode DRBID", err)
 		return
 	}
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
+			err = utils.WrapError("Encode DLForwardingUPTNLInformation", err)
 			return
 		}
 	}
 	if ie.ULForwardingUPTNLInformation != nil {
 		if err = ie.ULForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read ULForwardingUPTNLInformation", err)
+			err = utils.WrapError("Encode ULForwardingUPTNLInformation", err)
 			return
 		}
 	}
@@ -53,7 +53,7 @@ func (ie *DataForwardingResponseDRBItem) Decode(r *aper.AperReader) (err error) 
 	}
 	tmp_DRBID := INTEGER{
 		c:   aper.Constraint{Lb: 1, Ub: 32},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_DRBID.Decode(r); err != nil {
 		err = utils.WrapError("Read DRBID", err)

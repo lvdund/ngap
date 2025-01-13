@@ -6,8 +6,8 @@ import (
 )
 
 type DRBStatusUL12 struct {
-	ULCOUNTValue              COUNTValueForPDCPSN12
-	ReceiveStatusOfULPDCPSDUs []byte
+	ULCOUNTValue              COUNTValueForPDCPSN12 `madatory`
+	ReceiveStatusOfULPDCPSDUs []byte                `lb:1,ub:2048,optional`
 	// IEExtension *DRBStatusUL12ExtIEs `optional`
 }
 
@@ -21,13 +21,13 @@ func (ie *DRBStatusUL12) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.ULCOUNTValue.Encode(w); err != nil {
-		err = utils.WrapError("Read ULCOUNTValue", err)
+		err = utils.WrapError("Encode ULCOUNTValue", err)
 		return
 	}
 	if ie.ReceiveStatusOfULPDCPSDUs != nil {
 		tmp_ReceiveStatusOfULPDCPSDUs := NewBITSTRING(ie.ReceiveStatusOfULPDCPSDUs, aper.Constraint{Lb: 1, Ub: 2048}, false)
 		if err = tmp_ReceiveStatusOfULPDCPSDUs.Encode(w); err != nil {
-			err = utils.WrapError("Read ReceiveStatusOfULPDCPSDUs", err)
+			err = utils.WrapError("Encode ReceiveStatusOfULPDCPSDUs", err)
 			return
 		}
 	}

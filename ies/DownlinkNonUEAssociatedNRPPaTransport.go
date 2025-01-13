@@ -10,14 +10,18 @@ import (
 )
 
 type DownlinkNonUEAssociatedNRPPaTransport struct {
-	RoutingID []byte
-	NRPPaPDU  []byte
+	RoutingID []byte `lb:0,ub:0,mandatory,reject`
+	NRPPaPDU  []byte `lb:0,ub:0,mandatory,reject`
 }
 
 func (msg *DownlinkNonUEAssociatedNRPPaTransport) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkNonUEAssociatedNRPPaTransport, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkNonUEAssociatedNRPPaTransport, Criticality_PresentIgnore, ies)
 }
-func (msg *DownlinkNonUEAssociatedNRPPaTransport) toIes() (ies []NgapMessageIE) {
+func (msg *DownlinkNonUEAssociatedNRPPaTransport) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_RoutingID},

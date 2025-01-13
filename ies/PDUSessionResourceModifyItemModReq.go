@@ -6,9 +6,9 @@ import (
 )
 
 type PDUSessionResourceModifyItemModReq struct {
-	PDUSessionID                            int64
-	NASPDU                                  []byte
-	PDUSessionResourceModifyRequestTransfer []byte
+	PDUSessionID                            int64  `lb:0,ub:255,madatory`
+	NASPDU                                  []byte `lb:0,ub:0,optional`
+	PDUSessionResourceModifyRequestTransfer []byte `lb:0,ub:0,optional`
 	// IEExtensions *PDUSessionResourceModifyItemModReqExtIEs `optional`
 }
 
@@ -26,20 +26,20 @@ func (ie *PDUSessionResourceModifyItemModReq) Encode(w *aper.AperWriter) (err er
 	w.WriteBits(optionals, 3)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	if ie.NASPDU != nil {
 		tmp_NASPDU := NewOCTETSTRING(ie.NASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_NASPDU.Encode(w); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = utils.WrapError("Encode NASPDU", err)
 			return
 		}
 	}
 	if ie.PDUSessionResourceModifyRequestTransfer != nil {
 		tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_PDUSessionResourceModifyRequestTransfer.Encode(w); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceModifyRequestTransfer", err)
+			err = utils.WrapError("Encode PDUSessionResourceModifyRequestTransfer", err)
 			return
 		}
 	}

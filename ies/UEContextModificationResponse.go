@@ -10,17 +10,21 @@ import (
 )
 
 type UEContextModificationResponse struct {
-	AMFUENGAPID             int64
-	RANUENGAPID             int64
-	RRCState                *RRCState                `optional`
-	UserLocationInformation *UserLocationInformation `optional`
-	CriticalityDiagnostics  *CriticalityDiagnostics  `optional`
+	AMFUENGAPID             int64                    `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID             int64                    `lb:0,ub:4294967295,mandatory,ignore`
+	RRCState                *RRCState                `optional,ignore`
+	UserLocationInformation *UserLocationInformation `optional,ignore`
+	CriticalityDiagnostics  *CriticalityDiagnostics  `optional,ignore`
 }
 
 func (msg *UEContextModificationResponse) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UEContextModification, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UEContextModification, Criticality_PresentReject, ies)
 }
-func (msg *UEContextModificationResponse) toIes() (ies []NgapMessageIE) {
+func (msg *UEContextModificationResponse) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

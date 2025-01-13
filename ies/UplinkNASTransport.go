@@ -10,16 +10,20 @@ import (
 )
 
 type UplinkNASTransport struct {
-	AMFUENGAPID             int64
-	RANUENGAPID             int64
-	NASPDU                  []byte
-	UserLocationInformation UserLocationInformation
+	AMFUENGAPID             int64                   `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID             int64                   `lb:0,ub:4294967295,mandatory,reject`
+	NASPDU                  []byte                  `lb:0,ub:0,mandatory,reject`
+	UserLocationInformation UserLocationInformation `mandatory,ignore`
 }
 
 func (msg *UplinkNASTransport) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkNASTransport, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkNASTransport, Criticality_PresentIgnore, ies)
 }
-func (msg *UplinkNASTransport) toIes() (ies []NgapMessageIE) {
+func (msg *UplinkNASTransport) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

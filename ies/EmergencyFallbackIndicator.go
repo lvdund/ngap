@@ -6,8 +6,8 @@ import (
 )
 
 type EmergencyFallbackIndicator struct {
-	EmergencyFallbackRequestIndicator EmergencyFallbackRequestIndicator
-	EmergencyServiceTargetCN          *EmergencyServiceTargetCN `optional`
+	EmergencyFallbackRequestIndicator EmergencyFallbackRequestIndicator `madatory`
+	EmergencyServiceTargetCN          *EmergencyServiceTargetCN         `optional`
 	// IEExtensions *EmergencyFallbackIndicatorExtIEs `optional`
 }
 
@@ -21,12 +21,12 @@ func (ie *EmergencyFallbackIndicator) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.EmergencyFallbackRequestIndicator.Encode(w); err != nil {
-		err = utils.WrapError("Read EmergencyFallbackRequestIndicator", err)
+		err = utils.WrapError("Encode EmergencyFallbackRequestIndicator", err)
 		return
 	}
 	if ie.EmergencyServiceTargetCN != nil {
 		if err = ie.EmergencyServiceTargetCN.Encode(w); err != nil {
-			err = utils.WrapError("Read EmergencyServiceTargetCN", err)
+			err = utils.WrapError("Encode EmergencyServiceTargetCN", err)
 			return
 		}
 	}

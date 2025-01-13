@@ -10,15 +10,19 @@ import (
 )
 
 type HandoverCancelAcknowledge struct {
-	AMFUENGAPID            int64
-	RANUENGAPID            int64
-	CriticalityDiagnostics *CriticalityDiagnostics `optional`
+	AMFUENGAPID            int64                   `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID            int64                   `lb:0,ub:4294967295,mandatory,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *HandoverCancelAcknowledge) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverCancel, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverCancel, Criticality_PresentReject, ies)
 }
-func (msg *HandoverCancelAcknowledge) toIes() (ies []NgapMessageIE) {
+func (msg *HandoverCancelAcknowledge) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

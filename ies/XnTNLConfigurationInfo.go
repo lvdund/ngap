@@ -6,8 +6,8 @@ import (
 )
 
 type XnTNLConfigurationInfo struct {
-	XnTransportLayerAddresses         []TransportLayerAddress
-	XnExtendedTransportLayerAddresses []XnExtTLAItem `optional`
+	XnTransportLayerAddresses         []TransportLayerAddress `lb:1,ub:maxnoofXnTLAs,madatory`
+	XnExtendedTransportLayerAddresses []XnExtTLAItem          `lb:1,ub:maxnoofXnExtTLAs,optional`
 	// IEExtensions *XnTNLConfigurationInfoExtIEs `optional`
 }
 
@@ -30,24 +30,25 @@ func (ie *XnTNLConfigurationInfo) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read XnTransportLayerAddresses", err)
+			err = utils.WrapError("Encode XnTransportLayerAddresses", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("XnTransportLayerAddresses is nil", err)
+		return
 	}
-	if ie.XnExtendedTransportLayerAddresses != nil {
-		if len(ie.XnExtendedTransportLayerAddresses) > 0 {
-			tmp := Sequence[*XnExtTLAItem]{
-				Value: []*XnExtTLAItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofXnExtTLAs},
-				ext:   false,
-			}
-			for _, i := range ie.XnExtendedTransportLayerAddresses {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read XnExtendedTransportLayerAddresses", err)
-				return
-			}
+	if len(ie.XnExtendedTransportLayerAddresses) > 0 {
+		tmp := Sequence[*XnExtTLAItem]{
+			Value: []*XnExtTLAItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofXnExtTLAs},
+			ext:   false,
+		}
+		for _, i := range ie.XnExtendedTransportLayerAddresses {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode XnExtendedTransportLayerAddresses", err)
+			return
 		}
 	}
 	return

@@ -6,11 +6,11 @@ import (
 )
 
 type QosFlowLevelQosParameters struct {
-	QosCharacteristics             QosCharacteristics
-	AllocationAndRetentionPriority AllocationAndRetentionPriority
-	GBRQosInformation              *GBRQosInformation            `optional`
-	ReflectiveQosAttribute         *ReflectiveQosAttribute       `optional`
-	AdditionalQosFlowInformation   *AdditionalQosFlowInformation `optional`
+	QosCharacteristics             QosCharacteristics             `madatory`
+	AllocationAndRetentionPriority AllocationAndRetentionPriority `madatory`
+	GBRQosInformation              *GBRQosInformation             `optional`
+	ReflectiveQosAttribute         *ReflectiveQosAttribute        `optional`
+	AdditionalQosFlowInformation   *AdditionalQosFlowInformation  `optional`
 	// IEExtensions *QosFlowLevelQosParametersExtIEs `optional`
 }
 
@@ -30,28 +30,28 @@ func (ie *QosFlowLevelQosParameters) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if err = ie.QosCharacteristics.Encode(w); err != nil {
-		err = utils.WrapError("Read QosCharacteristics", err)
+		err = utils.WrapError("Encode QosCharacteristics", err)
 		return
 	}
 	if err = ie.AllocationAndRetentionPriority.Encode(w); err != nil {
-		err = utils.WrapError("Read AllocationAndRetentionPriority", err)
+		err = utils.WrapError("Encode AllocationAndRetentionPriority", err)
 		return
 	}
 	if ie.GBRQosInformation != nil {
 		if err = ie.GBRQosInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read GBRQosInformation", err)
+			err = utils.WrapError("Encode GBRQosInformation", err)
 			return
 		}
 	}
 	if ie.ReflectiveQosAttribute != nil {
 		if err = ie.ReflectiveQosAttribute.Encode(w); err != nil {
-			err = utils.WrapError("Read ReflectiveQosAttribute", err)
+			err = utils.WrapError("Encode ReflectiveQosAttribute", err)
 			return
 		}
 	}
 	if ie.AdditionalQosFlowInformation != nil {
 		if err = ie.AdditionalQosFlowInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read AdditionalQosFlowInformation", err)
+			err = utils.WrapError("Encode AdditionalQosFlowInformation", err)
 			return
 		}
 	}

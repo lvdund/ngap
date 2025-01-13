@@ -10,14 +10,18 @@ import (
 )
 
 type UETNLABindingReleaseRequest struct {
-	AMFUENGAPID int64
-	RANUENGAPID int64
+	AMFUENGAPID int64 `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID int64 `lb:0,ub:4294967295,mandatory,reject`
 }
 
 func (msg *UETNLABindingReleaseRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UETNLABindingRelease, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UETNLABindingRelease, Criticality_PresentIgnore, ies)
 }
-func (msg *UETNLABindingReleaseRequest) toIes() (ies []NgapMessageIE) {
+func (msg *UETNLABindingReleaseRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

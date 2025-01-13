@@ -10,21 +10,26 @@ import (
 )
 
 type PDUSessionResourceSetupRequestTransfer struct {
-	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional`
-	ULNGUUPTNLInformation             UPTransportLayerInformation
-	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem `optional`
-	DataForwardingNotPossible         *DataForwardingNotPossible        `optional`
-	PDUSessionType                    PDUSessionType
-	SecurityIndication                *SecurityIndication `optional`
-	NetworkInstance                   *int64              `optional`
-	QosFlowSetupRequestList           []QosFlowSetupRequestItem
-	CommonNetworkInstance             []byte `optional`
+	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional,reject`
+	ULNGUUPTNLInformation             UPTransportLayerInformation        `mandatory,reject`
+	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional,reject`
+	DataForwardingNotPossible         *DataForwardingNotPossible         `optional,reject`
+	PDUSessionType                    PDUSessionType                     `mandatory,reject`
+	SecurityIndication                *SecurityIndication                `optional,reject`
+	NetworkInstance                   *int64                             `lb:1,ub:256,optional,reject,valueExt`
+	QosFlowSetupRequestList           []QosFlowSetupRequestItem          `lb:1,ub:maxnoofQosFlows,mandatory,reject`
+	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,ignore`
 }
 
-func (msg *PDUSessionResourceSetupRequestTransfer) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceSetup, Criticality_PresentReject, msg.toIes())
+func (msg *PDUSessionResourceSetupRequestTransfer) Encode(w io.Writer) ([]byte, error) {
+	var ies []NgapMessageIE
+	var err error
+	if ies, err = msg.toIes(); err != nil {
+		return nil, err
+	}
+	return encodeTransferMessage(ies)
 }
-func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.PDUSessionAggregateMaximumBitRate != nil {
 		ies = append(ies, NgapMessageIE{
@@ -38,7 +43,7 @@ func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE)
 		Criticality: Criticality{Value: Criticality_PresentReject},
 		Value:       &msg.ULNGUUPTNLInformation,
 	})
-	if msg.AdditionalULNGUUPTNLInformation != nil {
+	if len(msg.AdditionalULNGUUPTNLInformation) > 0 {
 		tmp_AdditionalULNGUUPTNLInformation := Sequence[*UPTransportLayerInformationItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
 			ext: false,
@@ -81,18 +86,23 @@ func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE)
 				Value: aper.Integer(*msg.NetworkInstance),
 			}})
 	}
-	tmp_QosFlowSetupRequestList := Sequence[*QosFlowSetupRequestItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-		ext: false,
+	if len(msg.QosFlowSetupRequestList) > 0 {
+		tmp_QosFlowSetupRequestList := Sequence[*QosFlowSetupRequestItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext: false,
+		}
+		for _, i := range msg.QosFlowSetupRequestList {
+			tmp_QosFlowSetupRequestList.Value = append(tmp_QosFlowSetupRequestList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_QosFlowSetupRequestList},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_QosFlowSetupRequestList,
+		})
+	} else {
+		err = utils.WrapError("QosFlowSetupRequestList is nil", err)
+		return
 	}
-	for _, i := range msg.QosFlowSetupRequestList {
-		tmp_QosFlowSetupRequestList.Value = append(tmp_QosFlowSetupRequestList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_QosFlowSetupRequestList},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_QosFlowSetupRequestList,
-	})
 	if msg.CommonNetworkInstance != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_CommonNetworkInstance},

@@ -6,8 +6,8 @@ import (
 )
 
 type QosFlowPerTNLInformation struct {
-	UPTransportLayerInformation UPTransportLayerInformation
-	AssociatedQosFlowList       []AssociatedQosFlowItem
+	UPTransportLayerInformation UPTransportLayerInformation `madatory`
+	AssociatedQosFlowList       []AssociatedQosFlowItem     `lb:1,ub:maxnoofQosFlows,madatory`
 	// IEExtensions *QosFlowPerTNLInformationExtIEs `optional`
 }
 
@@ -18,7 +18,7 @@ func (ie *QosFlowPerTNLInformation) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.UPTransportLayerInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read UPTransportLayerInformation", err)
+		err = utils.WrapError("Encode UPTransportLayerInformation", err)
 		return
 	}
 	if len(ie.AssociatedQosFlowList) > 0 {
@@ -31,9 +31,12 @@ func (ie *QosFlowPerTNLInformation) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read AssociatedQosFlowList", err)
+			err = utils.WrapError("Encode AssociatedQosFlowList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("AssociatedQosFlowList is nil", err)
+		return
 	}
 	return
 }

@@ -10,23 +10,27 @@ import (
 )
 
 type WriteReplaceWarningRequest struct {
-	MessageIdentifier           []byte
-	SerialNumber                []byte
-	WarningAreaList             *WarningAreaList `optional`
-	RepetitionPeriod            int64
-	NumberOfBroadcastsRequested int64
-	WarningType                 []byte                       `optional`
-	WarningSecurityInfo         []byte                       `optional`
-	DataCodingScheme            []byte                       `optional`
-	WarningMessageContents      []byte                       `optional`
-	ConcurrentWarningMessageInd *ConcurrentWarningMessageInd `optional`
-	WarningAreaCoordinates      []byte                       `optional`
+	MessageIdentifier           []byte                       `lb:16,ub:16,mandatory,reject`
+	SerialNumber                []byte                       `lb:16,ub:16,mandatory,reject`
+	WarningAreaList             *WarningAreaList             `optional,ignore`
+	RepetitionPeriod            int64                        `lb:0,ub:131071,mandatory,reject`
+	NumberOfBroadcastsRequested int64                        `lb:0,ub:65535,mandatory,reject`
+	WarningType                 []byte                       `lb:2,ub:2,optional,ignore`
+	WarningSecurityInfo         []byte                       `lb:50,ub:50,optional,ignore`
+	DataCodingScheme            []byte                       `lb:8,ub:8,optional,ignore`
+	WarningMessageContents      []byte                       `lb:1,ub:9600,optional,ignore`
+	ConcurrentWarningMessageInd *ConcurrentWarningMessageInd `optional,reject`
+	WarningAreaCoordinates      []byte                       `lb:1,ub:1024,optional,ignore`
 }
 
 func (msg *WriteReplaceWarningRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_WriteReplaceWarning, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_WriteReplaceWarning, Criticality_PresentReject, ies)
 }
-func (msg *WriteReplaceWarningRequest) toIes() (ies []NgapMessageIE) {
+func (msg *WriteReplaceWarningRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_MessageIdentifier},

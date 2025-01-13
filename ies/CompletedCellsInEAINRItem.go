@@ -6,7 +6,7 @@ import (
 )
 
 type CompletedCellsInEAINRItem struct {
-	NRCGI NRCGI
+	NRCGI NRCGI `madatory`
 	// IEExtensions *CompletedCellsInEAINRItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *CompletedCellsInEAINRItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NRCGI.Encode(w); err != nil {
-		err = utils.WrapError("Read NRCGI", err)
+		err = utils.WrapError("Encode NRCGI", err)
 		return
 	}
 	return

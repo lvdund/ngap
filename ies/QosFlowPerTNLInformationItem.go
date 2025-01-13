@@ -6,7 +6,7 @@ import (
 )
 
 type QosFlowPerTNLInformationItem struct {
-	QosFlowPerTNLInformation QosFlowPerTNLInformation
+	QosFlowPerTNLInformation QosFlowPerTNLInformation `madatory`
 	// IEExtensions *QosFlowPerTNLInformationItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *QosFlowPerTNLInformationItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.QosFlowPerTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowPerTNLInformation", err)
+		err = utils.WrapError("Encode QosFlowPerTNLInformation", err)
 		return
 	}
 	return

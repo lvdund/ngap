@@ -6,7 +6,7 @@ import (
 )
 
 type RecommendedRANNodesForPaging struct {
-	RecommendedRANNodeList []RecommendedRANNodeItem
+	RecommendedRANNodeList []RecommendedRANNodeItem `lb:1,ub:maxnoofRecommendedRANNodes,madatory`
 	// IEExtensions *RecommendedRANNodesForPagingExtIEs `optional`
 }
 
@@ -26,9 +26,12 @@ func (ie *RecommendedRANNodesForPaging) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read RecommendedRANNodeList", err)
+			err = utils.WrapError("Encode RecommendedRANNodeList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("RecommendedRANNodeList is nil", err)
+		return
 	}
 	return
 }

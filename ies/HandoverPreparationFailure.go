@@ -10,16 +10,20 @@ import (
 )
 
 type HandoverPreparationFailure struct {
-	AMFUENGAPID            int64
-	RANUENGAPID            int64
-	Cause                  Cause
-	CriticalityDiagnostics *CriticalityDiagnostics `optional`
+	AMFUENGAPID            int64                   `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID            int64                   `lb:0,ub:4294967295,mandatory,ignore`
+	Cause                  Cause                   `mandatory,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *HandoverPreparationFailure) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_HandoverPreparation, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_HandoverPreparation, Criticality_PresentReject, ies)
 }
-func (msg *HandoverPreparationFailure) toIes() (ies []NgapMessageIE) {
+func (msg *HandoverPreparationFailure) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

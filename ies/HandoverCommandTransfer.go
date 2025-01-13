@@ -1,18 +1,21 @@
 package ies
 
 import (
+	"bytes"
+
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
 
 type HandoverCommandTransfer struct {
 	DLForwardingUPTNLInformation  *UPTransportLayerInformation    `optional`
-	QosFlowToBeForwardedList      []QosFlowToBeForwardedItem      `optional`
-	DataForwardingResponseDRBList []DataForwardingResponseDRBItem `optional`
+	QosFlowToBeForwardedList      []QosFlowToBeForwardedItem      `lb:1,ub:maxnoofQosFlows,optional`
+	DataForwardingResponseDRBList []DataForwardingResponseDRBItem `lb:1,ub:maxnoofDRBs,optional`
 	// IEExtensions *HandoverCommandTransferExtIEs `optional`
 }
 
-func (ie *HandoverCommandTransfer) Encode(w *aper.AperWriter) (err error) {
+func (ie *HandoverCommandTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -29,45 +32,42 @@ func (ie *HandoverCommandTransfer) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 4)
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
+			err = utils.WrapError("Encode DLForwardingUPTNLInformation", err)
 			return
 		}
 	}
-	if ie.QosFlowToBeForwardedList != nil {
-		if len(ie.QosFlowToBeForwardedList) > 0 {
-			tmp := Sequence[*QosFlowToBeForwardedItem]{
-				Value: []*QosFlowToBeForwardedItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-				ext:   false,
-			}
-			for _, i := range ie.QosFlowToBeForwardedList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read QosFlowToBeForwardedList", err)
-				return
-			}
+	if len(ie.QosFlowToBeForwardedList) > 0 {
+		tmp := Sequence[*QosFlowToBeForwardedItem]{
+			Value: []*QosFlowToBeForwardedItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.QosFlowToBeForwardedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowToBeForwardedList", err)
+			return
 		}
 	}
-	if ie.DataForwardingResponseDRBList != nil {
-		if len(ie.DataForwardingResponseDRBList) > 0 {
-			tmp := Sequence[*DataForwardingResponseDRBItem]{
-				Value: []*DataForwardingResponseDRBItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
-				ext:   false,
-			}
-			for _, i := range ie.DataForwardingResponseDRBList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read DataForwardingResponseDRBList", err)
-				return
-			}
+	if len(ie.DataForwardingResponseDRBList) > 0 {
+		tmp := Sequence[*DataForwardingResponseDRBItem]{
+			Value: []*DataForwardingResponseDRBItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
+			ext:   false,
+		}
+		for _, i := range ie.DataForwardingResponseDRBList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode DataForwardingResponseDRBList", err)
+			return
 		}
 	}
 	return
 }
-func (ie *HandoverCommandTransfer) Decode(r *aper.AperReader) (err error) {
+func (ie *HandoverCommandTransfer) Decode(wire []byte) (err error) {
+	r := aper.NewReader(bytes.NewBuffer(wire))
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

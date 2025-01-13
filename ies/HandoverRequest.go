@@ -10,32 +10,36 @@ import (
 )
 
 type HandoverRequest struct {
-	AMFUENGAPID                                 int64
-	HandoverType                                HandoverType
-	Cause                                       Cause
-	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional`
-	UESecurityCapabilities                      UESecurityCapabilities
-	SecurityContext                             SecurityContext
-	NewSecurityContextInd                       *NewSecurityContextInd `optional`
-	NASC                                        []byte                 `optional`
-	PDUSessionResourceSetupListHOReq            []PDUSessionResourceSetupItemHOReq
-	AllowedNSSAI                                []AllowedNSSAIItem
-	TraceActivation                             *TraceActivation `optional`
-	MaskedIMEISV                                []byte           `optional`
-	SourceToTargetTransparentContainer          []byte
-	MobilityRestrictionList                     *MobilityRestrictionList            `optional`
-	LocationReportingRequestType                *LocationReportingRequestType       `optional`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest `optional`
-	GUAMI                                       GUAMI
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback `optional`
-	CNAssistedRANTuning                         *CNAssistedRANTuning      `optional`
+	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
+	HandoverType                                HandoverType                                 `mandatory,reject`
+	Cause                                       Cause                                        `mandatory,ignore`
+	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `mandatory,reject`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	UESecurityCapabilities                      UESecurityCapabilities                       `mandatory,reject`
+	SecurityContext                             SecurityContext                              `mandatory,reject`
+	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,reject`
+	NASC                                        []byte                                       `lb:0,ub:0,optional,reject`
+	PDUSessionResourceSetupListHOReq            []PDUSessionResourceSetupItemHOReq           `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
+	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
+	TraceActivation                             *TraceActivation                             `optional,ignore`
+	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,ignore`
+	SourceToTargetTransparentContainer          []byte                                       `lb:0,ub:0,mandatory,reject`
+	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,ignore`
+	LocationReportingRequestType                *LocationReportingRequestType                `optional,ignore`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	GUAMI                                       GUAMI                                        `mandatory,reject`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *HandoverRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_HandoverResourceAllocation, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_HandoverResourceAllocation, Criticality_PresentReject, ies)
 }
-func (msg *HandoverRequest) toIes() (ies []NgapMessageIE) {
+func (msg *HandoverRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -94,30 +98,40 @@ func (msg *HandoverRequest) toIes() (ies []NgapMessageIE) {
 				Value: msg.NASC,
 			}})
 	}
-	tmp_PDUSessionResourceSetupListHOReq := Sequence[*PDUSessionResourceSetupItemHOReq]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceSetupListHOReq) > 0 {
+		tmp_PDUSessionResourceSetupListHOReq := Sequence[*PDUSessionResourceSetupItemHOReq]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceSetupListHOReq {
+			tmp_PDUSessionResourceSetupListHOReq.Value = append(tmp_PDUSessionResourceSetupListHOReq.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSetupListHOReq},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PDUSessionResourceSetupListHOReq,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceSetupListHOReq is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceSetupListHOReq {
-		tmp_PDUSessionResourceSetupListHOReq.Value = append(tmp_PDUSessionResourceSetupListHOReq.Value, &i)
+	if len(msg.AllowedNSSAI) > 0 {
+		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
+			ext: false,
+		}
+		for _, i := range msg.AllowedNSSAI {
+			tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_AllowedNSSAI,
+		})
+	} else {
+		err = utils.WrapError("AllowedNSSAI is nil", err)
+		return
 	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSetupListHOReq},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PDUSessionResourceSetupListHOReq,
-	})
-	tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
-		ext: false,
-	}
-	for _, i := range msg.AllowedNSSAI {
-		tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_AllowedNSSAI,
-	})
 	if msg.TraceActivation != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_TraceActivation},

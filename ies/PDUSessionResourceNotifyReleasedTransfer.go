@@ -6,7 +6,7 @@ import (
 )
 
 type PDUSessionResourceNotifyReleasedTransfer struct {
-	Cause Cause
+	Cause Cause `madatory`
 	// IEExtensions *PDUSessionResourceNotifyReleasedTransferExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *PDUSessionResourceNotifyReleasedTransfer) Encode(w *aper.AperWriter) (
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = utils.WrapError("Encode Cause", err)
 		return
 	}
 	return

@@ -6,8 +6,8 @@ import (
 )
 
 type QosFlowWithCauseItem struct {
-	QosFlowIdentifier int64
-	Cause             Cause
+	QosFlowIdentifier int64 `lb:0,ub:63,madatory,valExt`
+	Cause             Cause `madatory`
 	// IEExtensions *QosFlowWithCauseItemExtIEs `optional`
 }
 
@@ -17,13 +17,13 @@ func (ie *QosFlowWithCauseItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = utils.WrapError("Encode QosFlowIdentifier", err)
 		return
 	}
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = utils.WrapError("Encode Cause", err)
 		return
 	}
 	return
@@ -37,7 +37,7 @@ func (ie *QosFlowWithCauseItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_QosFlowIdentifier := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 63},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		err = utils.WrapError("Read QosFlowIdentifier", err)

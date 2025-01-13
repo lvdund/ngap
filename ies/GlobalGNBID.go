@@ -6,8 +6,8 @@ import (
 )
 
 type GlobalGNBID struct {
-	PLMNIdentity []byte
-	GNBID        GNBID
+	PLMNIdentity []byte `lb:3,ub:3,madatory`
+	GNBID        GNBID  `madatory`
 	// IEExtensions *GlobalGNBIDExtIEs `optional`
 }
 
@@ -19,11 +19,11 @@ func (ie *GlobalGNBID) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	if err = ie.GNBID.Encode(w); err != nil {
-		err = utils.WrapError("Read GNBID", err)
+		err = utils.WrapError("Encode GNBID", err)
 		return
 	}
 	return

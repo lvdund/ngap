@@ -10,17 +10,21 @@ import (
 )
 
 type PDUSessionResourceModifyConfirm struct {
-	AMFUENGAPID                                int64
-	RANUENGAPID                                int64
-	PDUSessionResourceModifyListModCfm         []PDUSessionResourceModifyItemModCfm         `optional`
-	PDUSessionResourceFailedToModifyListModCfm []PDUSessionResourceFailedToModifyItemModCfm `optional`
-	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional`
+	AMFUENGAPID                                int64                                        `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                                int64                                        `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceModifyListModCfm         []PDUSessionResourceModifyItemModCfm         `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToModifyListModCfm []PDUSessionResourceFailedToModifyItemModCfm `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional,ignore`
 }
 
 func (msg *PDUSessionResourceModifyConfirm) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceModifyIndication, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceModifyIndication, Criticality_PresentReject, ies)
 }
-func (msg *PDUSessionResourceModifyConfirm) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceModifyConfirm) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -38,7 +42,7 @@ func (msg *PDUSessionResourceModifyConfirm) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	if msg.PDUSessionResourceModifyListModCfm != nil {
+	if len(msg.PDUSessionResourceModifyListModCfm) > 0 {
 		tmp_PDUSessionResourceModifyListModCfm := Sequence[*PDUSessionResourceModifyItemModCfm]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,
@@ -52,7 +56,7 @@ func (msg *PDUSessionResourceModifyConfirm) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PDUSessionResourceModifyListModCfm,
 		})
 	}
-	if msg.PDUSessionResourceFailedToModifyListModCfm != nil {
+	if len(msg.PDUSessionResourceFailedToModifyListModCfm) > 0 {
 		tmp_PDUSessionResourceFailedToModifyListModCfm := Sequence[*PDUSessionResourceFailedToModifyItemModCfm]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

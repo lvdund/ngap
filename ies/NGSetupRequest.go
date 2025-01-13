@@ -10,17 +10,21 @@ import (
 )
 
 type NGSetupRequest struct {
-	GlobalRANNodeID        GlobalRANNodeID
-	RANNodeName            []byte `optional`
-	SupportedTAList        []SupportedTAItem
-	DefaultPagingDRX       PagingDRX
-	UERetentionInformation *UERetentionInformation `optional`
+	GlobalRANNodeID        GlobalRANNodeID         `mandatory,reject`
+	RANNodeName            []byte                  `lb:1,ub:150,optional,ignore,valueExt`
+	SupportedTAList        []SupportedTAItem       `lb:1,ub:maxnoofTACs,mandatory,reject`
+	DefaultPagingDRX       PagingDRX               `mandatory,ignore`
+	UERetentionInformation *UERetentionInformation `optional,ignore`
 }
 
 func (msg *NGSetupRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_NGSetup, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_NGSetup, Criticality_PresentReject, ies)
 }
-func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
+func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_GlobalRANNodeID},
@@ -37,18 +41,23 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE) {
 				Value: msg.RANNodeName,
 			}})
 	}
-	tmp_SupportedTAList := Sequence[*SupportedTAItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofTACs},
-		ext: false,
+	if len(msg.SupportedTAList) > 0 {
+		tmp_SupportedTAList := Sequence[*SupportedTAItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTACs},
+			ext: false,
+		}
+		for _, i := range msg.SupportedTAList {
+			tmp_SupportedTAList.Value = append(tmp_SupportedTAList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_SupportedTAList},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_SupportedTAList,
+		})
+	} else {
+		err = utils.WrapError("SupportedTAList is nil", err)
+		return
 	}
-	for _, i := range msg.SupportedTAList {
-		tmp_SupportedTAList.Value = append(tmp_SupportedTAList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_SupportedTAList},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_SupportedTAList,
-	})
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_DefaultPagingDRX},
 		Criticality: Criticality{Value: Criticality_PresentIgnore},

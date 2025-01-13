@@ -25,13 +25,13 @@ func (ie *AssistanceDataForPaging) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	if ie.AssistanceDataForRecommendedCells != nil {
 		if err = ie.AssistanceDataForRecommendedCells.Encode(w); err != nil {
-			err = utils.WrapError("Read AssistanceDataForRecommendedCells", err)
+			err = utils.WrapError("Encode AssistanceDataForRecommendedCells", err)
 			return
 		}
 	}
 	if ie.PagingAttemptInformation != nil {
 		if err = ie.PagingAttemptInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read PagingAttemptInformation", err)
+			err = utils.WrapError("Encode PagingAttemptInformation", err)
 			return
 		}
 	}

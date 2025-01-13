@@ -6,8 +6,8 @@ import (
 )
 
 type UERadioCapabilityForPaging struct {
-	UERadioCapabilityForPagingOfNR    []byte
-	UERadioCapabilityForPagingOfEUTRA []byte
+	UERadioCapabilityForPagingOfNR    []byte `lb:0,ub:0,optional`
+	UERadioCapabilityForPagingOfEUTRA []byte `lb:0,ub:0,optional`
 	// IEExtensions *UERadioCapabilityForPagingExtIEs `optional`
 }
 
@@ -26,14 +26,14 @@ func (ie *UERadioCapabilityForPaging) Encode(w *aper.AperWriter) (err error) {
 	if ie.UERadioCapabilityForPagingOfNR != nil {
 		tmp_UERadioCapabilityForPagingOfNR := NewOCTETSTRING(ie.UERadioCapabilityForPagingOfNR, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_UERadioCapabilityForPagingOfNR.Encode(w); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPagingOfNR", err)
+			err = utils.WrapError("Encode UERadioCapabilityForPagingOfNR", err)
 			return
 		}
 	}
 	if ie.UERadioCapabilityForPagingOfEUTRA != nil {
 		tmp_UERadioCapabilityForPagingOfEUTRA := NewOCTETSTRING(ie.UERadioCapabilityForPagingOfEUTRA, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_UERadioCapabilityForPagingOfEUTRA.Encode(w); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPagingOfEUTRA", err)
+			err = utils.WrapError("Encode UERadioCapabilityForPagingOfEUTRA", err)
 			return
 		}
 	}

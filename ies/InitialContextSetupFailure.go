@@ -10,17 +10,21 @@ import (
 )
 
 type InitialContextSetupFailure struct {
-	AMFUENGAPID                                int64
-	RANUENGAPID                                int64
-	PDUSessionResourceFailedToSetupListCxtFail []PDUSessionResourceFailedToSetupItemCxtFail `optional`
-	Cause                                      Cause
-	CriticalityDiagnostics                     *CriticalityDiagnostics `optional`
+	AMFUENGAPID                                int64                                        `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                                int64                                        `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceFailedToSetupListCxtFail []PDUSessionResourceFailedToSetupItemCxtFail `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	Cause                                      Cause                                        `mandatory,ignore`
+	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional,ignore`
 }
 
 func (msg *InitialContextSetupFailure) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_InitialContextSetup, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_InitialContextSetup, Criticality_PresentReject, ies)
 }
-func (msg *InitialContextSetupFailure) toIes() (ies []NgapMessageIE) {
+func (msg *InitialContextSetupFailure) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -38,7 +42,7 @@ func (msg *InitialContextSetupFailure) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	if msg.PDUSessionResourceFailedToSetupListCxtFail != nil {
+	if len(msg.PDUSessionResourceFailedToSetupListCxtFail) > 0 {
 		tmp_PDUSessionResourceFailedToSetupListCxtFail := Sequence[*PDUSessionResourceFailedToSetupItemCxtFail]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

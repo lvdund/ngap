@@ -6,9 +6,9 @@ import (
 )
 
 type PDUSessionResourceInformationItem struct {
-	PDUSessionID              int64
-	QosFlowInformationList    []QosFlowInformationItem
-	DRBsToQosFlowsMappingList []DRBsToQosFlowsMappingItem `optional`
+	PDUSessionID              int64                       `lb:0,ub:255,madatory`
+	QosFlowInformationList    []QosFlowInformationItem    `lb:1,ub:maxnoofQosFlows,madatory`
+	DRBsToQosFlowsMappingList []DRBsToQosFlowsMappingItem `lb:1,ub:maxnoofDRBs,optional`
 	// IEExtensions *PDUSessionResourceInformationItemExtIEs `optional`
 }
 
@@ -23,7 +23,7 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 	w.WriteBits(optionals, 2)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	if len(ie.QosFlowInformationList) > 0 {
@@ -36,24 +36,25 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read QosFlowInformationList", err)
+			err = utils.WrapError("Encode QosFlowInformationList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("QosFlowInformationList is nil", err)
+		return
 	}
-	if ie.DRBsToQosFlowsMappingList != nil {
-		if len(ie.DRBsToQosFlowsMappingList) > 0 {
-			tmp := Sequence[*DRBsToQosFlowsMappingItem]{
-				Value: []*DRBsToQosFlowsMappingItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
-				ext:   false,
-			}
-			for _, i := range ie.DRBsToQosFlowsMappingList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read DRBsToQosFlowsMappingList", err)
-				return
-			}
+	if len(ie.DRBsToQosFlowsMappingList) > 0 {
+		tmp := Sequence[*DRBsToQosFlowsMappingItem]{
+			Value: []*DRBsToQosFlowsMappingItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
+			ext:   false,
+		}
+		for _, i := range ie.DRBsToQosFlowsMappingList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode DRBsToQosFlowsMappingList", err)
+			return
 		}
 	}
 	return

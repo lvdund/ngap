@@ -6,9 +6,9 @@ import (
 )
 
 type ServiceAreaInformationItem struct {
-	PLMNIdentity   []byte
-	AllowedTACs    []TAC `optional`
-	NotAllowedTACs []TAC `optional`
+	PLMNIdentity   []byte `lb:3,ub:3,madatory`
+	AllowedTACs    []TAC  `lb:1,ub:maxnoofAllowedAreas,optional`
+	NotAllowedTACs []TAC  `lb:1,ub:maxnoofAllowedAreas,optional`
 	// IEExtensions *ServiceAreaInformationItemExtIEs `optional`
 }
 
@@ -26,39 +26,35 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
-	if ie.AllowedTACs != nil {
-		if len(ie.AllowedTACs) > 0 {
-			tmp := Sequence[*TAC]{
-				Value: []*TAC{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofAllowedAreas},
-				ext:   false,
-			}
-			for _, i := range ie.AllowedTACs {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read AllowedTACs", err)
-				return
-			}
+	if len(ie.AllowedTACs) > 0 {
+		tmp := Sequence[*TAC]{
+			Value: []*TAC{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofAllowedAreas},
+			ext:   false,
+		}
+		for _, i := range ie.AllowedTACs {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode AllowedTACs", err)
+			return
 		}
 	}
-	if ie.NotAllowedTACs != nil {
-		if len(ie.NotAllowedTACs) > 0 {
-			tmp := Sequence[*TAC]{
-				Value: []*TAC{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofAllowedAreas},
-				ext:   false,
-			}
-			for _, i := range ie.NotAllowedTACs {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read NotAllowedTACs", err)
-				return
-			}
+	if len(ie.NotAllowedTACs) > 0 {
+		tmp := Sequence[*TAC]{
+			Value: []*TAC{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofAllowedAreas},
+			ext:   false,
+		}
+		for _, i := range ie.NotAllowedTACs {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode NotAllowedTACs", err)
+			return
 		}
 	}
 	return

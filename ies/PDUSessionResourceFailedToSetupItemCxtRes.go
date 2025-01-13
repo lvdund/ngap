@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceFailedToSetupItemCxtRes struct {
-	PDUSessionID                                int64
-	PDUSessionResourceSetupUnsuccessfulTransfer []byte
+	PDUSessionID                                int64  `lb:0,ub:255,madatory`
+	PDUSessionResourceSetupUnsuccessfulTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceFailedToSetupItemCxtResExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceFailedToSetupItemCxtRes) Encode(w *aper.AperWriter) 
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_PDUSessionResourceSetupUnsuccessfulTransfer := NewOCTETSTRING(ie.PDUSessionResourceSetupUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceSetupUnsuccessfulTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionResourceSetupUnsuccessfulTransfer", err)
+		err = utils.WrapError("Encode PDUSessionResourceSetupUnsuccessfulTransfer", err)
 		return
 	}
 	return

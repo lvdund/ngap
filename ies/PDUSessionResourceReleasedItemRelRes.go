@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceReleasedItemRelRes struct {
-	PDUSessionID                              int64
-	PDUSessionResourceReleaseResponseTransfer []byte
+	PDUSessionID                              int64  `lb:0,ub:255,madatory`
+	PDUSessionResourceReleaseResponseTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceReleasedItemRelResExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceReleasedItemRelRes) Encode(w *aper.AperWriter) (err 
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_PDUSessionResourceReleaseResponseTransfer := NewOCTETSTRING(ie.PDUSessionResourceReleaseResponseTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceReleaseResponseTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionResourceReleaseResponseTransfer", err)
+		err = utils.WrapError("Encode PDUSessionResourceReleaseResponseTransfer", err)
 		return
 	}
 	return

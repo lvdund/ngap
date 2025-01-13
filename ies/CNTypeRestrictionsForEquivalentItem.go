@@ -6,8 +6,8 @@ import (
 )
 
 type CNTypeRestrictionsForEquivalentItem struct {
-	PlmnIdentity []byte
-	CnType       int64
+	PlmnIdentity []byte `lb:3,ub:3,madatory`
+	CnType       CnType `madatory`
 	// IEExtensions *CNTypeRestrictionsForEquivalentItemExtIEs `optional`
 }
 
@@ -19,12 +19,11 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Encode(w *aper.AperWriter) (err e
 	w.WriteBits(optionals, 1)
 	tmp_PlmnIdentity := NewOCTETSTRING(ie.PlmnIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PlmnIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PlmnIdentity", err)
+		err = utils.WrapError("Encode PlmnIdentity", err)
 		return
 	}
-	tmp_CnType := NewENUMERATED(ie.CnType, aper.Constraint{Lb: 0, Ub: 0}, false)
-	if err = tmp_CnType.Encode(w); err != nil {
-		err = utils.WrapError("Read CnType", err)
+	if err = ie.CnType.Encode(w); err != nil {
+		err = utils.WrapError("Encode CnType", err)
 		return
 	}
 	return
@@ -45,14 +44,9 @@ func (ie *CNTypeRestrictionsForEquivalentItem) Decode(r *aper.AperReader) (err e
 		return
 	}
 	ie.PlmnIdentity = tmp_PlmnIdentity.Value
-	tmp_CnType := ENUMERATED{
-		c:   aper.Constraint{Lb: 0, Ub: 0},
-		ext: false,
-	}
-	if err = tmp_CnType.Decode(r); err != nil {
+	if err = ie.CnType.Decode(r); err != nil {
 		err = utils.WrapError("Read CnType", err)
 		return
 	}
-	ie.CnType = int64(tmp_CnType.Value)
 	return
 }

@@ -9,7 +9,7 @@ type ExpectedUEBehaviour struct {
 	ExpectedUEActivityBehaviour *ExpectedUEActivityBehaviour     `optional`
 	ExpectedHOInterval          *ExpectedHOInterval              `optional`
 	ExpectedUEMobility          *ExpectedUEMobility              `optional`
-	ExpectedUEMovingTrajectory  []ExpectedUEMovingTrajectoryItem `optional`
+	ExpectedUEMovingTrajectory  []ExpectedUEMovingTrajectoryItem `lb:1,ub:maxnoofCellsUEMovingTrajectory,optional`
 	// IEExtensions *ExpectedUEBehaviourExtIEs `optional`
 }
 
@@ -33,36 +33,34 @@ func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	if ie.ExpectedUEActivityBehaviour != nil {
 		if err = ie.ExpectedUEActivityBehaviour.Encode(w); err != nil {
-			err = utils.WrapError("Read ExpectedUEActivityBehaviour", err)
+			err = utils.WrapError("Encode ExpectedUEActivityBehaviour", err)
 			return
 		}
 	}
 	if ie.ExpectedHOInterval != nil {
 		if err = ie.ExpectedHOInterval.Encode(w); err != nil {
-			err = utils.WrapError("Read ExpectedHOInterval", err)
+			err = utils.WrapError("Encode ExpectedHOInterval", err)
 			return
 		}
 	}
 	if ie.ExpectedUEMobility != nil {
 		if err = ie.ExpectedUEMobility.Encode(w); err != nil {
-			err = utils.WrapError("Read ExpectedUEMobility", err)
+			err = utils.WrapError("Encode ExpectedUEMobility", err)
 			return
 		}
 	}
-	if ie.ExpectedUEMovingTrajectory != nil {
-		if len(ie.ExpectedUEMovingTrajectory) > 0 {
-			tmp := Sequence[*ExpectedUEMovingTrajectoryItem]{
-				Value: []*ExpectedUEMovingTrajectoryItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofCellsUEMovingTrajectory},
-				ext:   false,
-			}
-			for _, i := range ie.ExpectedUEMovingTrajectory {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read ExpectedUEMovingTrajectory", err)
-				return
-			}
+	if len(ie.ExpectedUEMovingTrajectory) > 0 {
+		tmp := Sequence[*ExpectedUEMovingTrajectoryItem]{
+			Value: []*ExpectedUEMovingTrajectoryItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofCellsUEMovingTrajectory},
+			ext:   false,
+		}
+		for _, i := range ie.ExpectedUEMovingTrajectory {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode ExpectedUEMovingTrajectory", err)
+			return
 		}
 	}
 	return

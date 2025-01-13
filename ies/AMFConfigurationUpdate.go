@@ -10,19 +10,23 @@ import (
 )
 
 type AMFConfigurationUpdate struct {
-	AMFName                       []byte                          `optional`
-	ServedGUAMIList               []ServedGUAMIItem               `optional`
-	RelativeAMFCapacity           *int64                          `optional`
-	PLMNSupportList               []PLMNSupportItem               `optional`
-	AMFTNLAssociationToAddList    []AMFTNLAssociationToAddItem    `optional`
-	AMFTNLAssociationToRemoveList []AMFTNLAssociationToRemoveItem `optional`
-	AMFTNLAssociationToUpdateList []AMFTNLAssociationToUpdateItem `optional`
+	AMFName                       []byte                          `lb:1,ub:150,optional,reject,valueExt`
+	ServedGUAMIList               []ServedGUAMIItem               `lb:1,ub:maxnoofServedGUAMIs,optional,reject`
+	RelativeAMFCapacity           *int64                          `lb:0,ub:255,optional,ignore`
+	PLMNSupportList               []PLMNSupportItem               `lb:1,ub:maxnoofPLMNs,optional,reject`
+	AMFTNLAssociationToAddList    []AMFTNLAssociationToAddItem    `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
+	AMFTNLAssociationToRemoveList []AMFTNLAssociationToRemoveItem `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
+	AMFTNLAssociationToUpdateList []AMFTNLAssociationToUpdateItem `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
 }
 
 func (msg *AMFConfigurationUpdate) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_AMFConfigurationUpdate, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_AMFConfigurationUpdate, Criticality_PresentReject, ies)
 }
-func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
+func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.AMFName != nil {
 		ies = append(ies, NgapMessageIE{
@@ -34,7 +38,7 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 				Value: msg.AMFName,
 			}})
 	}
-	if msg.ServedGUAMIList != nil {
+	if len(msg.ServedGUAMIList) > 0 {
 		tmp_ServedGUAMIList := Sequence[*ServedGUAMIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofServedGUAMIs},
 			ext: false,
@@ -58,7 +62,7 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 				Value: aper.Integer(*msg.RelativeAMFCapacity),
 			}})
 	}
-	if msg.PLMNSupportList != nil {
+	if len(msg.PLMNSupportList) > 0 {
 		tmp_PLMNSupportList := Sequence[*PLMNSupportItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPLMNs},
 			ext: false,
@@ -72,7 +76,7 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PLMNSupportList,
 		})
 	}
-	if msg.AMFTNLAssociationToAddList != nil {
+	if len(msg.AMFTNLAssociationToAddList) > 0 {
 		tmp_AMFTNLAssociationToAddList := Sequence[*AMFTNLAssociationToAddItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
 			ext: false,
@@ -86,7 +90,7 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_AMFTNLAssociationToAddList,
 		})
 	}
-	if msg.AMFTNLAssociationToRemoveList != nil {
+	if len(msg.AMFTNLAssociationToRemoveList) > 0 {
 		tmp_AMFTNLAssociationToRemoveList := Sequence[*AMFTNLAssociationToRemoveItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
 			ext: false,
@@ -100,7 +104,7 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_AMFTNLAssociationToRemoveList,
 		})
 	}
-	if msg.AMFTNLAssociationToUpdateList != nil {
+	if len(msg.AMFTNLAssociationToUpdateList) > 0 {
 		tmp_AMFTNLAssociationToUpdateList := Sequence[*AMFTNLAssociationToUpdateItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
 			ext: false,

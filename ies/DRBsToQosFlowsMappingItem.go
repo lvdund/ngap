@@ -6,8 +6,8 @@ import (
 )
 
 type DRBsToQosFlowsMappingItem struct {
-	DRBID                 int64
-	AssociatedQosFlowList []AssociatedQosFlowItem
+	DRBID                 int64                   `lb:1,ub:32,madatory,valExt`
+	AssociatedQosFlowList []AssociatedQosFlowItem `lb:1,ub:maxnoofQosFlows,madatory`
 	// IEExtensions *DRBsToQosFlowsMappingItemExtIEs `optional`
 }
 
@@ -17,9 +17,9 @@ func (ie *DRBsToQosFlowsMappingItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, false)
+	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, true)
 	if err = tmp_DRBID.Encode(w); err != nil {
-		err = utils.WrapError("Read DRBID", err)
+		err = utils.WrapError("Encode DRBID", err)
 		return
 	}
 	if len(ie.AssociatedQosFlowList) > 0 {
@@ -32,9 +32,12 @@ func (ie *DRBsToQosFlowsMappingItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read AssociatedQosFlowList", err)
+			err = utils.WrapError("Encode AssociatedQosFlowList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("AssociatedQosFlowList is nil", err)
+		return
 	}
 	return
 }
@@ -47,7 +50,7 @@ func (ie *DRBsToQosFlowsMappingItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_DRBID := INTEGER{
 		c:   aper.Constraint{Lb: 1, Ub: 32},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_DRBID.Decode(r); err != nil {
 		err = utils.WrapError("Read DRBID", err)

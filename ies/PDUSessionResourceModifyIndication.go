@@ -10,15 +10,19 @@ import (
 )
 
 type PDUSessionResourceModifyIndication struct {
-	AMFUENGAPID                        int64
-	RANUENGAPID                        int64
-	PDUSessionResourceModifyListModInd []PDUSessionResourceModifyItemModInd
+	AMFUENGAPID                        int64                                `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                        int64                                `lb:0,ub:4294967295,mandatory,reject`
+	PDUSessionResourceModifyListModInd []PDUSessionResourceModifyItemModInd `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
 }
 
 func (msg *PDUSessionResourceModifyIndication) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceModifyIndication, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceModifyIndication, Criticality_PresentReject, ies)
 }
-func (msg *PDUSessionResourceModifyIndication) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceModifyIndication) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -36,18 +40,23 @@ func (msg *PDUSessionResourceModifyIndication) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	tmp_PDUSessionResourceModifyListModInd := Sequence[*PDUSessionResourceModifyItemModInd]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceModifyListModInd) > 0 {
+		tmp_PDUSessionResourceModifyListModInd := Sequence[*PDUSessionResourceModifyItemModInd]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceModifyListModInd {
+			tmp_PDUSessionResourceModifyListModInd.Value = append(tmp_PDUSessionResourceModifyListModInd.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceModifyListModInd},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PDUSessionResourceModifyListModInd,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceModifyListModInd is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceModifyListModInd {
-		tmp_PDUSessionResourceModifyListModInd.Value = append(tmp_PDUSessionResourceModifyListModInd.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceModifyListModInd},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PDUSessionResourceModifyListModInd,
-	})
 	return
 }
 func (msg *PDUSessionResourceModifyIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {

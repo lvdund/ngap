@@ -10,14 +10,18 @@ import (
 )
 
 type NGReset struct {
-	Cause     Cause
-	ResetType ResetType
+	Cause     Cause     `mandatory,ignore`
+	ResetType ResetType `mandatory,reject`
 }
 
 func (msg *NGReset) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_NGReset, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_NGReset, Criticality_PresentReject, ies)
 }
-func (msg *NGReset) toIes() (ies []NgapMessageIE) {
+func (msg *NGReset) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_Cause},

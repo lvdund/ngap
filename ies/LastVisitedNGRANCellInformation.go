@@ -6,11 +6,11 @@ import (
 )
 
 type LastVisitedNGRANCellInformation struct {
-	GlobalCellID                          NGRANCGI
-	CellType                              CellType
-	TimeUEStayedInCell                    int64
-	TimeUEStayedInCellEnhancedGranularity *int64 `optional`
-	HOCauseValue                          *Cause `optional`
+	GlobalCellID                          NGRANCGI `madatory`
+	CellType                              CellType `madatory`
+	TimeUEStayedInCell                    int64    `lb:0,ub:4095,madatory`
+	TimeUEStayedInCellEnhancedGranularity *int64   `lb:0,ub:40950,optional`
+	HOCauseValue                          *Cause   `optional`
 	// IEExtensions *LastVisitedNGRANCellInformationExtIEs `optional`
 }
 
@@ -27,28 +27,28 @@ func (ie *LastVisitedNGRANCellInformation) Encode(w *aper.AperWriter) (err error
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.GlobalCellID.Encode(w); err != nil {
-		err = utils.WrapError("Read GlobalCellID", err)
+		err = utils.WrapError("Encode GlobalCellID", err)
 		return
 	}
 	if err = ie.CellType.Encode(w); err != nil {
-		err = utils.WrapError("Read CellType", err)
+		err = utils.WrapError("Encode CellType", err)
 		return
 	}
 	tmp_TimeUEStayedInCell := NewINTEGER(ie.TimeUEStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, false)
 	if err = tmp_TimeUEStayedInCell.Encode(w); err != nil {
-		err = utils.WrapError("Read TimeUEStayedInCell", err)
+		err = utils.WrapError("Encode TimeUEStayedInCell", err)
 		return
 	}
 	if ie.TimeUEStayedInCellEnhancedGranularity != nil {
 		tmp_TimeUEStayedInCellEnhancedGranularity := NewINTEGER(*ie.TimeUEStayedInCellEnhancedGranularity, aper.Constraint{Lb: 0, Ub: 40950}, false)
 		if err = tmp_TimeUEStayedInCellEnhancedGranularity.Encode(w); err != nil {
-			err = utils.WrapError("Read TimeUEStayedInCellEnhancedGranularity", err)
+			err = utils.WrapError("Encode TimeUEStayedInCellEnhancedGranularity", err)
 			return
 		}
 	}
 	if ie.HOCauseValue != nil {
 		if err = ie.HOCauseValue.Encode(w); err != nil {
-			err = utils.WrapError("Read HOCauseValue", err)
+			err = utils.WrapError("Encode HOCauseValue", err)
 			return
 		}
 	}

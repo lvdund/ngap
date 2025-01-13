@@ -6,7 +6,7 @@ import (
 )
 
 type CompletedCellsInEAIEUTRAItem struct {
-	EUTRACGI EUTRACGI
+	EUTRACGI EUTRACGI `madatory`
 	// IEExtensions *CompletedCellsInEAIEUTRAItemExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *CompletedCellsInEAIEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.EUTRACGI.Encode(w); err != nil {
-		err = utils.WrapError("Read EUTRACGI", err)
+		err = utils.WrapError("Encode EUTRACGI", err)
 		return
 	}
 	return

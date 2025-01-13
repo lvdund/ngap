@@ -10,17 +10,21 @@ import (
 )
 
 type AMFConfigurationUpdateAcknowledge struct {
-	AMFTNLAssociationSetupList         []AMFTNLAssociationSetupItem `optional`
-	AMFTNLAssociationFailedToSetupList []TNLAssociationItem         `optional`
-	CriticalityDiagnostics             *CriticalityDiagnostics      `optional`
+	AMFTNLAssociationSetupList         []AMFTNLAssociationSetupItem `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
+	AMFTNLAssociationFailedToSetupList []TNLAssociationItem         `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
+	CriticalityDiagnostics             *CriticalityDiagnostics      `optional,ignore`
 }
 
 func (msg *AMFConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_AMFConfigurationUpdate, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_AMFConfigurationUpdate, Criticality_PresentReject, ies)
 }
-func (msg *AMFConfigurationUpdateAcknowledge) toIes() (ies []NgapMessageIE) {
+func (msg *AMFConfigurationUpdateAcknowledge) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
-	if msg.AMFTNLAssociationSetupList != nil {
+	if len(msg.AMFTNLAssociationSetupList) > 0 {
 		tmp_AMFTNLAssociationSetupList := Sequence[*AMFTNLAssociationSetupItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
 			ext: false,
@@ -34,7 +38,7 @@ func (msg *AMFConfigurationUpdateAcknowledge) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_AMFTNLAssociationSetupList,
 		})
 	}
-	if msg.AMFTNLAssociationFailedToSetupList != nil {
+	if len(msg.AMFTNLAssociationFailedToSetupList) > 0 {
 		tmp_AMFTNLAssociationFailedToSetupList := Sequence[*TNLAssociationItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofTNLAssociations},
 			ext: false,

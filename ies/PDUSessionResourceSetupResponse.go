@@ -10,17 +10,21 @@ import (
 )
 
 type PDUSessionResourceSetupResponse struct {
-	AMFUENGAPID                              int64
-	RANUENGAPID                              int64
-	PDUSessionResourceSetupListSURes         []PDUSessionResourceSetupItemSURes         `optional`
-	PDUSessionResourceFailedToSetupListSURes []PDUSessionResourceFailedToSetupItemSURes `optional`
-	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional`
+	AMFUENGAPID                              int64                                      `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                              int64                                      `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceSetupListSURes         []PDUSessionResourceSetupItemSURes         `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToSetupListSURes []PDUSessionResourceFailedToSetupItemSURes `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional,ignore`
 }
 
 func (msg *PDUSessionResourceSetupResponse) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceSetup, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceSetup, Criticality_PresentReject, ies)
 }
-func (msg *PDUSessionResourceSetupResponse) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceSetupResponse) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -38,7 +42,7 @@ func (msg *PDUSessionResourceSetupResponse) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	if msg.PDUSessionResourceSetupListSURes != nil {
+	if len(msg.PDUSessionResourceSetupListSURes) > 0 {
 		tmp_PDUSessionResourceSetupListSURes := Sequence[*PDUSessionResourceSetupItemSURes]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,
@@ -52,7 +56,7 @@ func (msg *PDUSessionResourceSetupResponse) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PDUSessionResourceSetupListSURes,
 		})
 	}
-	if msg.PDUSessionResourceFailedToSetupListSURes != nil {
+	if len(msg.PDUSessionResourceFailedToSetupListSURes) > 0 {
 		tmp_PDUSessionResourceFailedToSetupListSURes := Sequence[*PDUSessionResourceFailedToSetupItemSURes]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

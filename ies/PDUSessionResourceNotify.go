@@ -10,17 +10,21 @@ import (
 )
 
 type PDUSessionResourceNotify struct {
-	AMFUENGAPID                       int64
-	RANUENGAPID                       int64
-	PDUSessionResourceNotifyList      []PDUSessionResourceNotifyItem      `optional`
-	PDUSessionResourceReleasedListNot []PDUSessionResourceReleasedItemNot `optional`
-	UserLocationInformation           *UserLocationInformation            `optional`
+	AMFUENGAPID                       int64                               `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                       int64                               `lb:0,ub:4294967295,mandatory,reject`
+	PDUSessionResourceNotifyList      []PDUSessionResourceNotifyItem      `lb:1,ub:maxnoofPDUSessions,optional,reject`
+	PDUSessionResourceReleasedListNot []PDUSessionResourceReleasedItemNot `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	UserLocationInformation           *UserLocationInformation            `optional,ignore`
 }
 
 func (msg *PDUSessionResourceNotify) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceNotify, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceNotify, Criticality_PresentIgnore, ies)
 }
-func (msg *PDUSessionResourceNotify) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceNotify) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -38,7 +42,7 @@ func (msg *PDUSessionResourceNotify) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	if msg.PDUSessionResourceNotifyList != nil {
+	if len(msg.PDUSessionResourceNotifyList) > 0 {
 		tmp_PDUSessionResourceNotifyList := Sequence[*PDUSessionResourceNotifyItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,
@@ -52,7 +56,7 @@ func (msg *PDUSessionResourceNotify) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PDUSessionResourceNotifyList,
 		})
 	}
-	if msg.PDUSessionResourceReleasedListNot != nil {
+	if len(msg.PDUSessionResourceReleasedListNot) > 0 {
 		tmp_PDUSessionResourceReleasedListNot := Sequence[*PDUSessionResourceReleasedItemNot]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

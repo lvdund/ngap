@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionUsageReport struct {
-	RATType                   int64
-	PDUSessionTimedReportList []VolumeTimedReportItem
+	RATType                   RATType                 `madatory`
+	PDUSessionTimedReportList []VolumeTimedReportItem `lb:1,ub:maxnoofTimePeriods,madatory`
 	// IEExtensions *PDUSessionUsageReportExtIEs `optional`
 }
 
@@ -17,9 +17,8 @@ func (ie *PDUSessionUsageReport) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_RATType := NewENUMERATED(ie.RATType, aper.Constraint{Lb: 0, Ub: 0}, false)
-	if err = tmp_RATType.Encode(w); err != nil {
-		err = utils.WrapError("Read RATType", err)
+	if err = ie.RATType.Encode(w); err != nil {
+		err = utils.WrapError("Encode RATType", err)
 		return
 	}
 	if len(ie.PDUSessionTimedReportList) > 0 {
@@ -32,9 +31,12 @@ func (ie *PDUSessionUsageReport) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read PDUSessionTimedReportList", err)
+			err = utils.WrapError("Encode PDUSessionTimedReportList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("PDUSessionTimedReportList is nil", err)
+		return
 	}
 	return
 }
@@ -45,15 +47,10 @@ func (ie *PDUSessionUsageReport) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBits(1); err != nil {
 		return
 	}
-	tmp_RATType := ENUMERATED{
-		c:   aper.Constraint{Lb: 0, Ub: 0},
-		ext: false,
-	}
-	if err = tmp_RATType.Decode(r); err != nil {
+	if err = ie.RATType.Decode(r); err != nil {
 		err = utils.WrapError("Read RATType", err)
 		return
 	}
-	ie.RATType = int64(tmp_RATType.Value)
 	tmp_PDUSessionTimedReportList := Sequence[*VolumeTimedReportItem]{
 		c:   aper.Constraint{Lb: 1, Ub: maxnoofTimePeriods},
 		ext: false,

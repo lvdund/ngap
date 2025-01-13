@@ -10,20 +10,24 @@ import (
 )
 
 type HandoverCommand struct {
-	AMFUENGAPID                          int64
-	RANUENGAPID                          int64
-	HandoverType                         HandoverType
-	NASSecurityParametersFromNGRAN       []byte
-	PDUSessionResourceHandoverList       []PDUSessionResourceHandoverItem       `optional`
-	PDUSessionResourceToReleaseListHOCmd []PDUSessionResourceToReleaseItemHOCmd `optional`
-	TargetToSourceTransparentContainer   []byte
-	CriticalityDiagnostics               *CriticalityDiagnostics `optional`
+	AMFUENGAPID                          int64                                  `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                          int64                                  `lb:0,ub:4294967295,mandatory,reject`
+	HandoverType                         HandoverType                           `mandatory,reject`
+	NASSecurityParametersFromNGRAN       []byte                                 `lb:0,ub:0,mandatory,reject`
+	PDUSessionResourceHandoverList       []PDUSessionResourceHandoverItem       `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceToReleaseListHOCmd []PDUSessionResourceToReleaseItemHOCmd `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	TargetToSourceTransparentContainer   []byte                                 `lb:0,ub:0,mandatory,reject`
+	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,ignore`
 }
 
 func (msg *HandoverCommand) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverPreparation, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverPreparation, Criticality_PresentReject, ies)
 }
-func (msg *HandoverCommand) toIes() (ies []NgapMessageIE) {
+func (msg *HandoverCommand) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -54,7 +58,7 @@ func (msg *HandoverCommand) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: msg.NASSecurityParametersFromNGRAN,
 		}})
-	if msg.PDUSessionResourceHandoverList != nil {
+	if len(msg.PDUSessionResourceHandoverList) > 0 {
 		tmp_PDUSessionResourceHandoverList := Sequence[*PDUSessionResourceHandoverItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,
@@ -68,7 +72,7 @@ func (msg *HandoverCommand) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PDUSessionResourceHandoverList,
 		})
 	}
-	if msg.PDUSessionResourceToReleaseListHOCmd != nil {
+	if len(msg.PDUSessionResourceToReleaseListHOCmd) > 0 {
 		tmp_PDUSessionResourceToReleaseListHOCmd := Sequence[*PDUSessionResourceToReleaseItemHOCmd]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

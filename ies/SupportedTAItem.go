@@ -6,8 +6,8 @@ import (
 )
 
 type SupportedTAItem struct {
-	TAC               []byte
-	BroadcastPLMNList []BroadcastPLMNItem
+	TAC               []byte              `lb:3,ub:3,madatory`
+	BroadcastPLMNList []BroadcastPLMNItem `lb:1,ub:maxnoofBPLMNs,madatory`
 	// IEExtensions *SupportedTAItemExtIEs `optional`
 }
 
@@ -19,7 +19,7 @@ func (ie *SupportedTAItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_TAC := NewOCTETSTRING(ie.TAC, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_TAC.Encode(w); err != nil {
-		err = utils.WrapError("Read TAC", err)
+		err = utils.WrapError("Encode TAC", err)
 		return
 	}
 	if len(ie.BroadcastPLMNList) > 0 {
@@ -32,9 +32,12 @@ func (ie *SupportedTAItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read BroadcastPLMNList", err)
+			err = utils.WrapError("Encode BroadcastPLMNList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("BroadcastPLMNList is nil", err)
+		return
 	}
 	return
 }

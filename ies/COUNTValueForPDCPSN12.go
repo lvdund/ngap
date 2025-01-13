@@ -6,8 +6,8 @@ import (
 )
 
 type COUNTValueForPDCPSN12 struct {
-	PDCPSN12    int64
-	HFNPDCPSN12 int64
+	PDCPSN12    int64 `lb:0,ub:4095,madatory`
+	HFNPDCPSN12 int64 `lb:0,ub:1048575,madatory`
 	// IEExtensions *COUNTValueForPDCPSN12ExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *COUNTValueForPDCPSN12) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PDCPSN12 := NewINTEGER(ie.PDCPSN12, aper.Constraint{Lb: 0, Ub: 4095}, false)
 	if err = tmp_PDCPSN12.Encode(w); err != nil {
-		err = utils.WrapError("Read PDCPSN12", err)
+		err = utils.WrapError("Encode PDCPSN12", err)
 		return
 	}
 	tmp_HFNPDCPSN12 := NewINTEGER(ie.HFNPDCPSN12, aper.Constraint{Lb: 0, Ub: 1048575}, false)
 	if err = tmp_HFNPDCPSN12.Encode(w); err != nil {
-		err = utils.WrapError("Read HFNPDCPSN12", err)
+		err = utils.WrapError("Encode HFNPDCPSN12", err)
 		return
 	}
 	return

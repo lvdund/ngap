@@ -10,19 +10,23 @@ import (
 )
 
 type Paging struct {
-	UEPagingIdentity           UEPagingIdentity
-	PagingDRX                  *PagingDRX `optional`
-	TAIListForPaging           []TAIListForPagingItem
-	PagingPriority             *PagingPriority             `optional`
-	UERadioCapabilityForPaging *UERadioCapabilityForPaging `optional`
-	PagingOrigin               *PagingOrigin               `optional`
-	AssistanceDataForPaging    *AssistanceDataForPaging    `optional`
+	UEPagingIdentity           UEPagingIdentity            `mandatory,ignore`
+	PagingDRX                  *PagingDRX                  `optional,ignore`
+	TAIListForPaging           []TAIListForPagingItem      `lb:1,ub:maxnoofTAIforPaging,mandatory,ignore`
+	PagingPriority             *PagingPriority             `optional,ignore`
+	UERadioCapabilityForPaging *UERadioCapabilityForPaging `optional,ignore`
+	PagingOrigin               *PagingOrigin               `optional,ignore`
+	AssistanceDataForPaging    *AssistanceDataForPaging    `optional,ignore`
 }
 
 func (msg *Paging) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_Paging, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_Paging, Criticality_PresentIgnore, ies)
 }
-func (msg *Paging) toIes() (ies []NgapMessageIE) {
+func (msg *Paging) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_UEPagingIdentity},
@@ -36,18 +40,23 @@ func (msg *Paging) toIes() (ies []NgapMessageIE) {
 			Value:       msg.PagingDRX,
 		})
 	}
-	tmp_TAIListForPaging := Sequence[*TAIListForPagingItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforPaging},
-		ext: false,
+	if len(msg.TAIListForPaging) > 0 {
+		tmp_TAIListForPaging := Sequence[*TAIListForPagingItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforPaging},
+			ext: false,
+		}
+		for _, i := range msg.TAIListForPaging {
+			tmp_TAIListForPaging.Value = append(tmp_TAIListForPaging.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_TAIListForPaging},
+			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Value:       &tmp_TAIListForPaging,
+		})
+	} else {
+		err = utils.WrapError("TAIListForPaging is nil", err)
+		return
 	}
-	for _, i := range msg.TAIListForPaging {
-		tmp_TAIListForPaging.Value = append(tmp_TAIListForPaging.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_TAIListForPaging},
-		Criticality: Criticality{Value: Criticality_PresentIgnore},
-		Value:       &tmp_TAIListForPaging,
-	})
 	if msg.PagingPriority != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_PagingPriority},

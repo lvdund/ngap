@@ -6,8 +6,8 @@ import (
 )
 
 type SecurityResult struct {
-	IntegrityProtectionResult       IntegrityProtectionResult
-	ConfidentialityProtectionResult ConfidentialityProtectionResult
+	IntegrityProtectionResult       IntegrityProtectionResult       `madatory`
+	ConfidentialityProtectionResult ConfidentialityProtectionResult `madatory`
 	// IEExtensions *SecurityResultExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *SecurityResult) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.IntegrityProtectionResult.Encode(w); err != nil {
-		err = utils.WrapError("Read IntegrityProtectionResult", err)
+		err = utils.WrapError("Encode IntegrityProtectionResult", err)
 		return
 	}
 	if err = ie.ConfidentialityProtectionResult.Encode(w); err != nil {
-		err = utils.WrapError("Read ConfidentialityProtectionResult", err)
+		err = utils.WrapError("Encode ConfidentialityProtectionResult", err)
 		return
 	}
 	return

@@ -10,15 +10,19 @@ import (
 )
 
 type RANConfigurationUpdateFailure struct {
-	Cause                  Cause
-	TimeToWait             *TimeToWait             `optional`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional`
+	Cause                  Cause                   `mandatory,ignore`
+	TimeToWait             *TimeToWait             `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *RANConfigurationUpdateFailure) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, ies)
 }
-func (msg *RANConfigurationUpdateFailure) toIes() (ies []NgapMessageIE) {
+func (msg *RANConfigurationUpdateFailure) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_Cause},

@@ -10,15 +10,19 @@ import (
 )
 
 type UplinkRANStatusTransfer struct {
-	AMFUENGAPID                           int64
-	RANUENGAPID                           int64
-	RANStatusTransferTransparentContainer RANStatusTransferTransparentContainer
+	AMFUENGAPID                           int64                                 `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                           int64                                 `lb:0,ub:4294967295,mandatory,reject`
+	RANStatusTransferTransparentContainer RANStatusTransferTransparentContainer `mandatory,reject`
 }
 
 func (msg *UplinkRANStatusTransfer) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkRANStatusTransfer, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkRANStatusTransfer, Criticality_PresentIgnore, ies)
 }
-func (msg *UplinkRANStatusTransfer) toIes() (ies []NgapMessageIE) {
+func (msg *UplinkRANStatusTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

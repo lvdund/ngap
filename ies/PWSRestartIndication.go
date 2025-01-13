@@ -10,16 +10,20 @@ import (
 )
 
 type PWSRestartIndication struct {
-	CellIDListForRestart          CellIDListForRestart
-	GlobalRANNodeID               GlobalRANNodeID
-	TAIListForRestart             []TAI
-	EmergencyAreaIDListForRestart []EmergencyAreaID `optional`
+	CellIDListForRestart          CellIDListForRestart `mandatory,reject`
+	GlobalRANNodeID               GlobalRANNodeID      `mandatory,reject`
+	TAIListForRestart             []TAI                `lb:1,ub:maxnoofTAIforRestart,mandatory,reject`
+	EmergencyAreaIDListForRestart []EmergencyAreaID    `lb:1,ub:maxnoofEAIforRestart,optional,reject`
 }
 
 func (msg *PWSRestartIndication) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSRestartIndication, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSRestartIndication, Criticality_PresentIgnore, ies)
 }
-func (msg *PWSRestartIndication) toIes() (ies []NgapMessageIE) {
+func (msg *PWSRestartIndication) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_CellIDListForRestart},
@@ -31,19 +35,24 @@ func (msg *PWSRestartIndication) toIes() (ies []NgapMessageIE) {
 		Criticality: Criticality{Value: Criticality_PresentReject},
 		Value:       &msg.GlobalRANNodeID,
 	})
-	tmp_TAIListForRestart := Sequence[*TAI]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforRestart},
-		ext: false,
+	if len(msg.TAIListForRestart) > 0 {
+		tmp_TAIListForRestart := Sequence[*TAI]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforRestart},
+			ext: false,
+		}
+		for _, i := range msg.TAIListForRestart {
+			tmp_TAIListForRestart.Value = append(tmp_TAIListForRestart.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_TAIListForRestart},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_TAIListForRestart,
+		})
+	} else {
+		err = utils.WrapError("TAIListForRestart is nil", err)
+		return
 	}
-	for _, i := range msg.TAIListForRestart {
-		tmp_TAIListForRestart.Value = append(tmp_TAIListForRestart.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_TAIListForRestart},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_TAIListForRestart,
-	})
-	if msg.EmergencyAreaIDListForRestart != nil {
+	if len(msg.EmergencyAreaIDListForRestart) > 0 {
 		tmp_EmergencyAreaIDListForRestart := Sequence[*EmergencyAreaID]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofEAIforRestart},
 			ext: false,

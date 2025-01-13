@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionResourceSecondaryRATUsageItem struct {
-	PDUSessionID                        int64
-	SecondaryRATDataUsageReportTransfer []byte
+	PDUSessionID                        int64  `lb:0,ub:255,madatory`
+	SecondaryRATDataUsageReportTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceSecondaryRATUsageItemExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *PDUSessionResourceSecondaryRATUsageItem) Encode(w *aper.AperWriter) (e
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = utils.WrapError("Encode PDUSessionID", err)
 		return
 	}
 	tmp_SecondaryRATDataUsageReportTransfer := NewOCTETSTRING(ie.SecondaryRATDataUsageReportTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_SecondaryRATDataUsageReportTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Read SecondaryRATDataUsageReportTransfer", err)
+		err = utils.WrapError("Encode SecondaryRATDataUsageReportTransfer", err)
 		return
 	}
 	return

@@ -6,10 +6,10 @@ import (
 )
 
 type PDUSessionResourceModifyConfirmTransfer struct {
-	QosFlowModifyConfirmList      []QosFlowModifyConfirmItem
-	ULNGUUPTNLInformation         UPTransportLayerInformation
-	AdditionalNGUUPTNLInformation []UPTransportLayerInformationPairItem `optional`
-	QosFlowFailedToModifyList     []QosFlowWithCauseItem                `optional`
+	QosFlowModifyConfirmList      []QosFlowModifyConfirmItem            `lb:1,ub:maxnoofQosFlows,madatory`
+	ULNGUUPTNLInformation         UPTransportLayerInformation           `madatory`
+	AdditionalNGUUPTNLInformation []UPTransportLayerInformationPairItem `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional`
+	QosFlowFailedToModifyList     []QosFlowWithCauseItem                `lb:1,ub:maxnoofQosFlows,optional`
 	// IEExtensions *PDUSessionResourceModifyConfirmTransferExtIEs `optional`
 }
 
@@ -35,44 +35,43 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode(w *aper.AperWriter) (e
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read QosFlowModifyConfirmList", err)
+			err = utils.WrapError("Encode QosFlowModifyConfirmList", err)
+			return
+		}
+	} else {
+		err = utils.WrapError("QosFlowModifyConfirmList is nil", err)
+		return
+	}
+	if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
+		err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
+		return
+	}
+	if len(ie.AdditionalNGUUPTNLInformation) > 0 {
+		tmp := Sequence[*UPTransportLayerInformationPairItem]{
+			Value: []*UPTransportLayerInformationPairItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
+			ext:   false,
+		}
+		for _, i := range ie.AdditionalNGUUPTNLInformation {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode AdditionalNGUUPTNLInformation", err)
 			return
 		}
 	}
-	if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read ULNGUUPTNLInformation", err)
-		return
-	}
-	if ie.AdditionalNGUUPTNLInformation != nil {
-		if len(ie.AdditionalNGUUPTNLInformation) > 0 {
-			tmp := Sequence[*UPTransportLayerInformationPairItem]{
-				Value: []*UPTransportLayerInformationPairItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofMultiConnectivityMinusOne},
-				ext:   false,
-			}
-			for _, i := range ie.AdditionalNGUUPTNLInformation {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read AdditionalNGUUPTNLInformation", err)
-				return
-			}
+	if len(ie.QosFlowFailedToModifyList) > 0 {
+		tmp := Sequence[*QosFlowWithCauseItem]{
+			Value: []*QosFlowWithCauseItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
 		}
-	}
-	if ie.QosFlowFailedToModifyList != nil {
-		if len(ie.QosFlowFailedToModifyList) > 0 {
-			tmp := Sequence[*QosFlowWithCauseItem]{
-				Value: []*QosFlowWithCauseItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-				ext:   false,
-			}
-			for _, i := range ie.QosFlowFailedToModifyList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read QosFlowFailedToModifyList", err)
-				return
-			}
+		for _, i := range ie.QosFlowFailedToModifyList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowFailedToModifyList", err)
+			return
 		}
 	}
 	return

@@ -10,18 +10,22 @@ import (
 )
 
 type PDUSessionResourceSetupRequest struct {
-	AMFUENGAPID                      int64
-	RANUENGAPID                      int64
-	RANPagingPriority                *int64 `optional`
-	NASPDU                           []byte `optional`
-	PDUSessionResourceSetupListSUReq []PDUSessionResourceSetupItemSUReq
-	UEAggregateMaximumBitRate        *UEAggregateMaximumBitRate `optional`
+	AMFUENGAPID                      int64                              `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                      int64                              `lb:0,ub:4294967295,mandatory,reject`
+	RANPagingPriority                *int64                             `lb:1,ub:256,optional,ignore`
+	NASPDU                           []byte                             `lb:0,ub:0,optional,reject`
+	PDUSessionResourceSetupListSUReq []PDUSessionResourceSetupItemSUReq `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
+	UEAggregateMaximumBitRate        *UEAggregateMaximumBitRate         `optional,ignore`
 }
 
 func (msg *PDUSessionResourceSetupRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceSetup, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceSetup, Criticality_PresentReject, ies)
 }
-func (msg *PDUSessionResourceSetupRequest) toIes() (ies []NgapMessageIE) {
+func (msg *PDUSessionResourceSetupRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -59,18 +63,23 @@ func (msg *PDUSessionResourceSetupRequest) toIes() (ies []NgapMessageIE) {
 				Value: msg.NASPDU,
 			}})
 	}
-	tmp_PDUSessionResourceSetupListSUReq := Sequence[*PDUSessionResourceSetupItemSUReq]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceSetupListSUReq) > 0 {
+		tmp_PDUSessionResourceSetupListSUReq := Sequence[*PDUSessionResourceSetupItemSUReq]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceSetupListSUReq {
+			tmp_PDUSessionResourceSetupListSUReq.Value = append(tmp_PDUSessionResourceSetupListSUReq.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSetupListSUReq},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_PDUSessionResourceSetupListSUReq,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceSetupListSUReq is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceSetupListSUReq {
-		tmp_PDUSessionResourceSetupListSUReq.Value = append(tmp_PDUSessionResourceSetupListSUReq.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSetupListSUReq},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_PDUSessionResourceSetupListSUReq,
-	})
 	if msg.UEAggregateMaximumBitRate != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_UEAggregateMaximumBitRate},

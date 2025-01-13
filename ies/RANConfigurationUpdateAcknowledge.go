@@ -10,13 +10,17 @@ import (
 )
 
 type RANConfigurationUpdateAcknowledge struct {
-	CriticalityDiagnostics *CriticalityDiagnostics `optional`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *RANConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, ies)
 }
-func (msg *RANConfigurationUpdateAcknowledge) toIes() (ies []NgapMessageIE) {
+func (msg *RANConfigurationUpdateAcknowledge) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.CriticalityDiagnostics != nil {
 		ies = append(ies, NgapMessageIE{

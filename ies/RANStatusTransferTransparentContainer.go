@@ -6,7 +6,7 @@ import (
 )
 
 type RANStatusTransferTransparentContainer struct {
-	DRBsSubjectToStatusTransferList []DRBsSubjectToStatusTransferItem
+	DRBsSubjectToStatusTransferList []DRBsSubjectToStatusTransferItem `lb:1,ub:maxnoofDRBs,madatory`
 	// IEExtensions *RANStatusTransferTransparentContainerExtIEs `optional`
 }
 
@@ -26,9 +26,12 @@ func (ie *RANStatusTransferTransparentContainer) Encode(w *aper.AperWriter) (err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read DRBsSubjectToStatusTransferList", err)
+			err = utils.WrapError("Encode DRBsSubjectToStatusTransferList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("DRBsSubjectToStatusTransferList is nil", err)
+		return
 	}
 	return
 }

@@ -21,7 +21,7 @@ func (ie *SecondaryRATDataUsageReportTransfer) Encode(w *aper.AperWriter) (err e
 	w.WriteBits(optionals, 2)
 	if ie.SecondaryRATUsageInformation != nil {
 		if err = ie.SecondaryRATUsageInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read SecondaryRATUsageInformation", err)
+			err = utils.WrapError("Encode SecondaryRATUsageInformation", err)
 			return
 		}
 	}

@@ -6,9 +6,9 @@ import (
 )
 
 type UserLocationInformationNR struct {
-	NRCGI     NRCGI
-	TAI       TAI
-	TimeStamp []byte
+	NRCGI     NRCGI  `madatory`
+	TAI       TAI    `madatory`
+	TimeStamp []byte `lb:4,ub:4,optional`
 	// IEExtensions *UserLocationInformationNRExtIEs `optional`
 }
 
@@ -22,17 +22,17 @@ func (ie *UserLocationInformationNR) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.NRCGI.Encode(w); err != nil {
-		err = utils.WrapError("Read NRCGI", err)
+		err = utils.WrapError("Encode NRCGI", err)
 		return
 	}
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = utils.WrapError("Encode TAI", err)
 		return
 	}
 	if ie.TimeStamp != nil {
 		tmp_TimeStamp := NewOCTETSTRING(ie.TimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 		if err = tmp_TimeStamp.Encode(w); err != nil {
-			err = utils.WrapError("Read TimeStamp", err)
+			err = utils.WrapError("Encode TimeStamp", err)
 			return
 		}
 	}

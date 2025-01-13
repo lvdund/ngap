@@ -6,8 +6,8 @@ import (
 )
 
 type TAICancelledEUTRAItem struct {
-	TAI                      TAI
-	CancelledCellsInTAIEUTRA []CancelledCellsInTAIEUTRAItem
+	TAI                      TAI                            `madatory`
+	CancelledCellsInTAIEUTRA []CancelledCellsInTAIEUTRAItem `lb:1,ub:maxnoofCellinTAI,madatory`
 	// IEExtensions *TAICancelledEUTRAItemExtIEs `optional`
 }
 
@@ -18,7 +18,7 @@ func (ie *TAICancelledEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = utils.WrapError("Encode TAI", err)
 		return
 	}
 	if len(ie.CancelledCellsInTAIEUTRA) > 0 {
@@ -31,9 +31,12 @@ func (ie *TAICancelledEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read CancelledCellsInTAIEUTRA", err)
+			err = utils.WrapError("Encode CancelledCellsInTAIEUTRA", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("CancelledCellsInTAIEUTRA is nil", err)
+		return
 	}
 	return
 }

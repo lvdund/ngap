@@ -6,7 +6,7 @@ import (
 )
 
 type NGRANTNLAssociationToRemoveItem struct {
-	TNLAssociationTransportLayerAddress    CPTransportLayerInformation
+	TNLAssociationTransportLayerAddress    CPTransportLayerInformation  `madatory`
 	TNLAssociationTransportLayerAddressAMF *CPTransportLayerInformation `optional`
 	// IEExtensions *NGRANTNLAssociationToRemoveItemExtIEs `optional`
 }
@@ -21,12 +21,12 @@ func (ie *NGRANTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.TNLAssociationTransportLayerAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read TNLAssociationTransportLayerAddress", err)
+		err = utils.WrapError("Encode TNLAssociationTransportLayerAddress", err)
 		return
 	}
 	if ie.TNLAssociationTransportLayerAddressAMF != nil {
 		if err = ie.TNLAssociationTransportLayerAddressAMF.Encode(w); err != nil {
-			err = utils.WrapError("Read TNLAssociationTransportLayerAddressAMF", err)
+			err = utils.WrapError("Encode TNLAssociationTransportLayerAddressAMF", err)
 			return
 		}
 	}

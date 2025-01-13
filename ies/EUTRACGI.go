@@ -6,8 +6,8 @@ import (
 )
 
 type EUTRACGI struct {
-	PLMNIdentity      []byte
-	EUTRACellIdentity []byte
+	PLMNIdentity      []byte `lb:3,ub:3,madatory`
+	EUTRACellIdentity []byte `lb:28,ub:28,madatory`
 	// IEExtensions *EUTRACGIExtIEs `optional`
 }
 
@@ -19,12 +19,12 @@ func (ie *EUTRACGI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	tmp_EUTRACellIdentity := NewBITSTRING(ie.EUTRACellIdentity, aper.Constraint{Lb: 28, Ub: 28}, false)
 	if err = tmp_EUTRACellIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read EUTRACellIdentity", err)
+		err = utils.WrapError("Encode EUTRACellIdentity", err)
 		return
 	}
 	return

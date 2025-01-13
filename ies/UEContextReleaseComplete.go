@@ -10,18 +10,22 @@ import (
 )
 
 type UEContextReleaseComplete struct {
-	AMFUENGAPID                                int64
-	RANUENGAPID                                int64
-	UserLocationInformation                    *UserLocationInformation                    `optional`
-	InfoOnRecommendedCellsAndRANNodesForPaging *InfoOnRecommendedCellsAndRANNodesForPaging `optional`
-	PDUSessionResourceListCxtRelCpl            []PDUSessionResourceItemCxtRelCpl           `optional`
-	CriticalityDiagnostics                     *CriticalityDiagnostics                     `optional`
+	AMFUENGAPID                                int64                                       `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                                int64                                       `lb:0,ub:4294967295,mandatory,ignore`
+	UserLocationInformation                    *UserLocationInformation                    `optional,ignore`
+	InfoOnRecommendedCellsAndRANNodesForPaging *InfoOnRecommendedCellsAndRANNodesForPaging `optional,ignore`
+	PDUSessionResourceListCxtRelCpl            []PDUSessionResourceItemCxtRelCpl           `lb:1,ub:maxnoofPDUSessions,optional,reject`
+	CriticalityDiagnostics                     *CriticalityDiagnostics                     `optional,ignore`
 }
 
 func (msg *UEContextReleaseComplete) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UEContextRelease, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UEContextRelease, Criticality_PresentReject, ies)
 }
-func (msg *UEContextReleaseComplete) toIes() (ies []NgapMessageIE) {
+func (msg *UEContextReleaseComplete) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -53,7 +57,7 @@ func (msg *UEContextReleaseComplete) toIes() (ies []NgapMessageIE) {
 			Value:       msg.InfoOnRecommendedCellsAndRANNodesForPaging,
 		})
 	}
-	if msg.PDUSessionResourceListCxtRelCpl != nil {
+	if len(msg.PDUSessionResourceListCxtRelCpl) > 0 {
 		tmp_PDUSessionResourceListCxtRelCpl := Sequence[*PDUSessionResourceItemCxtRelCpl]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

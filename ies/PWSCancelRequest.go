@@ -10,16 +10,20 @@ import (
 )
 
 type PWSCancelRequest struct {
-	MessageIdentifier        []byte
-	SerialNumber             []byte
-	WarningAreaList          *WarningAreaList          `optional`
-	CancelAllWarningMessages *CancelAllWarningMessages `optional`
+	MessageIdentifier        []byte                    `lb:16,ub:16,mandatory,reject`
+	SerialNumber             []byte                    `lb:16,ub:16,mandatory,reject`
+	WarningAreaList          *WarningAreaList          `optional,ignore`
+	CancelAllWarningMessages *CancelAllWarningMessages `optional,reject`
 }
 
 func (msg *PWSCancelRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSCancel, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSCancel, Criticality_PresentReject, ies)
 }
-func (msg *PWSCancelRequest) toIes() (ies []NgapMessageIE) {
+func (msg *PWSCancelRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_MessageIdentifier},

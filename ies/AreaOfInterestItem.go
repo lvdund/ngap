@@ -6,8 +6,8 @@ import (
 )
 
 type AreaOfInterestItem struct {
-	AreaOfInterest               AreaOfInterest
-	LocationReportingReferenceID int64
+	AreaOfInterest               AreaOfInterest `madatory`
+	LocationReportingReferenceID int64          `lb:1,ub:64,madatory,valExt`
 	// IEExtensions *AreaOfInterestItemExtIEs `optional`
 }
 
@@ -18,12 +18,12 @@ func (ie *AreaOfInterestItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AreaOfInterest.Encode(w); err != nil {
-		err = utils.WrapError("Read AreaOfInterest", err)
+		err = utils.WrapError("Encode AreaOfInterest", err)
 		return
 	}
-	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, false)
+	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, true)
 	if err = tmp_LocationReportingReferenceID.Encode(w); err != nil {
-		err = utils.WrapError("Read LocationReportingReferenceID", err)
+		err = utils.WrapError("Encode LocationReportingReferenceID", err)
 		return
 	}
 	return
@@ -41,7 +41,7 @@ func (ie *AreaOfInterestItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_LocationReportingReferenceID := INTEGER{
 		c:   aper.Constraint{Lb: 1, Ub: 64},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_LocationReportingReferenceID.Decode(r); err != nil {
 		err = utils.WrapError("Read LocationReportingReferenceID", err)

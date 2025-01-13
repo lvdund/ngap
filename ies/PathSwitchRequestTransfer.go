@@ -1,19 +1,22 @@
 package ies
 
 import (
+	"bytes"
+
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestTransfer struct {
-	DLNGUUPTNLInformation        UPTransportLayerInformation
+	DLNGUUPTNLInformation        UPTransportLayerInformation   `madatory`
 	DLNGUTNLInformationReused    *DLNGUTNLInformationReused    `optional`
 	UserPlaneSecurityInformation *UserPlaneSecurityInformation `optional`
-	QosFlowAcceptedList          []QosFlowAcceptedItem         `optional`
+	QosFlowAcceptedList          []QosFlowAcceptedItem         `lb:1,ub:maxnoofQosFlows,optional`
 	// IEExtensions *PathSwitchRequestTransferExtIEs `optional`
 }
 
-func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
+func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -29,40 +32,39 @@ func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 4)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
+		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
 		return
 	}
 	if ie.DLNGUTNLInformationReused != nil {
 		if err = ie.DLNGUTNLInformationReused.Encode(w); err != nil {
-			err = utils.WrapError("Read DLNGUTNLInformationReused", err)
+			err = utils.WrapError("Encode DLNGUTNLInformationReused", err)
 			return
 		}
 	}
 	if ie.UserPlaneSecurityInformation != nil {
 		if err = ie.UserPlaneSecurityInformation.Encode(w); err != nil {
-			err = utils.WrapError("Read UserPlaneSecurityInformation", err)
+			err = utils.WrapError("Encode UserPlaneSecurityInformation", err)
 			return
 		}
 	}
-	if ie.QosFlowAcceptedList != nil {
-		if len(ie.QosFlowAcceptedList) > 0 {
-			tmp := Sequence[*QosFlowAcceptedItem]{
-				Value: []*QosFlowAcceptedItem{},
-				c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-				ext:   false,
-			}
-			for _, i := range ie.QosFlowAcceptedList {
-				tmp.Value = append(tmp.Value, &i)
-			}
-			if err = tmp.Encode(w); err != nil {
-				err = utils.WrapError("Read QosFlowAcceptedList", err)
-				return
-			}
+	if len(ie.QosFlowAcceptedList) > 0 {
+		tmp := Sequence[*QosFlowAcceptedItem]{
+			Value: []*QosFlowAcceptedItem{},
+			c:     aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+			ext:   false,
+		}
+		for _, i := range ie.QosFlowAcceptedList {
+			tmp.Value = append(tmp.Value, &i)
+		}
+		if err = tmp.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowAcceptedList", err)
+			return
 		}
 	}
 	return
 }
-func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
+func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
+	r := aper.NewReader(bytes.NewBuffer(wire))
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

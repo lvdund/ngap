@@ -10,34 +10,38 @@ import (
 )
 
 type InitialContextSetupRequest struct {
-	AMFUENGAPID                                 int64
-	RANUENGAPID                                 int64
-	OldAMF                                      []byte `optional`
-	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional`
-	GUAMI                                       GUAMI
-	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq `optional`
-	AllowedNSSAI                                []AllowedNSSAIItem
-	UESecurityCapabilities                      UESecurityCapabilities
-	SecurityKey                                 []byte
-	TraceActivation                             *TraceActivation                    `optional`
-	MobilityRestrictionList                     *MobilityRestrictionList            `optional`
-	UERadioCapability                           []byte                              `optional`
-	IndexToRFSP                                 *int64                              `optional`
-	MaskedIMEISV                                []byte                              `optional`
-	NASPDU                                      []byte                              `optional`
-	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator         `optional`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest `optional`
-	UERadioCapabilityForPaging                  *UERadioCapabilityForPaging         `optional`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback           `optional`
-	LocationReportingRequestType                *LocationReportingRequestType       `optional`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                `optional`
+	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,reject`
+	OldAMF                                      []byte                                       `lb:1,ub:150,optional,reject,valueExt`
+	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `mandatory,reject`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	GUAMI                                       GUAMI                                        `mandatory,reject`
+	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq          `lb:1,ub:maxnoofPDUSessions,optional,reject`
+	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
+	UESecurityCapabilities                      UESecurityCapabilities                       `mandatory,reject`
+	SecurityKey                                 []byte                                       `lb:256,ub:256,mandatory,reject`
+	TraceActivation                             *TraceActivation                             `optional,ignore`
+	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,ignore`
+	UERadioCapability                           []byte                                       `lb:0,ub:0,optional,ignore`
+	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,ignore,valueExt`
+	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,ignore`
+	NASPDU                                      []byte                                       `lb:0,ub:0,optional,ignore`
+	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,reject`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	UERadioCapabilityForPaging                  *UERadioCapabilityForPaging                  `optional,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
+	LocationReportingRequestType                *LocationReportingRequestType                `optional,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *InitialContextSetupRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_InitialContextSetup, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_InitialContextSetup, Criticality_PresentReject, ies)
 }
-func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE) {
+func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -82,7 +86,7 @@ func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE) {
 		Criticality: Criticality{Value: Criticality_PresentReject},
 		Value:       &msg.GUAMI,
 	})
-	if msg.PDUSessionResourceSetupListCxtReq != nil {
+	if len(msg.PDUSessionResourceSetupListCxtReq) > 0 {
 		tmp_PDUSessionResourceSetupListCxtReq := Sequence[*PDUSessionResourceSetupItemCxtReq]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,
@@ -96,18 +100,23 @@ func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PDUSessionResourceSetupListCxtReq,
 		})
 	}
-	tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
-		ext: false,
+	if len(msg.AllowedNSSAI) > 0 {
+		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
+			ext: false,
+		}
+		for _, i := range msg.AllowedNSSAI {
+			tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_AllowedNSSAI,
+		})
+	} else {
+		err = utils.WrapError("AllowedNSSAI is nil", err)
+		return
 	}
-	for _, i := range msg.AllowedNSSAI {
-		tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_AllowedNSSAI,
-	})
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_UESecurityCapabilities},
 		Criticality: Criticality{Value: Criticality_PresentReject},

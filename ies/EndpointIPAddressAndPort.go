@@ -6,8 +6,8 @@ import (
 )
 
 type EndpointIPAddressAndPort struct {
-	EndpointIPAddress []byte
-	PortNumber        []byte
+	EndpointIPAddress []byte `lb:1,ub:160,madatory,valExt`
+	PortNumber        []byte `lb:2,ub:2,madatory`
 	// IEExtensions *EndpointIPAddressAndPortExtIEs `optional`
 }
 
@@ -17,14 +17,14 @@ func (ie *EndpointIPAddressAndPort) Encode(w *aper.AperWriter) (err error) {
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_EndpointIPAddress := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
+	tmp_EndpointIPAddress := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_EndpointIPAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read EndpointIPAddress", err)
+		err = utils.WrapError("Encode EndpointIPAddress", err)
 		return
 	}
 	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_PortNumber.Encode(w); err != nil {
-		err = utils.WrapError("Read PortNumber", err)
+		err = utils.WrapError("Encode PortNumber", err)
 		return
 	}
 	return
@@ -38,7 +38,7 @@ func (ie *EndpointIPAddressAndPort) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_EndpointIPAddress := BITSTRING{
 		c:   aper.Constraint{Lb: 1, Ub: 160},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_EndpointIPAddress.Decode(r); err != nil {
 		err = utils.WrapError("Read EndpointIPAddress", err)

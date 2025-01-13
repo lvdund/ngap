@@ -6,8 +6,8 @@ import (
 )
 
 type AssociatedQosFlowItem struct {
-	QosFlowIdentifier        int64
-	QosFlowMappingIndication *int64 `optional`
+	QosFlowIdentifier        int64                     `lb:0,ub:63,madatory,valExt`
+	QosFlowMappingIndication *QosFlowMappingIndication `optional`
 	// IEExtensions *AssociatedQosFlowItemExtIEs `optional`
 }
 
@@ -20,15 +20,14 @@ func (ie *AssociatedQosFlowItem) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, false)
+	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = utils.WrapError("Encode QosFlowIdentifier", err)
 		return
 	}
 	if ie.QosFlowMappingIndication != nil {
-		tmp_QosFlowMappingIndication := NewENUMERATED(*ie.QosFlowMappingIndication, aper.Constraint{Lb: 0, Ub: 0}, false)
-		if err = tmp_QosFlowMappingIndication.Encode(w); err != nil {
-			err = utils.WrapError("Read QosFlowMappingIndication", err)
+		if err = ie.QosFlowMappingIndication.Encode(w); err != nil {
+			err = utils.WrapError("Encode QosFlowMappingIndication", err)
 			return
 		}
 	}
@@ -44,7 +43,7 @@ func (ie *AssociatedQosFlowItem) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_QosFlowIdentifier := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 63},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
 		err = utils.WrapError("Read QosFlowIdentifier", err)
@@ -52,15 +51,10 @@ func (ie *AssociatedQosFlowItem) Decode(r *aper.AperReader) (err error) {
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
-		tmp_QosFlowMappingIndication := ENUMERATED{
-			c:   aper.Constraint{Lb: 0, Ub: 0},
-			ext: false,
-		}
-		if err = tmp_QosFlowMappingIndication.Decode(r); err != nil {
+		if err = ie.QosFlowMappingIndication.Decode(r); err != nil {
 			err = utils.WrapError("Read QosFlowMappingIndication", err)
 			return
 		}
-		ie.QosFlowMappingIndication = (*int64)(&tmp_QosFlowMappingIndication.Value)
 	}
 	return
 }

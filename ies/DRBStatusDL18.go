@@ -6,7 +6,7 @@ import (
 )
 
 type DRBStatusDL18 struct {
-	DLCOUNTValue COUNTValueForPDCPSN18
+	DLCOUNTValue COUNTValueForPDCPSN18 `madatory`
 	// IEExtension *DRBStatusDL18ExtIEs `optional`
 }
 
@@ -17,7 +17,7 @@ func (ie *DRBStatusDL18) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.DLCOUNTValue.Encode(w); err != nil {
-		err = utils.WrapError("Read DLCOUNTValue", err)
+		err = utils.WrapError("Encode DLCOUNTValue", err)
 		return
 	}
 	return

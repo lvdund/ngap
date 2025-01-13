@@ -6,8 +6,8 @@ import (
 )
 
 type TNLAssociationItem struct {
-	TNLAssociationAddress CPTransportLayerInformation
-	Cause                 Cause
+	TNLAssociationAddress CPTransportLayerInformation `madatory`
+	Cause                 Cause                       `madatory`
 	// IEExtensions *TNLAssociationItemExtIEs `optional`
 }
 
@@ -18,11 +18,11 @@ func (ie *TNLAssociationItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TNLAssociationAddress.Encode(w); err != nil {
-		err = utils.WrapError("Read TNLAssociationAddress", err)
+		err = utils.WrapError("Encode TNLAssociationAddress", err)
 		return
 	}
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = utils.WrapError("Encode Cause", err)
 		return
 	}
 	return

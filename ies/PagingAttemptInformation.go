@@ -6,8 +6,8 @@ import (
 )
 
 type PagingAttemptInformation struct {
-	PagingAttemptCount             int64
-	IntendedNumberOfPagingAttempts int64
+	PagingAttemptCount             int64                `lb:1,ub:16,madatory,valExt`
+	IntendedNumberOfPagingAttempts int64                `lb:1,ub:16,madatory,valExt`
 	NextPagingAreaScope            *NextPagingAreaScope `optional`
 	// IEExtensions *PagingAttemptInformationExtIEs `optional`
 }
@@ -21,19 +21,19 @@ func (ie *PagingAttemptInformation) Encode(w *aper.AperWriter) (err error) {
 		aper.SetBit(optionals, 1)
 	}
 	w.WriteBits(optionals, 2)
-	tmp_PagingAttemptCount := NewINTEGER(ie.PagingAttemptCount, aper.Constraint{Lb: 1, Ub: 16}, false)
+	tmp_PagingAttemptCount := NewINTEGER(ie.PagingAttemptCount, aper.Constraint{Lb: 1, Ub: 16}, true)
 	if err = tmp_PagingAttemptCount.Encode(w); err != nil {
-		err = utils.WrapError("Read PagingAttemptCount", err)
+		err = utils.WrapError("Encode PagingAttemptCount", err)
 		return
 	}
-	tmp_IntendedNumberOfPagingAttempts := NewINTEGER(ie.IntendedNumberOfPagingAttempts, aper.Constraint{Lb: 1, Ub: 16}, false)
+	tmp_IntendedNumberOfPagingAttempts := NewINTEGER(ie.IntendedNumberOfPagingAttempts, aper.Constraint{Lb: 1, Ub: 16}, true)
 	if err = tmp_IntendedNumberOfPagingAttempts.Encode(w); err != nil {
-		err = utils.WrapError("Read IntendedNumberOfPagingAttempts", err)
+		err = utils.WrapError("Encode IntendedNumberOfPagingAttempts", err)
 		return
 	}
 	if ie.NextPagingAreaScope != nil {
 		if err = ie.NextPagingAreaScope.Encode(w); err != nil {
-			err = utils.WrapError("Read NextPagingAreaScope", err)
+			err = utils.WrapError("Encode NextPagingAreaScope", err)
 			return
 		}
 	}
@@ -49,7 +49,7 @@ func (ie *PagingAttemptInformation) Decode(r *aper.AperReader) (err error) {
 	}
 	tmp_PagingAttemptCount := INTEGER{
 		c:   aper.Constraint{Lb: 1, Ub: 16},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_PagingAttemptCount.Decode(r); err != nil {
 		err = utils.WrapError("Read PagingAttemptCount", err)
@@ -58,7 +58,7 @@ func (ie *PagingAttemptInformation) Decode(r *aper.AperReader) (err error) {
 	ie.PagingAttemptCount = int64(tmp_PagingAttemptCount.Value)
 	tmp_IntendedNumberOfPagingAttempts := INTEGER{
 		c:   aper.Constraint{Lb: 1, Ub: 16},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_IntendedNumberOfPagingAttempts.Decode(r); err != nil {
 		err = utils.WrapError("Read IntendedNumberOfPagingAttempts", err)

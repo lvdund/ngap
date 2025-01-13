@@ -10,25 +10,29 @@ import (
 )
 
 type PathSwitchRequestAcknowledge struct {
-	AMFUENGAPID                                 int64
-	RANUENGAPID                                 int64
-	UESecurityCapabilities                      *UESecurityCapabilities `optional`
-	SecurityContext                             SecurityContext
-	NewSecurityContextInd                       *NewSecurityContextInd `optional`
-	PDUSessionResourceSwitchedList              []PDUSessionResourceSwitchedItem
-	PDUSessionResourceReleasedListPSAck         []PDUSessionResourceReleasedItemPSAck `optional`
-	AllowedNSSAI                                []AllowedNSSAIItem
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional`
-	CriticalityDiagnostics                      *CriticalityDiagnostics                      `optional`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional`
+	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,ignore`
+	UESecurityCapabilities                      *UESecurityCapabilities                      `optional,reject`
+	SecurityContext                             SecurityContext                              `mandatory,reject`
+	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,reject`
+	PDUSessionResourceSwitchedList              []PDUSessionResourceSwitchedItem             `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
+	PDUSessionResourceReleasedListPSAck         []PDUSessionResourceReleasedItemPSAck        `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	CriticalityDiagnostics                      *CriticalityDiagnostics                      `optional,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *PathSwitchRequestAcknowledge) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, ies)
 }
-func (msg *PathSwitchRequestAcknowledge) toIes() (ies []NgapMessageIE) {
+func (msg *PathSwitchRequestAcknowledge) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -65,19 +69,24 @@ func (msg *PathSwitchRequestAcknowledge) toIes() (ies []NgapMessageIE) {
 			Value:       msg.NewSecurityContextInd,
 		})
 	}
-	tmp_PDUSessionResourceSwitchedList := Sequence[*PDUSessionResourceSwitchedItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceSwitchedList) > 0 {
+		tmp_PDUSessionResourceSwitchedList := Sequence[*PDUSessionResourceSwitchedItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceSwitchedList {
+			tmp_PDUSessionResourceSwitchedList.Value = append(tmp_PDUSessionResourceSwitchedList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSwitchedList},
+			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Value:       &tmp_PDUSessionResourceSwitchedList,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceSwitchedList is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceSwitchedList {
-		tmp_PDUSessionResourceSwitchedList.Value = append(tmp_PDUSessionResourceSwitchedList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceSwitchedList},
-		Criticality: Criticality{Value: Criticality_PresentIgnore},
-		Value:       &tmp_PDUSessionResourceSwitchedList,
-	})
-	if msg.PDUSessionResourceReleasedListPSAck != nil {
+	if len(msg.PDUSessionResourceReleasedListPSAck) > 0 {
 		tmp_PDUSessionResourceReleasedListPSAck := Sequence[*PDUSessionResourceReleasedItemPSAck]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,
@@ -91,18 +100,23 @@ func (msg *PathSwitchRequestAcknowledge) toIes() (ies []NgapMessageIE) {
 			Value:       &tmp_PDUSessionResourceReleasedListPSAck,
 		})
 	}
-	tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
-		ext: false,
+	if len(msg.AllowedNSSAI) > 0 {
+		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},
+			ext: false,
+		}
+		for _, i := range msg.AllowedNSSAI {
+			tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       &tmp_AllowedNSSAI,
+		})
+	} else {
+		err = utils.WrapError("AllowedNSSAI is nil", err)
+		return
 	}
-	for _, i := range msg.AllowedNSSAI {
-		tmp_AllowedNSSAI.Value = append(tmp_AllowedNSSAI.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_AllowedNSSAI},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &tmp_AllowedNSSAI,
-	})
 	if msg.CoreNetworkAssistanceInformationForInactive != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_CoreNetworkAssistanceInformationForInactive},

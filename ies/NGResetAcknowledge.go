@@ -10,16 +10,20 @@ import (
 )
 
 type NGResetAcknowledge struct {
-	UEassociatedLogicalNGconnectionList []UEassociatedLogicalNGconnectionItem `optional`
-	CriticalityDiagnostics              *CriticalityDiagnostics               `optional`
+	UEassociatedLogicalNGconnectionList []UEassociatedLogicalNGconnectionItem `lb:1,ub:maxnoofNGConnectionsToReset,optional,ignore`
+	CriticalityDiagnostics              *CriticalityDiagnostics               `optional,ignore`
 }
 
 func (msg *NGResetAcknowledge) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_NGReset, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_NGReset, Criticality_PresentReject, ies)
 }
-func (msg *NGResetAcknowledge) toIes() (ies []NgapMessageIE) {
+func (msg *NGResetAcknowledge) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
-	if msg.UEassociatedLogicalNGconnectionList != nil {
+	if len(msg.UEassociatedLogicalNGconnectionList) > 0 {
 		tmp_UEassociatedLogicalNGconnectionList := Sequence[*UEassociatedLogicalNGconnectionItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofNGConnectionsToReset},
 			ext: false,

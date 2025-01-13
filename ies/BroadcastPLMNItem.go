@@ -6,8 +6,8 @@ import (
 )
 
 type BroadcastPLMNItem struct {
-	PLMNIdentity        []byte
-	TAISliceSupportList []SliceSupportItem
+	PLMNIdentity        []byte             `lb:3,ub:3,madatory`
+	TAISliceSupportList []SliceSupportItem `lb:1,ub:maxnoofSliceItems,madatory`
 	// IEExtensions *BroadcastPLMNItemExtIEs `optional`
 }
 
@@ -19,7 +19,7 @@ func (ie *BroadcastPLMNItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	if len(ie.TAISliceSupportList) > 0 {
@@ -32,9 +32,12 @@ func (ie *BroadcastPLMNItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read TAISliceSupportList", err)
+			err = utils.WrapError("Encode TAISliceSupportList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("TAISliceSupportList is nil", err)
+		return
 	}
 	return
 }

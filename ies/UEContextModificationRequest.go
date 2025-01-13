@@ -10,25 +10,29 @@ import (
 )
 
 type UEContextModificationRequest struct {
-	AMFUENGAPID                                 int64
-	RANUENGAPID                                 int64
-	RANPagingPriority                           *int64                                       `optional`
-	SecurityKey                                 []byte                                       `optional`
-	IndexToRFSP                                 *int64                                       `optional`
-	UEAggregateMaximumBitRate                   *UEAggregateMaximumBitRate                   `optional`
-	UESecurityCapabilities                      *UESecurityCapabilities                      `optional`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional`
-	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional`
-	NewAMFUENGAPID                              *int64                                       `optional`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional`
-	NewGUAMI                                    *GUAMI                                       `optional`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional`
+	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,reject`
+	RANPagingPriority                           *int64                                       `lb:1,ub:256,optional,ignore`
+	SecurityKey                                 []byte                                       `lb:256,ub:256,optional,reject`
+	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,ignore,valueExt`
+	UEAggregateMaximumBitRate                   *UEAggregateMaximumBitRate                   `optional,ignore`
+	UESecurityCapabilities                      *UESecurityCapabilities                      `optional,reject`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,reject`
+	NewAMFUENGAPID                              *int64                                       `lb:0,ub:1099511627775,optional,reject`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	NewGUAMI                                    *GUAMI                                       `optional,reject`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *UEContextModificationRequest) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UEContextModification, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UEContextModification, Criticality_PresentReject, ies)
 }
-func (msg *UEContextModificationRequest) toIes() (ies []NgapMessageIE) {
+func (msg *UEContextModificationRequest) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},

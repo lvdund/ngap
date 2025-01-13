@@ -6,8 +6,8 @@ import (
 )
 
 type PDUSessionAggregateMaximumBitRate struct {
-	PDUSessionAggregateMaximumBitRateDL int64
-	PDUSessionAggregateMaximumBitRateUL int64
+	PDUSessionAggregateMaximumBitRateDL int64 `lb:0,ub:4000000000000,madatory,valExt`
+	PDUSessionAggregateMaximumBitRateUL int64 `lb:0,ub:4000000000000,madatory,valExt`
 	// IEExtensions *PDUSessionAggregateMaximumBitRateExtIEs `optional`
 }
 
@@ -17,14 +17,14 @@ func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err err
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
-	tmp_PDUSessionAggregateMaximumBitRateDL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
+	tmp_PDUSessionAggregateMaximumBitRateDL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_PDUSessionAggregateMaximumBitRateDL.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionAggregateMaximumBitRateDL", err)
+		err = utils.WrapError("Encode PDUSessionAggregateMaximumBitRateDL", err)
 		return
 	}
-	tmp_PDUSessionAggregateMaximumBitRateUL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, false)
+	tmp_PDUSessionAggregateMaximumBitRateUL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_PDUSessionAggregateMaximumBitRateUL.Encode(w); err != nil {
-		err = utils.WrapError("Read PDUSessionAggregateMaximumBitRateUL", err)
+		err = utils.WrapError("Encode PDUSessionAggregateMaximumBitRateUL", err)
 		return
 	}
 	return
@@ -38,7 +38,7 @@ func (ie *PDUSessionAggregateMaximumBitRate) Decode(r *aper.AperReader) (err err
 	}
 	tmp_PDUSessionAggregateMaximumBitRateDL := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 4000000000000},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_PDUSessionAggregateMaximumBitRateDL.Decode(r); err != nil {
 		err = utils.WrapError("Read PDUSessionAggregateMaximumBitRateDL", err)
@@ -47,7 +47,7 @@ func (ie *PDUSessionAggregateMaximumBitRate) Decode(r *aper.AperReader) (err err
 	ie.PDUSessionAggregateMaximumBitRateDL = int64(tmp_PDUSessionAggregateMaximumBitRateDL.Value)
 	tmp_PDUSessionAggregateMaximumBitRateUL := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 4000000000000},
-		ext: false,
+		ext: true,
 	}
 	if err = tmp_PDUSessionAggregateMaximumBitRateUL.Decode(r); err != nil {
 		err = utils.WrapError("Read PDUSessionAggregateMaximumBitRateUL", err)

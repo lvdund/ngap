@@ -6,10 +6,10 @@ import (
 )
 
 type VolumeTimedReportItem struct {
-	StartTimeStamp []byte
-	EndTimeStamp   []byte
-	UsageCountUL   int64
-	UsageCountDL   int64
+	StartTimeStamp []byte `lb:4,ub:4,madatory`
+	EndTimeStamp   []byte `lb:4,ub:4,madatory`
+	UsageCountUL   int64  `lb:0,ub:1844674407370955161,madatory`
+	UsageCountDL   int64  `lb:0,ub:1844674407370955161,madatory`
 	// IEExtensions *VolumeTimedReportItemExtIEs `optional`
 }
 
@@ -21,22 +21,22 @@ func (ie *VolumeTimedReportItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_StartTimeStamp := NewOCTETSTRING(ie.StartTimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_StartTimeStamp.Encode(w); err != nil {
-		err = utils.WrapError("Read StartTimeStamp", err)
+		err = utils.WrapError("Encode StartTimeStamp", err)
 		return
 	}
 	tmp_EndTimeStamp := NewOCTETSTRING(ie.EndTimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_EndTimeStamp.Encode(w); err != nil {
-		err = utils.WrapError("Read EndTimeStamp", err)
+		err = utils.WrapError("Encode EndTimeStamp", err)
 		return
 	}
 	tmp_UsageCountUL := NewINTEGER(ie.UsageCountUL, aper.Constraint{Lb: 0, Ub: 1844674407370955161}, false)
 	if err = tmp_UsageCountUL.Encode(w); err != nil {
-		err = utils.WrapError("Read UsageCountUL", err)
+		err = utils.WrapError("Encode UsageCountUL", err)
 		return
 	}
 	tmp_UsageCountDL := NewINTEGER(ie.UsageCountDL, aper.Constraint{Lb: 0, Ub: 1844674407370955161}, false)
 	if err = tmp_UsageCountDL.Encode(w); err != nil {
-		err = utils.WrapError("Read UsageCountDL", err)
+		err = utils.WrapError("Encode UsageCountDL", err)
 		return
 	}
 	return

@@ -6,8 +6,8 @@ import (
 )
 
 type PLMNSupportItem struct {
-	PLMNIdentity     []byte
-	SliceSupportList []SliceSupportItem
+	PLMNIdentity     []byte             `lb:3,ub:3,madatory`
+	SliceSupportList []SliceSupportItem `lb:1,ub:maxnoofSliceItems,madatory`
 	// IEExtensions *PLMNSupportItemExtIEs `optional`
 }
 
@@ -19,7 +19,7 @@ func (ie *PLMNSupportItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = utils.WrapError("Encode PLMNIdentity", err)
 		return
 	}
 	if len(ie.SliceSupportList) > 0 {
@@ -32,9 +32,12 @@ func (ie *PLMNSupportItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Read SliceSupportList", err)
+			err = utils.WrapError("Encode SliceSupportList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("SliceSupportList is nil", err)
+		return
 	}
 	return
 }

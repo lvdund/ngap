@@ -10,18 +10,22 @@ import (
 )
 
 type HandoverRequestAcknowledge struct {
-	AMFUENGAPID                              int64
-	RANUENGAPID                              int64
-	PDUSessionResourceAdmittedList           []PDUSessionResourceAdmittedItem
-	PDUSessionResourceFailedToSetupListHOAck []PDUSessionResourceFailedToSetupItemHOAck `optional`
-	TargetToSourceTransparentContainer       []byte
-	CriticalityDiagnostics                   *CriticalityDiagnostics `optional`
+	AMFUENGAPID                              int64                                      `lb:0,ub:1099511627775,mandatory,ignore`
+	RANUENGAPID                              int64                                      `lb:0,ub:4294967295,mandatory,ignore`
+	PDUSessionResourceAdmittedList           []PDUSessionResourceAdmittedItem           `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
+	PDUSessionResourceFailedToSetupListHOAck []PDUSessionResourceFailedToSetupItemHOAck `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	TargetToSourceTransparentContainer       []byte                                     `lb:0,ub:0,mandatory,reject`
+	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional,ignore`
 }
 
 func (msg *HandoverRequestAcknowledge) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverResourceAllocation, Criticality_PresentReject, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverResourceAllocation, Criticality_PresentReject, ies)
 }
-func (msg *HandoverRequestAcknowledge) toIes() (ies []NgapMessageIE) {
+func (msg *HandoverRequestAcknowledge) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_AMFUENGAPID},
@@ -39,19 +43,24 @@ func (msg *HandoverRequestAcknowledge) toIes() (ies []NgapMessageIE) {
 			ext:   false,
 			Value: aper.Integer(msg.RANUENGAPID),
 		}})
-	tmp_PDUSessionResourceAdmittedList := Sequence[*PDUSessionResourceAdmittedItem]{
-		c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
-		ext: false,
+	if len(msg.PDUSessionResourceAdmittedList) > 0 {
+		tmp_PDUSessionResourceAdmittedList := Sequence[*PDUSessionResourceAdmittedItem]{
+			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
+			ext: false,
+		}
+		for _, i := range msg.PDUSessionResourceAdmittedList {
+			tmp_PDUSessionResourceAdmittedList.Value = append(tmp_PDUSessionResourceAdmittedList.Value, &i)
+		}
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceAdmittedList},
+			Criticality: Criticality{Value: Criticality_PresentIgnore},
+			Value:       &tmp_PDUSessionResourceAdmittedList,
+		})
+	} else {
+		err = utils.WrapError("PDUSessionResourceAdmittedList is nil", err)
+		return
 	}
-	for _, i := range msg.PDUSessionResourceAdmittedList {
-		tmp_PDUSessionResourceAdmittedList.Value = append(tmp_PDUSessionResourceAdmittedList.Value, &i)
-	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_PDUSessionResourceAdmittedList},
-		Criticality: Criticality{Value: Criticality_PresentIgnore},
-		Value:       &tmp_PDUSessionResourceAdmittedList,
-	})
-	if msg.PDUSessionResourceFailedToSetupListHOAck != nil {
+	if len(msg.PDUSessionResourceFailedToSetupListHOAck) > 0 {
 		tmp_PDUSessionResourceFailedToSetupListHOAck := Sequence[*PDUSessionResourceFailedToSetupItemHOAck]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
 			ext: false,

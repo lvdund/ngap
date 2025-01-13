@@ -10,16 +10,20 @@ import (
 )
 
 type ErrorIndication struct {
-	AMFUENGAPID            *int64                  `optional`
-	RANUENGAPID            *int64                  `optional`
-	Cause                  *Cause                  `optional`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional`
+	AMFUENGAPID            *int64                  `lb:0,ub:1099511627775,optional,ignore`
+	RANUENGAPID            *int64                  `lb:0,ub:4294967295,optional,ignore`
+	Cause                  *Cause                  `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *ErrorIndication) Encode(w io.Writer) (err error) {
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_ErrorIndication, Criticality_PresentIgnore, msg.toIes())
+	var ies []NgapMessageIE
+	if ies, err = msg.toIes(); err != nil {
+		return
+	}
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_ErrorIndication, Criticality_PresentIgnore, ies)
 }
-func (msg *ErrorIndication) toIes() (ies []NgapMessageIE) {
+func (msg *ErrorIndication) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
 	if msg.AMFUENGAPID != nil {
 		ies = append(ies, NgapMessageIE{

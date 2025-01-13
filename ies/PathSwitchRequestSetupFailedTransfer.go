@@ -1,28 +1,32 @@
 package ies
 
 import (
+	"bytes"
+
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestSetupFailedTransfer struct {
-	Cause Cause
+	Cause Cause `madatory`
 	// IEExtensions *PathSwitchRequestSetupFailedTransferExtIEs `optional`
 }
 
-func (ie *PathSwitchRequestSetupFailedTransfer) Encode(w *aper.AperWriter) (err error) {
+func (ie *PathSwitchRequestSetupFailedTransfer) Encode() (b []byte, err error) {
+	w := aper.NewWriter(bytes.NewBuffer(b))
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = utils.WrapError("Encode Cause", err)
 		return
 	}
 	return
 }
-func (ie *PathSwitchRequestSetupFailedTransfer) Decode(r *aper.AperReader) (err error) {
+func (ie *PathSwitchRequestSetupFailedTransfer) Decode(wire []byte) (err error) {
+	r := aper.NewReader(bytes.NewBuffer(wire))
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

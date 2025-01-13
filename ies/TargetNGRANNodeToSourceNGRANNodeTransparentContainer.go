@@ -6,7 +6,7 @@ import (
 )
 
 type TargetNGRANNodeToSourceNGRANNodeTransparentContainer struct {
-	RRCContainer []byte
+	RRCContainer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *TargetNGRANNodeToSourceNGRANNodeTransparentContainerExtIEs `optional`
 }
 
@@ -18,7 +18,7 @@ func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Encode(w *aper.A
 	w.WriteBits(optionals, 1)
 	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
-		err = utils.WrapError("Read RRCContainer", err)
+		err = utils.WrapError("Encode RRCContainer", err)
 		return
 	}
 	return
