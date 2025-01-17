@@ -90,7 +90,7 @@ func (msg *Paging) toIes() (ies []NgapMessageIE, err error) {
 func (msg *Paging) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
 	defer func() {
 		if err != nil {
-			
+			err = msgErrors(fmt.Errorf("Paging"), err)
 		}
 	}()
 	r := aper.NewReader(bytes.NewReader(wire))

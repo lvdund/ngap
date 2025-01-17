@@ -13,7 +13,7 @@ type InitialContextSetupRequest struct {
 	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,reject`
 	OldAMF                                      []byte                                       `lb:1,ub:150,optional,reject,valueExt`
-	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `mandatory,reject`
+	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `conditional,reject`
 	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
 	GUAMI                                       GUAMI                                        `mandatory,reject`
 	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq          `lb:1,ub:maxnoofPDUSessions,optional,reject`
@@ -264,13 +264,13 @@ func (msg *InitialContextSetupRequest) Decode(wire []byte) (err error, diagList 
 		return
 	}
 	if _, ok := decoder.list[ProtocolIEID_UEAggregateMaximumBitRate]; !ok {
-		err = fmt.Errorf("Mandatory field UEAggregateMaximumBitRate is missing")
+		// err = fmt.Errorf("Mandatory field UEAggregateMaximumBitRate is missing")
 		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
 			IECriticality: Criticality{Value: Criticality_PresentReject},
 			IEID:          ProtocolIEID{Value: ProtocolIEID_UEAggregateMaximumBitRate},
 			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
 		})
-		return
+		// return
 	}
 	if _, ok := decoder.list[ProtocolIEID_GUAMI]; !ok {
 		err = fmt.Errorf("Mandatory field GUAMI is missing")
