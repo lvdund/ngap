@@ -69,6 +69,11 @@ func (msg *PWSRestartIndication) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *PWSRestartIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PWSRestartIndication"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PWSRestartIndicationDecoder{

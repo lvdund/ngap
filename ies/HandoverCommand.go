@@ -104,6 +104,11 @@ func (msg *HandoverCommand) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *HandoverCommand) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("HandoverCommand"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := HandoverCommandDecoder{

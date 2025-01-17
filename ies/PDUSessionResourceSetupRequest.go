@@ -90,6 +90,11 @@ func (msg *PDUSessionResourceSetupRequest) toIes() (ies []NgapMessageIE, err err
 	return
 }
 func (msg *PDUSessionResourceSetupRequest) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PDUSessionResourceSetupRequest"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PDUSessionResourceSetupRequestDecoder{

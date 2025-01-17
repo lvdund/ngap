@@ -80,6 +80,11 @@ func (msg *PDUSessionResourceModifyConfirm) toIes() (ies []NgapMessageIE, err er
 	return
 }
 func (msg *PDUSessionResourceModifyConfirm) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PDUSessionResourceModifyConfirm"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PDUSessionResourceModifyConfirmDecoder{

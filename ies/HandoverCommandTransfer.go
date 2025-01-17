@@ -1,8 +1,6 @@
 package ies
 
 import (
-	"bytes"
-
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
@@ -14,8 +12,7 @@ type HandoverCommandTransfer struct {
 	// IEExtensions *HandoverCommandTransferExtIEs `optional`
 }
 
-func (ie *HandoverCommandTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *HandoverCommandTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -66,8 +63,7 @@ func (ie *HandoverCommandTransfer) Encode() (b []byte, err error) {
 	}
 	return
 }
-func (ie *HandoverCommandTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *HandoverCommandTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

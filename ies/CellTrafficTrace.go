@@ -67,6 +67,11 @@ func (msg *CellTrafficTrace) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *CellTrafficTrace) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("CellTrafficTrace"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := CellTrafficTraceDecoder{

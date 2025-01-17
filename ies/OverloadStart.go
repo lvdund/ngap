@@ -58,6 +58,11 @@ func (msg *OverloadStart) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *OverloadStart) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("OverloadStart"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := OverloadStartDecoder{

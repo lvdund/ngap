@@ -1,8 +1,6 @@
 package ies
 
 import (
-	"bytes"
-
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
@@ -16,8 +14,7 @@ type PDUSessionResourceModifyResponseTransfer struct {
 	// IEExtensions *PDUSessionResourceModifyResponseTransferExtIEs `optional`
 }
 
-func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *PDUSessionResourceModifyResponseTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -94,8 +91,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err erro
 	}
 	return
 }
-func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *PDUSessionResourceModifyResponseTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

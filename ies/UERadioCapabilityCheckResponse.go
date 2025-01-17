@@ -56,6 +56,11 @@ func (msg *UERadioCapabilityCheckResponse) toIes() (ies []NgapMessageIE, err err
 	return
 }
 func (msg *UERadioCapabilityCheckResponse) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("UERadioCapabilityCheckResponse"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := UERadioCapabilityCheckResponseDecoder{

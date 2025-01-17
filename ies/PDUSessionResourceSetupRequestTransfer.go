@@ -21,13 +21,12 @@ type PDUSessionResourceSetupRequestTransfer struct {
 	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,ignore`
 }
 
-func (msg *PDUSessionResourceSetupRequestTransfer) Encode(w io.Writer) ([]byte, error) {
+func (msg *PDUSessionResourceSetupRequestTransfer) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
-	var err error
 	if ies, err = msg.toIes(); err != nil {
-		return nil, err
+		return
 	}
-	return encodeTransferMessage(ies)
+	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceSetup, Criticality_PresentReject, ies)
 }
 func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
@@ -116,6 +115,11 @@ func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE,
 	return
 }
 func (msg *PDUSessionResourceSetupRequestTransfer) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PDUSessionResourceSetupRequestTransfer"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PDUSessionResourceSetupRequestTransferDecoder{

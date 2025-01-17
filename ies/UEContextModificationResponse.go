@@ -66,6 +66,11 @@ func (msg *UEContextModificationResponse) toIes() (ies []NgapMessageIE, err erro
 	return
 }
 func (msg *UEContextModificationResponse) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("UEContextModificationResponse"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := UEContextModificationResponseDecoder{

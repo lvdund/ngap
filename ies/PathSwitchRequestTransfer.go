@@ -1,8 +1,6 @@
 package ies
 
 import (
-	"bytes"
-
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
 )
@@ -15,8 +13,7 @@ type PathSwitchRequestTransfer struct {
 	// IEExtensions *PathSwitchRequestTransferExtIEs `optional`
 }
 
-func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -63,8 +60,7 @@ func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
 	}
 	return
 }
-func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
-	r := aper.NewReader(bytes.NewBuffer(wire))
+func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
 	if _, err = r.ReadBool(); err != nil {
 		return
 	}

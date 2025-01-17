@@ -46,6 +46,11 @@ func (msg *AMFConfigurationUpdateFailure) toIes() (ies []NgapMessageIE, err erro
 	return
 }
 func (msg *AMFConfigurationUpdateFailure) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("AMFConfigurationUpdateFailure"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := AMFConfigurationUpdateFailureDecoder{

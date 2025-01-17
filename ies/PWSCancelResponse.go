@@ -60,6 +60,11 @@ func (msg *PWSCancelResponse) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *PWSCancelResponse) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PWSCancelResponse"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PWSCancelResponseDecoder{

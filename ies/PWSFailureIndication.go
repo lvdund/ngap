@@ -36,6 +36,11 @@ func (msg *PWSFailureIndication) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *PWSFailureIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PWSFailureIndication"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PWSFailureIndicationDecoder{

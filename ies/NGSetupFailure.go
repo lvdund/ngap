@@ -46,6 +46,11 @@ func (msg *NGSetupFailure) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *NGSetupFailure) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("NGSetupFailure"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := NGSetupFailureDecoder{

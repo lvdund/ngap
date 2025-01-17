@@ -87,6 +87,11 @@ func (msg *PathSwitchRequest) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *PathSwitchRequest) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("PathSwitchRequest"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := PathSwitchRequestDecoder{

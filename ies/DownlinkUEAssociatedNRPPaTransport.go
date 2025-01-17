@@ -60,6 +60,11 @@ func (msg *DownlinkUEAssociatedNRPPaTransport) toIes() (ies []NgapMessageIE, err
 	return
 }
 func (msg *DownlinkUEAssociatedNRPPaTransport) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("DownlinkUEAssociatedNRPPaTransport"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := DownlinkUEAssociatedNRPPaTransportDecoder{

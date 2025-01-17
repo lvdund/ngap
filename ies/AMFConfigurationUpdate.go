@@ -121,6 +121,11 @@ func (msg *AMFConfigurationUpdate) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *AMFConfigurationUpdate) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("AMFConfigurationUpdate"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := AMFConfigurationUpdateDecoder{

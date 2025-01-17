@@ -62,6 +62,11 @@ func (msg *ErrorIndication) toIes() (ies []NgapMessageIE, err error) {
 	return
 }
 func (msg *ErrorIndication) Decode(wire []byte) (err error, diagList []CriticalityDiagnosticsIEItem) {
+	defer func() {
+		if err != nil {
+			err = msgErrors(fmt.Errorf("ErrorIndication"), err)
+		}
+	}()
 	r := aper.NewReader(bytes.NewReader(wire))
 	r.ReadBool()
 	decoder := ErrorIndicationDecoder{

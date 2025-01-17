@@ -52,7 +52,6 @@ func NgapDecode(buf []byte) (pdu NgapPdu, err error, diagnostics *ies.Criticalit
 	var diagnosticsItems []ies.CriticalityDiagnosticsIEItem
 	//decode all IEs within the message
 	if err, diagnosticsItems = message.Decode(containerBytes); err != nil {
-		fmt.Println("-- message.Decode 1")
 		return
 	}
 
