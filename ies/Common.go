@@ -190,18 +190,17 @@ func BuildDiagnostics(present uint8, procedureCode ProcedureCode, criticality Cr
 }
 
 func msgErrors(err1, err2 error) error {
-    if err1 == nil && err2 == nil {
-        return nil
-    }
-    if err1 == nil {
-        return err2
-    }
-    if err2 == nil {
-        return err1
-    }
-    return fmt.Errorf("%v: %v", err1, err2)
+	if err1 == nil && err2 == nil {
+		return nil
+	}
+	if err1 == nil {
+		return err2
+	}
+	if err2 == nil {
+		return err1
+	}
+	return fmt.Errorf("%v: %v", err1, err2)
 }
-
 
 // NgapPdu - Present
 const (

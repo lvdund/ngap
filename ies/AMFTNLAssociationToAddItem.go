@@ -8,7 +8,7 @@ import (
 type AMFTNLAssociationToAddItem struct {
 	AMFTNLAssociationAddress CPTransportLayerInformation `madatory`
 	TNLAssociationUsage      *TNLAssociationUsage        `optional`
-	TNLAddressWeightFactor   *int64                      `lb:0,ub:255,optional`
+	TNLAddressWeightFactor   int64                       `lb:0,ub:255,madatory`
 	// IEExtensions *AMFTNLAssociationToAddItemExtIEs `optional`
 }
 
@@ -20,10 +20,7 @@ func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
 	if ie.TNLAssociationUsage != nil {
 		aper.SetBit(optionals, 1)
 	}
-	if ie.TNLAddressWeightFactor != nil {
-		aper.SetBit(optionals, 2)
-	}
-	w.WriteBits(optionals, 3)
+	w.WriteBits(optionals, 2)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
 		err = utils.WrapError("Encode AMFTNLAssociationAddress", err)
 		return
@@ -34,12 +31,10 @@ func (ie *AMFTNLAssociationToAddItem) Encode(w *aper.AperWriter) (err error) {
 			return
 		}
 	}
-	if ie.TNLAddressWeightFactor != nil {
-		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
-		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
-			err = utils.WrapError("Encode TNLAddressWeightFactor", err)
-			return
-		}
+	tmp_TNLAddressWeightFactor := NewINTEGER(ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
+	if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
+		err = utils.WrapError("Encode TNLAddressWeightFactor", err)
+		return
 	}
 	return
 }
@@ -48,7 +43,7 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(3); err != nil {
+	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
@@ -61,16 +56,14 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 2) {
-		tmp_TNLAddressWeightFactor := INTEGER{
-			c:   aper.Constraint{Lb: 0, Ub: 255},
-			ext: false,
-		}
-		if err = tmp_TNLAddressWeightFactor.Decode(r); err != nil {
-			err = utils.WrapError("Read TNLAddressWeightFactor", err)
-			return
-		}
-		ie.TNLAddressWeightFactor = (*int64)(&tmp_TNLAddressWeightFactor.Value)
+	tmp_TNLAddressWeightFactor := INTEGER{
+		c:   aper.Constraint{Lb: 0, Ub: 255},
+		ext: false,
 	}
+	if err = tmp_TNLAddressWeightFactor.Decode(r); err != nil {
+		err = utils.WrapError("Read TNLAddressWeightFactor", err)
+		return
+	}
+	ie.TNLAddressWeightFactor = int64(tmp_TNLAddressWeightFactor.Value)
 	return
 }

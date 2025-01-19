@@ -8,9 +8,9 @@ import (
 type CoreNetworkAssistanceInformationForInactive struct {
 	UEIdentityIndexValue            UEIdentityIndexValue     `madatory`
 	UESpecificDRX                   *PagingDRX               `optional`
-	PeriodicRegistrationUpdateTimer []byte                   `lb:8,ub:8,optional`
+	PeriodicRegistrationUpdateTimer []byte                   `lb:8,ub:8,madatory`
 	MICOModeIndication              *MICOModeIndication      `optional`
-	TAIListForInactive              []TAIListForInactiveItem `lb:1,ub:maxnoofTAIforInactive,optional`
+	TAIListForInactive              []TAIListForInactiveItem `lb:1,ub:maxnoofTAIforInactive,madatory`
 	ExpectedUEBehaviour             *ExpectedUEBehaviour     `optional`
 	// IEExtensions *CoreNetworkAssistanceInformationForInactiveExtIEs `optional`
 }
@@ -23,19 +23,13 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 	if ie.UESpecificDRX != nil {
 		aper.SetBit(optionals, 1)
 	}
-	if ie.PeriodicRegistrationUpdateTimer != nil {
+	if ie.MICOModeIndication != nil {
 		aper.SetBit(optionals, 2)
 	}
-	if ie.MICOModeIndication != nil {
+	if ie.ExpectedUEBehaviour != nil {
 		aper.SetBit(optionals, 3)
 	}
-	if ie.TAIListForInactive != nil {
-		aper.SetBit(optionals, 4)
-	}
-	if ie.ExpectedUEBehaviour != nil {
-		aper.SetBit(optionals, 5)
-	}
-	w.WriteBits(optionals, 6)
+	w.WriteBits(optionals, 4)
 	if err = ie.UEIdentityIndexValue.Encode(w); err != nil {
 		err = utils.WrapError("Encode UEIdentityIndexValue", err)
 		return
@@ -46,12 +40,10 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 			return
 		}
 	}
-	if ie.PeriodicRegistrationUpdateTimer != nil {
-		tmp_PeriodicRegistrationUpdateTimer := NewBITSTRING(ie.PeriodicRegistrationUpdateTimer, aper.Constraint{Lb: 8, Ub: 8}, false)
-		if err = tmp_PeriodicRegistrationUpdateTimer.Encode(w); err != nil {
-			err = utils.WrapError("Encode PeriodicRegistrationUpdateTimer", err)
-			return
-		}
+	tmp_PeriodicRegistrationUpdateTimer := NewBITSTRING(ie.PeriodicRegistrationUpdateTimer, aper.Constraint{Lb: 8, Ub: 8}, false)
+	if err = tmp_PeriodicRegistrationUpdateTimer.Encode(w); err != nil {
+		err = utils.WrapError("Encode PeriodicRegistrationUpdateTimer", err)
+		return
 	}
 	if ie.MICOModeIndication != nil {
 		if err = ie.MICOModeIndication.Encode(w); err != nil {
@@ -72,6 +64,9 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 			err = utils.WrapError("Encode TAIListForInactive", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("TAIListForInactive is nil", err)
+		return
 	}
 	if ie.ExpectedUEBehaviour != nil {
 		if err = ie.ExpectedUEBehaviour.Encode(w); err != nil {
@@ -86,7 +81,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(6); err != nil {
+	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
 	if err = ie.UEIdentityIndexValue.Decode(r); err != nil {
@@ -99,39 +94,35 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 2) {
-		tmp_PeriodicRegistrationUpdateTimer := BITSTRING{
-			c:   aper.Constraint{Lb: 8, Ub: 8},
-			ext: false,
-		}
-		if err = tmp_PeriodicRegistrationUpdateTimer.Decode(r); err != nil {
-			err = utils.WrapError("Read PeriodicRegistrationUpdateTimer", err)
-			return
-		}
-		ie.PeriodicRegistrationUpdateTimer = tmp_PeriodicRegistrationUpdateTimer.Value.Bytes
+	tmp_PeriodicRegistrationUpdateTimer := BITSTRING{
+		c:   aper.Constraint{Lb: 8, Ub: 8},
+		ext: false,
 	}
-	if aper.IsBitSet(optionals, 3) {
+	if err = tmp_PeriodicRegistrationUpdateTimer.Decode(r); err != nil {
+		err = utils.WrapError("Read PeriodicRegistrationUpdateTimer", err)
+		return
+	}
+	ie.PeriodicRegistrationUpdateTimer = tmp_PeriodicRegistrationUpdateTimer.Value.Bytes
+	if aper.IsBitSet(optionals, 2) {
 		if err = ie.MICOModeIndication.Decode(r); err != nil {
 			err = utils.WrapError("Read MICOModeIndication", err)
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 4) {
-		tmp_TAIListForInactive := Sequence[*TAIListForInactiveItem]{
-			c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforInactive},
-			ext: false,
-		}
-		fn := func() *TAIListForInactiveItem { return new(TAIListForInactiveItem) }
-		if err = tmp_TAIListForInactive.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read TAIListForInactive", err)
-			return
-		}
-		ie.TAIListForInactive = []TAIListForInactiveItem{}
-		for _, i := range tmp_TAIListForInactive.Value {
-			ie.TAIListForInactive = append(ie.TAIListForInactive, *i)
-		}
+	tmp_TAIListForInactive := Sequence[*TAIListForInactiveItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforInactive},
+		ext: false,
 	}
-	if aper.IsBitSet(optionals, 5) {
+	fn := func() *TAIListForInactiveItem { return new(TAIListForInactiveItem) }
+	if err = tmp_TAIListForInactive.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read TAIListForInactive", err)
+		return
+	}
+	ie.TAIListForInactive = []TAIListForInactiveItem{}
+	for _, i := range tmp_TAIListForInactive.Value {
+		ie.TAIListForInactive = append(ie.TAIListForInactive, *i)
+	}
+	if aper.IsBitSet(optionals, 3) {
 		if err = ie.ExpectedUEBehaviour.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedUEBehaviour", err)
 			return

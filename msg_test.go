@@ -7,8 +7,6 @@ import (
 	"github.com/lvdund/ngap/ies"
 )
 
-// need: [0 21 0 38 0 0 3 0 27 0 9 0 19 48 1 80 18 52 86 120 0 102 0 13 0 0 19 48 1 0 19 48 1 0 0 0 8 0 21 64 1 32]
-// have: [0 21 0 38 0 0 3 0 27 0 9 0 19 48 1 80 18 52 86 120 0 102 0 13 0 0 19 48 1 0 19 48 1 0 0 0 8 0 21 64 1 32]
 func Test_NGSetupRequest(t *testing.T) {
 	msg := ies.NGSetupRequest{
 		GlobalRANNodeID: ies.GlobalRANNodeID{
@@ -92,4 +90,46 @@ func TestM1(t *testing.T) {
 	fmt.Println(msg1.MobilityRestrictionList)
 	fmt.Println(msg1.MaskedIMEISV)
 	fmt.Println(msg1.NASPDU)
+}
+
+var m2 []byte = []byte{0, 29, 0, 128, 200, 0, 0, 4, 0, 10, 0, 2, 0, 1, 0, 85, 0, 2, 0, 1, 0, 74, 0, 128, 166, 0, 64, 1, 103, 126, 2, 98, 205, 169, 177, 3, 126, 0, 104, 1, 0, 88, 46, 1, 1, 194, 17, 0, 35, 1, 0, 6, 49, 49, 1, 1, 255, 1, 1, 0, 14, 33, 17, 9, 16, 1, 1, 1, 1, 255, 255, 255, 255, 128, 3, 2, 0, 6, 33, 18, 1, 1, 255, 2, 6, 6, 3, 232, 6, 3, 232, 41, 5, 1, 10, 60, 0, 1, 34, 4, 1, 1, 2, 3, 121, 0, 12, 1, 32, 65, 1, 1, 9, 3, 32, 65, 1, 1, 8, 37, 9, 8, 105, 110, 116, 101, 114, 110, 101, 116, 18, 1, 64, 32, 1, 2, 3, 53, 0, 0, 4, 0, 130, 0, 10, 12, 59, 154, 202, 0, 48, 59, 154, 202, 0, 0, 139, 0, 10, 1, 240, 192, 168, 56, 101, 0, 0, 0, 2, 0, 134, 0, 1, 0, 0, 136, 0, 13, 4, 1, 0, 0, 9, 28, 0, 48, 0, 0, 8, 28, 0, 0, 110, 64, 10, 12, 119, 53, 148, 0, 48, 59, 154, 202, 0}
+
+func TestM2(t *testing.T) {
+	var pdu NgapPdu
+	var err error
+	var diagnostics *ies.CriticalityDiagnostics
+	pdu, err, diagnostics = NgapDecode(m2)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println(diagnostics)
+		return
+	}
+	msg1 := pdu.Message.Msg.(*ies.PDUSessionResourceSetupRequest)
+	fmt.Println(msg1.PDUSessionResourceSetupListSUReq[0].PDUSessionResourceSetupRequestTransfer)
+
+	fmt.Println("-------------------------------------")
+	fmt.Println("-------------------------------------")
+	fmt.Println("-------------------------------------")
+
+	msg2 := ies.PDUSessionResourceSetupRequest{
+		AMFUENGAPID: 1,
+		RANUENGAPID: 1,
+		PDUSessionResourceSetupListSUReq: []ies.PDUSessionResourceSetupItemSUReq{{
+			PDUSessionID: 1,
+			// PDUSessionNASPDU:                       []byte{1, 1, 1},
+			SNSSAI: ies.SNSSAI{SST: []byte{1}, SD: []byte{1, 2, 3}},
+			// PDUSessionResourceSetupRequestTransfer: []byte{2, 2, 2},
+		}},
+		UEAggregateMaximumBitRate: &ies.UEAggregateMaximumBitRate{
+			UEAggregateMaximumBitRateDL: 1000000000,
+			UEAggregateMaximumBitRateUL: 2000000000,
+		},
+	}
+	var b []byte
+	b, err = NgapEncode(&msg2)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(b)
 }

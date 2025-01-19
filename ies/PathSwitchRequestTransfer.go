@@ -9,7 +9,7 @@ type PathSwitchRequestTransfer struct {
 	DLNGUUPTNLInformation        UPTransportLayerInformation   `madatory`
 	DLNGUTNLInformationReused    *DLNGUTNLInformationReused    `optional`
 	UserPlaneSecurityInformation *UserPlaneSecurityInformation `optional`
-	QosFlowAcceptedList          []QosFlowAcceptedItem         `lb:1,ub:maxnoofQosFlows,optional`
+	QosFlowAcceptedList          []QosFlowAcceptedItem         `lb:1,ub:maxnoofQosFlows,madatory`
 	// IEExtensions *PathSwitchRequestTransferExtIEs `optional`
 }
 
@@ -24,10 +24,7 @@ func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 	if ie.UserPlaneSecurityInformation != nil {
 		aper.SetBit(optionals, 2)
 	}
-	if ie.QosFlowAcceptedList != nil {
-		aper.SetBit(optionals, 3)
-	}
-	w.WriteBits(optionals, 4)
+	w.WriteBits(optionals, 3)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
 		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
 		return
@@ -57,6 +54,9 @@ func (ie *PathSwitchRequestTransfer) Encode(w *aper.AperWriter) (err error) {
 			err = utils.WrapError("Encode QosFlowAcceptedList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("QosFlowAcceptedList is nil", err)
+		return
 	}
 	return
 }
@@ -65,7 +65,7 @@ func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(4); err != nil {
+	if optionals, err = r.ReadBits(3); err != nil {
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
@@ -84,20 +84,18 @@ func (ie *PathSwitchRequestTransfer) Decode(r *aper.AperReader) (err error) {
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
-		tmp_QosFlowAcceptedList := Sequence[*QosFlowAcceptedItem]{
-			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-			ext: false,
-		}
-		fn := func() *QosFlowAcceptedItem { return new(QosFlowAcceptedItem) }
-		if err = tmp_QosFlowAcceptedList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowAcceptedList", err)
-			return
-		}
-		ie.QosFlowAcceptedList = []QosFlowAcceptedItem{}
-		for _, i := range tmp_QosFlowAcceptedList.Value {
-			ie.QosFlowAcceptedList = append(ie.QosFlowAcceptedList, *i)
-		}
+	tmp_QosFlowAcceptedList := Sequence[*QosFlowAcceptedItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+		ext: false,
+	}
+	fn := func() *QosFlowAcceptedItem { return new(QosFlowAcceptedItem) }
+	if err = tmp_QosFlowAcceptedList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read QosFlowAcceptedList", err)
+		return
+	}
+	ie.QosFlowAcceptedList = []QosFlowAcceptedItem{}
+	for _, i := range tmp_QosFlowAcceptedList.Value {
+		ie.QosFlowAcceptedList = append(ie.QosFlowAcceptedList, *i)
 	}
 	return
 }

@@ -9,9 +9,9 @@ type SourceNGRANNodeToTargetNGRANNodeTransparentContainer struct {
 	RRCContainer                      []byte                              `lb:0,ub:0,madatory`
 	PDUSessionResourceInformationList []PDUSessionResourceInformationItem `lb:1,ub:maxnoofPDUSessions,optional`
 	ERABInformationList               []ERABInformationItem               `lb:1,ub:maxnoofERABs,optional`
-	TargetCellID                      *NGRANCGI                           `optional`
+	TargetCellID                      NGRANCGI                            `madatory`
 	IndexToRFSP                       *int64                              `lb:1,ub:256,optional,valExt`
-	UEHistoryInformation              []LastVisitedCellItem               `lb:1,ub:maxnoofCellsinUEHistoryInfo,optional`
+	UEHistoryInformation              []LastVisitedCellItem               `lb:1,ub:maxnoofCellsinUEHistoryInfo,madatory`
 	// IEExtensions *SourceNGRANNodeToTargetNGRANNodeTransparentContainerExtIEs `optional`
 }
 
@@ -26,16 +26,10 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.A
 	if ie.ERABInformationList != nil {
 		aper.SetBit(optionals, 2)
 	}
-	if ie.TargetCellID != nil {
+	if ie.IndexToRFSP != nil {
 		aper.SetBit(optionals, 3)
 	}
-	if ie.IndexToRFSP != nil {
-		aper.SetBit(optionals, 4)
-	}
-	if ie.UEHistoryInformation != nil {
-		aper.SetBit(optionals, 5)
-	}
-	w.WriteBits(optionals, 6)
+	w.WriteBits(optionals, 4)
 	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
 		err = utils.WrapError("Encode RRCContainer", err)
@@ -69,11 +63,9 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.A
 			return
 		}
 	}
-	if ie.TargetCellID != nil {
-		if err = ie.TargetCellID.Encode(w); err != nil {
-			err = utils.WrapError("Encode TargetCellID", err)
-			return
-		}
+	if err = ie.TargetCellID.Encode(w); err != nil {
+		err = utils.WrapError("Encode TargetCellID", err)
+		return
 	}
 	if ie.IndexToRFSP != nil {
 		tmp_IndexToRFSP := NewINTEGER(*ie.IndexToRFSP, aper.Constraint{Lb: 1, Ub: 256}, true)
@@ -95,6 +87,9 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode(w *aper.A
 			err = utils.WrapError("Encode UEHistoryInformation", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("UEHistoryInformation is nil", err)
+		return
 	}
 	return
 }
@@ -103,7 +98,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(r *aper.A
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(6); err != nil {
+	if optionals, err = r.ReadBits(4); err != nil {
 		return
 	}
 	tmp_RRCContainer := OCTETSTRING{
@@ -145,13 +140,11 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(r *aper.A
 			ie.ERABInformationList = append(ie.ERABInformationList, *i)
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
-		if err = ie.TargetCellID.Decode(r); err != nil {
-			err = utils.WrapError("Read TargetCellID", err)
-			return
-		}
+	if err = ie.TargetCellID.Decode(r); err != nil {
+		err = utils.WrapError("Read TargetCellID", err)
+		return
 	}
-	if aper.IsBitSet(optionals, 4) {
+	if aper.IsBitSet(optionals, 3) {
 		tmp_IndexToRFSP := INTEGER{
 			c:   aper.Constraint{Lb: 1, Ub: 256},
 			ext: true,
@@ -162,20 +155,18 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(r *aper.A
 		}
 		ie.IndexToRFSP = (*int64)(&tmp_IndexToRFSP.Value)
 	}
-	if aper.IsBitSet(optionals, 5) {
-		tmp_UEHistoryInformation := Sequence[*LastVisitedCellItem]{
-			c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinUEHistoryInfo},
-			ext: false,
-		}
-		fn := func() *LastVisitedCellItem { return new(LastVisitedCellItem) }
-		if err = tmp_UEHistoryInformation.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read UEHistoryInformation", err)
-			return
-		}
-		ie.UEHistoryInformation = []LastVisitedCellItem{}
-		for _, i := range tmp_UEHistoryInformation.Value {
-			ie.UEHistoryInformation = append(ie.UEHistoryInformation, *i)
-		}
+	tmp_UEHistoryInformation := Sequence[*LastVisitedCellItem]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofCellsinUEHistoryInfo},
+		ext: false,
+	}
+	fn := func() *LastVisitedCellItem { return new(LastVisitedCellItem) }
+	if err = tmp_UEHistoryInformation.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read UEHistoryInformation", err)
+		return
+	}
+	ie.UEHistoryInformation = []LastVisitedCellItem{}
+	for _, i := range tmp_UEHistoryInformation.Value {
+		ie.UEHistoryInformation = append(ie.UEHistoryInformation, *i)
 	}
 	return
 }

@@ -9,7 +9,7 @@ type HandoverRequestAcknowledgeTransfer struct {
 	DLNGUUPTNLInformation         UPTransportLayerInformation     `madatory`
 	DLForwardingUPTNLInformation  *UPTransportLayerInformation    `optional`
 	SecurityResult                *SecurityResult                 `optional`
-	QosFlowSetupResponseList      []QosFlowItemWithDataForwarding `lb:1,ub:maxnoofQosFlows,optional`
+	QosFlowSetupResponseList      []QosFlowItemWithDataForwarding `lb:1,ub:maxnoofQosFlows,madatory`
 	QosFlowFailedToSetupList      []QosFlowWithCauseItem          `lb:1,ub:maxnoofQosFlows,optional`
 	DataForwardingResponseDRBList []DataForwardingResponseDRBItem `lb:1,ub:maxnoofDRBs,optional`
 	// IEExtensions *HandoverRequestAcknowledgeTransferExtIEs `optional`
@@ -26,16 +26,13 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err er
 	if ie.SecurityResult != nil {
 		aper.SetBit(optionals, 2)
 	}
-	if ie.QosFlowSetupResponseList != nil {
+	if ie.QosFlowFailedToSetupList != nil {
 		aper.SetBit(optionals, 3)
 	}
-	if ie.QosFlowFailedToSetupList != nil {
+	if ie.DataForwardingResponseDRBList != nil {
 		aper.SetBit(optionals, 4)
 	}
-	if ie.DataForwardingResponseDRBList != nil {
-		aper.SetBit(optionals, 5)
-	}
-	w.WriteBits(optionals, 6)
+	w.WriteBits(optionals, 5)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
 		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
 		return
@@ -65,6 +62,9 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode(w *aper.AperWriter) (err er
 			err = utils.WrapError("Encode QosFlowSetupResponseList", err)
 			return
 		}
+	} else {
+		err = utils.WrapError("QosFlowSetupResponseList is nil", err)
+		return
 	}
 	if len(ie.QosFlowFailedToSetupList) > 0 {
 		tmp := Sequence[*QosFlowWithCauseItem]{
@@ -101,7 +101,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(6); err != nil {
+	if optionals, err = r.ReadBits(5); err != nil {
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
@@ -120,22 +120,20 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 			return
 		}
 	}
-	if aper.IsBitSet(optionals, 3) {
-		tmp_QosFlowSetupResponseList := Sequence[*QosFlowItemWithDataForwarding]{
-			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
-			ext: false,
-		}
-		fn := func() *QosFlowItemWithDataForwarding { return new(QosFlowItemWithDataForwarding) }
-		if err = tmp_QosFlowSetupResponseList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowSetupResponseList", err)
-			return
-		}
-		ie.QosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
-		for _, i := range tmp_QosFlowSetupResponseList.Value {
-			ie.QosFlowSetupResponseList = append(ie.QosFlowSetupResponseList, *i)
-		}
+	tmp_QosFlowSetupResponseList := Sequence[*QosFlowItemWithDataForwarding]{
+		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
+		ext: false,
 	}
-	if aper.IsBitSet(optionals, 4) {
+	fn := func() *QosFlowItemWithDataForwarding { return new(QosFlowItemWithDataForwarding) }
+	if err = tmp_QosFlowSetupResponseList.Decode(r, fn); err != nil {
+		err = utils.WrapError("Read QosFlowSetupResponseList", err)
+		return
+	}
+	ie.QosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
+	for _, i := range tmp_QosFlowSetupResponseList.Value {
+		ie.QosFlowSetupResponseList = append(ie.QosFlowSetupResponseList, *i)
+	}
+	if aper.IsBitSet(optionals, 3) {
 		tmp_QosFlowFailedToSetupList := Sequence[*QosFlowWithCauseItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},
 			ext: false,
@@ -150,7 +148,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(r *aper.AperReader) (err er
 			ie.QosFlowFailedToSetupList = append(ie.QosFlowFailedToSetupList, *i)
 		}
 	}
-	if aper.IsBitSet(optionals, 5) {
+	if aper.IsBitSet(optionals, 4) {
 		tmp_DataForwardingResponseDRBList := Sequence[*DataForwardingResponseDRBItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofDRBs},
 			ext: false,

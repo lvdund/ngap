@@ -8,7 +8,7 @@ import (
 type PacketErrorRate struct {
 	PERScalar   int64 `lb:0,ub:9,madatory,valExt`
 	PERExponent int64 `lb:0,ub:9,madatory,valExt`
-	// IEExtensions *PacketErrorRateExtIEs `optional,valExt`
+	// IEExtensions *PacketErrorRateExtIEs `optional`
 }
 
 func (ie *PacketErrorRate) Encode(w *aper.AperWriter) (err error) {

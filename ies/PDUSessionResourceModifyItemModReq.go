@@ -8,7 +8,7 @@ import (
 type PDUSessionResourceModifyItemModReq struct {
 	PDUSessionID                            int64  `lb:0,ub:255,madatory`
 	NASPDU                                  []byte `lb:0,ub:0,optional`
-	PDUSessionResourceModifyRequestTransfer []byte `lb:0,ub:0,optional`
+	PDUSessionResourceModifyRequestTransfer []byte `lb:0,ub:0,madatory`
 	// IEExtensions *PDUSessionResourceModifyItemModReqExtIEs `optional`
 }
 
@@ -20,10 +20,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Encode(w *aper.AperWriter) (err er
 	if ie.NASPDU != nil {
 		aper.SetBit(optionals, 1)
 	}
-	if ie.PDUSessionResourceModifyRequestTransfer != nil {
-		aper.SetBit(optionals, 2)
-	}
-	w.WriteBits(optionals, 3)
+	w.WriteBits(optionals, 2)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
 		err = utils.WrapError("Encode PDUSessionID", err)
@@ -36,12 +33,10 @@ func (ie *PDUSessionResourceModifyItemModReq) Encode(w *aper.AperWriter) (err er
 			return
 		}
 	}
-	if ie.PDUSessionResourceModifyRequestTransfer != nil {
-		tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
-		if err = tmp_PDUSessionResourceModifyRequestTransfer.Encode(w); err != nil {
-			err = utils.WrapError("Encode PDUSessionResourceModifyRequestTransfer", err)
-			return
-		}
+	tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
+	if err = tmp_PDUSessionResourceModifyRequestTransfer.Encode(w); err != nil {
+		err = utils.WrapError("Encode PDUSessionResourceModifyRequestTransfer", err)
+		return
 	}
 	return
 }
@@ -50,7 +45,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 		return
 	}
 	var optionals []byte
-	if optionals, err = r.ReadBits(3); err != nil {
+	if optionals, err = r.ReadBits(2); err != nil {
 		return
 	}
 	tmp_PDUSessionID := INTEGER{
@@ -73,16 +68,14 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 		}
 		ie.NASPDU = tmp_NASPDU.Value
 	}
-	if aper.IsBitSet(optionals, 2) {
-		tmp_PDUSessionResourceModifyRequestTransfer := OCTETSTRING{
-			c:   aper.Constraint{Lb: 0, Ub: 0},
-			ext: false,
-		}
-		if err = tmp_PDUSessionResourceModifyRequestTransfer.Decode(r); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceModifyRequestTransfer", err)
-			return
-		}
-		ie.PDUSessionResourceModifyRequestTransfer = tmp_PDUSessionResourceModifyRequestTransfer.Value
+	tmp_PDUSessionResourceModifyRequestTransfer := OCTETSTRING{
+		c:   aper.Constraint{Lb: 0, Ub: 0},
+		ext: false,
 	}
+	if err = tmp_PDUSessionResourceModifyRequestTransfer.Decode(r); err != nil {
+		err = utils.WrapError("Read PDUSessionResourceModifyRequestTransfer", err)
+		return
+	}
+	ie.PDUSessionResourceModifyRequestTransfer = tmp_PDUSessionResourceModifyRequestTransfer.Value
 	return
 }
