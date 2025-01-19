@@ -3,7 +3,6 @@ package ies
 import (
 	"bytes"
 	"fmt"
-	"io"
 
 	"github.com/lvdund/ngap/aper"
 	"github.com/reogac/utils"
@@ -19,12 +18,13 @@ type PDUSessionResourceModifyRequestTransfer struct {
 	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,mandatory,ignore`
 }
 
-func (msg *PDUSessionResourceModifyRequestTransfer) Encode(w io.Writer) (err error) {
+func (msg *PDUSessionResourceModifyRequestTransfer) Encode() ([]byte, error) {
 	var ies []NgapMessageIE
+	var err error
 	if ies, err = msg.toIes(); err != nil {
-		return
+		return nil, err
 	}
-	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceModify, Criticality_PresentReject, ies)
+	return encodeTransferMessage(ies)
 }
 func (msg *PDUSessionResourceModifyRequestTransfer) toIes() (ies []NgapMessageIE, err error) {
 	ies = []NgapMessageIE{}
