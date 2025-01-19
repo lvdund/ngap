@@ -12,13 +12,13 @@ import (
 type DownlinkNASTransport struct {
 	AMFUENGAPID               int64                      `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID               int64                      `lb:0,ub:4294967295,mandatory,reject`
-	OldAMF                    []byte                     `lb:1,ub:150,optional,reject,valueExt`
-	RANPagingPriority         *int64                     `lb:1,ub:256,optional,ignore`
+	OldAMF                    []byte                     `lb:1,ub:150,optional,mandatory,reject,valueExt`
+	RANPagingPriority         *int64                     `lb:1,ub:256,optional,mandatory,ignore`
 	NASPDU                    []byte                     `lb:0,ub:0,mandatory,reject`
-	MobilityRestrictionList   *MobilityRestrictionList   `optional,ignore`
-	IndexToRFSP               *int64                     `lb:1,ub:256,optional,ignore,valueExt`
-	UEAggregateMaximumBitRate *UEAggregateMaximumBitRate `optional,ignore`
-	AllowedNSSAI              []AllowedNSSAIItem         `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
+	MobilityRestrictionList   *MobilityRestrictionList   `optional,mandatory,ignore`
+	IndexToRFSP               *int64                     `lb:1,ub:256,optional,mandatory,ignore,valueExt`
+	UEAggregateMaximumBitRate *UEAggregateMaximumBitRate `optional,mandatory,ignore`
+	AllowedNSSAI              []AllowedNSSAIItem         `lb:1,ub:maxnoofAllowedSNSSAIs,optional,mandatory,reject`
 }
 
 func (msg *DownlinkNASTransport) Encode(w io.Writer) (err error) {

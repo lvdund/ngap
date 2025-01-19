@@ -10,7 +10,7 @@ import (
 )
 
 type RANConfigurationUpdateAcknowledge struct {
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
 }
 
 func (msg *RANConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {

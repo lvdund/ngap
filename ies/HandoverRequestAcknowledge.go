@@ -13,9 +13,9 @@ type HandoverRequestAcknowledge struct {
 	AMFUENGAPID                              int64                                      `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                              int64                                      `lb:0,ub:4294967295,mandatory,ignore`
 	PDUSessionResourceAdmittedList           []PDUSessionResourceAdmittedItem           `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
-	PDUSessionResourceFailedToSetupListHOAck []PDUSessionResourceFailedToSetupItemHOAck `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToSetupListHOAck []PDUSessionResourceFailedToSetupItemHOAck `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
 	TargetToSourceTransparentContainer       []byte                                     `lb:0,ub:0,mandatory,reject`
-	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional,ignore`
+	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional,mandatory,ignore`
 }
 
 func (msg *HandoverRequestAcknowledge) Encode(w io.Writer) (err error) {

@@ -10,9 +10,9 @@ import (
 )
 
 type AMFConfigurationUpdateAcknowledge struct {
-	AMFTNLAssociationSetupList         []AMFTNLAssociationSetupItem `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
-	AMFTNLAssociationFailedToSetupList []TNLAssociationItem         `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
-	CriticalityDiagnostics             *CriticalityDiagnostics      `optional,ignore`
+	AMFTNLAssociationSetupList         []AMFTNLAssociationSetupItem `lb:1,ub:maxnoofTNLAssociations,optional,mandatory,ignore`
+	AMFTNLAssociationFailedToSetupList []TNLAssociationItem         `lb:1,ub:maxnoofTNLAssociations,optional,mandatory,ignore`
+	CriticalityDiagnostics             *CriticalityDiagnostics      `optional,mandatory,ignore`
 }
 
 func (msg *AMFConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {

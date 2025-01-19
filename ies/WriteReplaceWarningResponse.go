@@ -12,8 +12,8 @@ import (
 type WriteReplaceWarningResponse struct {
 	MessageIdentifier          []byte                      `lb:16,ub:16,mandatory,reject`
 	SerialNumber               []byte                      `lb:16,ub:16,mandatory,reject`
-	BroadcastCompletedAreaList *BroadcastCompletedAreaList `optional,ignore`
-	CriticalityDiagnostics     *CriticalityDiagnostics     `optional,ignore`
+	BroadcastCompletedAreaList *BroadcastCompletedAreaList `optional,mandatory,ignore`
+	CriticalityDiagnostics     *CriticalityDiagnostics     `optional,mandatory,ignore`
 }
 
 func (msg *WriteReplaceWarningResponse) Encode(w io.Writer) (err error) {

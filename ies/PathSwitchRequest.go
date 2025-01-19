@@ -15,7 +15,7 @@ type PathSwitchRequest struct {
 	UserLocationInformation                  UserLocationInformation                    `mandatory,ignore`
 	UESecurityCapabilities                   UESecurityCapabilities                     `mandatory,ignore`
 	PDUSessionResourceToBeSwitchedDLList     []PDUSessionResourceToBeSwitchedDLItem     `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
-	PDUSessionResourceFailedToSetupListPSReq []PDUSessionResourceFailedToSetupItemPSReq `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToSetupListPSReq []PDUSessionResourceFailedToSetupItemPSReq `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
 }
 
 func (msg *PathSwitchRequest) Encode(w io.Writer) (err error) {

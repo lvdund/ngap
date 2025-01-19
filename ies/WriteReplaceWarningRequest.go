@@ -12,15 +12,15 @@ import (
 type WriteReplaceWarningRequest struct {
 	MessageIdentifier           []byte                       `lb:16,ub:16,mandatory,reject`
 	SerialNumber                []byte                       `lb:16,ub:16,mandatory,reject`
-	WarningAreaList             *WarningAreaList             `optional,ignore`
+	WarningAreaList             *WarningAreaList             `optional,mandatory,ignore`
 	RepetitionPeriod            int64                        `lb:0,ub:131071,mandatory,reject`
 	NumberOfBroadcastsRequested int64                        `lb:0,ub:65535,mandatory,reject`
-	WarningType                 []byte                       `lb:2,ub:2,optional,ignore`
-	WarningSecurityInfo         []byte                       `lb:50,ub:50,optional,ignore`
-	DataCodingScheme            []byte                       `lb:8,ub:8,optional,ignore`
-	WarningMessageContents      []byte                       `lb:1,ub:9600,optional,ignore`
-	ConcurrentWarningMessageInd *ConcurrentWarningMessageInd `optional,reject`
-	WarningAreaCoordinates      []byte                       `lb:1,ub:1024,optional,ignore`
+	WarningType                 []byte                       `lb:2,ub:2,optional,mandatory,ignore`
+	WarningSecurityInfo         []byte                       `lb:50,ub:50,optional,mandatory,ignore`
+	DataCodingScheme            []byte                       `lb:8,ub:8,optional,mandatory,ignore`
+	WarningMessageContents      []byte                       `lb:1,ub:9600,optional,mandatory,ignore`
+	ConcurrentWarningMessageInd *ConcurrentWarningMessageInd `optional,mandatory,reject`
+	WarningAreaCoordinates      []byte                       `lb:1,ub:1024,optional,mandatory,ignore`
 }
 
 func (msg *WriteReplaceWarningRequest) Encode(w io.Writer) (err error) {

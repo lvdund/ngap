@@ -13,7 +13,7 @@ type PWSRestartIndication struct {
 	CellIDListForRestart          CellIDListForRestart `mandatory,reject`
 	GlobalRANNodeID               GlobalRANNodeID      `mandatory,reject`
 	TAIListForRestart             []TAI                `lb:1,ub:maxnoofTAIforRestart,mandatory,reject`
-	EmergencyAreaIDListForRestart []EmergencyAreaID    `lb:1,ub:maxnoofEAIforRestart,optional,reject`
+	EmergencyAreaIDListForRestart []EmergencyAreaID    `lb:1,ub:maxnoofEAIforRestart,optional,mandatory,reject`
 }
 
 func (msg *PWSRestartIndication) Encode(w io.Writer) (err error) {

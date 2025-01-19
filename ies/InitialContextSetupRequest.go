@@ -12,26 +12,26 @@ import (
 type InitialContextSetupRequest struct {
 	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,reject`
-	OldAMF                                      []byte                                       `lb:1,ub:150,optional,reject,valueExt`
-	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `mandatory,reject`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	OldAMF                                      []byte                                       `lb:1,ub:150,optional,mandatory,reject,valueExt`
+	UEAggregateMaximumBitRate                   *UEAggregateMaximumBitRate                   `conditional,reject`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,mandatory,ignore`
 	GUAMI                                       GUAMI                                        `mandatory,reject`
-	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq          `lb:1,ub:maxnoofPDUSessions,optional,reject`
+	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq          `lb:1,ub:maxnoofPDUSessions,optional,mandatory,reject`
 	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
 	UESecurityCapabilities                      UESecurityCapabilities                       `mandatory,reject`
 	SecurityKey                                 []byte                                       `lb:256,ub:256,mandatory,reject`
-	TraceActivation                             *TraceActivation                             `optional,ignore`
-	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,ignore`
-	UERadioCapability                           []byte                                       `lb:0,ub:0,optional,ignore`
-	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,ignore,valueExt`
-	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,ignore`
-	NASPDU                                      []byte                                       `lb:0,ub:0,optional,ignore`
-	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,reject`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
-	UERadioCapabilityForPaging                  *UERadioCapabilityForPaging                  `optional,ignore`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
-	LocationReportingRequestType                *LocationReportingRequestType                `optional,ignore`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
+	TraceActivation                             *TraceActivation                             `optional,mandatory,ignore`
+	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,mandatory,ignore`
+	UERadioCapability                           []byte                                       `lb:0,ub:0,optional,mandatory,ignore`
+	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,mandatory,ignore,valueExt`
+	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,mandatory,ignore`
+	NASPDU                                      []byte                                       `lb:0,ub:0,optional,mandatory,ignore`
+	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,mandatory,reject`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,mandatory,ignore`
+	UERadioCapabilityForPaging                  *UERadioCapabilityForPaging                  `optional,mandatory,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,mandatory,ignore`
+	LocationReportingRequestType                *LocationReportingRequestType                `optional,mandatory,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,mandatory,ignore`
 }
 
 func (msg *InitialContextSetupRequest) Encode(w io.Writer) (err error) {
@@ -69,11 +69,13 @@ func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE, err error) 
 				Value: msg.OldAMF,
 			}})
 	}
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_UEAggregateMaximumBitRate},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value:       &msg.UEAggregateMaximumBitRate,
-	})
+	if msg.UEAggregateMaximumBitRate != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_UEAggregateMaximumBitRate},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value:       msg.UEAggregateMaximumBitRate,
+		})
+	}
 	if msg.CoreNetworkAssistanceInformationForInactive != nil {
 		ies = append(ies, NgapMessageIE{
 			Id:          ProtocolIEID{Value: ProtocolIEID_CoreNetworkAssistanceInformationForInactive},
@@ -263,15 +265,6 @@ func (msg *InitialContextSetupRequest) Decode(wire []byte) (err error, diagList 
 		})
 		return
 	}
-	if _, ok := decoder.list[ProtocolIEID_UEAggregateMaximumBitRate]; !ok {
-		err = fmt.Errorf("Mandatory field UEAggregateMaximumBitRate is missing")
-		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
-			IECriticality: Criticality{Value: Criticality_PresentReject},
-			IEID:          ProtocolIEID{Value: ProtocolIEID_UEAggregateMaximumBitRate},
-			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
-		})
-		return
-	}
 	if _, ok := decoder.list[ProtocolIEID_GUAMI]; !ok {
 		err = fmt.Errorf("Mandatory field GUAMI is missing")
 		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
@@ -378,7 +371,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read UEAggregateMaximumBitRate", err)
 			return
 		}
-		msg.UEAggregateMaximumBitRate = tmp
+		msg.UEAggregateMaximumBitRate = &tmp
 	case ProtocolIEID_CoreNetworkAssistanceInformationForInactive:
 		var tmp CoreNetworkAssistanceInformationForInactive
 		if err = tmp.Decode(ieR); err != nil {

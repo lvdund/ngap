@@ -12,8 +12,8 @@ import (
 type PWSCancelResponse struct {
 	MessageIdentifier          []byte                      `lb:16,ub:16,mandatory,reject`
 	SerialNumber               []byte                      `lb:16,ub:16,mandatory,reject`
-	BroadcastCancelledAreaList *BroadcastCancelledAreaList `optional,ignore`
-	CriticalityDiagnostics     *CriticalityDiagnostics     `optional,ignore`
+	BroadcastCancelledAreaList *BroadcastCancelledAreaList `optional,mandatory,ignore`
+	CriticalityDiagnostics     *CriticalityDiagnostics     `optional,mandatory,ignore`
 }
 
 func (msg *PWSCancelResponse) Encode(w io.Writer) (err error) {

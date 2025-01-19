@@ -14,22 +14,22 @@ type HandoverRequest struct {
 	HandoverType                                HandoverType                                 `mandatory,reject`
 	Cause                                       Cause                                        `mandatory,ignore`
 	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `mandatory,reject`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,mandatory,ignore`
 	UESecurityCapabilities                      UESecurityCapabilities                       `mandatory,reject`
 	SecurityContext                             SecurityContext                              `mandatory,reject`
-	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,reject`
-	NASC                                        []byte                                       `lb:0,ub:0,optional,reject`
+	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,mandatory,reject`
+	NASC                                        []byte                                       `lb:0,ub:0,optional,mandatory,reject`
 	PDUSessionResourceSetupListHOReq            []PDUSessionResourceSetupItemHOReq           `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
 	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
-	TraceActivation                             *TraceActivation                             `optional,ignore`
-	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,ignore`
+	TraceActivation                             *TraceActivation                             `optional,mandatory,ignore`
+	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,mandatory,ignore`
 	SourceToTargetTransparentContainer          []byte                                       `lb:0,ub:0,mandatory,reject`
-	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,ignore`
-	LocationReportingRequestType                *LocationReportingRequestType                `optional,ignore`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,mandatory,ignore`
+	LocationReportingRequestType                *LocationReportingRequestType                `optional,mandatory,ignore`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,mandatory,ignore`
 	GUAMI                                       GUAMI                                        `mandatory,reject`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,mandatory,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,mandatory,ignore`
 }
 
 func (msg *HandoverRequest) Encode(w io.Writer) (err error) {

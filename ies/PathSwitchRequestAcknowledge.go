@@ -12,17 +12,17 @@ import (
 type PathSwitchRequestAcknowledge struct {
 	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,ignore`
-	UESecurityCapabilities                      *UESecurityCapabilities                      `optional,reject`
+	UESecurityCapabilities                      *UESecurityCapabilities                      `optional,mandatory,reject`
 	SecurityContext                             SecurityContext                              `mandatory,reject`
-	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,reject`
+	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,mandatory,reject`
 	PDUSessionResourceSwitchedList              []PDUSessionResourceSwitchedItem             `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
-	PDUSessionResourceReleasedListPSAck         []PDUSessionResourceReleasedItemPSAck        `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceReleasedListPSAck         []PDUSessionResourceReleasedItemPSAck        `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
 	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
-	CriticalityDiagnostics                      *CriticalityDiagnostics                      `optional,ignore`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,mandatory,ignore`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,mandatory,ignore`
+	CriticalityDiagnostics                      *CriticalityDiagnostics                      `optional,mandatory,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,mandatory,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,mandatory,ignore`
 }
 
 func (msg *PathSwitchRequestAcknowledge) Encode(w io.Writer) (err error) {

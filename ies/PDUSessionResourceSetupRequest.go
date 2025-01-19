@@ -12,10 +12,10 @@ import (
 type PDUSessionResourceSetupRequest struct {
 	AMFUENGAPID                      int64                              `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                      int64                              `lb:0,ub:4294967295,mandatory,reject`
-	RANPagingPriority                *int64                             `lb:1,ub:256,optional,ignore`
-	NASPDU                           []byte                             `lb:0,ub:0,optional,reject`
+	RANPagingPriority                *int64                             `lb:1,ub:256,optional,mandatory,ignore`
+	NASPDU                           []byte                             `lb:0,ub:0,optional,mandatory,reject`
 	PDUSessionResourceSetupListSUReq []PDUSessionResourceSetupItemSUReq `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
-	UEAggregateMaximumBitRate        *UEAggregateMaximumBitRate         `optional,ignore`
+	UEAggregateMaximumBitRate        *UEAggregateMaximumBitRate         `optional,mandatory,ignore`
 }
 
 func (msg *PDUSessionResourceSetupRequest) Encode(w io.Writer) (err error) {

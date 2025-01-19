@@ -13,11 +13,11 @@ type HandoverCommand struct {
 	AMFUENGAPID                          int64                                  `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                          int64                                  `lb:0,ub:4294967295,mandatory,reject`
 	HandoverType                         HandoverType                           `mandatory,reject`
-	NASSecurityParametersFromNGRAN       []byte                                 `lb:0,ub:0,mandatory,reject`
-	PDUSessionResourceHandoverList       []PDUSessionResourceHandoverItem       `lb:1,ub:maxnoofPDUSessions,optional,ignore`
-	PDUSessionResourceToReleaseListHOCmd []PDUSessionResourceToReleaseItemHOCmd `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	NASSecurityParametersFromNGRAN       []byte                                 `lb:0,ub:0,conditional,reject`
+	PDUSessionResourceHandoverList       []PDUSessionResourceHandoverItem       `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
+	PDUSessionResourceToReleaseListHOCmd []PDUSessionResourceToReleaseItemHOCmd `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
 	TargetToSourceTransparentContainer   []byte                                 `lb:0,ub:0,mandatory,reject`
-	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,ignore`
+	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,mandatory,ignore`
 }
 
 func (msg *HandoverCommand) Encode(w io.Writer) (err error) {
@@ -50,14 +50,16 @@ func (msg *HandoverCommand) toIes() (ies []NgapMessageIE, err error) {
 		Criticality: Criticality{Value: Criticality_PresentReject},
 		Value:       &msg.HandoverType,
 	})
-	ies = append(ies, NgapMessageIE{
-		Id:          ProtocolIEID{Value: ProtocolIEID_NASSecurityParametersFromNGRAN},
-		Criticality: Criticality{Value: Criticality_PresentReject},
-		Value: &OCTETSTRING{
-			c:     aper.Constraint{Lb: 0, Ub: 0},
-			ext:   false,
-			Value: msg.NASSecurityParametersFromNGRAN,
-		}})
+	if msg.NASSecurityParametersFromNGRAN != nil {
+		ies = append(ies, NgapMessageIE{
+			Id:          ProtocolIEID{Value: ProtocolIEID_NASSecurityParametersFromNGRAN},
+			Criticality: Criticality{Value: Criticality_PresentReject},
+			Value: &OCTETSTRING{
+				c:     aper.Constraint{Lb: 0, Ub: 0},
+				ext:   false,
+				Value: msg.NASSecurityParametersFromNGRAN,
+			}})
+	}
 	if len(msg.PDUSessionResourceHandoverList) > 0 {
 		tmp_PDUSessionResourceHandoverList := Sequence[*PDUSessionResourceHandoverItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},
@@ -141,15 +143,6 @@ func (msg *HandoverCommand) Decode(wire []byte) (err error, diagList []Criticali
 		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
 			IECriticality: Criticality{Value: Criticality_PresentReject},
 			IEID:          ProtocolIEID{Value: ProtocolIEID_HandoverType},
-			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
-		})
-		return
-	}
-	if _, ok := decoder.list[ProtocolIEID_NASSecurityParametersFromNGRAN]; !ok {
-		err = fmt.Errorf("Mandatory field NASSecurityParametersFromNGRAN is missing")
-		decoder.diagList = append(decoder.diagList, CriticalityDiagnosticsIEItem{
-			IECriticality: Criticality{Value: Criticality_PresentReject},
-			IEID:          ProtocolIEID{Value: ProtocolIEID_NASSecurityParametersFromNGRAN},
 			TypeOfError:   TypeOfError{Value: TypeOfErrorMissing},
 		})
 		return

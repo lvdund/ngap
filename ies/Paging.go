@@ -11,12 +11,12 @@ import (
 
 type Paging struct {
 	UEPagingIdentity           UEPagingIdentity            `mandatory,ignore`
-	PagingDRX                  *PagingDRX                  `optional,ignore`
+	PagingDRX                  *PagingDRX                  `optional,mandatory,ignore`
 	TAIListForPaging           []TAIListForPagingItem      `lb:1,ub:maxnoofTAIforPaging,mandatory,ignore`
-	PagingPriority             *PagingPriority             `optional,ignore`
-	UERadioCapabilityForPaging *UERadioCapabilityForPaging `optional,ignore`
-	PagingOrigin               *PagingOrigin               `optional,ignore`
-	AssistanceDataForPaging    *AssistanceDataForPaging    `optional,ignore`
+	PagingPriority             *PagingPriority             `optional,mandatory,ignore`
+	UERadioCapabilityForPaging *UERadioCapabilityForPaging `optional,mandatory,ignore`
+	PagingOrigin               *PagingOrigin               `optional,mandatory,ignore`
+	AssistanceDataForPaging    *AssistanceDataForPaging    `optional,mandatory,ignore`
 }
 
 func (msg *Paging) Encode(w io.Writer) (err error) {

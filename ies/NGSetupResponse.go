@@ -14,8 +14,8 @@ type NGSetupResponse struct {
 	ServedGUAMIList        []ServedGUAMIItem       `lb:1,ub:maxnoofServedGUAMIs,mandatory,reject`
 	RelativeAMFCapacity    int64                   `lb:0,ub:255,mandatory,ignore`
 	PLMNSupportList        []PLMNSupportItem       `lb:1,ub:maxnoofPLMNs,mandatory,reject`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
-	UERetentionInformation *UERetentionInformation `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
+	UERetentionInformation *UERetentionInformation `optional,mandatory,ignore`
 }
 
 func (msg *NGSetupResponse) Encode(w io.Writer) (err error) {

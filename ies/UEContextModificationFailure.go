@@ -13,7 +13,7 @@ type UEContextModificationFailure struct {
 	AMFUENGAPID            int64                   `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID            int64                   `lb:0,ub:4294967295,mandatory,ignore`
 	Cause                  Cause                   `mandatory,ignore`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
 }
 
 func (msg *UEContextModificationFailure) Encode(w io.Writer) (err error) {

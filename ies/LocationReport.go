@@ -13,7 +13,7 @@ type LocationReport struct {
 	AMFUENGAPID                    int64                            `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                    int64                            `lb:0,ub:4294967295,mandatory,reject`
 	UserLocationInformation        UserLocationInformation          `mandatory,ignore`
-	UEPresenceInAreaOfInterestList []UEPresenceInAreaOfInterestItem `lb:1,ub:maxnoofAoI,optional,ignore`
+	UEPresenceInAreaOfInterestList []UEPresenceInAreaOfInterestItem `lb:1,ub:maxnoofAoI,optional,mandatory,ignore`
 	LocationReportingRequestType   LocationReportingRequestType     `mandatory,ignore`
 }
 

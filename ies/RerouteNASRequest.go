@@ -11,11 +11,11 @@ import (
 
 type RerouteNASRequest struct {
 	RANUENGAPID                         int64                                `lb:0,ub:4294967295,mandatory,reject`
-	AMFUENGAPID                         *int64                               `lb:0,ub:1099511627775,optional,ignore`
+	AMFUENGAPID                         *int64                               `lb:0,ub:1099511627775,optional,mandatory,ignore`
 	NGAPMessage                         []byte                               `lb:0,ub:0,mandatory,reject`
 	AMFSetID                            []byte                               `lb:10,ub:10,mandatory,reject`
-	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
-	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,ignore`
+	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,mandatory,reject`
+	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,mandatory,ignore`
 }
 
 func (msg *RerouteNASRequest) Encode(w io.Writer) (err error) {

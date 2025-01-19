@@ -10,8 +10,8 @@ import (
 )
 
 type NGResetAcknowledge struct {
-	UEassociatedLogicalNGconnectionList []UEassociatedLogicalNGconnectionItem `lb:1,ub:maxnoofNGConnectionsToReset,optional,ignore`
-	CriticalityDiagnostics              *CriticalityDiagnostics               `optional,ignore`
+	UEassociatedLogicalNGconnectionList []UEassociatedLogicalNGconnectionItem `lb:1,ub:maxnoofNGConnectionsToReset,optional,mandatory,ignore`
+	CriticalityDiagnostics              *CriticalityDiagnostics               `optional,mandatory,ignore`
 }
 
 func (msg *NGResetAcknowledge) Encode(w io.Writer) (err error) {

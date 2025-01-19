@@ -13,8 +13,8 @@ type PDUSessionResourceReleaseResponse struct {
 	AMFUENGAPID                          int64                                  `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                          int64                                  `lb:0,ub:4294967295,mandatory,ignore`
 	PDUSessionResourceReleasedListRelRes []PDUSessionResourceReleasedItemRelRes `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
-	UserLocationInformation              *UserLocationInformation               `optional,ignore`
-	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,ignore`
+	UserLocationInformation              *UserLocationInformation               `optional,mandatory,ignore`
+	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,mandatory,ignore`
 }
 
 func (msg *PDUSessionResourceReleaseResponse) Encode(w io.Writer) (err error) {

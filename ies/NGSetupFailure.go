@@ -11,8 +11,8 @@ import (
 
 type NGSetupFailure struct {
 	Cause                  Cause                   `mandatory,ignore`
-	TimeToWait             *TimeToWait             `optional,ignore`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
+	TimeToWait             *TimeToWait             `optional,mandatory,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
 }
 
 func (msg *NGSetupFailure) Encode(w io.Writer) (err error) {

@@ -10,13 +10,13 @@ import (
 )
 
 type AMFConfigurationUpdate struct {
-	AMFName                       []byte                          `lb:1,ub:150,optional,reject,valueExt`
-	ServedGUAMIList               []ServedGUAMIItem               `lb:1,ub:maxnoofServedGUAMIs,optional,reject`
-	RelativeAMFCapacity           *int64                          `lb:0,ub:255,optional,ignore`
-	PLMNSupportList               []PLMNSupportItem               `lb:1,ub:maxnoofPLMNs,optional,reject`
-	AMFTNLAssociationToAddList    []AMFTNLAssociationToAddItem    `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
-	AMFTNLAssociationToRemoveList []AMFTNLAssociationToRemoveItem `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
-	AMFTNLAssociationToUpdateList []AMFTNLAssociationToUpdateItem `lb:1,ub:maxnoofTNLAssociations,optional,ignore`
+	AMFName                       []byte                          `lb:1,ub:150,optional,mandatory,reject,valueExt`
+	ServedGUAMIList               []ServedGUAMIItem               `lb:1,ub:maxnoofServedGUAMIs,optional,mandatory,reject`
+	RelativeAMFCapacity           *int64                          `lb:0,ub:255,optional,mandatory,ignore`
+	PLMNSupportList               []PLMNSupportItem               `lb:1,ub:maxnoofPLMNs,optional,mandatory,reject`
+	AMFTNLAssociationToAddList    []AMFTNLAssociationToAddItem    `lb:1,ub:maxnoofTNLAssociations,optional,mandatory,ignore`
+	AMFTNLAssociationToRemoveList []AMFTNLAssociationToRemoveItem `lb:1,ub:maxnoofTNLAssociations,optional,mandatory,ignore`
+	AMFTNLAssociationToUpdateList []AMFTNLAssociationToUpdateItem `lb:1,ub:maxnoofTNLAssociations,optional,mandatory,ignore`
 }
 
 func (msg *AMFConfigurationUpdate) Encode(w io.Writer) (err error) {
