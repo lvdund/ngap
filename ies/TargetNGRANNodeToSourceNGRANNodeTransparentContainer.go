@@ -13,7 +13,8 @@ type TargetNGRANNodeToSourceNGRANNodeTransparentContainer struct {
 }
 
 func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -24,6 +25,8 @@ func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Encode() (b []by
 		err = utils.WrapError("Encode RRCContainer", err)
 		return
 	}
+	err = w.Close()
+	b = buf.Bytes()
 	return
 }
 func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Decode(wire []byte) (err error) {

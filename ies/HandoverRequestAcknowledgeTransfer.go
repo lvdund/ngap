@@ -18,7 +18,8 @@ type HandoverRequestAcknowledgeTransfer struct {
 }
 
 func (ie *HandoverRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -97,6 +98,8 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
 			return
 		}
 	}
+	err = w.Close()
+	b = buf.Bytes()
 	return
 }
 func (ie *HandoverRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {

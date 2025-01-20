@@ -13,7 +13,8 @@ type HandoverPreparationUnsuccessfulTransfer struct {
 }
 
 func (ie *HandoverPreparationUnsuccessfulTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -23,6 +24,8 @@ func (ie *HandoverPreparationUnsuccessfulTransfer) Encode() (b []byte, err error
 		err = utils.WrapError("Encode Cause", err)
 		return
 	}
+	err = w.Close()
+	b = buf.Bytes()
 	return
 }
 func (ie *HandoverPreparationUnsuccessfulTransfer) Decode(wire []byte) (err error) {

@@ -13,7 +13,8 @@ type PathSwitchRequestUnsuccessfulTransfer struct {
 }
 
 func (ie *PathSwitchRequestUnsuccessfulTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -23,6 +24,8 @@ func (ie *PathSwitchRequestUnsuccessfulTransfer) Encode() (b []byte, err error) 
 		err = utils.WrapError("Encode Cause", err)
 		return
 	}
+	err = w.Close()
+	b = buf.Bytes()
 	return
 }
 func (ie *PathSwitchRequestUnsuccessfulTransfer) Decode(wire []byte) (err error) {

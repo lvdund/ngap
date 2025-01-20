@@ -14,7 +14,8 @@ type HandoverResourceAllocationUnsuccessfulTransfer struct {
 }
 
 func (ie *HandoverResourceAllocationUnsuccessfulTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -33,6 +34,8 @@ func (ie *HandoverResourceAllocationUnsuccessfulTransfer) Encode() (b []byte, er
 			return
 		}
 	}
+	err = w.Close()
+	b = buf.Bytes()
 	return
 }
 func (ie *HandoverResourceAllocationUnsuccessfulTransfer) Decode(wire []byte) (err error) {

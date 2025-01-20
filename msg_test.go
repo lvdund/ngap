@@ -1,10 +1,12 @@
 package ngap
 
 import (
+	"encoding/binary"
 	"fmt"
 	"testing"
 
 	"github.com/lvdund/ngap/ies"
+	"github.com/lvdund/ngap/utils"
 )
 
 func Test_NGSetupRequest(t *testing.T) {
@@ -132,4 +134,36 @@ func TestM2(t *testing.T) {
 		return
 	}
 	fmt.Println(b)
+}
+
+func TestTransfer1(t *testing.T) {
+	fmt.Println(getPDUSessionResourceSetupResponseTransfer("192.168.1.1", 1, 1))
+}
+
+func getPDUSessionResourceSetupResponseTransfer(ipv4 string, teid uint32, qosId int64) []byte {
+	data := ies.PDUSessionResourceSetupResponseTransfer{}
+
+	dowlinkTeid := make([]byte, 4)
+	binary.BigEndian.PutUint32(dowlinkTeid, teid)
+	ipNgap := utils.IPAddressToNgap(ipv4, "")
+	data.DLQosFlowPerTNLInformation = ies.QosFlowPerTNLInformation{
+		UPTransportLayerInformation: ies.UPTransportLayerInformation{
+			Choice: ies.UPTransportLayerInformationPresentGtptunnel,
+			GTPTunnel: &ies.GTPTunnel{
+				GTPTEID:               dowlinkTeid,
+				TransportLayerAddress: ipNgap,
+			},
+		},
+		AssociatedQosFlowList: []ies.AssociatedQosFlowItem{
+			ies.AssociatedQosFlowItem{QosFlowIdentifier: qosId},
+		},
+	}
+
+	var buf []byte
+	var err error
+	if buf, err = data.Encode(); err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return buf
 }

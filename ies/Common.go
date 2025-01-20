@@ -9,8 +9,8 @@ import (
 )
 
 func encodeTransferMessage(ies []NgapMessageIE) (w []byte, err error) {
-	buffer := bytes.NewBuffer(w)
-	aw := aper.NewWriter(buffer)
+	var buf bytes.Buffer
+	aw := aper.NewWriter(&buf)
 	if err = aw.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -27,6 +27,7 @@ func encodeTransferMessage(ies []NgapMessageIE) (w []byte, err error) {
 	}
 
 	err = aw.Close()
+	w = buf.Bytes()
 	return
 }
 

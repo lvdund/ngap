@@ -16,7 +16,8 @@ type PDUSessionResourceSetupResponseTransfer struct {
 }
 
 func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error) {
-	w := aper.NewWriter(bytes.NewBuffer(b))
+	var buf bytes.Buffer
+	w := aper.NewWriter(&buf)
 	if err = w.WriteBool(aper.Zero); err != nil {
 		return
 	}
@@ -69,6 +70,8 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error
 			return
 		}
 	}
+	err = w.Close()
+	b = buf.Bytes()
 	return
 }
 func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err error) {
