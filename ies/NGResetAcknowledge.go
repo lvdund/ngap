@@ -17,6 +17,7 @@ type NGResetAcknowledge struct {
 func (msg *NGResetAcknowledge) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("NGResetAcknowledge"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_NGReset, Criticality_PresentReject, ies)

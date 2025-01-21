@@ -19,6 +19,7 @@ type PDUSessionResourceModifyRequest struct {
 func (msg *PDUSessionResourceModifyRequest) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PDUSessionResourceModifyRequest"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceModify, Criticality_PresentReject, ies)
@@ -175,7 +176,7 @@ func (decoder *PDUSessionResourceModifyRequestDecoder) decodeIE(r *aper.AperRead
 			err = utils.WrapError("Read RANPagingPriority", err)
 			return
 		}
-		*msg.RANPagingPriority = int64(tmp.Value)
+		msg.RANPagingPriority = (*int64)(&tmp.Value)
 	case ProtocolIEID_PDUSessionResourceModifyListModReq:
 		tmp := Sequence[*PDUSessionResourceModifyItemModReq]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPDUSessions},

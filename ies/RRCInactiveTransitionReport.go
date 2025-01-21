@@ -19,6 +19,7 @@ type RRCInactiveTransitionReport struct {
 func (msg *RRCInactiveTransitionReport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("RRCInactiveTransitionReport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RRCInactiveTransitionReport, Criticality_PresentIgnore, ies)

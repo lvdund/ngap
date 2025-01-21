@@ -22,6 +22,7 @@ type AMFConfigurationUpdate struct {
 func (msg *AMFConfigurationUpdate) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("AMFConfigurationUpdate"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_AMFConfigurationUpdate, Criticality_PresentReject, ies)
@@ -202,7 +203,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 			err = utils.WrapError("Read RelativeAMFCapacity", err)
 			return
 		}
-		*msg.RelativeAMFCapacity = int64(tmp.Value)
+		msg.RelativeAMFCapacity = (*int64)(&tmp.Value)
 	case ProtocolIEID_PLMNSupportList:
 		tmp := Sequence[*PLMNSupportItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofPLMNs},

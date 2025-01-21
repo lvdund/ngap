@@ -18,6 +18,7 @@ type AMFConfigurationUpdateAcknowledge struct {
 func (msg *AMFConfigurationUpdateAcknowledge) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("AMFConfigurationUpdateAcknowledge"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_AMFConfigurationUpdate, Criticality_PresentReject, ies)

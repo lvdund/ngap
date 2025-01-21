@@ -19,6 +19,7 @@ type HandoverPreparationFailure struct {
 func (msg *HandoverPreparationFailure) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("HandoverPreparationFailure"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_HandoverPreparation, Criticality_PresentReject, ies)

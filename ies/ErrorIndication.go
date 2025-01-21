@@ -19,6 +19,7 @@ type ErrorIndication struct {
 func (msg *ErrorIndication) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("ErrorIndication"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_ErrorIndication, Criticality_PresentIgnore, ies)
@@ -119,7 +120,7 @@ func (decoder *ErrorIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			err = utils.WrapError("Read AMFUENGAPID", err)
 			return
 		}
-		*msg.AMFUENGAPID = int64(tmp.Value)
+		msg.AMFUENGAPID = (*int64)(&tmp.Value)
 	case ProtocolIEID_RANUENGAPID:
 		tmp := INTEGER{
 			c:   aper.Constraint{Lb: 0, Ub: 4294967295},
@@ -129,7 +130,7 @@ func (decoder *ErrorIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			err = utils.WrapError("Read RANUENGAPID", err)
 			return
 		}
-		*msg.RANUENGAPID = int64(tmp.Value)
+		msg.RANUENGAPID = (*int64)(&tmp.Value)
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {

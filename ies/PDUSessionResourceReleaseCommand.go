@@ -20,6 +20,7 @@ type PDUSessionResourceReleaseCommand struct {
 func (msg *PDUSessionResourceReleaseCommand) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PDUSessionResourceReleaseCommand"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PDUSessionResourceRelease, Criticality_PresentReject, ies)
@@ -186,7 +187,7 @@ func (decoder *PDUSessionResourceReleaseCommandDecoder) decodeIE(r *aper.AperRea
 			err = utils.WrapError("Read RANPagingPriority", err)
 			return
 		}
-		*msg.RANPagingPriority = int64(tmp.Value)
+		msg.RANPagingPriority = (*int64)(&tmp.Value)
 	case ProtocolIEID_NASPDU:
 		tmp := OCTETSTRING{
 			c:   aper.Constraint{Lb: 0, Ub: 0},

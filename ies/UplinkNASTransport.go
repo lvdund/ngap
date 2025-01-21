@@ -19,6 +19,7 @@ type UplinkNASTransport struct {
 func (msg *UplinkNASTransport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UplinkNASTransport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkNASTransport, Criticality_PresentIgnore, ies)

@@ -18,6 +18,7 @@ type HandoverCancelAcknowledge struct {
 func (msg *HandoverCancelAcknowledge) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("HandoverCancelAcknowledge"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverCancel, Criticality_PresentReject, ies)

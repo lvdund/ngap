@@ -22,6 +22,7 @@ type Paging struct {
 func (msg *Paging) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("Paging"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_Paging, Criticality_PresentIgnore, ies)

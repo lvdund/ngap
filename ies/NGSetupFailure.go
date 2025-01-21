@@ -18,6 +18,7 @@ type NGSetupFailure struct {
 func (msg *NGSetupFailure) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("NGSetupFailure"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_NGSetup, Criticality_PresentReject, ies)

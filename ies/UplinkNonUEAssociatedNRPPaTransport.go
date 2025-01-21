@@ -17,6 +17,7 @@ type UplinkNonUEAssociatedNRPPaTransport struct {
 func (msg *UplinkNonUEAssociatedNRPPaTransport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UplinkNonUEAssociatedNRPPaTransport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkNonUEAssociatedNRPPaTransport, Criticality_PresentIgnore, ies)

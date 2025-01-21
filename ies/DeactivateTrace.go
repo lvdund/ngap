@@ -18,6 +18,7 @@ type DeactivateTrace struct {
 func (msg *DeactivateTrace) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("DeactivateTrace"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DeactivateTrace, Criticality_PresentIgnore, ies)

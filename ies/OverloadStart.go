@@ -18,6 +18,7 @@ type OverloadStart struct {
 func (msg *OverloadStart) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("OverloadStart"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_OverloadStart, Criticality_PresentIgnore, ies)
@@ -122,7 +123,7 @@ func (decoder *OverloadStartDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMe
 			err = utils.WrapError("Read AMFTrafficLoadReductionIndication", err)
 			return
 		}
-		*msg.AMFTrafficLoadReductionIndication = int64(tmp.Value)
+		msg.AMFTrafficLoadReductionIndication = (*int64)(&tmp.Value)
 	case ProtocolIEID_OverloadStartNSSAIList:
 		tmp := Sequence[*OverloadStartNSSAIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofSliceItems},

@@ -21,6 +21,7 @@ type RerouteNASRequest struct {
 func (msg *RerouteNASRequest) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("RerouteNASRequest"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RerouteNASRequest, Criticality_PresentReject, ies)
@@ -180,7 +181,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			err = utils.WrapError("Read AMFUENGAPID", err)
 			return
 		}
-		*msg.AMFUENGAPID = int64(tmp.Value)
+		msg.AMFUENGAPID = (*int64)(&tmp.Value)
 	case ProtocolIEID_NGAPMessage:
 		tmp := OCTETSTRING{
 			c:   aper.Constraint{Lb: 0, Ub: 0},

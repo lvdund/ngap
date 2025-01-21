@@ -19,6 +19,7 @@ type PathSwitchRequestFailure struct {
 func (msg *PathSwitchRequestFailure) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PathSwitchRequestFailure"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, ies)

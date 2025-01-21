@@ -37,6 +37,7 @@ type InitialContextSetupRequest struct {
 func (msg *InitialContextSetupRequest) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("InitialContextSetupRequest"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_InitialContextSetup, Criticality_PresentReject, ies)
@@ -464,7 +465,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read IndexToRFSP", err)
 			return
 		}
-		*msg.IndexToRFSP = int64(tmp.Value)
+		msg.IndexToRFSP = (*int64)(&tmp.Value)
 	case ProtocolIEID_MaskedIMEISV:
 		tmp := BITSTRING{
 			c:   aper.Constraint{Lb: 64, Ub: 64},

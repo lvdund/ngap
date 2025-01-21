@@ -20,6 +20,7 @@ type PDUSessionResourceReleaseResponse struct {
 func (msg *PDUSessionResourceReleaseResponse) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PDUSessionResourceReleaseResponse"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceRelease, Criticality_PresentReject, ies)

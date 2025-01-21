@@ -18,6 +18,7 @@ type DownlinkRANStatusTransfer struct {
 func (msg *DownlinkRANStatusTransfer) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("DownlinkRANStatusTransfer"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkRANStatusTransfer, Criticality_PresentIgnore, ies)

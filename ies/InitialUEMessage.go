@@ -25,6 +25,7 @@ type InitialUEMessage struct {
 func (msg *InitialUEMessage) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("InitialUEMessage"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_InitialUEMessage, Criticality_PresentIgnore, ies)

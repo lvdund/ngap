@@ -19,6 +19,7 @@ type PWSCancelResponse struct {
 func (msg *PWSCancelResponse) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PWSCancelResponse"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PWSCancel, Criticality_PresentReject, ies)

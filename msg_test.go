@@ -167,3 +167,55 @@ func getPDUSessionResourceSetupResponseTransfer(ipv4 string, teid uint32, qosId 
 	}
 	return buf
 }
+
+// PathSwitchRequest
+func Test_PathSwitchRequest(t *testing.T) {
+	msg := ies.PathSwitchRequest{
+		SourceAMFUENGAPID: 1,
+		RANUENGAPID:       1,
+		PDUSessionResourceToBeSwitchedDLList: []ies.PDUSessionResourceToBeSwitchedDLItem{ies.PDUSessionResourceToBeSwitchedDLItem{
+			PDUSessionID:              1,
+			PathSwitchRequestTransfer: []byte{0, 31, 192, 168, 56, 121, 0, 0, 0, 1, 0, 6},
+		}},
+		UESecurityCapabilities: ies.UESecurityCapabilities{
+			NRencryptionAlgorithms:             []byte{64, 0},
+			NRintegrityProtectionAlgorithms:    []byte{64, 0},
+			EUTRAencryptionAlgorithms:          []byte{0, 0},
+			EUTRAintegrityProtectionAlgorithms: []byte{0, 0},
+		},
+		UserLocationInformation: ies.UserLocationInformation{
+			Choice: 2,
+			UserLocationInformationNR: &ies.UserLocationInformationNR{
+				NRCGI: ies.NRCGI{
+					PLMNIdentity:   []byte{2, 248, 57},
+					NRCellIdentity: []byte{0, 0, 8, 0, 0},
+				},
+				TAI: ies.TAI{
+					PLMNIdentity: []byte{2, 248, 57},
+					TAC:          []byte{0, 0, 1},
+				},
+			},
+		},
+	}
+	ngapPdu, err := NgapEncode(&msg)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(ngapPdu)
+}
+func TestError(t *testing.T) {
+	// PathSwitchRequest
+	// b := []byte{0, 25, 0, 67, 0, 0, 5, 0, 85, 0, 2, 0, 1, 0, 100, 0, 2, 0, 4, 0, 121, 64, 15, 64, 2, 248, 57, 0, 0, 8, 0, 0, 2, 248, 57, 0, 0, 1, 0, 119, 64, 9, 8, 0, 4, 0, 0, 0, 0, 0, 0, 0, 76, 0, 16, 0, 0, 1, 12, 0, 31, 192, 168, 56, 121, 0, 0, 0, 1, 0, 6}
+
+	// PathSwitchRequestAcknowledge
+	b := []byte{32, 25, 0, 97, 0, 0, 6, 0, 10, 64, 2, 0, 1, 0, 85, 64, 2, 0, 1, 0, 119, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 93, 0, 33, 16, 179, 41, 230, 110, 213, 7, 205, 244, 63, 229, 2, 141, 85, 221, 53, 117, 34, 135, 111, 98, 120, 8, 169, 19, 86, 117, 83, 61, 102, 150, 88, 114, 0, 77, 64, 14, 0, 0, 1, 10, 64, 31, 192, 168, 56, 101, 0, 0, 0, 2, 0, 0, 0, 10, 34, 1, 1, 2, 3, 16, 8, 17, 34, 51}
+	ngap, err, cri := NgapDecode(b)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println(cri)
+	}
+	fmt.Println(ngap.Message.ProcedureCode)
+	msg := ngap.Message.Msg.(*ies.PathSwitchRequestAcknowledge)
+	fmt.Println(msg)
+}

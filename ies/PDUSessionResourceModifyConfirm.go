@@ -20,6 +20,7 @@ type PDUSessionResourceModifyConfirm struct {
 func (msg *PDUSessionResourceModifyConfirm) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PDUSessionResourceModifyConfirm"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PDUSessionResourceModifyIndication, Criticality_PresentReject, ies)

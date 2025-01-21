@@ -17,6 +17,7 @@ type PWSFailureIndication struct {
 func (msg *PWSFailureIndication) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PWSFailureIndication"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_PWSFailureIndication, Criticality_PresentIgnore, ies)

@@ -23,6 +23,7 @@ type HandoverCommand struct {
 func (msg *HandoverCommand) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("HandoverCommand"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_HandoverPreparation, Criticality_PresentReject, ies)

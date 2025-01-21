@@ -28,6 +28,7 @@ type UEContextModificationRequest struct {
 func (msg *UEContextModificationRequest) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UEContextModificationRequest"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UEContextModification, Criticality_PresentReject, ies)
@@ -238,7 +239,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			err = utils.WrapError("Read RANPagingPriority", err)
 			return
 		}
-		*msg.RANPagingPriority = int64(tmp.Value)
+		msg.RANPagingPriority = (*int64)(&tmp.Value)
 	case ProtocolIEID_SecurityKey:
 		tmp := BITSTRING{
 			c:   aper.Constraint{Lb: 256, Ub: 256},
@@ -258,7 +259,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			err = utils.WrapError("Read IndexToRFSP", err)
 			return
 		}
-		*msg.IndexToRFSP = int64(tmp.Value)
+		msg.IndexToRFSP = (*int64)(&tmp.Value)
 	case ProtocolIEID_UEAggregateMaximumBitRate:
 		var tmp UEAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {
@@ -296,7 +297,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			err = utils.WrapError("Read NewAMFUENGAPID", err)
 			return
 		}
-		*msg.NewAMFUENGAPID = int64(tmp.Value)
+		msg.NewAMFUENGAPID = (*int64)(&tmp.Value)
 	case ProtocolIEID_RRCInactiveTransitionReportRequest:
 		var tmp RRCInactiveTransitionReportRequest
 		if err = tmp.Decode(ieR); err != nil {

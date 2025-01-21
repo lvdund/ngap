@@ -16,6 +16,7 @@ type AMFStatusIndication struct {
 func (msg *AMFStatusIndication) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("AMFStatusIndication"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_AMFStatusIndication, Criticality_PresentIgnore, ies)

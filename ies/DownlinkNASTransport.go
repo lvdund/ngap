@@ -24,6 +24,7 @@ type DownlinkNASTransport struct {
 func (msg *DownlinkNASTransport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("DownlinkNASTransport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkNASTransport, Criticality_PresentIgnore, ies)
@@ -229,7 +230,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			err = utils.WrapError("Read RANPagingPriority", err)
 			return
 		}
-		*msg.RANPagingPriority = int64(tmp.Value)
+		msg.RANPagingPriority = (*int64)(&tmp.Value)
 	case ProtocolIEID_NASPDU:
 		tmp := OCTETSTRING{
 			c:   aper.Constraint{Lb: 0, Ub: 0},
@@ -256,7 +257,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			err = utils.WrapError("Read IndexToRFSP", err)
 			return
 		}
-		*msg.IndexToRFSP = int64(tmp.Value)
+		msg.IndexToRFSP = (*int64)(&tmp.Value)
 	case ProtocolIEID_UEAggregateMaximumBitRate:
 		var tmp UEAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {

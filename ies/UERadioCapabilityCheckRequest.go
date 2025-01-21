@@ -18,6 +18,7 @@ type UERadioCapabilityCheckRequest struct {
 func (msg *UERadioCapabilityCheckRequest) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UERadioCapabilityCheckRequest"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UERadioCapabilityCheck, Criticality_PresentReject, ies)

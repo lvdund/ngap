@@ -19,6 +19,7 @@ type UEContextModificationFailure struct {
 func (msg *UEContextModificationFailure) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UEContextModificationFailure"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduUnsuccessfulOutcome, ProcedureCode_UEContextModification, Criticality_PresentReject, ies)

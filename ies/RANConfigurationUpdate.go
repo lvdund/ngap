@@ -20,6 +20,7 @@ type RANConfigurationUpdate struct {
 func (msg *RANConfigurationUpdate) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("RANConfigurationUpdate"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_RANConfigurationUpdate, Criticality_PresentReject, ies)

@@ -20,6 +20,7 @@ type InitialContextSetupResponse struct {
 func (msg *InitialContextSetupResponse) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("InitialContextSetupResponse"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_InitialContextSetup, Criticality_PresentReject, ies)

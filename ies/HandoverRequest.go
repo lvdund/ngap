@@ -35,6 +35,7 @@ type HandoverRequest struct {
 func (msg *HandoverRequest) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("HandoverRequest"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_HandoverResourceAllocation, Criticality_PresentReject, ies)

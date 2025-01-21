@@ -20,6 +20,7 @@ type CellTrafficTrace struct {
 func (msg *CellTrafficTrace) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("CellTrafficTrace"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_CellTrafficTrace, Criticality_PresentIgnore, ies)

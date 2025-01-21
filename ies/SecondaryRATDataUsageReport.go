@@ -20,6 +20,7 @@ type SecondaryRATDataUsageReport struct {
 func (msg *SecondaryRATDataUsageReport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("SecondaryRATDataUsageReport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_SecondaryRATDataUsageReport, Criticality_PresentIgnore, ies)

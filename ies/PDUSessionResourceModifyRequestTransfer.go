@@ -192,7 +192,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 			err = utils.WrapError("Read NetworkInstance", err)
 			return
 		}
-		*msg.NetworkInstance = int64(tmp.Value)
+		msg.NetworkInstance = (*int64)(&tmp.Value)
 	case ProtocolIEID_QosFlowAddOrModifyRequestList:
 		tmp := Sequence[*QosFlowAddOrModifyRequestItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},

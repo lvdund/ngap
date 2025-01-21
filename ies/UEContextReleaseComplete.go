@@ -21,6 +21,7 @@ type UEContextReleaseComplete struct {
 func (msg *UEContextReleaseComplete) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UEContextReleaseComplete"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_UEContextRelease, Criticality_PresentReject, ies)

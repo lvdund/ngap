@@ -28,6 +28,7 @@ type PathSwitchRequestAcknowledge struct {
 func (msg *PathSwitchRequestAcknowledge) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("PathSwitchRequestAcknowledge"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_PathSwitchRequest, Criticality_PresentReject, ies)

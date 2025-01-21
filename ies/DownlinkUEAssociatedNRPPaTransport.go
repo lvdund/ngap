@@ -19,6 +19,7 @@ type DownlinkUEAssociatedNRPPaTransport struct {
 func (msg *DownlinkUEAssociatedNRPPaTransport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("DownlinkUEAssociatedNRPPaTransport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_DownlinkUEAssociatedNRPPaTransport, Criticality_PresentIgnore, ies)

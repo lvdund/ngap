@@ -19,6 +19,7 @@ type UERadioCapabilityInfoIndication struct {
 func (msg *UERadioCapabilityInfoIndication) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UERadioCapabilityInfoIndication"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UERadioCapabilityInfoIndication, Criticality_PresentIgnore, ies)

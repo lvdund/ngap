@@ -19,6 +19,7 @@ type WriteReplaceWarningResponse struct {
 func (msg *WriteReplaceWarningResponse) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("WriteReplaceWarningResponse"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduSuccessfulOutcome, ProcedureCode_WriteReplaceWarning, Criticality_PresentReject, ies)

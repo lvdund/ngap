@@ -19,6 +19,7 @@ type NASNonDeliveryIndication struct {
 func (msg *NASNonDeliveryIndication) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("NASNonDeliveryIndication"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_NASNonDeliveryIndication, Criticality_PresentIgnore, ies)

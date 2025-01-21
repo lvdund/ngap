@@ -18,6 +18,7 @@ type TraceStart struct {
 func (msg *TraceStart) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("TraceStart"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_TraceStart, Criticality_PresentIgnore, ies)

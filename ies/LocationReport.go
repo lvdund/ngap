@@ -20,6 +20,7 @@ type LocationReport struct {
 func (msg *LocationReport) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("LocationReport"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_LocationReport, Criticality_PresentIgnore, ies)

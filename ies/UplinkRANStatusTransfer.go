@@ -18,6 +18,7 @@ type UplinkRANStatusTransfer struct {
 func (msg *UplinkRANStatusTransfer) Encode(w io.Writer) (err error) {
 	var ies []NgapMessageIE
 	if ies, err = msg.toIes(); err != nil {
+		err = msgErrors(fmt.Errorf("UplinkRANStatusTransfer"), err)
 		return
 	}
 	return encodeMessage(w, NgapPduInitiatingMessage, ProcedureCode_UplinkRANStatusTransfer, Criticality_PresentIgnore, ies)
