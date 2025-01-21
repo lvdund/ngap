@@ -74,22 +74,28 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.ExpectedUEActivityBehaviour.Decode(r); err != nil {
+		tmp := new(ExpectedUEActivityBehaviour)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedUEActivityBehaviour", err)
 			return
 		}
+		ie.ExpectedUEActivityBehaviour = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.ExpectedHOInterval.Decode(r); err != nil {
+		tmp := new(ExpectedHOInterval)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedHOInterval", err)
 			return
 		}
+		ie.ExpectedHOInterval = tmp
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.ExpectedUEMobility.Decode(r); err != nil {
+		tmp := new(ExpectedUEMobility)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedUEMobility", err)
 			return
 		}
+		ie.ExpectedUEMobility = tmp
 	}
 	if aper.IsBitSet(optionals, 4) {
 		tmp_ExpectedUEMovingTrajectory := Sequence[*ExpectedUEMovingTrajectoryItem]{

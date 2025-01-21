@@ -76,10 +76,12 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 		ie.AdditionalQosFlowSetupResponseList = append(ie.AdditionalQosFlowSetupResponseList, *i)
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.AdditionalDLForwardingUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read AdditionalDLForwardingUPTNLInformation", err)
 			return
 		}
+		ie.AdditionalDLForwardingUPTNLInformation = tmp
 	}
 	return
 }

@@ -103,10 +103,12 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 		}
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.SecurityResult.Decode(r); err != nil {
+		tmp := new(SecurityResult)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read SecurityResult", err)
 			return
 		}
+		ie.SecurityResult = tmp
 	}
 	if aper.IsBitSet(optionals, 3) {
 		tmp_QosFlowFailedToSetupList := Sequence[*QosFlowWithCauseItem]{

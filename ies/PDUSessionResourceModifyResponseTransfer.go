@@ -107,16 +107,20 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DLNGUUPTNLInformation", err)
 			return
 		}
+		ie.DLNGUUPTNLInformation = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 			return
 		}
+		ie.ULNGUUPTNLInformation = tmp
 	}
 	if aper.IsBitSet(optionals, 3) {
 		tmp_QosFlowAddOrModifyResponseList := Sequence[*QosFlowAddOrModifyResponseItem]{

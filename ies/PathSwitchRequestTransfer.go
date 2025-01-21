@@ -80,16 +80,20 @@ func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DLNGUTNLInformationReused.Decode(r); err != nil {
+		tmp := new(DLNGUTNLInformationReused)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DLNGUTNLInformationReused", err)
 			return
 		}
+		ie.DLNGUTNLInformationReused = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.UserPlaneSecurityInformation.Decode(r); err != nil {
+		tmp := new(UserPlaneSecurityInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read UserPlaneSecurityInformation", err)
 			return
 		}
+		ie.UserPlaneSecurityInformation = tmp
 	}
 	tmp_QosFlowAcceptedList := Sequence[*QosFlowAcceptedItem]{
 		c:   aper.Constraint{Lb: 1, Ub: maxnoofQosFlows},

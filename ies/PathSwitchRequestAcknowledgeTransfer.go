@@ -53,16 +53,20 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Decode(wire []byte) (err error) 
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
 			return
 		}
+		ie.ULNGUUPTNLInformation = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.SecurityIndication.Decode(r); err != nil {
+		tmp := new(SecurityIndication)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read SecurityIndication", err)
 			return
 		}
+		ie.SecurityIndication = tmp
 	}
 	return
 }

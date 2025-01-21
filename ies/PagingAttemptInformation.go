@@ -66,10 +66,12 @@ func (ie *PagingAttemptInformation) Decode(r *aper.AperReader) (err error) {
 	}
 	ie.IntendedNumberOfPagingAttempts = int64(tmp_IntendedNumberOfPagingAttempts.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.NextPagingAreaScope.Decode(r); err != nil {
+		tmp := new(NextPagingAreaScope)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read NextPagingAreaScope", err)
 			return
 		}
+		ie.NextPagingAreaScope = tmp
 	}
 	return
 }

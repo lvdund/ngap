@@ -118,10 +118,12 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 	}
 	ie.GuaranteedFlowBitRateUL = int64(tmp_GuaranteedFlowBitRateUL.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.NotificationControl.Decode(r); err != nil {
+		tmp := new(NotificationControl)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read NotificationControl", err)
 			return
 		}
+		ie.NotificationControl = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_MaximumPacketLossRateDL := INTEGER{

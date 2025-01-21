@@ -74,22 +74,28 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.ProcedureCode.Decode(r); err != nil {
+		tmp := new(ProcedureCode)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ProcedureCode", err)
 			return
 		}
+		ie.ProcedureCode = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.TriggeringMessage.Decode(r); err != nil {
+		tmp := new(TriggeringMessage)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read TriggeringMessage", err)
 			return
 		}
+		ie.TriggeringMessage = tmp
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.ProcedureCriticality.Decode(r); err != nil {
+		tmp := new(Criticality)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ProcedureCriticality", err)
 			return
 		}
+		ie.ProcedureCriticality = tmp
 	}
 	if aper.IsBitSet(optionals, 4) {
 		tmp_IEsCriticalityDiagnostics := Sequence[*CriticalityDiagnosticsIEItem]{

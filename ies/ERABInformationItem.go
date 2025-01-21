@@ -51,10 +51,12 @@ func (ie *ERABInformationItem) Decode(r *aper.AperReader) (err error) {
 	}
 	ie.ERABID = int64(tmp_ERABID.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DLForwarding.Decode(r); err != nil {
+		tmp := new(DLForwarding)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DLForwarding", err)
 			return
 		}
+		ie.DLForwarding = tmp
 	}
 	return
 }

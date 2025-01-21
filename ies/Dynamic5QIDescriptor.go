@@ -119,10 +119,12 @@ func (ie *Dynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 		ie.FiveQI = (*int64)(&tmp_FiveQI.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.DelayCritical.Decode(r); err != nil {
+		tmp := new(DelayCritical)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DelayCritical", err)
 			return
 		}
+		ie.DelayCritical = tmp
 	}
 	if aper.IsBitSet(optionals, 3) {
 		tmp_AveragingWindow := INTEGER{

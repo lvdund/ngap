@@ -43,10 +43,12 @@ func (ie *SecondaryRATDataUsageReportTransfer) Decode(wire []byte) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.SecondaryRATUsageInformation.Decode(r); err != nil {
+		tmp := new(SecondaryRATUsageInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read SecondaryRATUsageInformation", err)
 			return
 		}
+		ie.SecondaryRATUsageInformation = tmp
 	}
 	return
 }

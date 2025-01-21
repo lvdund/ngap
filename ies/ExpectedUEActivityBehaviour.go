@@ -80,10 +80,12 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 		ie.ExpectedIdlePeriod = (*int64)(&tmp_ExpectedIdlePeriod.Value)
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.SourceOfUEActivityBehaviourInformation.Decode(r); err != nil {
+		tmp := new(SourceOfUEActivityBehaviourInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read SourceOfUEActivityBehaviourInformation", err)
 			return
 		}
+		ie.SourceOfUEActivityBehaviourInformation = tmp
 	}
 	return
 }

@@ -79,10 +79,12 @@ func (ie *HandoverCommandTransfer) Decode(wire []byte) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DLForwardingUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
 			return
 		}
+		ie.DLForwardingUPTNLInformation = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_QosFlowToBeForwardedList := Sequence[*QosFlowToBeForwardedItem]{

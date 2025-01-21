@@ -51,10 +51,12 @@ func (ie *AMFTNLAssociationToAddItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.TNLAssociationUsage.Decode(r); err != nil {
+		tmp := new(TNLAssociationUsage)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read TNLAssociationUsage", err)
 			return
 		}
+		ie.TNLAssociationUsage = tmp
 	}
 	tmp_TNLAddressWeightFactor := INTEGER{
 		c:   aper.Constraint{Lb: 0, Ub: 255},

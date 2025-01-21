@@ -56,10 +56,12 @@ func (ie *AMFTNLAssociationToUpdateItem) Decode(r *aper.AperReader) (err error) 
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.TNLAssociationUsage.Decode(r); err != nil {
+		tmp := new(TNLAssociationUsage)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read TNLAssociationUsage", err)
 			return
 		}
+		ie.TNLAssociationUsage = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_TNLAddressWeightFactor := INTEGER{

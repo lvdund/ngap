@@ -36,10 +36,12 @@ func (ie *CNAssistedRANTuning) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.ExpectedUEBehaviour.Decode(r); err != nil {
+		tmp := new(ExpectedUEBehaviour)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedUEBehaviour", err)
 			return
 		}
+		ie.ExpectedUEBehaviour = tmp
 	}
 	return
 }

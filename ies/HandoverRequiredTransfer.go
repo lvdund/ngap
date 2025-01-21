@@ -43,10 +43,12 @@ func (ie *HandoverRequiredTransfer) Decode(wire []byte) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DirectForwardingPathAvailability.Decode(r); err != nil {
+		tmp := new(DirectForwardingPathAvailability)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DirectForwardingPathAvailability", err)
 			return
 		}
+		ie.DirectForwardingPathAvailability = tmp
 	}
 	return
 }

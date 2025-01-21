@@ -74,22 +74,28 @@ func (ie *QosFlowLevelQosParameters) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.GBRQosInformation.Decode(r); err != nil {
+		tmp := new(GBRQosInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read GBRQosInformation", err)
 			return
 		}
+		ie.GBRQosInformation = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.ReflectiveQosAttribute.Decode(r); err != nil {
+		tmp := new(ReflectiveQosAttribute)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ReflectiveQosAttribute", err)
 			return
 		}
+		ie.ReflectiveQosAttribute = tmp
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.AdditionalQosFlowInformation.Decode(r); err != nil {
+		tmp := new(AdditionalQosFlowInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read AdditionalQosFlowInformation", err)
 			return
 		}
+		ie.AdditionalQosFlowInformation = tmp
 	}
 	return
 }

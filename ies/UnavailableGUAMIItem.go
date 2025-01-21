@@ -56,10 +56,12 @@ func (ie *UnavailableGUAMIItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.TimerApproachForGUAMIRemoval.Decode(r); err != nil {
+		tmp := new(TimerApproachForGUAMIRemoval)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read TimerApproachForGUAMIRemoval", err)
 			return
 		}
+		ie.TimerApproachForGUAMIRemoval = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_BackupAMFName := OCTETSTRING{

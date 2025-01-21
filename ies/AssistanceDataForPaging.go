@@ -46,16 +46,20 @@ func (ie *AssistanceDataForPaging) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.AssistanceDataForRecommendedCells.Decode(r); err != nil {
+		tmp := new(AssistanceDataForRecommendedCells)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read AssistanceDataForRecommendedCells", err)
 			return
 		}
+		ie.AssistanceDataForRecommendedCells = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.PagingAttemptInformation.Decode(r); err != nil {
+		tmp := new(PagingAttemptInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read PagingAttemptInformation", err)
 			return
 		}
+		ie.PagingAttemptInformation = tmp
 	}
 	return
 }

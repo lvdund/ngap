@@ -91,10 +91,12 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 		ie.TimeUEStayedInCellEnhancedGranularity = (*int64)(&tmp_TimeUEStayedInCellEnhancedGranularity.Value)
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.HOCauseValue.Decode(r); err != nil {
+		tmp := new(Cause)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read HOCauseValue", err)
 			return
 		}
+		ie.HOCauseValue = tmp
 	}
 	return
 }

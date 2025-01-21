@@ -62,10 +62,12 @@ func (ie *QosFlowAddOrModifyRequestItem) Decode(r *aper.AperReader) (err error) 
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.QosFlowLevelQosParameters.Decode(r); err != nil {
+		tmp := new(QosFlowLevelQosParameters)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read QosFlowLevelQosParameters", err)
 			return
 		}
+		ie.QosFlowLevelQosParameters = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_ERABID := INTEGER{

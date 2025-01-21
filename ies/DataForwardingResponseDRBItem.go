@@ -61,16 +61,20 @@ func (ie *DataForwardingResponseDRBItem) Decode(r *aper.AperReader) (err error) 
 	}
 	ie.DRBID = int64(tmp_DRBID.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DLForwardingUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
 			return
 		}
+		ie.DLForwardingUPTNLInformation = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.ULForwardingUPTNLInformation.Decode(r); err != nil {
+		tmp := new(UPTransportLayerInformation)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ULForwardingUPTNLInformation", err)
 			return
 		}
+		ie.ULForwardingUPTNLInformation = tmp
 	}
 	return
 }

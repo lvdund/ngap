@@ -54,10 +54,12 @@ func (ie *SecurityIndication) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.MaximumIntegrityProtectedDataRateUL.Decode(r); err != nil {
+		tmp := new(MaximumIntegrityProtectedDataRate)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read MaximumIntegrityProtectedDataRateUL", err)
 			return
 		}
+		ie.MaximumIntegrityProtectedDataRateUL = tmp
 	}
 	return
 }

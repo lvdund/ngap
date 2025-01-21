@@ -51,10 +51,12 @@ func (ie *AssociatedQosFlowItem) Decode(r *aper.AperReader) (err error) {
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.QosFlowMappingIndication.Decode(r); err != nil {
+		tmp := new(QosFlowMappingIndication)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read QosFlowMappingIndication", err)
 			return
 		}
+		ie.QosFlowMappingIndication = tmp
 	}
 	return
 }

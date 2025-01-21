@@ -54,10 +54,12 @@ func (ie *SecondaryRATUsageInformation) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.PDUSessionUsageReport.Decode(r); err != nil {
+		tmp := new(PDUSessionUsageReport)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read PDUSessionUsageReport", err)
 			return
 		}
+		ie.PDUSessionUsageReport = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_QosFlowsUsageReportList := Sequence[*QoSFlowsUsageReportItem]{

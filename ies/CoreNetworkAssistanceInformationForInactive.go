@@ -89,10 +89,12 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.UESpecificDRX.Decode(r); err != nil {
+		tmp := new(PagingDRX)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read UESpecificDRX", err)
 			return
 		}
+		ie.UESpecificDRX = tmp
 	}
 	tmp_PeriodicRegistrationUpdateTimer := BITSTRING{
 		c:   aper.Constraint{Lb: 8, Ub: 8},
@@ -104,10 +106,12 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 	}
 	ie.PeriodicRegistrationUpdateTimer = tmp_PeriodicRegistrationUpdateTimer.Value.Bytes
 	if aper.IsBitSet(optionals, 2) {
-		if err = ie.MICOModeIndication.Decode(r); err != nil {
+		tmp := new(MICOModeIndication)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read MICOModeIndication", err)
 			return
 		}
+		ie.MICOModeIndication = tmp
 	}
 	tmp_TAIListForInactive := Sequence[*TAIListForInactiveItem]{
 		c:   aper.Constraint{Lb: 1, Ub: maxnoofTAIforInactive},
@@ -123,10 +127,12 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		ie.TAIListForInactive = append(ie.TAIListForInactive, *i)
 	}
 	if aper.IsBitSet(optionals, 3) {
-		if err = ie.ExpectedUEBehaviour.Decode(r); err != nil {
+		tmp := new(ExpectedUEBehaviour)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ExpectedUEBehaviour", err)
 			return
 		}
+		ie.ExpectedUEBehaviour = tmp
 	}
 	return
 }

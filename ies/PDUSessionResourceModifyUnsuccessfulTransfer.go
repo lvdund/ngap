@@ -52,10 +52,12 @@ func (ie *PDUSessionResourceModifyUnsuccessfulTransfer) Decode(wire []byte) (err
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.CriticalityDiagnostics.Decode(r); err != nil {
+		tmp := new(CriticalityDiagnostics)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read CriticalityDiagnostics", err)
 			return
 		}
+		ie.CriticalityDiagnostics = tmp
 	}
 	return
 }

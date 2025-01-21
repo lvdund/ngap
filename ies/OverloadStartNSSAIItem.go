@@ -78,10 +78,12 @@ func (ie *OverloadStartNSSAIItem) Decode(r *aper.AperReader) (err error) {
 		ie.SliceOverloadList = append(ie.SliceOverloadList, *i)
 	}
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.SliceOverloadResponse.Decode(r); err != nil {
+		tmp := new(OverloadResponse)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read SliceOverloadResponse", err)
 			return
 		}
+		ie.SliceOverloadResponse = tmp
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_SliceTrafficLoadReductionIndication := INTEGER{

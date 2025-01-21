@@ -51,10 +51,12 @@ func (ie *QosFlowItemWithDataForwarding) Decode(r *aper.AperReader) (err error) 
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
-		if err = ie.DataForwardingAccepted.Decode(r); err != nil {
+		tmp := new(DataForwardingAccepted)
+		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read DataForwardingAccepted", err)
 			return
 		}
+		ie.DataForwardingAccepted = tmp
 	}
 	return
 }
