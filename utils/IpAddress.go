@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/sirupsen/logrus"
@@ -52,7 +51,6 @@ func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr []byte) {
 
 	} else if ipv4Addr != "" && ipv6Addr == "" { // ipv4
 		ipv4NetIP := net.ParseIP(ipv4Addr).To4()
-		fmt.Println(ipv4Addr, ipv4NetIP)
 
 		ipBytes := []byte{ipv4NetIP[0], ipv4NetIP[1], ipv4NetIP[2], ipv4NetIP[3]}
 
