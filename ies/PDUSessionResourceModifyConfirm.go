@@ -12,9 +12,9 @@ import (
 type PDUSessionResourceModifyConfirm struct {
 	AMFUENGAPID                                int64                                        `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                                int64                                        `lb:0,ub:4294967295,mandatory,ignore`
-	PDUSessionResourceModifyListModCfm         []PDUSessionResourceModifyItemModCfm         `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	PDUSessionResourceFailedToModifyListModCfm []PDUSessionResourceFailedToModifyItemModCfm `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional,mandatory,ignore`
+	PDUSessionResourceModifyListModCfm         []PDUSessionResourceModifyItemModCfm         `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToModifyListModCfm []PDUSessionResourceFailedToModifyItemModCfm `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional,ignore`
 }
 
 func (msg *PDUSessionResourceModifyConfirm) Encode(w io.Writer) (err error) {

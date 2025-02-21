@@ -11,8 +11,8 @@ import (
 
 type AMFConfigurationUpdateFailure struct {
 	Cause                  Cause                   `mandatory,ignore`
-	TimeToWait             *TimeToWait             `optional,mandatory,ignore`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
+	TimeToWait             *TimeToWait             `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *AMFConfigurationUpdateFailure) Encode(w io.Writer) (err error) {

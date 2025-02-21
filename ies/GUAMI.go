@@ -6,10 +6,10 @@ import (
 )
 
 type GUAMI struct {
-	PLMNIdentity []byte `lb:3,ub:3,madatory`
-	AMFRegionID  []byte `lb:8,ub:8,madatory`
-	AMFSetID     []byte `lb:10,ub:10,madatory`
-	AMFPointer   []byte `lb:6,ub:6,madatory`
+	PLMNIdentity []byte         `lb:3,ub:3,madatory`
+	AMFRegionID  aper.BitString `lb:8,ub:8,madatory`
+	AMFSetID     aper.BitString `lb:10,ub:10,madatory`
+	AMFPointer   aper.BitString `lb:6,ub:6,madatory`
 	// IEExtensions *GUAMIExtIEs `optional`
 }
 
@@ -65,7 +65,7 @@ func (ie *GUAMI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read AMFRegionID", err)
 		return
 	}
-	ie.AMFRegionID = tmp_AMFRegionID.Value.Bytes
+	ie.AMFRegionID = aper.BitString{Bytes: tmp_AMFRegionID.Value.Bytes, NumBits: tmp_AMFRegionID.Value.NumBits}
 	tmp_AMFSetID := BITSTRING{
 		c:   aper.Constraint{Lb: 10, Ub: 10},
 		ext: false,
@@ -74,7 +74,7 @@ func (ie *GUAMI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read AMFSetID", err)
 		return
 	}
-	ie.AMFSetID = tmp_AMFSetID.Value.Bytes
+	ie.AMFSetID = aper.BitString{Bytes: tmp_AMFSetID.Value.Bytes, NumBits: tmp_AMFSetID.Value.NumBits}
 	tmp_AMFPointer := BITSTRING{
 		c:   aper.Constraint{Lb: 6, Ub: 6},
 		ext: false,
@@ -83,6 +83,6 @@ func (ie *GUAMI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read AMFPointer", err)
 		return
 	}
-	ie.AMFPointer = tmp_AMFPointer.Value.Bytes
+	ie.AMFPointer = aper.BitString{Bytes: tmp_AMFPointer.Value.Bytes, NumBits: tmp_AMFPointer.Value.NumBits}
 	return
 }

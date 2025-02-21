@@ -13,8 +13,8 @@ type SecondaryRATDataUsageReport struct {
 	AMFUENGAPID                             int64                                     `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                             int64                                     `lb:0,ub:4294967295,mandatory,ignore`
 	PDUSessionResourceSecondaryRATUsageList []PDUSessionResourceSecondaryRATUsageItem `lb:1,ub:maxnoofPDUSessions,mandatory,ignore`
-	HandoverFlag                            *HandoverFlag                             `optional,mandatory,ignore`
-	UserLocationInformation                 *UserLocationInformation                  `optional,mandatory,ignore`
+	HandoverFlag                            *HandoverFlag                             `optional,ignore`
+	UserLocationInformation                 *UserLocationInformation                  `optional,ignore`
 }
 
 func (msg *SecondaryRATDataUsageReport) Encode(w io.Writer) (err error) {

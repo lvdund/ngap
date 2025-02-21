@@ -8,7 +8,7 @@ import (
 type CoreNetworkAssistanceInformationForInactive struct {
 	UEIdentityIndexValue            UEIdentityIndexValue     `madatory`
 	UESpecificDRX                   *PagingDRX               `optional`
-	PeriodicRegistrationUpdateTimer []byte                   `lb:8,ub:8,madatory`
+	PeriodicRegistrationUpdateTimer aper.BitString           `lb:8,ub:8,madatory`
 	MICOModeIndication              *MICOModeIndication      `optional`
 	TAIListForInactive              []TAIListForInactiveItem `lb:1,ub:maxnoofTAIforInactive,madatory`
 	ExpectedUEBehaviour             *ExpectedUEBehaviour     `optional`
@@ -104,7 +104,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		err = utils.WrapError("Read PeriodicRegistrationUpdateTimer", err)
 		return
 	}
-	ie.PeriodicRegistrationUpdateTimer = tmp_PeriodicRegistrationUpdateTimer.Value.Bytes
+	ie.PeriodicRegistrationUpdateTimer = aper.BitString{Bytes: tmp_PeriodicRegistrationUpdateTimer.Value.Bytes, NumBits: tmp_PeriodicRegistrationUpdateTimer.Value.NumBits}
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(MICOModeIndication)
 		if err = tmp.Decode(r); err != nil {

@@ -11,11 +11,11 @@ import (
 
 type RerouteNASRequest struct {
 	RANUENGAPID                         int64                                `lb:0,ub:4294967295,mandatory,reject`
-	AMFUENGAPID                         *int64                               `lb:0,ub:1099511627775,optional,mandatory,ignore`
+	AMFUENGAPID                         *int64                               `lb:0,ub:1099511627775,optional,ignore`
 	NGAPMessage                         []byte                               `lb:0,ub:0,mandatory,reject`
-	AMFSetID                            []byte                               `lb:10,ub:10,mandatory,reject`
-	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,mandatory,reject`
-	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,mandatory,ignore`
+	AMFSetID                            aper.BitString                       `lb:10,ub:10,mandatory,reject`
+	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
+	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,ignore`
 }
 
 func (msg *RerouteNASRequest) Encode(w io.Writer) (err error) {
@@ -61,7 +61,7 @@ func (msg *RerouteNASRequest) toIes() (ies []NgapMessageIE, err error) {
 			c:   aper.Constraint{Lb: 10, Ub: 10},
 			ext: false,
 			Value: aper.BitString{
-				Bytes: msg.AMFSetID},
+				Bytes: msg.AMFSetID.Bytes, NumBits: msg.AMFSetID.NumBits},
 		}})
 	if len(msg.AllowedNSSAI) > 0 {
 		tmp_AllowedNSSAI := Sequence[*AllowedNSSAIItem]{
@@ -201,7 +201,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			err = utils.WrapError("Read AMFSetID", err)
 			return
 		}
-		msg.AMFSetID = tmp.Value.Bytes
+		msg.AMFSetID = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_AllowedNSSAI:
 		tmp := Sequence[*AllowedNSSAIItem]{
 			c:   aper.Constraint{Lb: 1, Ub: maxnoofAllowedSNSSAIs},

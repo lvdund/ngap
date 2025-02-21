@@ -13,7 +13,7 @@ const (
 
 type CPTransportLayerInformation struct {
 	Choice            uint64
-	EndpointIPAddress []byte
+	EndpointIPAddress *aper.BitString
 	// ChoiceExtensions *CPTransportLayerInformationExtIEs
 }
 
@@ -23,7 +23,7 @@ func (ie *CPTransportLayerInformation) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case CPTransportLayerInformationPresentEndpointipaddress:
-		tmp := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
+		tmp := NewBITSTRING(*ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, false)
 		err = tmp.Encode(w)
 	}
 	return
@@ -34,12 +34,12 @@ func (ie *CPTransportLayerInformation) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case CPTransportLayerInformationPresentEndpointipaddress:
-		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 1, Ub: 160}, false)
+		tmp := BITSTRING{c: aper.Constraint{Lb: 1, Ub: 160}, ext: false}
 		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read EndpointIPAddress", err)
 			return
 		}
-		ie.EndpointIPAddress = tmp.Value.Bytes
+		ie.EndpointIPAddress = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	}
 	return
 }

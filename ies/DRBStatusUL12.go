@@ -7,7 +7,7 @@ import (
 
 type DRBStatusUL12 struct {
 	ULCOUNTValue              COUNTValueForPDCPSN12 `madatory`
-	ReceiveStatusOfULPDCPSDUs []byte                `lb:1,ub:2048,optional`
+	ReceiveStatusOfULPDCPSDUs *aper.BitString       `lb:1,ub:2048,optional`
 	// IEExtension *DRBStatusUL12ExtIEs `optional`
 }
 
@@ -25,7 +25,7 @@ func (ie *DRBStatusUL12) Encode(w *aper.AperWriter) (err error) {
 		return
 	}
 	if ie.ReceiveStatusOfULPDCPSDUs != nil {
-		tmp_ReceiveStatusOfULPDCPSDUs := NewBITSTRING(ie.ReceiveStatusOfULPDCPSDUs, aper.Constraint{Lb: 1, Ub: 2048}, false)
+		tmp_ReceiveStatusOfULPDCPSDUs := NewBITSTRING(*ie.ReceiveStatusOfULPDCPSDUs, aper.Constraint{Lb: 1, Ub: 2048}, false)
 		if err = tmp_ReceiveStatusOfULPDCPSDUs.Encode(w); err != nil {
 			err = utils.WrapError("Encode ReceiveStatusOfULPDCPSDUs", err)
 			return
@@ -54,7 +54,10 @@ func (ie *DRBStatusUL12) Decode(r *aper.AperReader) (err error) {
 			err = utils.WrapError("Read ReceiveStatusOfULPDCPSDUs", err)
 			return
 		}
-		ie.ReceiveStatusOfULPDCPSDUs = tmp_ReceiveStatusOfULPDCPSDUs.Value.Bytes
+		ie.ReceiveStatusOfULPDCPSDUs = &aper.BitString{
+			Bytes:   tmp_ReceiveStatusOfULPDCPSDUs.Value.Bytes,
+			NumBits: tmp_ReceiveStatusOfULPDCPSDUs.Value.NumBits,
+		}
 	}
 	return
 }

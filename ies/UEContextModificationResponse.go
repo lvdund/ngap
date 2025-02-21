@@ -12,9 +12,9 @@ import (
 type UEContextModificationResponse struct {
 	AMFUENGAPID             int64                    `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID             int64                    `lb:0,ub:4294967295,mandatory,ignore`
-	RRCState                *RRCState                `optional,mandatory,ignore`
-	UserLocationInformation *UserLocationInformation `optional,mandatory,ignore`
-	CriticalityDiagnostics  *CriticalityDiagnostics  `optional,mandatory,ignore`
+	RRCState                *RRCState                `optional,ignore`
+	UserLocationInformation *UserLocationInformation `optional,ignore`
+	CriticalityDiagnostics  *CriticalityDiagnostics  `optional,ignore`
 }
 
 func (msg *UEContextModificationResponse) Encode(w io.Writer) (err error) {

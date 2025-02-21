@@ -33,11 +33,11 @@ type BITSTRING struct {
 	ext   bool
 }
 
-func NewBITSTRING(v []byte, c aper.Constraint, ext bool) BITSTRING {
+func NewBITSTRING(v aper.BitString, c aper.Constraint, ext bool) BITSTRING {
 	return BITSTRING{
 		Value: aper.BitString{
-			Bytes:   v,
-			NumBits: uint64(len(v)),
+			Bytes:   v.Bytes,
+			NumBits: v.NumBits,
 		},
 		c:   c,
 		ext: ext,

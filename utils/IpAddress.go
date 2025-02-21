@@ -3,6 +3,7 @@ package utils
 import (
 	"net"
 
+	"github.com/lvdund/ngap/aper"
 	"github.com/sirupsen/logrus"
 )
 
@@ -31,7 +32,7 @@ func IPAddressToString(ipAddr []byte) (ipv4Addr, ipv6Addr string) {
 	return
 }
 
-func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr []byte) {
+func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr aper.BitString) {
 
 	if ipv4Addr == "" && ipv6Addr == "" {
 		logrus.Warningln("IPAddressToNgap: Both ipv4 & ipv6 are nil string")
@@ -47,14 +48,20 @@ func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr []byte) {
 			ipBytes = append(ipBytes, ipv6NetIP[i])
 		}
 
-		ipAddr = ipBytes
+		ipAddr = aper.BitString{
+			Bytes: ipBytes,
+			NumBits: 160,
+		}
 
 	} else if ipv4Addr != "" && ipv6Addr == "" { // ipv4
 		ipv4NetIP := net.ParseIP(ipv4Addr).To4()
 
 		ipBytes := []byte{ipv4NetIP[0], ipv4NetIP[1], ipv4NetIP[2], ipv4NetIP[3]}
 
-		ipAddr = ipBytes
+		ipAddr = aper.BitString{
+			Bytes: ipBytes,
+			NumBits: 32,
+		}
 
 	} else { // ipv6
 		ipv6NetIP := net.ParseIP(ipv6Addr).To16()
@@ -64,7 +71,10 @@ func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr []byte) {
 			ipBytes = append(ipBytes, ipv6NetIP[i])
 		}
 
-		ipAddr = ipBytes
+		ipAddr = aper.BitString{
+			Bytes: ipBytes,
+			NumBits: 128,
+		}
 
 	}
 

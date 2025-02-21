@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"strings"
 
+	"github.com/lvdund/ngap/aper"
 	"github.com/lvdund/ngap/ies"
 	"github.com/sirupsen/logrus"
 )
@@ -81,12 +82,11 @@ func TraceDataToNgap(traceData TraceData, trsr string) ies.TraceActivation {
 	} else {
 		interfacesToTrace = interfacesToTraceTmp
 	}
-	traceActivation.InterfacesToTrace = interfacesToTrace
+	traceActivation.InterfacesToTrace = aper.BitString{Bytes: interfacesToTrace, NumBits: 8}
 
 	// Trace Collection Entity IP Address
 	ngapIP := IPAddressToNgap(traceData.CollectionEntityIpv4Addr, traceData.CollectionEntityIpv6Addr)
 	traceActivation.TraceCollectionEntityIPAddress = ngapIP
-
 	// Trace Depth
 	switch traceData.TraceDepth {
 	case TraceDepth_MINIMUM:

@@ -6,8 +6,8 @@ import (
 )
 
 type RATRestrictionsItem struct {
-	PLMNIdentity              []byte `lb:3,ub:3,madatory`
-	RATRestrictionInformation []byte `lb:8,ub:8,madatory,valExt`
+	PLMNIdentity              []byte         `lb:3,ub:3,madatory`
+	RATRestrictionInformation aper.BitString `lb:8,ub:8,madatory,valExt`
 	// IEExtensions *RATRestrictionsItemExtIEs `optional`
 }
 
@@ -53,6 +53,6 @@ func (ie *RATRestrictionsItem) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read RATRestrictionInformation", err)
 		return
 	}
-	ie.RATRestrictionInformation = tmp_RATRestrictionInformation.Value.Bytes
+	ie.RATRestrictionInformation = aper.BitString{Bytes: tmp_RATRestrictionInformation.Value.Bytes, NumBits: tmp_RATRestrictionInformation.Value.NumBits}
 	return
 }

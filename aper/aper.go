@@ -74,7 +74,7 @@ func (aw *AperWriter) writeExtBit(bitsLength uint64, e bool,c *Constraint) (int6
 			return 0,0,ErrConstraint
 		}
 		if int64(bitsLength) <=c.Ub {
-			lRange = (c.Range())
+			lRange = c.Range()
 		} else if !e {
 			//err = ErrInextensible
 			return 0,0,ErrInextensible

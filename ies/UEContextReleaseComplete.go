@@ -12,10 +12,10 @@ import (
 type UEContextReleaseComplete struct {
 	AMFUENGAPID                                int64                                       `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                                int64                                       `lb:0,ub:4294967295,mandatory,ignore`
-	UserLocationInformation                    *UserLocationInformation                    `optional,mandatory,ignore`
-	InfoOnRecommendedCellsAndRANNodesForPaging *InfoOnRecommendedCellsAndRANNodesForPaging `optional,mandatory,ignore`
-	PDUSessionResourceListCxtRelCpl            []PDUSessionResourceItemCxtRelCpl           `lb:1,ub:maxnoofPDUSessions,optional,mandatory,reject`
-	CriticalityDiagnostics                     *CriticalityDiagnostics                     `optional,mandatory,ignore`
+	UserLocationInformation                    *UserLocationInformation                    `optional,ignore`
+	InfoOnRecommendedCellsAndRANNodesForPaging *InfoOnRecommendedCellsAndRANNodesForPaging `optional,ignore`
+	PDUSessionResourceListCxtRelCpl            []PDUSessionResourceItemCxtRelCpl           `lb:1,ub:maxnoofPDUSessions,optional,reject`
+	CriticalityDiagnostics                     *CriticalityDiagnostics                     `optional,ignore`
 }
 
 func (msg *UEContextReleaseComplete) Encode(w io.Writer) (err error) {

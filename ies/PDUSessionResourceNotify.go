@@ -12,9 +12,9 @@ import (
 type PDUSessionResourceNotify struct {
 	AMFUENGAPID                       int64                               `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                       int64                               `lb:0,ub:4294967295,mandatory,reject`
-	PDUSessionResourceNotifyList      []PDUSessionResourceNotifyItem      `lb:1,ub:maxnoofPDUSessions,optional,mandatory,reject`
-	PDUSessionResourceReleasedListNot []PDUSessionResourceReleasedItemNot `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	UserLocationInformation           *UserLocationInformation            `optional,mandatory,ignore`
+	PDUSessionResourceNotifyList      []PDUSessionResourceNotifyItem      `lb:1,ub:maxnoofPDUSessions,optional,reject`
+	PDUSessionResourceReleasedListNot []PDUSessionResourceReleasedItemNot `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	UserLocationInformation           *UserLocationInformation            `optional,ignore`
 }
 
 func (msg *PDUSessionResourceNotify) Encode(w io.Writer) (err error) {

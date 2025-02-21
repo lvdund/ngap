@@ -12,9 +12,9 @@ import (
 type PDUSessionResourceSetupResponse struct {
 	AMFUENGAPID                              int64                                      `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                              int64                                      `lb:0,ub:4294967295,mandatory,ignore`
-	PDUSessionResourceSetupListSURes         []PDUSessionResourceSetupItemSURes         `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	PDUSessionResourceFailedToSetupListSURes []PDUSessionResourceFailedToSetupItemSURes `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional,mandatory,ignore`
+	PDUSessionResourceSetupListSURes         []PDUSessionResourceSetupItemSURes         `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToSetupListSURes []PDUSessionResourceFailedToSetupItemSURes `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	CriticalityDiagnostics                   *CriticalityDiagnostics                    `optional,ignore`
 }
 
 func (msg *PDUSessionResourceSetupResponse) Encode(w io.Writer) (err error) {

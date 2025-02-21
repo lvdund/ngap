@@ -6,9 +6,9 @@ import (
 )
 
 type FiveGSTMSI struct {
-	AMFSetID   []byte `lb:10,ub:10,madatory`
-	AMFPointer []byte `lb:6,ub:6,madatory`
-	FiveGTMSI  []byte `lb:4,ub:4,madatory`
+	AMFSetID   aper.BitString `lb:10,ub:10,madatory`
+	AMFPointer aper.BitString `lb:6,ub:6,madatory`
+	FiveGTMSI  []byte         `lb:4,ub:4,madatory`
 	// IEExtensions *FiveGSTMSIExtIEs `optional`
 }
 
@@ -50,7 +50,7 @@ func (ie *FiveGSTMSI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read AMFSetID", err)
 		return
 	}
-	ie.AMFSetID = tmp_AMFSetID.Value.Bytes
+	ie.AMFSetID = aper.BitString{Bytes: tmp_AMFSetID.Value.Bytes, NumBits: tmp_AMFSetID.Value.NumBits}
 	tmp_AMFPointer := BITSTRING{
 		c:   aper.Constraint{Lb: 6, Ub: 6},
 		ext: false,
@@ -59,7 +59,7 @@ func (ie *FiveGSTMSI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read AMFPointer", err)
 		return
 	}
-	ie.AMFPointer = tmp_AMFPointer.Value.Bytes
+	ie.AMFPointer = aper.BitString{Bytes: tmp_AMFPointer.Value.Bytes, NumBits: tmp_AMFPointer.Value.NumBits}
 	tmp_FiveGTMSI := OCTETSTRING{
 		c:   aper.Constraint{Lb: 4, Ub: 4},
 		ext: false,

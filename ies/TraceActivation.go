@@ -6,10 +6,10 @@ import (
 )
 
 type TraceActivation struct {
-	NGRANTraceID                   []byte     `lb:8,ub:8,madatory`
-	InterfacesToTrace              []byte     `lb:8,ub:8,madatory`
-	TraceDepth                     TraceDepth `madatory`
-	TraceCollectionEntityIPAddress []byte     `lb:1,ub:160,madatory,valExt`
+	NGRANTraceID                   []byte         `lb:8,ub:8,madatory`
+	InterfacesToTrace              aper.BitString `lb:8,ub:8,madatory`
+	TraceDepth                     TraceDepth     `madatory`
+	TraceCollectionEntityIPAddress aper.BitString `lb:1,ub:160,madatory,valExt`
 	// IEExtensions *TraceActivationExtIEs `optional`
 }
 
@@ -64,7 +64,7 @@ func (ie *TraceActivation) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read InterfacesToTrace", err)
 		return
 	}
-	ie.InterfacesToTrace = tmp_InterfacesToTrace.Value.Bytes
+	ie.InterfacesToTrace = aper.BitString{Bytes: tmp_InterfacesToTrace.Value.Bytes, NumBits: tmp_InterfacesToTrace.Value.NumBits}
 	if err = ie.TraceDepth.Decode(r); err != nil {
 		err = utils.WrapError("Read TraceDepth", err)
 		return
@@ -77,6 +77,6 @@ func (ie *TraceActivation) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read TraceCollectionEntityIPAddress", err)
 		return
 	}
-	ie.TraceCollectionEntityIPAddress = tmp_TraceCollectionEntityIPAddress.Value.Bytes
+	ie.TraceCollectionEntityIPAddress = aper.BitString{Bytes: tmp_TraceCollectionEntityIPAddress.Value.Bytes, NumBits: tmp_TraceCollectionEntityIPAddress.Value.NumBits}
 	return
 }

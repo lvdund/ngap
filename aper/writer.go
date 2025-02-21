@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/reogac/utils"
 	"io"
 	"math/bits"
+
+	"github.com/reogac/utils"
 )
 
 type AperWriter struct {
@@ -291,7 +292,7 @@ func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 
 	if v < 0 {
 		y := v >> 63
-		unsignedValue = uint64(((v ^ y) - y)) - 1
+		unsignedValue = uint64((v ^ y) - y) - 1
 	}
 	if sRange <= 0 {
 		unsignedValue >>= 7
@@ -322,13 +323,15 @@ func (aw *AperWriter) WriteInteger(v int64, c *Constraint, e bool) (err error) {
 	}
 	rawLength *= 8
 	aw.align()
-	if sRange < 0 {
-		mask := int64(1<<rawLength - 1)
-		return aw.writeValue(uint64(v&mask), rawLength)
-	} else {
-		v -= lb
-		return aw.writeValue(uint64(v), rawLength)
-	}
+	// if sRange < 0 {
+	// 	mask := int64(1<<rawLength - 1)
+	// 	return aw.writeValue(uint64(v&mask), rawLength)
+	// } else {
+	// 	v -= lb
+	// 	return aw.writeValue(uint64(v), rawLength)
+	// }
+	v -= lb
+	return aw.writeValue(uint64(v), rawLength)
 }
 
 func (aw *AperWriter) WriteChoice(v uint64, uBound uint64, e bool) (err error) {

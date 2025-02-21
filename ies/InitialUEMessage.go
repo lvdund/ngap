@@ -14,12 +14,12 @@ type InitialUEMessage struct {
 	NASPDU                              []byte                               `lb:0,ub:0,mandatory,reject`
 	UserLocationInformation             UserLocationInformation              `mandatory,reject`
 	RRCEstablishmentCause               RRCEstablishmentCause                `mandatory,ignore`
-	FiveGSTMSI                          *FiveGSTMSI                          `optional,mandatory,reject`
-	AMFSetID                            []byte                               `lb:10,ub:10,optional,mandatory,ignore`
-	UEContextRequest                    *UEContextRequest                    `optional,mandatory,ignore`
-	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,mandatory,reject`
-	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,mandatory,ignore`
-	SelectedPLMNIdentity                []byte                               `lb:3,ub:3,optional,mandatory,ignore`
+	FiveGSTMSI                          *FiveGSTMSI                          `optional,reject`
+	AMFSetID                            *aper.BitString                      `lb:10,ub:10,optional,ignore`
+	UEContextRequest                    *UEContextRequest                    `optional,ignore`
+	AllowedNSSAI                        []AllowedNSSAIItem                   `lb:1,ub:maxnoofAllowedSNSSAIs,optional,reject`
+	SourceToTargetAMFInformationReroute *SourceToTargetAMFInformationReroute `optional,ignore`
+	SelectedPLMNIdentity                []byte                               `lb:3,ub:3,optional,ignore`
 }
 
 func (msg *InitialUEMessage) Encode(w io.Writer) (err error) {
@@ -73,7 +73,7 @@ func (msg *InitialUEMessage) toIes() (ies []NgapMessageIE, err error) {
 				c:   aper.Constraint{Lb: 10, Ub: 10},
 				ext: false,
 				Value: aper.BitString{
-					Bytes: msg.AMFSetID},
+					Bytes: msg.AMFSetID.Bytes, NumBits: msg.AMFSetID.NumBits},
 			}})
 	}
 	if msg.UEContextRequest != nil {
@@ -251,7 +251,7 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			err = utils.WrapError("Read AMFSetID", err)
 			return
 		}
-		msg.AMFSetID = tmp.Value.Bytes
+		msg.AMFSetID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_UEContextRequest:
 		var tmp UEContextRequest
 		if err = tmp.Decode(ieR); err != nil {

@@ -10,10 +10,10 @@ import (
 )
 
 type ErrorIndication struct {
-	AMFUENGAPID            *int64                  `lb:0,ub:1099511627775,optional,mandatory,ignore`
-	RANUENGAPID            *int64                  `lb:0,ub:4294967295,optional,mandatory,ignore`
-	Cause                  *Cause                  `optional,mandatory,ignore`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
+	AMFUENGAPID            *int64                  `lb:0,ub:1099511627775,optional,ignore`
+	RANUENGAPID            *int64                  `lb:0,ub:4294967295,optional,ignore`
+	Cause                  *Cause                  `optional,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *ErrorIndication) Encode(w io.Writer) (err error) {

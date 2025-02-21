@@ -6,8 +6,8 @@ import (
 )
 
 type SecurityContext struct {
-	NextHopChainingCount int64  `lb:0,ub:7,madatory`
-	NextHopNH            []byte `lb:256,ub:256,madatory`
+	NextHopChainingCount int64          `lb:0,ub:7,madatory`
+	NextHopNH            aper.BitString `lb:256,ub:256,madatory`
 	// IEExtensions *SecurityContextExtIEs `optional`
 }
 
@@ -53,6 +53,6 @@ func (ie *SecurityContext) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read NextHopNH", err)
 		return
 	}
-	ie.NextHopNH = tmp_NextHopNH.Value.Bytes
+	ie.NextHopNH = aper.BitString{Bytes: tmp_NextHopNH.Value.Bytes, NumBits: tmp_NextHopNH.Value.NumBits}
 	return
 }

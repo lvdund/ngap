@@ -12,7 +12,7 @@ import (
 type UERadioCapabilityCheckRequest struct {
 	AMFUENGAPID       int64  `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID       int64  `lb:0,ub:4294967295,mandatory,reject`
-	UERadioCapability []byte `lb:0,ub:0,optional,mandatory,ignore`
+	UERadioCapability []byte `lb:0,ub:0,optional,ignore`
 }
 
 func (msg *UERadioCapabilityCheckRequest) Encode(w io.Writer) (err error) {

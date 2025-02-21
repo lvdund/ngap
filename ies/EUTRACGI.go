@@ -6,8 +6,8 @@ import (
 )
 
 type EUTRACGI struct {
-	PLMNIdentity      []byte `lb:3,ub:3,madatory`
-	EUTRACellIdentity []byte `lb:28,ub:28,madatory`
+	PLMNIdentity      []byte         `lb:3,ub:3,madatory`
+	EUTRACellIdentity aper.BitString `lb:28,ub:28,madatory`
 	// IEExtensions *EUTRACGIExtIEs `optional`
 }
 
@@ -53,6 +53,6 @@ func (ie *EUTRACGI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read EUTRACellIdentity", err)
 		return
 	}
-	ie.EUTRACellIdentity = tmp_EUTRACellIdentity.Value.Bytes
+	ie.EUTRACellIdentity = aper.BitString{Bytes: tmp_EUTRACellIdentity.Value.Bytes, NumBits: tmp_EUTRACellIdentity.Value.NumBits}
 	return
 }

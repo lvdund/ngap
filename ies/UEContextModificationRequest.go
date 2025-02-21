@@ -12,17 +12,17 @@ import (
 type UEContextModificationRequest struct {
 	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,reject`
-	RANPagingPriority                           *int64                                       `lb:1,ub:256,optional,mandatory,ignore`
-	SecurityKey                                 []byte                                       `lb:256,ub:256,optional,mandatory,reject`
-	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,mandatory,ignore,valueExt`
-	UEAggregateMaximumBitRate                   *UEAggregateMaximumBitRate                   `optional,mandatory,ignore`
-	UESecurityCapabilities                      *UESecurityCapabilities                      `optional,mandatory,reject`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,mandatory,ignore`
-	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,mandatory,reject`
-	NewAMFUENGAPID                              *int64                                       `lb:0,ub:1099511627775,optional,mandatory,reject`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,mandatory,ignore`
-	NewGUAMI                                    *GUAMI                                       `optional,mandatory,reject`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,mandatory,ignore`
+	RANPagingPriority                           *int64                                       `lb:1,ub:256,optional,ignore`
+	SecurityKey                                 *aper.BitString                              `lb:256,ub:256,optional,reject`
+	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,ignore,valueExt`
+	UEAggregateMaximumBitRate                   *UEAggregateMaximumBitRate                   `optional,ignore`
+	UESecurityCapabilities                      *UESecurityCapabilities                      `optional,reject`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
+	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,reject`
+	NewAMFUENGAPID                              *int64                                       `lb:0,ub:1099511627775,optional,reject`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	NewGUAMI                                    *GUAMI                                       `optional,reject`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *UEContextModificationRequest) Encode(w io.Writer) (err error) {
@@ -69,7 +69,7 @@ func (msg *UEContextModificationRequest) toIes() (ies []NgapMessageIE, err error
 				c:   aper.Constraint{Lb: 256, Ub: 256},
 				ext: false,
 				Value: aper.BitString{
-					Bytes: msg.SecurityKey},
+					Bytes: msg.SecurityKey.Bytes, NumBits: msg.SecurityKey.NumBits},
 			}})
 	}
 	if msg.IndexToRFSP != nil {
@@ -249,7 +249,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			err = utils.WrapError("Read SecurityKey", err)
 			return
 		}
-		msg.SecurityKey = tmp.Value.Bytes
+		msg.SecurityKey = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_IndexToRFSP:
 		tmp := INTEGER{
 			c:   aper.Constraint{Lb: 1, Ub: 256},

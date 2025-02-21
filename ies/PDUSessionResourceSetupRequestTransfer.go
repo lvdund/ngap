@@ -9,15 +9,15 @@ import (
 )
 
 type PDUSessionResourceSetupRequestTransfer struct {
-	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional,mandatory,reject`
+	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional,reject`
 	ULNGUUPTNLInformation             UPTransportLayerInformation        `mandatory,reject`
-	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional,mandatory,reject`
-	DataForwardingNotPossible         *DataForwardingNotPossible         `optional,mandatory,reject`
+	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional,reject`
+	DataForwardingNotPossible         *DataForwardingNotPossible         `optional,reject`
 	PDUSessionType                    PDUSessionType                     `mandatory,reject`
-	SecurityIndication                *SecurityIndication                `optional,mandatory,reject`
-	NetworkInstance                   *int64                             `lb:1,ub:256,optional,mandatory,reject,valueExt`
+	SecurityIndication                *SecurityIndication                `optional,reject`
+	NetworkInstance                   *int64                             `lb:1,ub:256,optional,reject,valueExt`
 	QosFlowSetupRequestList           []QosFlowSetupRequestItem          `lb:1,ub:maxnoofQosFlows,mandatory,reject`
-	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,mandatory,ignore`
+	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,ignore`
 }
 
 func (msg *PDUSessionResourceSetupRequestTransfer) Encode() ([]byte, error) {

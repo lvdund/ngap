@@ -12,10 +12,10 @@ import (
 type PDUSessionResourceModifyResponse struct {
 	AMFUENGAPID                                int64                                        `lb:0,ub:1099511627775,mandatory,ignore`
 	RANUENGAPID                                int64                                        `lb:0,ub:4294967295,mandatory,ignore`
-	PDUSessionResourceModifyListModRes         []PDUSessionResourceModifyItemModRes         `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	PDUSessionResourceFailedToModifyListModRes []PDUSessionResourceFailedToModifyItemModRes `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	UserLocationInformation                    *UserLocationInformation                     `optional,mandatory,ignore`
-	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional,mandatory,ignore`
+	PDUSessionResourceModifyListModRes         []PDUSessionResourceModifyItemModRes         `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceFailedToModifyListModRes []PDUSessionResourceFailedToModifyItemModRes `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	UserLocationInformation                    *UserLocationInformation                     `optional,ignore`
+	CriticalityDiagnostics                     *CriticalityDiagnostics                      `optional,ignore`
 }
 
 func (msg *PDUSessionResourceModifyResponse) Encode(w io.Writer) (err error) {

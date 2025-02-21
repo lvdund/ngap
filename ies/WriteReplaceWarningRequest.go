@@ -10,17 +10,17 @@ import (
 )
 
 type WriteReplaceWarningRequest struct {
-	MessageIdentifier           []byte                       `lb:16,ub:16,mandatory,reject`
-	SerialNumber                []byte                       `lb:16,ub:16,mandatory,reject`
-	WarningAreaList             *WarningAreaList             `optional,mandatory,ignore`
+	MessageIdentifier           aper.BitString               `lb:16,ub:16,mandatory,reject`
+	SerialNumber                aper.BitString               `lb:16,ub:16,mandatory,reject`
+	WarningAreaList             *WarningAreaList             `optional,ignore`
 	RepetitionPeriod            int64                        `lb:0,ub:131071,mandatory,reject`
 	NumberOfBroadcastsRequested int64                        `lb:0,ub:65535,mandatory,reject`
-	WarningType                 []byte                       `lb:2,ub:2,optional,mandatory,ignore`
-	WarningSecurityInfo         []byte                       `lb:50,ub:50,optional,mandatory,ignore`
-	DataCodingScheme            []byte                       `lb:8,ub:8,optional,mandatory,ignore`
-	WarningMessageContents      []byte                       `lb:1,ub:9600,optional,mandatory,ignore`
-	ConcurrentWarningMessageInd *ConcurrentWarningMessageInd `optional,mandatory,reject`
-	WarningAreaCoordinates      []byte                       `lb:1,ub:1024,optional,mandatory,ignore`
+	WarningType                 []byte                       `lb:2,ub:2,optional,ignore`
+	WarningSecurityInfo         []byte                       `lb:50,ub:50,optional,ignore`
+	DataCodingScheme            *aper.BitString              `lb:8,ub:8,optional,ignore`
+	WarningMessageContents      []byte                       `lb:1,ub:9600,optional,ignore`
+	ConcurrentWarningMessageInd *ConcurrentWarningMessageInd `optional,reject`
+	WarningAreaCoordinates      []byte                       `lb:1,ub:1024,optional,ignore`
 }
 
 func (msg *WriteReplaceWarningRequest) Encode(w io.Writer) (err error) {
@@ -40,7 +40,7 @@ func (msg *WriteReplaceWarningRequest) toIes() (ies []NgapMessageIE, err error) 
 			c:   aper.Constraint{Lb: 16, Ub: 16},
 			ext: false,
 			Value: aper.BitString{
-				Bytes: msg.MessageIdentifier},
+				Bytes: msg.MessageIdentifier.Bytes, NumBits: msg.MessageIdentifier.NumBits},
 		}})
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_SerialNumber},
@@ -49,7 +49,7 @@ func (msg *WriteReplaceWarningRequest) toIes() (ies []NgapMessageIE, err error) 
 			c:   aper.Constraint{Lb: 16, Ub: 16},
 			ext: false,
 			Value: aper.BitString{
-				Bytes: msg.SerialNumber},
+				Bytes: msg.SerialNumber.Bytes, NumBits: msg.SerialNumber.NumBits},
 		}})
 	if msg.WarningAreaList != nil {
 		ies = append(ies, NgapMessageIE{
@@ -102,7 +102,7 @@ func (msg *WriteReplaceWarningRequest) toIes() (ies []NgapMessageIE, err error) 
 				c:   aper.Constraint{Lb: 8, Ub: 8},
 				ext: false,
 				Value: aper.BitString{
-					Bytes: msg.DataCodingScheme},
+					Bytes: msg.DataCodingScheme.Bytes, NumBits: msg.DataCodingScheme.NumBits},
 			}})
 	}
 	if msg.WarningMessageContents != nil {
@@ -228,7 +228,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read MessageIdentifier", err)
 			return
 		}
-		msg.MessageIdentifier = tmp.Value.Bytes
+		msg.MessageIdentifier = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_SerialNumber:
 		tmp := BITSTRING{
 			c:   aper.Constraint{Lb: 16, Ub: 16},
@@ -238,7 +238,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read SerialNumber", err)
 			return
 		}
-		msg.SerialNumber = tmp.Value.Bytes
+		msg.SerialNumber = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_WarningAreaList:
 		var tmp WarningAreaList
 		if err = tmp.Decode(ieR); err != nil {
@@ -295,7 +295,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read DataCodingScheme", err)
 			return
 		}
-		msg.DataCodingScheme = tmp.Value.Bytes
+		msg.DataCodingScheme = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_WarningMessageContents:
 		tmp := OCTETSTRING{
 			c:   aper.Constraint{Lb: 1, Ub: 9600},

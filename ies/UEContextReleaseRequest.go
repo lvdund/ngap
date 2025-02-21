@@ -12,7 +12,7 @@ import (
 type UEContextReleaseRequest struct {
 	AMFUENGAPID                     int64                             `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                     int64                             `lb:0,ub:4294967295,mandatory,reject`
-	PDUSessionResourceListCxtRelReq []PDUSessionResourceItemCxtRelReq `lb:1,ub:maxnoofPDUSessions,optional,mandatory,reject`
+	PDUSessionResourceListCxtRelReq []PDUSessionResourceItemCxtRelReq `lb:1,ub:maxnoofPDUSessions,optional,reject`
 	Cause                           Cause                             `mandatory,ignore`
 }
 

@@ -6,8 +6,8 @@ import (
 )
 
 type UserLocationInformationN3IWF struct {
-	IPAddress  []byte `lb:1,ub:160,madatory,valExt`
-	PortNumber []byte `lb:2,ub:2,madatory`
+	IPAddress  aper.BitString `lb:1,ub:160,madatory,valExt`
+	PortNumber []byte         `lb:2,ub:2,madatory`
 	// IEExtensions *UserLocationInformationN3IWFExtIEs `optional`
 }
 
@@ -44,7 +44,7 @@ func (ie *UserLocationInformationN3IWF) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read IPAddress", err)
 		return
 	}
-	ie.IPAddress = tmp_IPAddress.Value.Bytes
+	ie.IPAddress = aper.BitString{Bytes: tmp_IPAddress.Value.Bytes, NumBits: tmp_IPAddress.Value.NumBits}
 	tmp_PortNumber := OCTETSTRING{
 		c:   aper.Constraint{Lb: 2, Ub: 2},
 		ext: false,

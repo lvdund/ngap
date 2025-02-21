@@ -6,8 +6,8 @@ import (
 )
 
 type NRCGI struct {
-	PLMNIdentity   []byte `lb:3,ub:3,madatory`
-	NRCellIdentity []byte `lb:36,ub:36,madatory`
+	PLMNIdentity   []byte         `lb:3,ub:3,madatory`
+	NRCellIdentity aper.BitString `lb:36,ub:36,madatory`
 	// IEExtensions *NRCGIExtIEs `optional`
 }
 
@@ -53,6 +53,6 @@ func (ie *NRCGI) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read NRCellIdentity", err)
 		return
 	}
-	ie.NRCellIdentity = tmp_NRCellIdentity.Value.Bytes
+	ie.NRCellIdentity = aper.BitString{Bytes: tmp_NRCellIdentity.Value.Bytes, NumBits: tmp_NRCellIdentity.Value.NumBits}
 	return
 }

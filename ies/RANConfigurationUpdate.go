@@ -10,11 +10,11 @@ import (
 )
 
 type RANConfigurationUpdate struct {
-	RANNodeName                     []byte                            `lb:1,ub:150,optional,mandatory,ignore,valueExt`
-	SupportedTAList                 []SupportedTAItem                 `lb:1,ub:maxnoofTACs,optional,mandatory,reject`
-	DefaultPagingDRX                *PagingDRX                        `optional,mandatory,ignore`
-	GlobalRANNodeID                 *GlobalRANNodeID                  `optional,mandatory,ignore`
-	NGRANTNLAssociationToRemoveList []NGRANTNLAssociationToRemoveItem `lb:1,ub:maxnoofTNLAssociations,optional,mandatory,reject`
+	RANNodeName                     []byte                            `lb:1,ub:150,optional,ignore,valueExt`
+	SupportedTAList                 []SupportedTAItem                 `lb:1,ub:maxnoofTACs,optional,reject`
+	DefaultPagingDRX                *PagingDRX                        `optional,ignore`
+	GlobalRANNodeID                 *GlobalRANNodeID                  `optional,ignore`
+	NGRANTNLAssociationToRemoveList []NGRANTNLAssociationToRemoveItem `lb:1,ub:maxnoofTNLAssociations,optional,reject`
 }
 
 func (msg *RANConfigurationUpdate) Encode(w io.Writer) (err error) {

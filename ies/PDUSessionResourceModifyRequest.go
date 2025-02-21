@@ -12,7 +12,7 @@ import (
 type PDUSessionResourceModifyRequest struct {
 	AMFUENGAPID                        int64                                `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                        int64                                `lb:0,ub:4294967295,mandatory,reject`
-	RANPagingPriority                  *int64                               `lb:1,ub:256,optional,mandatory,ignore`
+	RANPagingPriority                  *int64                               `lb:1,ub:256,optional,ignore`
 	PDUSessionResourceModifyListModReq []PDUSessionResourceModifyItemModReq `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
 }
 

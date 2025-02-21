@@ -12,26 +12,26 @@ import (
 type InitialContextSetupRequest struct {
 	AMFUENGAPID                                 int64                                        `lb:0,ub:1099511627775,mandatory,reject`
 	RANUENGAPID                                 int64                                        `lb:0,ub:4294967295,mandatory,reject`
-	OldAMF                                      []byte                                       `lb:1,ub:150,optional,mandatory,reject,valueExt`
+	OldAMF                                      []byte                                       `lb:1,ub:150,optional,reject,valueExt`
 	UEAggregateMaximumBitRate                   *UEAggregateMaximumBitRate                   `conditional,reject`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,mandatory,ignore`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
 	GUAMI                                       GUAMI                                        `mandatory,reject`
-	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq          `lb:1,ub:maxnoofPDUSessions,optional,mandatory,reject`
+	PDUSessionResourceSetupListCxtReq           []PDUSessionResourceSetupItemCxtReq          `lb:1,ub:maxnoofPDUSessions,optional,reject`
 	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
 	UESecurityCapabilities                      UESecurityCapabilities                       `mandatory,reject`
-	SecurityKey                                 []byte                                       `lb:256,ub:256,mandatory,reject`
-	TraceActivation                             *TraceActivation                             `optional,mandatory,ignore`
-	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,mandatory,ignore`
-	UERadioCapability                           []byte                                       `lb:0,ub:0,optional,mandatory,ignore`
-	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,mandatory,ignore,valueExt`
-	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,mandatory,ignore`
-	NASPDU                                      []byte                                       `lb:0,ub:0,optional,mandatory,ignore`
-	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,mandatory,reject`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,mandatory,ignore`
-	UERadioCapabilityForPaging                  *UERadioCapabilityForPaging                  `optional,mandatory,ignore`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,mandatory,ignore`
-	LocationReportingRequestType                *LocationReportingRequestType                `optional,mandatory,ignore`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,mandatory,ignore`
+	SecurityKey                                 aper.BitString                               `lb:256,ub:256,mandatory,reject`
+	TraceActivation                             *TraceActivation                             `optional,ignore`
+	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,ignore`
+	UERadioCapability                           []byte                                       `lb:0,ub:0,optional,ignore`
+	IndexToRFSP                                 *int64                                       `lb:1,ub:256,optional,ignore,valueExt`
+	MaskedIMEISV                                *aper.BitString                              `lb:64,ub:64,optional,ignore`
+	NASPDU                                      []byte                                       `lb:0,ub:0,optional,ignore`
+	EmergencyFallbackIndicator                  *EmergencyFallbackIndicator                  `optional,reject`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
+	UERadioCapabilityForPaging                  *UERadioCapabilityForPaging                  `optional,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
+	LocationReportingRequestType                *LocationReportingRequestType                `optional,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *InitialContextSetupRequest) Encode(w io.Writer) (err error) {
@@ -132,7 +132,7 @@ func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE, err error) 
 			c:   aper.Constraint{Lb: 256, Ub: 256},
 			ext: false,
 			Value: aper.BitString{
-				Bytes: msg.SecurityKey},
+				Bytes: msg.SecurityKey.Bytes, NumBits: msg.SecurityKey.NumBits},
 		}})
 	if msg.TraceActivation != nil {
 		ies = append(ies, NgapMessageIE{
@@ -176,7 +176,7 @@ func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE, err error) 
 				c:   aper.Constraint{Lb: 64, Ub: 64},
 				ext: false,
 				Value: aper.BitString{
-					Bytes: msg.MaskedIMEISV},
+					Bytes: msg.MaskedIMEISV.Bytes, NumBits: msg.MaskedIMEISV.NumBits},
 			}})
 	}
 	if msg.NASPDU != nil {
@@ -431,7 +431,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read SecurityKey", err)
 			return
 		}
-		msg.SecurityKey = tmp.Value.Bytes
+		msg.SecurityKey = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_TraceActivation:
 		var tmp TraceActivation
 		if err = tmp.Decode(ieR); err != nil {
@@ -475,7 +475,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			err = utils.WrapError("Read MaskedIMEISV", err)
 			return
 		}
-		msg.MaskedIMEISV = tmp.Value.Bytes
+		msg.MaskedIMEISV = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_NASPDU:
 		tmp := OCTETSTRING{
 			c:   aper.Constraint{Lb: 0, Ub: 0},

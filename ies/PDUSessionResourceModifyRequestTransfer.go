@@ -9,13 +9,13 @@ import (
 )
 
 type PDUSessionResourceModifyRequestTransfer struct {
-	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional,mandatory,reject`
-	ULNGUUPTNLModifyList              []ULNGUUPTNLModifyItem             `lb:1,ub:maxnoofMultiConnectivity,optional,mandatory,reject`
-	NetworkInstance                   *int64                             `lb:1,ub:256,optional,mandatory,reject,valueExt`
-	QosFlowAddOrModifyRequestList     []QosFlowAddOrModifyRequestItem    `lb:1,ub:maxnoofQosFlows,optional,mandatory,reject`
-	QosFlowToReleaseList              []QosFlowWithCauseItem             `lb:1,ub:maxnoofQosFlows,optional,mandatory,reject`
-	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional,mandatory,reject`
-	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,mandatory,ignore`
+	PDUSessionAggregateMaximumBitRate *PDUSessionAggregateMaximumBitRate `optional,reject`
+	ULNGUUPTNLModifyList              []ULNGUUPTNLModifyItem             `lb:1,ub:maxnoofMultiConnectivity,optional,reject`
+	NetworkInstance                   *int64                             `lb:1,ub:256,optional,reject,valueExt`
+	QosFlowAddOrModifyRequestList     []QosFlowAddOrModifyRequestItem    `lb:1,ub:maxnoofQosFlows,optional,reject`
+	QosFlowToReleaseList              []QosFlowWithCauseItem             `lb:1,ub:maxnoofQosFlows,optional,reject`
+	AdditionalULNGUUPTNLInformation   []UPTransportLayerInformationItem  `lb:1,ub:maxnoofMultiConnectivityMinusOne,optional,reject`
+	CommonNetworkInstance             []byte                             `lb:0,ub:0,optional,ignore`
 }
 
 func (msg *PDUSessionResourceModifyRequestTransfer) Encode() ([]byte, error) {

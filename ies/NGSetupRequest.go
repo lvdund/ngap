@@ -11,10 +11,10 @@ import (
 
 type NGSetupRequest struct {
 	GlobalRANNodeID        GlobalRANNodeID         `mandatory,reject`
-	RANNodeName            []byte                  `lb:1,ub:150,optional,mandatory,ignore,valueExt`
+	RANNodeName            []byte                  `lb:1,ub:150,optional,ignore,valueExt`
 	SupportedTAList        []SupportedTAItem       `lb:1,ub:maxnoofTACs,mandatory,reject`
 	DefaultPagingDRX       PagingDRX               `mandatory,ignore`
-	UERetentionInformation *UERetentionInformation `optional,mandatory,ignore`
+	UERetentionInformation *UERetentionInformation `optional,ignore`
 }
 
 func (msg *NGSetupRequest) Encode(w io.Writer) (err error) {

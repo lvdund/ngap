@@ -6,7 +6,7 @@ import (
 )
 
 type XnExtTLAItem struct {
-	IPsecTLA []byte                  `lb:1,ub:160,optional,valExt`
+	IPsecTLA *aper.BitString         `lb:1,ub:160,optional,valExt`
 	GTPTLAs  []TransportLayerAddress `lb:1,ub:maxnoofXnGTPTLAs,optional`
 	// IEExtensions *XnExtTLAItemExtIEs `optional`
 }
@@ -24,7 +24,7 @@ func (ie *XnExtTLAItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if ie.IPsecTLA != nil {
-		tmp_IPsecTLA := NewBITSTRING(ie.IPsecTLA, aper.Constraint{Lb: 1, Ub: 160}, true)
+		tmp_IPsecTLA := NewBITSTRING(*ie.IPsecTLA, aper.Constraint{Lb: 1, Ub: 160}, true)
 		if err = tmp_IPsecTLA.Encode(w); err != nil {
 			err = utils.WrapError("Encode IPsecTLA", err)
 			return
@@ -63,7 +63,10 @@ func (ie *XnExtTLAItem) Decode(r *aper.AperReader) (err error) {
 			err = utils.WrapError("Read IPsecTLA", err)
 			return
 		}
-		ie.IPsecTLA = tmp_IPsecTLA.Value.Bytes
+		ie.IPsecTLA = &aper.BitString{
+			Bytes:   tmp_IPsecTLA.Value.Bytes,
+			NumBits: tmp_IPsecTLA.Value.NumBits,
+		}
 	}
 	if aper.IsBitSet(optionals, 2) {
 		tmp_GTPTLAs := Sequence[*TransportLayerAddress]{

@@ -10,11 +10,11 @@ import (
 )
 
 type CellTrafficTrace struct {
-	AMFUENGAPID                    int64    `lb:0,ub:1099511627775,mandatory,reject`
-	RANUENGAPID                    int64    `lb:0,ub:4294967295,mandatory,reject`
-	NGRANTraceID                   []byte   `lb:8,ub:8,mandatory,ignore`
-	NGRANCGI                       NGRANCGI `mandatory,ignore`
-	TraceCollectionEntityIPAddress []byte   `lb:1,ub:160,mandatory,ignore,valueExt`
+	AMFUENGAPID                    int64          `lb:0,ub:1099511627775,mandatory,reject`
+	RANUENGAPID                    int64          `lb:0,ub:4294967295,mandatory,reject`
+	NGRANTraceID                   []byte         `lb:8,ub:8,mandatory,ignore`
+	NGRANCGI                       NGRANCGI       `mandatory,ignore`
+	TraceCollectionEntityIPAddress aper.BitString `lb:1,ub:160,mandatory,ignore,valueExt`
 }
 
 func (msg *CellTrafficTrace) Encode(w io.Writer) (err error) {
@@ -63,7 +63,7 @@ func (msg *CellTrafficTrace) toIes() (ies []NgapMessageIE, err error) {
 			c:   aper.Constraint{Lb: 1, Ub: 160},
 			ext: true,
 			Value: aper.BitString{
-				Bytes: msg.TraceCollectionEntityIPAddress},
+				Bytes: msg.TraceCollectionEntityIPAddress.Bytes, NumBits: msg.TraceCollectionEntityIPAddress.NumBits},
 		}})
 	return
 }
@@ -207,7 +207,7 @@ func (decoder *CellTrafficTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			err = utils.WrapError("Read TraceCollectionEntityIPAddress", err)
 			return
 		}
-		msg.TraceCollectionEntityIPAddress = tmp.Value.Bytes
+		msg.TraceCollectionEntityIPAddress = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	default:
 		switch msgIe.Criticality.Value {
 		case Criticality_PresentReject:

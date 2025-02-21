@@ -6,8 +6,8 @@ import (
 )
 
 type GTPTunnel struct {
-	TransportLayerAddress []byte `lb:1,ub:160,madatory,valExt`
-	GTPTEID               []byte `lb:4,ub:4,madatory`
+	TransportLayerAddress aper.BitString `lb:1,ub:160,madatory,valExt`
+	GTPTEID               []byte         `lb:4,ub:4,madatory`
 	// IEExtensions *GTPTunnelExtIEs `optional`
 }
 
@@ -44,7 +44,7 @@ func (ie *GTPTunnel) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read TransportLayerAddress", err)
 		return
 	}
-	ie.TransportLayerAddress = tmp_TransportLayerAddress.Value.Bytes
+	ie.TransportLayerAddress = aper.BitString{Bytes: tmp_TransportLayerAddress.Value.Bytes, NumBits: tmp_TransportLayerAddress.Value.NumBits}
 	tmp_GTPTEID := OCTETSTRING{
 		c:   aper.Constraint{Lb: 4, Ub: 4},
 		ext: false,

@@ -15,7 +15,7 @@ type HandoverRequired struct {
 	HandoverType                       HandoverType                      `mandatory,reject`
 	Cause                              Cause                             `mandatory,ignore`
 	TargetID                           TargetID                          `mandatory,reject`
-	DirectForwardingPathAvailability   *DirectForwardingPathAvailability `optional,mandatory,ignore`
+	DirectForwardingPathAvailability   *DirectForwardingPathAvailability `optional,ignore`
 	PDUSessionResourceListHORqd        []PDUSessionResourceItemHORqd     `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
 	SourceToTargetTransparentContainer []byte                            `lb:0,ub:0,mandatory,reject`
 }

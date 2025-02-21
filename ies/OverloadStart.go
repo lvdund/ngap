@@ -10,9 +10,9 @@ import (
 )
 
 type OverloadStart struct {
-	AMFOverloadResponse               *OverloadResponse        `optional,mandatory,reject`
-	AMFTrafficLoadReductionIndication *int64                   `lb:1,ub:99,optional,mandatory,ignore`
-	OverloadStartNSSAIList            []OverloadStartNSSAIItem `lb:1,ub:maxnoofSliceItems,optional,mandatory,ignore`
+	AMFOverloadResponse               *OverloadResponse        `optional,reject`
+	AMFTrafficLoadReductionIndication *int64                   `lb:1,ub:99,optional,ignore`
+	OverloadStartNSSAIList            []OverloadStartNSSAIItem `lb:1,ub:maxnoofSliceItems,optional,ignore`
 }
 
 func (msg *OverloadStart) Encode(w io.Writer) (err error) {

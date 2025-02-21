@@ -14,22 +14,22 @@ type HandoverRequest struct {
 	HandoverType                                HandoverType                                 `mandatory,reject`
 	Cause                                       Cause                                        `mandatory,ignore`
 	UEAggregateMaximumBitRate                   UEAggregateMaximumBitRate                    `mandatory,reject`
-	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,mandatory,ignore`
+	CoreNetworkAssistanceInformationForInactive *CoreNetworkAssistanceInformationForInactive `optional,ignore`
 	UESecurityCapabilities                      UESecurityCapabilities                       `mandatory,reject`
 	SecurityContext                             SecurityContext                              `mandatory,reject`
-	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,mandatory,reject`
-	NASC                                        []byte                                       `lb:0,ub:0,optional,mandatory,reject`
+	NewSecurityContextInd                       *NewSecurityContextInd                       `optional,reject`
+	NASC                                        []byte                                       `lb:0,ub:0,optional,reject`
 	PDUSessionResourceSetupListHOReq            []PDUSessionResourceSetupItemHOReq           `lb:1,ub:maxnoofPDUSessions,mandatory,reject`
 	AllowedNSSAI                                []AllowedNSSAIItem                           `lb:1,ub:maxnoofAllowedSNSSAIs,mandatory,reject`
-	TraceActivation                             *TraceActivation                             `optional,mandatory,ignore`
-	MaskedIMEISV                                []byte                                       `lb:64,ub:64,optional,mandatory,ignore`
+	TraceActivation                             *TraceActivation                             `optional,ignore`
+	MaskedIMEISV                                *aper.BitString                              `lb:64,ub:64,optional,ignore`
 	SourceToTargetTransparentContainer          []byte                                       `lb:0,ub:0,mandatory,reject`
-	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,mandatory,ignore`
-	LocationReportingRequestType                *LocationReportingRequestType                `optional,mandatory,ignore`
-	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,mandatory,ignore`
+	MobilityRestrictionList                     *MobilityRestrictionList                     `optional,ignore`
+	LocationReportingRequestType                *LocationReportingRequestType                `optional,ignore`
+	RRCInactiveTransitionReportRequest          *RRCInactiveTransitionReportRequest          `optional,ignore`
 	GUAMI                                       GUAMI                                        `mandatory,reject`
-	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,mandatory,ignore`
-	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,mandatory,ignore`
+	RedirectionVoiceFallback                    *RedirectionVoiceFallback                    `optional,ignore`
+	CNAssistedRANTuning                         *CNAssistedRANTuning                         `optional,ignore`
 }
 
 func (msg *HandoverRequest) Encode(w io.Writer) (err error) {
@@ -148,7 +148,7 @@ func (msg *HandoverRequest) toIes() (ies []NgapMessageIE, err error) {
 				c:   aper.Constraint{Lb: 64, Ub: 64},
 				ext: false,
 				Value: aper.BitString{
-					Bytes: msg.MaskedIMEISV},
+					Bytes: msg.MaskedIMEISV.Bytes, NumBits: msg.MaskedIMEISV.NumBits},
 			}})
 	}
 	ies = append(ies, NgapMessageIE{
@@ -453,7 +453,7 @@ func (decoder *HandoverRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			err = utils.WrapError("Read MaskedIMEISV", err)
 			return
 		}
-		msg.MaskedIMEISV = tmp.Value.Bytes
+		msg.MaskedIMEISV = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_SourceToTargetTransparentContainer:
 		tmp := OCTETSTRING{
 			c:   aper.Constraint{Lb: 0, Ub: 0},

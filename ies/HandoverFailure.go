@@ -12,7 +12,7 @@ import (
 type HandoverFailure struct {
 	AMFUENGAPID            int64                   `lb:0,ub:1099511627775,mandatory,ignore`
 	Cause                  Cause                   `mandatory,ignore`
-	CriticalityDiagnostics *CriticalityDiagnostics `optional,mandatory,ignore`
+	CriticalityDiagnostics *CriticalityDiagnostics `optional,ignore`
 }
 
 func (msg *HandoverFailure) Encode(w io.Writer) (err error) {

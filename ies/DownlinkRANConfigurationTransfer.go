@@ -10,8 +10,8 @@ import (
 )
 
 type DownlinkRANConfigurationTransfer struct {
-	SONConfigurationTransferDL     *SONConfigurationTransfer `optional,mandatory,ignore`
-	ENDCSONConfigurationTransferDL []byte                    `lb:0,ub:0,optional,mandatory,ignore`
+	SONConfigurationTransferDL     *SONConfigurationTransfer `optional,ignore`
+	ENDCSONConfigurationTransferDL []byte                    `lb:0,ub:0,optional,ignore`
 }
 
 func (msg *DownlinkRANConfigurationTransfer) Encode(w io.Writer) (err error) {

@@ -14,10 +14,10 @@ type HandoverCommand struct {
 	RANUENGAPID                          int64                                  `lb:0,ub:4294967295,mandatory,reject`
 	HandoverType                         HandoverType                           `mandatory,reject`
 	NASSecurityParametersFromNGRAN       []byte                                 `lb:0,ub:0,conditional,reject`
-	PDUSessionResourceHandoverList       []PDUSessionResourceHandoverItem       `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
-	PDUSessionResourceToReleaseListHOCmd []PDUSessionResourceToReleaseItemHOCmd `lb:1,ub:maxnoofPDUSessions,optional,mandatory,ignore`
+	PDUSessionResourceHandoverList       []PDUSessionResourceHandoverItem       `lb:1,ub:maxnoofPDUSessions,optional,ignore`
+	PDUSessionResourceToReleaseListHOCmd []PDUSessionResourceToReleaseItemHOCmd `lb:1,ub:maxnoofPDUSessions,optional,ignore`
 	TargetToSourceTransparentContainer   []byte                                 `lb:0,ub:0,mandatory,reject`
-	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,mandatory,ignore`
+	CriticalityDiagnostics               *CriticalityDiagnostics                `optional,ignore`
 }
 
 func (msg *HandoverCommand) Encode(w io.Writer) (err error) {

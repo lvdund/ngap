@@ -10,10 +10,10 @@ import (
 )
 
 type PWSCancelRequest struct {
-	MessageIdentifier        []byte                    `lb:16,ub:16,mandatory,reject`
-	SerialNumber             []byte                    `lb:16,ub:16,mandatory,reject`
-	WarningAreaList          *WarningAreaList          `optional,mandatory,ignore`
-	CancelAllWarningMessages *CancelAllWarningMessages `optional,mandatory,reject`
+	MessageIdentifier        aper.BitString            `lb:16,ub:16,mandatory,reject`
+	SerialNumber             aper.BitString            `lb:16,ub:16,mandatory,reject`
+	WarningAreaList          *WarningAreaList          `optional,ignore`
+	CancelAllWarningMessages *CancelAllWarningMessages `optional,reject`
 }
 
 func (msg *PWSCancelRequest) Encode(w io.Writer) (err error) {
@@ -33,7 +33,7 @@ func (msg *PWSCancelRequest) toIes() (ies []NgapMessageIE, err error) {
 			c:   aper.Constraint{Lb: 16, Ub: 16},
 			ext: false,
 			Value: aper.BitString{
-				Bytes: msg.MessageIdentifier},
+				Bytes: msg.MessageIdentifier.Bytes, NumBits: msg.MessageIdentifier.NumBits},
 		}})
 	ies = append(ies, NgapMessageIE{
 		Id:          ProtocolIEID{Value: ProtocolIEID_SerialNumber},
@@ -42,7 +42,7 @@ func (msg *PWSCancelRequest) toIes() (ies []NgapMessageIE, err error) {
 			c:   aper.Constraint{Lb: 16, Ub: 16},
 			ext: false,
 			Value: aper.BitString{
-				Bytes: msg.SerialNumber},
+				Bytes: msg.SerialNumber.Bytes, NumBits: msg.SerialNumber.NumBits},
 		}})
 	if msg.WarningAreaList != nil {
 		ies = append(ies, NgapMessageIE{
@@ -136,7 +136,7 @@ func (decoder *PWSCancelRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			err = utils.WrapError("Read MessageIdentifier", err)
 			return
 		}
-		msg.MessageIdentifier = tmp.Value.Bytes
+		msg.MessageIdentifier = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_SerialNumber:
 		tmp := BITSTRING{
 			c:   aper.Constraint{Lb: 16, Ub: 16},
@@ -146,7 +146,7 @@ func (decoder *PWSCancelRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			err = utils.WrapError("Read SerialNumber", err)
 			return
 		}
-		msg.SerialNumber = tmp.Value.Bytes
+		msg.SerialNumber = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_WarningAreaList:
 		var tmp WarningAreaList
 		if err = tmp.Decode(ieR); err != nil {

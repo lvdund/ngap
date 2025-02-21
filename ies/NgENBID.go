@@ -15,9 +15,9 @@ const (
 
 type NgENBID struct {
 	Choice            uint64
-	MacroNgENBID      []byte
-	ShortMacroNgENBID []byte
-	LongMacroNgENBID  []byte
+	MacroNgENBID      *aper.BitString
+	ShortMacroNgENBID *aper.BitString
+	LongMacroNgENBID  *aper.BitString
 	// ChoiceExtensions *NgENBIDExtIEs
 }
 
@@ -27,13 +27,13 @@ func (ie *NgENBID) Encode(w *aper.AperWriter) (err error) {
 	}
 	switch ie.Choice {
 	case NgENBIDPresentMacrongenbId:
-		tmp := NewBITSTRING(ie.MacroNgENBID, aper.Constraint{Lb: 20, Ub: 20}, false)
+		tmp := NewBITSTRING(*ie.MacroNgENBID, aper.Constraint{Lb: 20, Ub: 20}, false)
 		err = tmp.Encode(w)
 	case NgENBIDPresentShortmacrongenbId:
-		tmp := NewBITSTRING(ie.ShortMacroNgENBID, aper.Constraint{Lb: 18, Ub: 18}, false)
+		tmp := NewBITSTRING(*ie.ShortMacroNgENBID, aper.Constraint{Lb: 18, Ub: 18}, false)
 		err = tmp.Encode(w)
 	case NgENBIDPresentLongmacrongenbId:
-		tmp := NewBITSTRING(ie.LongMacroNgENBID, aper.Constraint{Lb: 21, Ub: 21}, false)
+		tmp := NewBITSTRING(*ie.LongMacroNgENBID, aper.Constraint{Lb: 21, Ub: 21}, false)
 		err = tmp.Encode(w)
 	}
 	return
@@ -44,26 +44,26 @@ func (ie *NgENBID) Decode(r *aper.AperReader) (err error) {
 	}
 	switch ie.Choice {
 	case NgENBIDPresentMacrongenbId:
-		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 20, Ub: 20}, false)
+		tmp := BITSTRING{c: aper.Constraint{Lb: 20, Ub: 20}, ext: false}
 		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read MacroNgENBID", err)
 			return
 		}
-		ie.MacroNgENBID = tmp.Value.Bytes
+		ie.MacroNgENBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case NgENBIDPresentShortmacrongenbId:
-		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 18, Ub: 18}, false)
+		tmp := BITSTRING{c: aper.Constraint{Lb: 18, Ub: 18}, ext: false}
 		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read ShortMacroNgENBID", err)
 			return
 		}
-		ie.ShortMacroNgENBID = tmp.Value.Bytes
+		ie.ShortMacroNgENBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case NgENBIDPresentLongmacrongenbId:
-		tmp := NewBITSTRING(nil, aper.Constraint{Lb: 21, Ub: 21}, false)
+		tmp := BITSTRING{c: aper.Constraint{Lb: 21, Ub: 21}, ext: false}
 		if err = tmp.Decode(r); err != nil {
 			err = utils.WrapError("Read LongMacroNgENBID", err)
 			return
 		}
-		ie.LongMacroNgENBID = tmp.Value.Bytes
+		ie.LongMacroNgENBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	}
 	return
 }

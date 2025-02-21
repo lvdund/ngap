@@ -6,8 +6,8 @@ import (
 )
 
 type EndpointIPAddressAndPort struct {
-	EndpointIPAddress []byte `lb:1,ub:160,madatory,valExt`
-	PortNumber        []byte `lb:2,ub:2,madatory`
+	EndpointIPAddress aper.BitString `lb:1,ub:160,madatory,valExt`
+	PortNumber        []byte         `lb:2,ub:2,madatory`
 	// IEExtensions *EndpointIPAddressAndPortExtIEs `optional`
 }
 
@@ -44,7 +44,7 @@ func (ie *EndpointIPAddressAndPort) Decode(r *aper.AperReader) (err error) {
 		err = utils.WrapError("Read EndpointIPAddress", err)
 		return
 	}
-	ie.EndpointIPAddress = tmp_EndpointIPAddress.Value.Bytes
+	ie.EndpointIPAddress = aper.BitString{Bytes: tmp_EndpointIPAddress.Value.Bytes, NumBits: tmp_EndpointIPAddress.Value.NumBits}
 	tmp_PortNumber := OCTETSTRING{
 		c:   aper.Constraint{Lb: 2, Ub: 2},
 		ext: false,
