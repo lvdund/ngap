@@ -44,6 +44,10 @@ var decode_transfer ies.PDUSessionResourceSetupResponseTransfer{}
 err = decode_transfer.Decode(b)
 ```
 
+- With ```BitString``` parameters:
+  - If tag ```lb == ub```: No need to fill ```BitString.Numbits```
+  - If ```len(BitString.Bytes) < lb``` --> ```BitString.Numbits = lb```
+
 ## Contributing
 
 - [lvdund](https://github.com/lvdund)
