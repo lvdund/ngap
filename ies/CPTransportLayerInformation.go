@@ -13,7 +13,7 @@ const (
 
 type CPTransportLayerInformation struct {
 	Choice            uint64
-	EndpointIPAddress *aper.BitString
+	EndpointIPAddress *aper.BitString `lb:1,ub:160`
 	// ChoiceExtensions *CPTransportLayerInformationExtIEs
 }
 

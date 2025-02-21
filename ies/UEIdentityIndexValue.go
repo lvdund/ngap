@@ -13,7 +13,7 @@ const (
 
 type UEIdentityIndexValue struct {
 	Choice        uint64
-	IndexLength10 *aper.BitString
+	IndexLength10 *aper.BitString `lb:10,ub:10`
 	// ChoiceExtensions *UEIdentityIndexValueExtIEs
 }
 

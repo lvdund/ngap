@@ -48,8 +48,6 @@ func (t *BITSTRING) Encode(w *aper.AperWriter) (err error) {
 		t.Value.NumBits = uint64(t.c.Lb)
 	} else if len(t.Value.Bytes)*8 < int(t.c.Lb) {
 		t.Value.NumBits = uint64(t.c.Lb)
-	} else {
-		t.Value.NumBits = uint64(len(t.Value.Bytes) * 8)
 	}
 	err = w.WriteBitString(t.Value.Bytes, uint(t.Value.NumBits), &t.c, t.ext)
 	return

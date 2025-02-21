@@ -13,7 +13,7 @@ const (
 
 type N3IWFID struct {
 	Choice  uint64
-	N3IWFID *aper.BitString
+	N3IWFID *aper.BitString `lb:16,ub:16`
 	// ChoiceExtensions *N3IWFIDExtIEs
 }
 

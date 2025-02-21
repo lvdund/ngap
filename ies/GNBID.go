@@ -13,7 +13,7 @@ const (
 
 type GNBID struct {
 	Choice uint64
-	GNBID  *aper.BitString
+	GNBID  *aper.BitString `lb:22,ub:32`
 	// ChoiceExtensions *GNBIDExtIEs
 }
 

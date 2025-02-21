@@ -7,24 +7,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func IPAddressToString(ipAddr []byte) (ipv4Addr, ipv6Addr string) {
+func IPAddressToString(ipAddr aper.BitString) (ipv4Addr, ipv6Addr string) {
 
 	// Described in 38.414
-	switch len(ipAddr) * 8 {
+	switch ipAddr.NumBits {
 	case 32: // ipv4
-		netIP := net.IPv4(ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3])
+		netIP := net.IPv4(ipAddr.Bytes[0], ipAddr.Bytes[1], ipAddr.Bytes[2], ipAddr.Bytes[3])
 		ipv4Addr = netIP.String()
 	case 128: // ipv6
 		netIP := net.IP{}
-		for i := range ipAddr {
-			netIP = append(netIP, ipAddr[i])
+		for i := range ipAddr.Bytes {
+			netIP = append(netIP, ipAddr.Bytes[i])
 		}
 		ipv6Addr = netIP.String()
 	case 160: // ipv4 + ipv6, and ipv4 is contained in the first 32 bits
-		netIPv4 := net.IPv4(ipAddr[0], ipAddr[1], ipAddr[2], ipAddr[3])
+		netIPv4 := net.IPv4(ipAddr.Bytes[0], ipAddr.Bytes[1], ipAddr.Bytes[2], ipAddr.Bytes[3])
 		netIPv6 := net.IP{}
-		for i := range ipAddr {
-			netIPv6 = append(netIPv6, ipAddr[i+4])
+		for i := range ipAddr.Bytes {
+			netIPv6 = append(netIPv6, ipAddr.Bytes[i+4])
 		}
 		ipv4Addr = netIPv4.String()
 		ipv6Addr = netIPv6.String()

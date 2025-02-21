@@ -15,9 +15,9 @@ const (
 
 type NgENBID struct {
 	Choice            uint64
-	MacroNgENBID      *aper.BitString
-	ShortMacroNgENBID *aper.BitString
-	LongMacroNgENBID  *aper.BitString
+	MacroNgENBID      *aper.BitString `lb:20,ub:20`
+	ShortMacroNgENBID *aper.BitString `lb:18,ub:18`
+	LongMacroNgENBID  *aper.BitString `lb:21,ub:21`
 	// ChoiceExtensions *NgENBIDExtIEs
 }
 
