@@ -154,15 +154,32 @@ func (s *Sequence[T]) Decode(r *aper.AperReader, fn func() T) (err error) {
 	return
 }
 
-// temparory
+// TAC and PLMNIdentity are both OCTET STRING (SIZE(3)). They exist as named
+// types only because a few IEs carry them inside a SEQUENCE OF, which needs an
+// element implementing aper.IE; everywhere else the same three octets are a
+// plain []byte field encoded through OCTETSTRING, and these encode identically.
+//
+// A fixed-size octet string writes no length determinant, so the whole value is
+// the three octets the caller supplies: an encoder that writes nothing here
+// leaves the sequence claiming an element it never wrote, and a peer then reads
+// the following three octets as this one.
 type TAC struct {
 	Value []byte
 }
 
 func (ie *TAC) Encode(w *aper.AperWriter) (err error) {
-	return
+	t := NewOCTETSTRING(ie.Value, aper.Constraint{Lb: 3, Ub: 3}, false)
+	return t.Encode(w)
 }
 func (ie *TAC) Decode(r *aper.AperReader) (err error) {
+	t := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = t.Decode(r); err != nil {
+		return
+	}
+	ie.Value = t.Value
 	return
 }
 
@@ -171,31 +188,71 @@ type PLMNIdentity struct {
 }
 
 func (ie *PLMNIdentity) Encode(w *aper.AperWriter) (err error) {
-	return
+	t := NewOCTETSTRING(ie.Value, aper.Constraint{Lb: 3, Ub: 3}, false)
+	return t.Encode(w)
 }
 func (ie *PLMNIdentity) Decode(r *aper.AperReader) (err error) {
+	t := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = t.Decode(r); err != nil {
+		return
+	}
+	ie.Value = t.Value
 	return
 }
 
+// EmergencyAreaID is OCTET STRING (SIZE(3)), the same three octets that every
+// IE carrying one outside a SEQUENCE OF declares as a []byte with lb:3,ub:3.
 type EmergencyAreaID struct {
 	Value []byte
 }
 
 func (ie *EmergencyAreaID) Encode(w *aper.AperWriter) (err error) {
-	return
+	t := NewOCTETSTRING(ie.Value, aper.Constraint{Lb: 3, Ub: 3}, false)
+	return t.Encode(w)
 }
 func (ie *EmergencyAreaID) Decode(r *aper.AperReader) (err error) {
+	t := OCTETSTRING{
+		c:   aper.Constraint{Lb: 3, Ub: 3},
+		ext: false,
+	}
+	if err = t.Decode(r); err != nil {
+		return
+	}
+	ie.Value = t.Value
 	return
 }
 
+// TransportLayerAddress is BIT STRING (SIZE(1..160,...)) - an extensible bit
+// string, not an octet string, which is how XnExtTLAItem already carries the
+// same value in the field beside a list of these.
+//
+// Value holds whole octets and the bit count follows from its length, which
+// covers every address the protocol carries: 32 bits for IPv4, 128 for IPv6,
+// 160 for both. A length that is not a whole number of octets cannot be
+// expressed here and does not arise.
 type TransportLayerAddress struct {
 	Value []byte
 }
 
 func (ie *TransportLayerAddress) Encode(w *aper.AperWriter) (err error) {
-	return
+	t := NewBITSTRING(aper.BitString{
+		Bytes:   ie.Value,
+		NumBits: uint64(len(ie.Value)) * 8,
+	}, aper.Constraint{Lb: 1, Ub: 160}, true)
+	return t.Encode(w)
 }
 func (ie *TransportLayerAddress) Decode(r *aper.AperReader) (err error) {
+	t := BITSTRING{
+		c:   aper.Constraint{Lb: 1, Ub: 160},
+		ext: true,
+	}
+	if err = t.Decode(r); err != nil {
+		return
+	}
+	ie.Value = t.Value.Bytes
 	return
 }
 
