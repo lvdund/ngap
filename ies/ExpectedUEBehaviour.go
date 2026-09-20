@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type ExpectedUEBehaviour struct {
@@ -33,19 +34,19 @@ func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	if ie.ExpectedUEActivityBehaviour != nil {
 		if err = ie.ExpectedUEActivityBehaviour.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedUEActivityBehaviour", err)
+			err = fmt.Errorf("Encode ExpectedUEActivityBehaviour: %w", err)
 			return
 		}
 	}
 	if ie.ExpectedHOInterval != nil {
 		if err = ie.ExpectedHOInterval.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedHOInterval", err)
+			err = fmt.Errorf("Encode ExpectedHOInterval: %w", err)
 			return
 		}
 	}
 	if ie.ExpectedUEMobility != nil {
 		if err = ie.ExpectedUEMobility.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedUEMobility", err)
+			err = fmt.Errorf("Encode ExpectedUEMobility: %w", err)
 			return
 		}
 	}
@@ -59,7 +60,7 @@ func (ie *ExpectedUEBehaviour) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedUEMovingTrajectory", err)
+			err = fmt.Errorf("Encode ExpectedUEMovingTrajectory: %w", err)
 			return
 		}
 	}
@@ -76,7 +77,7 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(ExpectedUEActivityBehaviour)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ExpectedUEActivityBehaviour", err)
+			err = fmt.Errorf("Read ExpectedUEActivityBehaviour: %w", err)
 			return
 		}
 		ie.ExpectedUEActivityBehaviour = tmp
@@ -84,7 +85,7 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(ExpectedHOInterval)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ExpectedHOInterval", err)
+			err = fmt.Errorf("Read ExpectedHOInterval: %w", err)
 			return
 		}
 		ie.ExpectedHOInterval = tmp
@@ -92,7 +93,7 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 3) {
 		tmp := new(ExpectedUEMobility)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ExpectedUEMobility", err)
+			err = fmt.Errorf("Read ExpectedUEMobility: %w", err)
 			return
 		}
 		ie.ExpectedUEMobility = tmp
@@ -104,7 +105,7 @@ func (ie *ExpectedUEBehaviour) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *ExpectedUEMovingTrajectoryItem { return new(ExpectedUEMovingTrajectoryItem) }
 		if err = tmp_ExpectedUEMovingTrajectory.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read ExpectedUEMovingTrajectory", err)
+			err = fmt.Errorf("Read ExpectedUEMovingTrajectory: %w", err)
 			return
 		}
 		ie.ExpectedUEMovingTrajectory = []ExpectedUEMovingTrajectoryItem{}

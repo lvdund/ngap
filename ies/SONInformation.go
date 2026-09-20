@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -39,14 +40,14 @@ func (ie *SONInformation) Decode(r *aper.AperReader) (err error) {
 	case SONInformationPresentSoninformationrequest:
 		var tmp SONInformationRequest
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SONInformationRequest", err)
+			err = fmt.Errorf("Read SONInformationRequest: %w", err)
 			return
 		}
 		ie.SONInformationRequest = &tmp
 	case SONInformationPresentSoninformationreply:
 		var tmp SONInformationReply
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SONInformationReply", err)
+			err = fmt.Errorf("Read SONInformationReply: %w", err)
 			return
 		}
 		ie.SONInformationReply = &tmp

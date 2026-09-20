@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UERadioCapabilityCheckResponse struct {
@@ -138,7 +137,7 @@ func (decoder *UERadioCapabilityCheckResponseDecoder) decodeIE(r *aper.AperReade
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -148,21 +147,21 @@ func (decoder *UERadioCapabilityCheckResponseDecoder) decodeIE(r *aper.AperReade
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_IMSVoiceSupportIndicator:
 		var tmp IMSVoiceSupportIndicator
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read IMSVoiceSupportIndicator", err)
+			err = fmt.Errorf("Read IMSVoiceSupportIndicator: %w", err)
 			return
 		}
 		msg.IMSVoiceSupportIndicator = tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

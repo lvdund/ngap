@@ -1,7 +1,7 @@
 package aper
 
 import (
-	"github.com/reogac/utils"
+	"fmt"
 	"io"
 )
 
@@ -72,7 +72,7 @@ func (bs *bitstreamWriter) writeByte(v byte) error {
 	bs.b[0] |= v >> bs.index
 
 	if _, err := bs.w.Write(bs.b[:]); err != nil {
-		return utils.WrapError("WriteByte", err)
+		return fmt.Errorf("WriteByte: %w", err)
 	}
 	bs.b[0] = v << (8 - bs.index)
 
@@ -82,7 +82,9 @@ func (bs *bitstreamWriter) writeByte(v byte) error {
 // write 'nbits' from 'content' byte array
 func (bs *bitstreamWriter) WriteBits(content []byte, nbits uint) (err error) {
 	defer func() {
-		err = utils.WrapError("WriteBits", err)
+		if err != nil {
+			err = fmt.Errorf("WriteBits: %w", err)
+		}
 	}()
 
 	if nbits > uint(8*len(content)) {
@@ -168,7 +170,9 @@ func (bs *bitstreamReader) ReadBool() (bool, error) {
 
 func (bs *bitstreamReader) ReadBits(nbits uint) (output []byte, err error) {
 	defer func() {
-		err = utils.WrapError("ReadBits", err)
+		if err != nil {
+			err = fmt.Errorf("ReadBits: %w", err)
+		}
 	}()
 
 	if nbits == 0 { //read nothing

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type RecommendedRANNodesForPaging struct {
@@ -26,11 +27,13 @@ func (ie *RecommendedRANNodesForPaging) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode RecommendedRANNodeList", err)
+			err = fmt.Errorf("Encode RecommendedRANNodeList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("RecommendedRANNodeList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("RecommendedRANNodeList is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -48,7 +51,7 @@ func (ie *RecommendedRANNodesForPaging) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *RecommendedRANNodeItem { return new(RecommendedRANNodeItem) }
 	if err = tmp_RecommendedRANNodeList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read RecommendedRANNodeList", err)
+		err = fmt.Errorf("Read RecommendedRANNodeList: %w", err)
 		return
 	}
 	ie.RecommendedRANNodeList = []RecommendedRANNodeItem{}

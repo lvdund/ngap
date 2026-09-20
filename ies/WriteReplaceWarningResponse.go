@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type WriteReplaceWarningResponse struct {
@@ -133,7 +132,7 @@ func (decoder *WriteReplaceWarningResponseDecoder) decodeIE(r *aper.AperReader) 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read MessageIdentifier", err)
+			err = fmt.Errorf("Read MessageIdentifier: %w", err)
 			return
 		}
 		msg.MessageIdentifier = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -143,21 +142,21 @@ func (decoder *WriteReplaceWarningResponseDecoder) decodeIE(r *aper.AperReader) 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SerialNumber", err)
+			err = fmt.Errorf("Read SerialNumber: %w", err)
 			return
 		}
 		msg.SerialNumber = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_BroadcastCompletedAreaList:
 		var tmp BroadcastCompletedAreaList
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read BroadcastCompletedAreaList", err)
+			err = fmt.Errorf("Read BroadcastCompletedAreaList: %w", err)
 			return
 		}
 		msg.BroadcastCompletedAreaList = &tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

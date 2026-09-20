@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SONConfigurationTransfer struct {
@@ -23,20 +24,20 @@ func (ie *SONConfigurationTransfer) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.TargetRANNodeID.Encode(w); err != nil {
-		err = utils.WrapError("Encode TargetRANNodeID", err)
+		err = fmt.Errorf("Encode TargetRANNodeID: %w", err)
 		return
 	}
 	if err = ie.SourceRANNodeID.Encode(w); err != nil {
-		err = utils.WrapError("Encode SourceRANNodeID", err)
+		err = fmt.Errorf("Encode SourceRANNodeID: %w", err)
 		return
 	}
 	if err = ie.SONInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode SONInformation", err)
+		err = fmt.Errorf("Encode SONInformation: %w", err)
 		return
 	}
 	if ie.XnTNLConfigurationInfo != nil {
 		if err = ie.XnTNLConfigurationInfo.Encode(w); err != nil {
-			err = utils.WrapError("Encode XnTNLConfigurationInfo", err)
+			err = fmt.Errorf("Encode XnTNLConfigurationInfo: %w", err)
 			return
 		}
 	}
@@ -51,21 +52,21 @@ func (ie *SONConfigurationTransfer) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TargetRANNodeID.Decode(r); err != nil {
-		err = utils.WrapError("Read TargetRANNodeID", err)
+		err = fmt.Errorf("Read TargetRANNodeID: %w", err)
 		return
 	}
 	if err = ie.SourceRANNodeID.Decode(r); err != nil {
-		err = utils.WrapError("Read SourceRANNodeID", err)
+		err = fmt.Errorf("Read SourceRANNodeID: %w", err)
 		return
 	}
 	if err = ie.SONInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read SONInformation", err)
+		err = fmt.Errorf("Read SONInformation: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(XnTNLConfigurationInfo)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read XnTNLConfigurationInfo", err)
+			err = fmt.Errorf("Read XnTNLConfigurationInfo: %w", err)
 			return
 		}
 		ie.XnTNLConfigurationInfo = tmp

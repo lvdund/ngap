@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type RANConfigurationUpdate struct {
@@ -136,7 +135,7 @@ func (decoder *RANConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANNodeName", err)
+			err = fmt.Errorf("Read RANNodeName: %w", err)
 			return
 		}
 		msg.RANNodeName = tmp.Value
@@ -147,7 +146,7 @@ func (decoder *RANConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *SupportedTAItem { return new(SupportedTAItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read SupportedTAList", err)
+			err = fmt.Errorf("Read SupportedTAList: %w", err)
 			return
 		}
 		msg.SupportedTAList = []SupportedTAItem{}
@@ -157,14 +156,14 @@ func (decoder *RANConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 	case ProtocolIEID_DefaultPagingDRX:
 		var tmp PagingDRX
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read DefaultPagingDRX", err)
+			err = fmt.Errorf("Read DefaultPagingDRX: %w", err)
 			return
 		}
 		msg.DefaultPagingDRX = &tmp
 	case ProtocolIEID_GlobalRANNodeID:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read GlobalRANNodeID", err)
+			err = fmt.Errorf("Read GlobalRANNodeID: %w", err)
 			return
 		}
 		msg.GlobalRANNodeID = &tmp
@@ -175,7 +174,7 @@ func (decoder *RANConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *NGRANTNLAssociationToRemoveItem { return new(NGRANTNLAssociationToRemoveItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read NGRANTNLAssociationToRemoveList", err)
+			err = fmt.Errorf("Read NGRANTNLAssociationToRemoveList: %w", err)
 			return
 		}
 		msg.NGRANTNLAssociationToRemoveList = []NGRANTNLAssociationToRemoveItem{}

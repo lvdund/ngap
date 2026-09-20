@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type Paging struct {
@@ -55,7 +54,9 @@ func (msg *Paging) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_TAIListForPaging,
 		})
 	} else {
-		err = utils.WrapError("TAIListForPaging is nil", err)
+		if err != nil {
+			err = fmt.Errorf("TAIListForPaging is nil: %w", err)
+		}
 		return
 	}
 	if msg.PagingPriority != nil {
@@ -158,14 +159,14 @@ func (decoder *PagingDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE
 	case ProtocolIEID_UEPagingIdentity:
 		var tmp UEPagingIdentity
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UEPagingIdentity", err)
+			err = fmt.Errorf("Read UEPagingIdentity: %w", err)
 			return
 		}
 		msg.UEPagingIdentity = tmp
 	case ProtocolIEID_PagingDRX:
 		var tmp PagingDRX
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PagingDRX", err)
+			err = fmt.Errorf("Read PagingDRX: %w", err)
 			return
 		}
 		msg.PagingDRX = &tmp
@@ -176,7 +177,7 @@ func (decoder *PagingDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE
 		}
 		fn := func() *TAIListForPagingItem { return new(TAIListForPagingItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read TAIListForPaging", err)
+			err = fmt.Errorf("Read TAIListForPaging: %w", err)
 			return
 		}
 		msg.TAIListForPaging = []TAIListForPagingItem{}
@@ -186,28 +187,28 @@ func (decoder *PagingDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageIE
 	case ProtocolIEID_PagingPriority:
 		var tmp PagingPriority
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PagingPriority", err)
+			err = fmt.Errorf("Read PagingPriority: %w", err)
 			return
 		}
 		msg.PagingPriority = &tmp
 	case ProtocolIEID_UERadioCapabilityForPaging:
 		var tmp UERadioCapabilityForPaging
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPaging", err)
+			err = fmt.Errorf("Read UERadioCapabilityForPaging: %w", err)
 			return
 		}
 		msg.UERadioCapabilityForPaging = &tmp
 	case ProtocolIEID_PagingOrigin:
 		var tmp PagingOrigin
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PagingOrigin", err)
+			err = fmt.Errorf("Read PagingOrigin: %w", err)
 			return
 		}
 		msg.PagingOrigin = &tmp
 	case ProtocolIEID_AssistanceDataForPaging:
 		var tmp AssistanceDataForPaging
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AssistanceDataForPaging", err)
+			err = fmt.Errorf("Read AssistanceDataForPaging: %w", err)
 			return
 		}
 		msg.AssistanceDataForPaging = &tmp

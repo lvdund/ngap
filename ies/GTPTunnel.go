@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type GTPTunnel struct {
@@ -19,12 +20,12 @@ func (ie *GTPTunnel) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_TransportLayerAddress := NewBITSTRING(ie.TransportLayerAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_TransportLayerAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode TransportLayerAddress", err)
+		err = fmt.Errorf("Encode TransportLayerAddress: %w", err)
 		return
 	}
 	tmp_GTPTEID := NewOCTETSTRING(ie.GTPTEID, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_GTPTEID.Encode(w); err != nil {
-		err = utils.WrapError("Encode GTPTEID", err)
+		err = fmt.Errorf("Encode GTPTEID: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *GTPTunnel) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_TransportLayerAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read TransportLayerAddress", err)
+		err = fmt.Errorf("Read TransportLayerAddress: %w", err)
 		return
 	}
 	ie.TransportLayerAddress = aper.BitString{Bytes: tmp_TransportLayerAddress.Value.Bytes, NumBits: tmp_TransportLayerAddress.Value.NumBits}
@@ -50,7 +51,7 @@ func (ie *GTPTunnel) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_GTPTEID.Decode(r); err != nil {
-		err = utils.WrapError("Read GTPTEID", err)
+		err = fmt.Errorf("Read GTPTEID: %w", err)
 		return
 	}
 	ie.GTPTEID = tmp_GTPTEID.Value

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type GlobalNgENBID struct {
@@ -19,11 +20,11 @@ func (ie *GlobalNgENBID) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Encode PLMNIdentity", err)
+		err = fmt.Errorf("Encode PLMNIdentity: %w", err)
 		return
 	}
 	if err = ie.NgENBID.Encode(w); err != nil {
-		err = utils.WrapError("Encode NgENBID", err)
+		err = fmt.Errorf("Encode NgENBID: %w", err)
 		return
 	}
 	return
@@ -40,12 +41,12 @@ func (ie *GlobalNgENBID) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = fmt.Errorf("Read PLMNIdentity: %w", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
 	if err = ie.NgENBID.Decode(r); err != nil {
-		err = utils.WrapError("Read NgENBID", err)
+		err = fmt.Errorf("Read NgENBID: %w", err)
 		return
 	}
 	return

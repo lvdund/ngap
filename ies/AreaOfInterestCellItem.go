@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AreaOfInterestCellItem struct {
@@ -17,7 +18,7 @@ func (ie *AreaOfInterestCellItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NGRANCGI.Encode(w); err != nil {
-		err = utils.WrapError("Encode NGRANCGI", err)
+		err = fmt.Errorf("Encode NGRANCGI: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *AreaOfInterestCellItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.NGRANCGI.Decode(r); err != nil {
-		err = utils.WrapError("Read NGRANCGI", err)
+		err = fmt.Errorf("Read NGRANCGI: %w", err)
 		return
 	}
 	return

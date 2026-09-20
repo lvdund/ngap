@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type ServedGUAMIItem struct {
@@ -21,13 +22,13 @@ func (ie *ServedGUAMIItem) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.GUAMI.Encode(w); err != nil {
-		err = utils.WrapError("Encode GUAMI", err)
+		err = fmt.Errorf("Encode GUAMI: %w", err)
 		return
 	}
 	if ie.BackupAMFName != nil {
 		tmp_BackupAMFName := NewOCTETSTRING(ie.BackupAMFName, aper.Constraint{Lb: 1, Ub: 150}, true)
 		if err = tmp_BackupAMFName.Encode(w); err != nil {
-			err = utils.WrapError("Encode BackupAMFName", err)
+			err = fmt.Errorf("Encode BackupAMFName: %w", err)
 			return
 		}
 	}
@@ -42,7 +43,7 @@ func (ie *ServedGUAMIItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.GUAMI.Decode(r); err != nil {
-		err = utils.WrapError("Read GUAMI", err)
+		err = fmt.Errorf("Read GUAMI: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -51,7 +52,7 @@ func (ie *ServedGUAMIItem) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_BackupAMFName.Decode(r); err != nil {
-			err = utils.WrapError("Read BackupAMFName", err)
+			err = fmt.Errorf("Read BackupAMFName: %w", err)
 			return
 		}
 		ie.BackupAMFName = tmp_BackupAMFName.Value

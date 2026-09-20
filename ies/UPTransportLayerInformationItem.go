@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UPTransportLayerInformationItem struct {
@@ -17,7 +18,7 @@ func (ie *UPTransportLayerInformationItem) Encode(w *aper.AperWriter) (err error
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode NGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode NGUUPTNLInformation: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *UPTransportLayerInformationItem) Decode(r *aper.AperReader) (err error
 		return
 	}
 	if err = ie.NGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read NGUUPTNLInformation", err)
+		err = fmt.Errorf("Read NGUUPTNLInformation: %w", err)
 		return
 	}
 	return

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyItemModReq struct {
@@ -23,19 +24,19 @@ func (ie *PDUSessionResourceModifyItemModReq) Encode(w *aper.AperWriter) (err er
 	w.WriteBits(optionals, 2)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionID", err)
+		err = fmt.Errorf("Encode PDUSessionID: %w", err)
 		return
 	}
 	if ie.NASPDU != nil {
 		tmp_NASPDU := NewOCTETSTRING(ie.NASPDU, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_NASPDU.Encode(w); err != nil {
-			err = utils.WrapError("Encode NASPDU", err)
+			err = fmt.Errorf("Encode NASPDU: %w", err)
 			return
 		}
 	}
 	tmp_PDUSessionResourceModifyRequestTransfer := NewOCTETSTRING(ie.PDUSessionResourceModifyRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PDUSessionResourceModifyRequestTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionResourceModifyRequestTransfer", err)
+		err = fmt.Errorf("Encode PDUSessionResourceModifyRequestTransfer: %w", err)
 		return
 	}
 	return
@@ -53,7 +54,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = fmt.Errorf("Read PDUSessionID: %w", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -63,7 +64,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 			ext: false,
 		}
 		if err = tmp_NASPDU.Decode(r); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = fmt.Errorf("Read NASPDU: %w", err)
 			return
 		}
 		ie.NASPDU = tmp_NASPDU.Value
@@ -73,7 +74,7 @@ func (ie *PDUSessionResourceModifyItemModReq) Decode(r *aper.AperReader) (err er
 		ext: false,
 	}
 	if err = tmp_PDUSessionResourceModifyRequestTransfer.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionResourceModifyRequestTransfer", err)
+		err = fmt.Errorf("Read PDUSessionResourceModifyRequestTransfer: %w", err)
 		return
 	}
 	ie.PDUSessionResourceModifyRequestTransfer = tmp_PDUSessionResourceModifyRequestTransfer.Value

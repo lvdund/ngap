@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -100,7 +101,7 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(CellIDCancelledEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read CellIDCancelledEUTRA", err)
+			err = fmt.Errorf("Read CellIDCancelledEUTRA: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -112,7 +113,7 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAICancelledEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read TAICancelledEUTRA", err)
+			err = fmt.Errorf("Read TAICancelledEUTRA: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -124,7 +125,7 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaIDCancelledEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EmergencyAreaIDCancelledEUTRA", err)
+			err = fmt.Errorf("Read EmergencyAreaIDCancelledEUTRA: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -136,7 +137,7 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(CellIDCancelledNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read CellIDCancelledNR", err)
+			err = fmt.Errorf("Read CellIDCancelledNR: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -148,7 +149,7 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAICancelledNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read TAICancelledNR", err)
+			err = fmt.Errorf("Read TAICancelledNR: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -160,7 +161,7 @@ func (ie *BroadcastCancelledAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaIDCancelledNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EmergencyAreaIDCancelledNR", err)
+			err = fmt.Errorf("Read EmergencyAreaIDCancelledNR: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {

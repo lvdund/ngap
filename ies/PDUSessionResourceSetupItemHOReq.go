@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceSetupItemHOReq struct {
@@ -20,16 +21,16 @@ func (ie *PDUSessionResourceSetupItemHOReq) Encode(w *aper.AperWriter) (err erro
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionID", err)
+		err = fmt.Errorf("Encode PDUSessionID: %w", err)
 		return
 	}
 	if err = ie.SNSSAI.Encode(w); err != nil {
-		err = utils.WrapError("Encode SNSSAI", err)
+		err = fmt.Errorf("Encode SNSSAI: %w", err)
 		return
 	}
 	tmp_HandoverRequestTransfer := NewOCTETSTRING(ie.HandoverRequestTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverRequestTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Encode HandoverRequestTransfer", err)
+		err = fmt.Errorf("Encode HandoverRequestTransfer: %w", err)
 		return
 	}
 	return
@@ -46,12 +47,12 @@ func (ie *PDUSessionResourceSetupItemHOReq) Decode(r *aper.AperReader) (err erro
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = fmt.Errorf("Read PDUSessionID: %w", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
 	if err = ie.SNSSAI.Decode(r); err != nil {
-		err = utils.WrapError("Read SNSSAI", err)
+		err = fmt.Errorf("Read SNSSAI: %w", err)
 		return
 	}
 	tmp_HandoverRequestTransfer := OCTETSTRING{
@@ -59,7 +60,7 @@ func (ie *PDUSessionResourceSetupItemHOReq) Decode(r *aper.AperReader) (err erro
 		ext: false,
 	}
 	if err = tmp_HandoverRequestTransfer.Decode(r); err != nil {
-		err = utils.WrapError("Read HandoverRequestTransfer", err)
+		err = fmt.Errorf("Read HandoverRequestTransfer: %w", err)
 		return
 	}
 	ie.HandoverRequestTransfer = tmp_HandoverRequestTransfer.Value

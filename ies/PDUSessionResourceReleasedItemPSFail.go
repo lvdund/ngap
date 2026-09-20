@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceReleasedItemPSFail struct {
@@ -19,12 +20,12 @@ func (ie *PDUSessionResourceReleasedItemPSFail) Encode(w *aper.AperWriter) (err 
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionID", err)
+		err = fmt.Errorf("Encode PDUSessionID: %w", err)
 		return
 	}
 	tmp_PathSwitchRequestUnsuccessfulTransfer := NewOCTETSTRING(ie.PathSwitchRequestUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_PathSwitchRequestUnsuccessfulTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Encode PathSwitchRequestUnsuccessfulTransfer", err)
+		err = fmt.Errorf("Encode PathSwitchRequestUnsuccessfulTransfer: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *PDUSessionResourceReleasedItemPSFail) Decode(r *aper.AperReader) (err 
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = fmt.Errorf("Read PDUSessionID: %w", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -50,7 +51,7 @@ func (ie *PDUSessionResourceReleasedItemPSFail) Decode(r *aper.AperReader) (err 
 		ext: false,
 	}
 	if err = tmp_PathSwitchRequestUnsuccessfulTransfer.Decode(r); err != nil {
-		err = utils.WrapError("Read PathSwitchRequestUnsuccessfulTransfer", err)
+		err = fmt.Errorf("Read PathSwitchRequestUnsuccessfulTransfer: %w", err)
 		return
 	}
 	ie.PathSwitchRequestUnsuccessfulTransfer = tmp_PathSwitchRequestUnsuccessfulTransfer.Value

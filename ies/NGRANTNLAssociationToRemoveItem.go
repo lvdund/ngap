@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type NGRANTNLAssociationToRemoveItem struct {
@@ -21,12 +22,12 @@ func (ie *NGRANTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.TNLAssociationTransportLayerAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode TNLAssociationTransportLayerAddress", err)
+		err = fmt.Errorf("Encode TNLAssociationTransportLayerAddress: %w", err)
 		return
 	}
 	if ie.TNLAssociationTransportLayerAddressAMF != nil {
 		if err = ie.TNLAssociationTransportLayerAddressAMF.Encode(w); err != nil {
-			err = utils.WrapError("Encode TNLAssociationTransportLayerAddressAMF", err)
+			err = fmt.Errorf("Encode TNLAssociationTransportLayerAddressAMF: %w", err)
 			return
 		}
 	}
@@ -41,13 +42,13 @@ func (ie *NGRANTNLAssociationToRemoveItem) Decode(r *aper.AperReader) (err error
 		return
 	}
 	if err = ie.TNLAssociationTransportLayerAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read TNLAssociationTransportLayerAddress", err)
+		err = fmt.Errorf("Read TNLAssociationTransportLayerAddress: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(CPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read TNLAssociationTransportLayerAddressAMF", err)
+			err = fmt.Errorf("Read TNLAssociationTransportLayerAddressAMF: %w", err)
 			return
 		}
 		ie.TNLAssociationTransportLayerAddressAMF = tmp

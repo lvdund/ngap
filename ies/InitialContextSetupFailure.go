@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type InitialContextSetupFailure struct {
@@ -153,7 +152,7 @@ func (decoder *InitialContextSetupFailureDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -163,7 +162,7 @@ func (decoder *InitialContextSetupFailureDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -176,7 +175,7 @@ func (decoder *InitialContextSetupFailureDecoder) decodeIE(r *aper.AperReader) (
 			return new(PDUSessionResourceFailedToSetupItemCxtFail)
 		}
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceFailedToSetupListCxtFail", err)
+			err = fmt.Errorf("Read PDUSessionResourceFailedToSetupListCxtFail: %w", err)
 			return
 		}
 		msg.PDUSessionResourceFailedToSetupListCxtFail = []PDUSessionResourceFailedToSetupItemCxtFail{}
@@ -186,14 +185,14 @@ func (decoder *InitialContextSetupFailureDecoder) decodeIE(r *aper.AperReader) (
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type GBRQosInformation struct {
@@ -33,41 +34,41 @@ func (ie *GBRQosInformation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 4)
 	tmp_MaximumFlowBitRateDL := NewINTEGER(ie.MaximumFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_MaximumFlowBitRateDL.Encode(w); err != nil {
-		err = utils.WrapError("Encode MaximumFlowBitRateDL", err)
+		err = fmt.Errorf("Encode MaximumFlowBitRateDL: %w", err)
 		return
 	}
 	tmp_MaximumFlowBitRateUL := NewINTEGER(ie.MaximumFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_MaximumFlowBitRateUL.Encode(w); err != nil {
-		err = utils.WrapError("Encode MaximumFlowBitRateUL", err)
+		err = fmt.Errorf("Encode MaximumFlowBitRateUL: %w", err)
 		return
 	}
 	tmp_GuaranteedFlowBitRateDL := NewINTEGER(ie.GuaranteedFlowBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_GuaranteedFlowBitRateDL.Encode(w); err != nil {
-		err = utils.WrapError("Encode GuaranteedFlowBitRateDL", err)
+		err = fmt.Errorf("Encode GuaranteedFlowBitRateDL: %w", err)
 		return
 	}
 	tmp_GuaranteedFlowBitRateUL := NewINTEGER(ie.GuaranteedFlowBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_GuaranteedFlowBitRateUL.Encode(w); err != nil {
-		err = utils.WrapError("Encode GuaranteedFlowBitRateUL", err)
+		err = fmt.Errorf("Encode GuaranteedFlowBitRateUL: %w", err)
 		return
 	}
 	if ie.NotificationControl != nil {
 		if err = ie.NotificationControl.Encode(w); err != nil {
-			err = utils.WrapError("Encode NotificationControl", err)
+			err = fmt.Errorf("Encode NotificationControl: %w", err)
 			return
 		}
 	}
 	if ie.MaximumPacketLossRateDL != nil {
 		tmp_MaximumPacketLossRateDL := NewINTEGER(*ie.MaximumPacketLossRateDL, aper.Constraint{Lb: 0, Ub: 1000}, true)
 		if err = tmp_MaximumPacketLossRateDL.Encode(w); err != nil {
-			err = utils.WrapError("Encode MaximumPacketLossRateDL", err)
+			err = fmt.Errorf("Encode MaximumPacketLossRateDL: %w", err)
 			return
 		}
 	}
 	if ie.MaximumPacketLossRateUL != nil {
 		tmp_MaximumPacketLossRateUL := NewINTEGER(*ie.MaximumPacketLossRateUL, aper.Constraint{Lb: 0, Ub: 1000}, true)
 		if err = tmp_MaximumPacketLossRateUL.Encode(w); err != nil {
-			err = utils.WrapError("Encode MaximumPacketLossRateUL", err)
+			err = fmt.Errorf("Encode MaximumPacketLossRateUL: %w", err)
 			return
 		}
 	}
@@ -86,7 +87,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_MaximumFlowBitRateDL.Decode(r); err != nil {
-		err = utils.WrapError("Read MaximumFlowBitRateDL", err)
+		err = fmt.Errorf("Read MaximumFlowBitRateDL: %w", err)
 		return
 	}
 	ie.MaximumFlowBitRateDL = int64(tmp_MaximumFlowBitRateDL.Value)
@@ -95,7 +96,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_MaximumFlowBitRateUL.Decode(r); err != nil {
-		err = utils.WrapError("Read MaximumFlowBitRateUL", err)
+		err = fmt.Errorf("Read MaximumFlowBitRateUL: %w", err)
 		return
 	}
 	ie.MaximumFlowBitRateUL = int64(tmp_MaximumFlowBitRateUL.Value)
@@ -104,7 +105,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_GuaranteedFlowBitRateDL.Decode(r); err != nil {
-		err = utils.WrapError("Read GuaranteedFlowBitRateDL", err)
+		err = fmt.Errorf("Read GuaranteedFlowBitRateDL: %w", err)
 		return
 	}
 	ie.GuaranteedFlowBitRateDL = int64(tmp_GuaranteedFlowBitRateDL.Value)
@@ -113,14 +114,14 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_GuaranteedFlowBitRateUL.Decode(r); err != nil {
-		err = utils.WrapError("Read GuaranteedFlowBitRateUL", err)
+		err = fmt.Errorf("Read GuaranteedFlowBitRateUL: %w", err)
 		return
 	}
 	ie.GuaranteedFlowBitRateUL = int64(tmp_GuaranteedFlowBitRateUL.Value)
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(NotificationControl)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read NotificationControl", err)
+			err = fmt.Errorf("Read NotificationControl: %w", err)
 			return
 		}
 		ie.NotificationControl = tmp
@@ -131,7 +132,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_MaximumPacketLossRateDL.Decode(r); err != nil {
-			err = utils.WrapError("Read MaximumPacketLossRateDL", err)
+			err = fmt.Errorf("Read MaximumPacketLossRateDL: %w", err)
 			return
 		}
 		ie.MaximumPacketLossRateDL = (*int64)(&tmp_MaximumPacketLossRateDL.Value)
@@ -142,7 +143,7 @@ func (ie *GBRQosInformation) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_MaximumPacketLossRateUL.Decode(r); err != nil {
-			err = utils.WrapError("Read MaximumPacketLossRateUL", err)
+			err = fmt.Errorf("Read MaximumPacketLossRateUL: %w", err)
 			return
 		}
 		ie.MaximumPacketLossRateUL = (*int64)(&tmp_MaximumPacketLossRateUL.Value)

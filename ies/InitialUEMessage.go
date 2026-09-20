@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type InitialUEMessage struct {
@@ -207,7 +206,7 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -217,28 +216,28 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = fmt.Errorf("Read NASPDU: %w", err)
 			return
 		}
 		msg.NASPDU = tmp.Value
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = tmp
 	case ProtocolIEID_RRCEstablishmentCause:
 		var tmp RRCEstablishmentCause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RRCEstablishmentCause", err)
+			err = fmt.Errorf("Read RRCEstablishmentCause: %w", err)
 			return
 		}
 		msg.RRCEstablishmentCause = tmp
 	case ProtocolIEID_FiveGSTMSI:
 		var tmp FiveGSTMSI
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read FiveGSTMSI", err)
+			err = fmt.Errorf("Read FiveGSTMSI: %w", err)
 			return
 		}
 		msg.FiveGSTMSI = &tmp
@@ -248,14 +247,14 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFSetID", err)
+			err = fmt.Errorf("Read AMFSetID: %w", err)
 			return
 		}
 		msg.AMFSetID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_UEContextRequest:
 		var tmp UEContextRequest
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UEContextRequest", err)
+			err = fmt.Errorf("Read UEContextRequest: %w", err)
 			return
 		}
 		msg.UEContextRequest = &tmp
@@ -266,7 +265,7 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 		}
 		fn := func() *AllowedNSSAIItem { return new(AllowedNSSAIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AllowedNSSAI", err)
+			err = fmt.Errorf("Read AllowedNSSAI: %w", err)
 			return
 		}
 		msg.AllowedNSSAI = []AllowedNSSAIItem{}
@@ -276,7 +275,7 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 	case ProtocolIEID_SourceToTargetAMFInformationReroute:
 		var tmp SourceToTargetAMFInformationReroute
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SourceToTargetAMFInformationReroute", err)
+			err = fmt.Errorf("Read SourceToTargetAMFInformationReroute: %w", err)
 			return
 		}
 		msg.SourceToTargetAMFInformationReroute = &tmp
@@ -286,7 +285,7 @@ func (decoder *InitialUEMessageDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SelectedPLMNIdentity", err)
+			err = fmt.Errorf("Read SelectedPLMNIdentity: %w", err)
 			return
 		}
 		msg.SelectedPLMNIdentity = tmp.Value

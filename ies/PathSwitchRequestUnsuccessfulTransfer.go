@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestUnsuccessfulTransfer struct {
@@ -21,7 +21,7 @@ func (ie *PathSwitchRequestUnsuccessfulTransfer) Encode() (b []byte, err error) 
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Encode Cause", err)
+		err = fmt.Errorf("Encode Cause: %w", err)
 		return
 	}
 	err = w.Close()
@@ -37,7 +37,7 @@ func (ie *PathSwitchRequestUnsuccessfulTransfer) Decode(wire []byte) (err error)
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = fmt.Errorf("Read Cause: %w", err)
 		return
 	}
 	return

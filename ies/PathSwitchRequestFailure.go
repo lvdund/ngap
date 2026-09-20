@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestFailure struct {
@@ -56,7 +55,9 @@ func (msg *PathSwitchRequestFailure) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_PDUSessionResourceReleasedListPSFail,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceReleasedListPSFail is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceReleasedListPSFail is nil: %w", err)
+		}
 		return
 	}
 	if msg.CriticalityDiagnostics != nil {
@@ -150,7 +151,7 @@ func (decoder *PathSwitchRequestFailureDecoder) decodeIE(r *aper.AperReader) (ms
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -160,7 +161,7 @@ func (decoder *PathSwitchRequestFailureDecoder) decodeIE(r *aper.AperReader) (ms
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -171,7 +172,7 @@ func (decoder *PathSwitchRequestFailureDecoder) decodeIE(r *aper.AperReader) (ms
 		}
 		fn := func() *PDUSessionResourceReleasedItemPSFail { return new(PDUSessionResourceReleasedItemPSFail) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceReleasedListPSFail", err)
+			err = fmt.Errorf("Read PDUSessionResourceReleasedListPSFail: %w", err)
 			return
 		}
 		msg.PDUSessionResourceReleasedListPSFail = []PDUSessionResourceReleasedItemPSFail{}
@@ -181,7 +182,7 @@ func (decoder *PathSwitchRequestFailureDecoder) decodeIE(r *aper.AperReader) (ms
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

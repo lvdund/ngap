@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type ServiceAreaInformationItem struct {
@@ -26,7 +27,7 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Encode PLMNIdentity", err)
+		err = fmt.Errorf("Encode PLMNIdentity: %w", err)
 		return
 	}
 	if len(ie.AllowedTACs) > 0 {
@@ -39,7 +40,7 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AllowedTACs", err)
+			err = fmt.Errorf("Encode AllowedTACs: %w", err)
 			return
 		}
 	}
@@ -53,7 +54,7 @@ func (ie *ServiceAreaInformationItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode NotAllowedTACs", err)
+			err = fmt.Errorf("Encode NotAllowedTACs: %w", err)
 			return
 		}
 	}
@@ -72,7 +73,7 @@ func (ie *ServiceAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = fmt.Errorf("Read PLMNIdentity: %w", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -83,7 +84,7 @@ func (ie *ServiceAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *TAC { return new(TAC) }
 		if err = tmp_AllowedTACs.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AllowedTACs", err)
+			err = fmt.Errorf("Read AllowedTACs: %w", err)
 			return
 		}
 		ie.AllowedTACs = []TAC{}
@@ -98,7 +99,7 @@ func (ie *ServiceAreaInformationItem) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *TAC { return new(TAC) }
 		if err = tmp_NotAllowedTACs.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read NotAllowedTACs", err)
+			err = fmt.Errorf("Read NotAllowedTACs: %w", err)
 			return
 		}
 		ie.NotAllowedTACs = []TAC{}

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceReleaseCommand struct {
@@ -77,7 +76,9 @@ func (msg *PDUSessionResourceReleaseCommand) toIes() (ies []NgapMessageIE, err e
 			Value:       &tmp_PDUSessionResourceToReleaseListRelCmd,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceToReleaseListRelCmd is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceToReleaseListRelCmd is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -164,7 +165,7 @@ func (decoder *PDUSessionResourceReleaseCommandDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -174,7 +175,7 @@ func (decoder *PDUSessionResourceReleaseCommandDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -184,7 +185,7 @@ func (decoder *PDUSessionResourceReleaseCommandDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANPagingPriority", err)
+			err = fmt.Errorf("Read RANPagingPriority: %w", err)
 			return
 		}
 		msg.RANPagingPriority = (*int64)(&tmp.Value)
@@ -194,7 +195,7 @@ func (decoder *PDUSessionResourceReleaseCommandDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = fmt.Errorf("Read NASPDU: %w", err)
 			return
 		}
 		msg.NASPDU = tmp.Value
@@ -205,7 +206,7 @@ func (decoder *PDUSessionResourceReleaseCommandDecoder) decodeIE(r *aper.AperRea
 		}
 		fn := func() *PDUSessionResourceToReleaseItemRelCmd { return new(PDUSessionResourceToReleaseItemRelCmd) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceToReleaseListRelCmd", err)
+			err = fmt.Errorf("Read PDUSessionResourceToReleaseListRelCmd: %w", err)
 			return
 		}
 		msg.PDUSessionResourceToReleaseListRelCmd = []PDUSessionResourceToReleaseItemRelCmd{}

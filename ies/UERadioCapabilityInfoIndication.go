@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UERadioCapabilityInfoIndication struct {
@@ -141,7 +140,7 @@ func (decoder *UERadioCapabilityInfoIndicationDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -151,7 +150,7 @@ func (decoder *UERadioCapabilityInfoIndicationDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -161,14 +160,14 @@ func (decoder *UERadioCapabilityInfoIndicationDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERadioCapability", err)
+			err = fmt.Errorf("Read UERadioCapability: %w", err)
 			return
 		}
 		msg.UERadioCapability = tmp.Value
 	case ProtocolIEID_UERadioCapabilityForPaging:
 		var tmp UERadioCapabilityForPaging
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPaging", err)
+			err = fmt.Errorf("Read UERadioCapabilityForPaging: %w", err)
 			return
 		}
 		msg.UERadioCapabilityForPaging = &tmp

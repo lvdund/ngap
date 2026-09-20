@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type LastVisitedNGRANCellInformation struct {
@@ -27,28 +28,28 @@ func (ie *LastVisitedNGRANCellInformation) Encode(w *aper.AperWriter) (err error
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.GlobalCellID.Encode(w); err != nil {
-		err = utils.WrapError("Encode GlobalCellID", err)
+		err = fmt.Errorf("Encode GlobalCellID: %w", err)
 		return
 	}
 	if err = ie.CellType.Encode(w); err != nil {
-		err = utils.WrapError("Encode CellType", err)
+		err = fmt.Errorf("Encode CellType: %w", err)
 		return
 	}
 	tmp_TimeUEStayedInCell := NewINTEGER(ie.TimeUEStayedInCell, aper.Constraint{Lb: 0, Ub: 4095}, false)
 	if err = tmp_TimeUEStayedInCell.Encode(w); err != nil {
-		err = utils.WrapError("Encode TimeUEStayedInCell", err)
+		err = fmt.Errorf("Encode TimeUEStayedInCell: %w", err)
 		return
 	}
 	if ie.TimeUEStayedInCellEnhancedGranularity != nil {
 		tmp_TimeUEStayedInCellEnhancedGranularity := NewINTEGER(*ie.TimeUEStayedInCellEnhancedGranularity, aper.Constraint{Lb: 0, Ub: 40950}, false)
 		if err = tmp_TimeUEStayedInCellEnhancedGranularity.Encode(w); err != nil {
-			err = utils.WrapError("Encode TimeUEStayedInCellEnhancedGranularity", err)
+			err = fmt.Errorf("Encode TimeUEStayedInCellEnhancedGranularity: %w", err)
 			return
 		}
 	}
 	if ie.HOCauseValue != nil {
 		if err = ie.HOCauseValue.Encode(w); err != nil {
-			err = utils.WrapError("Encode HOCauseValue", err)
+			err = fmt.Errorf("Encode HOCauseValue: %w", err)
 			return
 		}
 	}
@@ -63,11 +64,11 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 		return
 	}
 	if err = ie.GlobalCellID.Decode(r); err != nil {
-		err = utils.WrapError("Read GlobalCellID", err)
+		err = fmt.Errorf("Read GlobalCellID: %w", err)
 		return
 	}
 	if err = ie.CellType.Decode(r); err != nil {
-		err = utils.WrapError("Read CellType", err)
+		err = fmt.Errorf("Read CellType: %w", err)
 		return
 	}
 	tmp_TimeUEStayedInCell := INTEGER{
@@ -75,7 +76,7 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 		ext: false,
 	}
 	if err = tmp_TimeUEStayedInCell.Decode(r); err != nil {
-		err = utils.WrapError("Read TimeUEStayedInCell", err)
+		err = fmt.Errorf("Read TimeUEStayedInCell: %w", err)
 		return
 	}
 	ie.TimeUEStayedInCell = int64(tmp_TimeUEStayedInCell.Value)
@@ -85,7 +86,7 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 			ext: false,
 		}
 		if err = tmp_TimeUEStayedInCellEnhancedGranularity.Decode(r); err != nil {
-			err = utils.WrapError("Read TimeUEStayedInCellEnhancedGranularity", err)
+			err = fmt.Errorf("Read TimeUEStayedInCellEnhancedGranularity: %w", err)
 			return
 		}
 		ie.TimeUEStayedInCellEnhancedGranularity = (*int64)(&tmp_TimeUEStayedInCellEnhancedGranularity.Value)
@@ -93,7 +94,7 @@ func (ie *LastVisitedNGRANCellInformation) Decode(r *aper.AperReader) (err error
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(Cause)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read HOCauseValue", err)
+			err = fmt.Errorf("Read HOCauseValue: %w", err)
 			return
 		}
 		ie.HOCauseValue = tmp

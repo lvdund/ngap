@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UserLocationInformationEUTRA struct {
@@ -22,17 +23,17 @@ func (ie *UserLocationInformationEUTRA) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.EUTRACGI.Encode(w); err != nil {
-		err = utils.WrapError("Encode EUTRACGI", err)
+		err = fmt.Errorf("Encode EUTRACGI: %w", err)
 		return
 	}
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Encode TAI", err)
+		err = fmt.Errorf("Encode TAI: %w", err)
 		return
 	}
 	if ie.TimeStamp != nil {
 		tmp_TimeStamp := NewOCTETSTRING(ie.TimeStamp, aper.Constraint{Lb: 4, Ub: 4}, false)
 		if err = tmp_TimeStamp.Encode(w); err != nil {
-			err = utils.WrapError("Encode TimeStamp", err)
+			err = fmt.Errorf("Encode TimeStamp: %w", err)
 			return
 		}
 	}
@@ -47,11 +48,11 @@ func (ie *UserLocationInformationEUTRA) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.EUTRACGI.Decode(r); err != nil {
-		err = utils.WrapError("Read EUTRACGI", err)
+		err = fmt.Errorf("Read EUTRACGI: %w", err)
 		return
 	}
 	if err = ie.TAI.Decode(r); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = fmt.Errorf("Read TAI: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -60,7 +61,7 @@ func (ie *UserLocationInformationEUTRA) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_TimeStamp.Decode(r); err != nil {
-			err = utils.WrapError("Read TimeStamp", err)
+			err = fmt.Errorf("Read TimeStamp: %w", err)
 			return
 		}
 		ie.TimeStamp = tmp_TimeStamp.Value

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AMFTNLAssociationToUpdateItem struct {
@@ -25,19 +26,19 @@ func (ie *AMFTNLAssociationToUpdateItem) Encode(w *aper.AperWriter) (err error) 
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode AMFTNLAssociationAddress", err)
+		err = fmt.Errorf("Encode AMFTNLAssociationAddress: %w", err)
 		return
 	}
 	if ie.TNLAssociationUsage != nil {
 		if err = ie.TNLAssociationUsage.Encode(w); err != nil {
-			err = utils.WrapError("Encode TNLAssociationUsage", err)
+			err = fmt.Errorf("Encode TNLAssociationUsage: %w", err)
 			return
 		}
 	}
 	if ie.TNLAddressWeightFactor != nil {
 		tmp_TNLAddressWeightFactor := NewINTEGER(*ie.TNLAddressWeightFactor, aper.Constraint{Lb: 0, Ub: 255}, false)
 		if err = tmp_TNLAddressWeightFactor.Encode(w); err != nil {
-			err = utils.WrapError("Encode TNLAddressWeightFactor", err)
+			err = fmt.Errorf("Encode TNLAddressWeightFactor: %w", err)
 			return
 		}
 	}
@@ -52,13 +53,13 @@ func (ie *AMFTNLAssociationToUpdateItem) Decode(r *aper.AperReader) (err error) 
 		return
 	}
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
+		err = fmt.Errorf("Read AMFTNLAssociationAddress: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(TNLAssociationUsage)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read TNLAssociationUsage", err)
+			err = fmt.Errorf("Read TNLAssociationUsage: %w", err)
 			return
 		}
 		ie.TNLAssociationUsage = tmp
@@ -69,7 +70,7 @@ func (ie *AMFTNLAssociationToUpdateItem) Decode(r *aper.AperReader) (err error) 
 			ext: false,
 		}
 		if err = tmp_TNLAddressWeightFactor.Decode(r); err != nil {
-			err = utils.WrapError("Read TNLAddressWeightFactor", err)
+			err = fmt.Errorf("Read TNLAddressWeightFactor: %w", err)
 			return
 		}
 		ie.TNLAddressWeightFactor = (*int64)(&tmp_TNLAddressWeightFactor.Value)

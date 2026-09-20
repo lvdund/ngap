@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestAcknowledge struct {
@@ -84,7 +83,9 @@ func (msg *PathSwitchRequestAcknowledge) toIes() (ies []NgapMessageIE, err error
 			Value:       &tmp_PDUSessionResourceSwitchedList,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceSwitchedList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceSwitchedList is nil: %w", err)
+		}
 		return
 	}
 	if len(msg.PDUSessionResourceReleasedListPSAck) > 0 {
@@ -115,7 +116,9 @@ func (msg *PathSwitchRequestAcknowledge) toIes() (ies []NgapMessageIE, err error
 			Value:       &tmp_AllowedNSSAI,
 		})
 	} else {
-		err = utils.WrapError("AllowedNSSAI is nil", err)
+		if err != nil {
+			err = fmt.Errorf("AllowedNSSAI is nil: %w", err)
+		}
 		return
 	}
 	if msg.CoreNetworkAssistanceInformationForInactive != nil {
@@ -255,7 +258,7 @@ func (decoder *PathSwitchRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -265,28 +268,28 @@ func (decoder *PathSwitchRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_UESecurityCapabilities:
 		var tmp UESecurityCapabilities
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UESecurityCapabilities", err)
+			err = fmt.Errorf("Read UESecurityCapabilities: %w", err)
 			return
 		}
 		msg.UESecurityCapabilities = &tmp
 	case ProtocolIEID_SecurityContext:
 		var tmp SecurityContext
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SecurityContext", err)
+			err = fmt.Errorf("Read SecurityContext: %w", err)
 			return
 		}
 		msg.SecurityContext = tmp
 	case ProtocolIEID_NewSecurityContextInd:
 		var tmp NewSecurityContextInd
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NewSecurityContextInd", err)
+			err = fmt.Errorf("Read NewSecurityContextInd: %w", err)
 			return
 		}
 		msg.NewSecurityContextInd = &tmp
@@ -297,7 +300,7 @@ func (decoder *PathSwitchRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader)
 		}
 		fn := func() *PDUSessionResourceSwitchedItem { return new(PDUSessionResourceSwitchedItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceSwitchedList", err)
+			err = fmt.Errorf("Read PDUSessionResourceSwitchedList: %w", err)
 			return
 		}
 		msg.PDUSessionResourceSwitchedList = []PDUSessionResourceSwitchedItem{}
@@ -311,7 +314,7 @@ func (decoder *PathSwitchRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader)
 		}
 		fn := func() *PDUSessionResourceReleasedItemPSAck { return new(PDUSessionResourceReleasedItemPSAck) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceReleasedListPSAck", err)
+			err = fmt.Errorf("Read PDUSessionResourceReleasedListPSAck: %w", err)
 			return
 		}
 		msg.PDUSessionResourceReleasedListPSAck = []PDUSessionResourceReleasedItemPSAck{}
@@ -325,7 +328,7 @@ func (decoder *PathSwitchRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader)
 		}
 		fn := func() *AllowedNSSAIItem { return new(AllowedNSSAIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AllowedNSSAI", err)
+			err = fmt.Errorf("Read AllowedNSSAI: %w", err)
 			return
 		}
 		msg.AllowedNSSAI = []AllowedNSSAIItem{}
@@ -335,35 +338,35 @@ func (decoder *PathSwitchRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader)
 	case ProtocolIEID_CoreNetworkAssistanceInformationForInactive:
 		var tmp CoreNetworkAssistanceInformationForInactive
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CoreNetworkAssistanceInformationForInactive", err)
+			err = fmt.Errorf("Read CoreNetworkAssistanceInformationForInactive: %w", err)
 			return
 		}
 		msg.CoreNetworkAssistanceInformationForInactive = &tmp
 	case ProtocolIEID_RRCInactiveTransitionReportRequest:
 		var tmp RRCInactiveTransitionReportRequest
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RRCInactiveTransitionReportRequest", err)
+			err = fmt.Errorf("Read RRCInactiveTransitionReportRequest: %w", err)
 			return
 		}
 		msg.RRCInactiveTransitionReportRequest = &tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp
 	case ProtocolIEID_RedirectionVoiceFallback:
 		var tmp RedirectionVoiceFallback
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RedirectionVoiceFallback", err)
+			err = fmt.Errorf("Read RedirectionVoiceFallback: %w", err)
 			return
 		}
 		msg.RedirectionVoiceFallback = &tmp
 	case ProtocolIEID_CNAssistedRANTuning:
 		var tmp CNAssistedRANTuning
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CNAssistedRANTuning", err)
+			err = fmt.Errorf("Read CNAssistedRANTuning: %w", err)
 			return
 		}
 		msg.CNAssistedRANTuning = &tmp

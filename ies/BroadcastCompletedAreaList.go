@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -100,7 +101,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(CellIDBroadcastEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read CellIDBroadcastEUTRA", err)
+			err = fmt.Errorf("Read CellIDBroadcastEUTRA: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -112,7 +113,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAIBroadcastEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read TAIBroadcastEUTRA", err)
+			err = fmt.Errorf("Read TAIBroadcastEUTRA: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -124,7 +125,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaIDBroadcastEUTRAItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EmergencyAreaIDBroadcastEUTRA", err)
+			err = fmt.Errorf("Read EmergencyAreaIDBroadcastEUTRA: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -136,7 +137,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(CellIDBroadcastNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read CellIDBroadcastNR", err)
+			err = fmt.Errorf("Read CellIDBroadcastNR: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -148,7 +149,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAIBroadcastNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read TAIBroadcastNR", err)
+			err = fmt.Errorf("Read TAIBroadcastNR: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -160,7 +161,7 @@ func (ie *BroadcastCompletedAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaIDBroadcastNRItem)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EmergencyAreaIDBroadcastNR", err)
+			err = fmt.Errorf("Read EmergencyAreaIDBroadcastNR: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {

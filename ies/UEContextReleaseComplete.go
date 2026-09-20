@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UEContextReleaseComplete struct {
@@ -154,7 +153,7 @@ func (decoder *UEContextReleaseCompleteDecoder) decodeIE(r *aper.AperReader) (ms
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -164,21 +163,21 @@ func (decoder *UEContextReleaseCompleteDecoder) decodeIE(r *aper.AperReader) (ms
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = &tmp
 	case ProtocolIEID_InfoOnRecommendedCellsAndRANNodesForPaging:
 		var tmp InfoOnRecommendedCellsAndRANNodesForPaging
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read InfoOnRecommendedCellsAndRANNodesForPaging", err)
+			err = fmt.Errorf("Read InfoOnRecommendedCellsAndRANNodesForPaging: %w", err)
 			return
 		}
 		msg.InfoOnRecommendedCellsAndRANNodesForPaging = &tmp
@@ -189,7 +188,7 @@ func (decoder *UEContextReleaseCompleteDecoder) decodeIE(r *aper.AperReader) (ms
 		}
 		fn := func() *PDUSessionResourceItemCxtRelCpl { return new(PDUSessionResourceItemCxtRelCpl) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceListCxtRelCpl", err)
+			err = fmt.Errorf("Read PDUSessionResourceListCxtRelCpl: %w", err)
 			return
 		}
 		msg.PDUSessionResourceListCxtRelCpl = []PDUSessionResourceItemCxtRelCpl{}
@@ -199,7 +198,7 @@ func (decoder *UEContextReleaseCompleteDecoder) decodeIE(r *aper.AperReader) (ms
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type EUTRACGI struct {
@@ -19,12 +20,12 @@ func (ie *EUTRACGI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Encode PLMNIdentity", err)
+		err = fmt.Errorf("Encode PLMNIdentity: %w", err)
 		return
 	}
 	tmp_EUTRACellIdentity := NewBITSTRING(ie.EUTRACellIdentity, aper.Constraint{Lb: 28, Ub: 28}, false)
 	if err = tmp_EUTRACellIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Encode EUTRACellIdentity", err)
+		err = fmt.Errorf("Encode EUTRACellIdentity: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *EUTRACGI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = fmt.Errorf("Read PLMNIdentity: %w", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -50,7 +51,7 @@ func (ie *EUTRACGI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_EUTRACellIdentity.Decode(r); err != nil {
-		err = utils.WrapError("Read EUTRACellIdentity", err)
+		err = fmt.Errorf("Read EUTRACellIdentity: %w", err)
 		return
 	}
 	ie.EUTRACellIdentity = aper.BitString{Bytes: tmp_EUTRACellIdentity.Value.Bytes, NumBits: tmp_EUTRACellIdentity.Value.NumBits}

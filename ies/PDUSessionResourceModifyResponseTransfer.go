@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyResponseTransfer struct {
@@ -41,13 +41,13 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err erro
 	w.WriteBits(optionals, 6)
 	if ie.DLNGUUPTNLInformation != nil {
 		if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
+			err = fmt.Errorf("Encode DLNGUUPTNLInformation: %w", err)
 			return
 		}
 	}
 	if ie.ULNGUUPTNLInformation != nil {
 		if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Encode ULNGUUPTNLInformation: %w", err)
 			return
 		}
 	}
@@ -61,7 +61,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err erro
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowAddOrModifyResponseList", err)
+			err = fmt.Errorf("Encode QosFlowAddOrModifyResponseList: %w", err)
 			return
 		}
 	}
@@ -75,7 +75,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err erro
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AdditionalDLQosFlowPerTNLInformation", err)
+			err = fmt.Errorf("Encode AdditionalDLQosFlowPerTNLInformation: %w", err)
 			return
 		}
 	}
@@ -89,7 +89,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Encode() (b []byte, err erro
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowFailedToAddOrModifyList", err)
+			err = fmt.Errorf("Encode QosFlowFailedToAddOrModifyList: %w", err)
 			return
 		}
 	}
@@ -109,7 +109,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read DLNGUUPTNLInformation: %w", err)
 			return
 		}
 		ie.DLNGUUPTNLInformation = tmp
@@ -117,7 +117,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read ULNGUUPTNLInformation: %w", err)
 			return
 		}
 		ie.ULNGUUPTNLInformation = tmp
@@ -129,7 +129,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 		}
 		fn := func() *QosFlowAddOrModifyResponseItem { return new(QosFlowAddOrModifyResponseItem) }
 		if err = tmp_QosFlowAddOrModifyResponseList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowAddOrModifyResponseList", err)
+			err = fmt.Errorf("Read QosFlowAddOrModifyResponseList: %w", err)
 			return
 		}
 		ie.QosFlowAddOrModifyResponseList = []QosFlowAddOrModifyResponseItem{}
@@ -144,7 +144,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 		}
 		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
 		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
+			err = fmt.Errorf("Read AdditionalDLQosFlowPerTNLInformation: %w", err)
 			return
 		}
 		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
@@ -159,7 +159,7 @@ func (ie *PDUSessionResourceModifyResponseTransfer) Decode(wire []byte) (err err
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToAddOrModifyList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowFailedToAddOrModifyList", err)
+			err = fmt.Errorf("Read QosFlowFailedToAddOrModifyList: %w", err)
 			return
 		}
 		ie.QosFlowFailedToAddOrModifyList = []QosFlowWithCauseItem{}

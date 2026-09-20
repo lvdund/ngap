@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestTransfer struct {
@@ -30,18 +30,18 @@ func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode DLNGUUPTNLInformation: %w", err)
 		return
 	}
 	if ie.DLNGUTNLInformationReused != nil {
 		if err = ie.DLNGUTNLInformationReused.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLNGUTNLInformationReused", err)
+			err = fmt.Errorf("Encode DLNGUTNLInformationReused: %w", err)
 			return
 		}
 	}
 	if ie.UserPlaneSecurityInformation != nil {
 		if err = ie.UserPlaneSecurityInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode UserPlaneSecurityInformation", err)
+			err = fmt.Errorf("Encode UserPlaneSecurityInformation: %w", err)
 			return
 		}
 	}
@@ -55,11 +55,13 @@ func (ie *PathSwitchRequestTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowAcceptedList", err)
+			err = fmt.Errorf("Encode QosFlowAcceptedList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("QosFlowAcceptedList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("QosFlowAcceptedList is nil: %w", err)
+		}
 		return
 	}
 	err = w.Close()
@@ -76,13 +78,13 @@ func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Read DLNGUUPTNLInformation: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(DLNGUTNLInformationReused)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLNGUTNLInformationReused", err)
+			err = fmt.Errorf("Read DLNGUTNLInformationReused: %w", err)
 			return
 		}
 		ie.DLNGUTNLInformationReused = tmp
@@ -90,7 +92,7 @@ func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(UserPlaneSecurityInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UserPlaneSecurityInformation", err)
+			err = fmt.Errorf("Read UserPlaneSecurityInformation: %w", err)
 			return
 		}
 		ie.UserPlaneSecurityInformation = tmp
@@ -101,7 +103,7 @@ func (ie *PathSwitchRequestTransfer) Decode(wire []byte) (err error) {
 	}
 	fn := func() *QosFlowAcceptedItem { return new(QosFlowAcceptedItem) }
 	if err = tmp_QosFlowAcceptedList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read QosFlowAcceptedList", err)
+		err = fmt.Errorf("Read QosFlowAcceptedList: %w", err)
 		return
 	}
 	ie.QosFlowAcceptedList = []QosFlowAcceptedItem{}

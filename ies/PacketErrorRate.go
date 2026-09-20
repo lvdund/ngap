@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PacketErrorRate struct {
@@ -19,12 +20,12 @@ func (ie *PacketErrorRate) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PERScalar := NewINTEGER(ie.PERScalar, aper.Constraint{Lb: 0, Ub: 9}, true)
 	if err = tmp_PERScalar.Encode(w); err != nil {
-		err = utils.WrapError("Encode PERScalar", err)
+		err = fmt.Errorf("Encode PERScalar: %w", err)
 		return
 	}
 	tmp_PERExponent := NewINTEGER(ie.PERExponent, aper.Constraint{Lb: 0, Ub: 9}, true)
 	if err = tmp_PERExponent.Encode(w); err != nil {
-		err = utils.WrapError("Encode PERExponent", err)
+		err = fmt.Errorf("Encode PERExponent: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *PacketErrorRate) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_PERScalar.Decode(r); err != nil {
-		err = utils.WrapError("Read PERScalar", err)
+		err = fmt.Errorf("Read PERScalar: %w", err)
 		return
 	}
 	ie.PERScalar = int64(tmp_PERScalar.Value)
@@ -50,7 +51,7 @@ func (ie *PacketErrorRate) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_PERExponent.Decode(r); err != nil {
-		err = utils.WrapError("Read PERExponent", err)
+		err = fmt.Errorf("Read PERExponent: %w", err)
 		return
 	}
 	ie.PERExponent = int64(tmp_PERExponent.Value)

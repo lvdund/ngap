@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type EmergencyFallbackIndicator struct {
@@ -21,12 +22,12 @@ func (ie *EmergencyFallbackIndicator) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.EmergencyFallbackRequestIndicator.Encode(w); err != nil {
-		err = utils.WrapError("Encode EmergencyFallbackRequestIndicator", err)
+		err = fmt.Errorf("Encode EmergencyFallbackRequestIndicator: %w", err)
 		return
 	}
 	if ie.EmergencyServiceTargetCN != nil {
 		if err = ie.EmergencyServiceTargetCN.Encode(w); err != nil {
-			err = utils.WrapError("Encode EmergencyServiceTargetCN", err)
+			err = fmt.Errorf("Encode EmergencyServiceTargetCN: %w", err)
 			return
 		}
 	}
@@ -41,13 +42,13 @@ func (ie *EmergencyFallbackIndicator) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.EmergencyFallbackRequestIndicator.Decode(r); err != nil {
-		err = utils.WrapError("Read EmergencyFallbackRequestIndicator", err)
+		err = fmt.Errorf("Read EmergencyFallbackRequestIndicator: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(EmergencyServiceTargetCN)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read EmergencyServiceTargetCN", err)
+			err = fmt.Errorf("Read EmergencyServiceTargetCN: %w", err)
 			return
 		}
 		ie.EmergencyServiceTargetCN = tmp

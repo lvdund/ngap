@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type CriticalityDiagnostics struct {
@@ -33,19 +34,19 @@ func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 5)
 	if ie.ProcedureCode != nil {
 		if err = ie.ProcedureCode.Encode(w); err != nil {
-			err = utils.WrapError("Encode ProcedureCode", err)
+			err = fmt.Errorf("Encode ProcedureCode: %w", err)
 			return
 		}
 	}
 	if ie.TriggeringMessage != nil {
 		if err = ie.TriggeringMessage.Encode(w); err != nil {
-			err = utils.WrapError("Encode TriggeringMessage", err)
+			err = fmt.Errorf("Encode TriggeringMessage: %w", err)
 			return
 		}
 	}
 	if ie.ProcedureCriticality != nil {
 		if err = ie.ProcedureCriticality.Encode(w); err != nil {
-			err = utils.WrapError("Encode ProcedureCriticality", err)
+			err = fmt.Errorf("Encode ProcedureCriticality: %w", err)
 			return
 		}
 	}
@@ -59,7 +60,7 @@ func (ie *CriticalityDiagnostics) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode IEsCriticalityDiagnostics", err)
+			err = fmt.Errorf("Encode IEsCriticalityDiagnostics: %w", err)
 			return
 		}
 	}
@@ -76,7 +77,7 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(ProcedureCode)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ProcedureCode", err)
+			err = fmt.Errorf("Read ProcedureCode: %w", err)
 			return
 		}
 		ie.ProcedureCode = tmp
@@ -84,7 +85,7 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(TriggeringMessage)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read TriggeringMessage", err)
+			err = fmt.Errorf("Read TriggeringMessage: %w", err)
 			return
 		}
 		ie.TriggeringMessage = tmp
@@ -92,7 +93,7 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 3) {
 		tmp := new(Criticality)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ProcedureCriticality", err)
+			err = fmt.Errorf("Read ProcedureCriticality: %w", err)
 			return
 		}
 		ie.ProcedureCriticality = tmp
@@ -104,7 +105,7 @@ func (ie *CriticalityDiagnostics) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *CriticalityDiagnosticsIEItem { return new(CriticalityDiagnosticsIEItem) }
 		if err = tmp_IEsCriticalityDiagnostics.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read IEsCriticalityDiagnostics", err)
+			err = fmt.Errorf("Read IEsCriticalityDiagnostics: %w", err)
 			return
 		}
 		ie.IEsCriticalityDiagnostics = []CriticalityDiagnosticsIEItem{}

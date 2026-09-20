@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TAIListForInactiveItem struct {
@@ -17,7 +18,7 @@ func (ie *TAIListForInactiveItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Encode TAI", err)
+		err = fmt.Errorf("Encode TAI: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *TAIListForInactiveItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TAI.Decode(r); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = fmt.Errorf("Read TAI: %w", err)
 		return
 	}
 	return

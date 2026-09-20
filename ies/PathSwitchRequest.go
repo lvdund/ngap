@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PathSwitchRequest struct {
@@ -68,7 +67,9 @@ func (msg *PathSwitchRequest) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_PDUSessionResourceToBeSwitchedDLList,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceToBeSwitchedDLList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceToBeSwitchedDLList is nil: %w", err)
+		}
 		return
 	}
 	if len(msg.PDUSessionResourceFailedToSetupListPSReq) > 0 {
@@ -187,7 +188,7 @@ func (decoder *PathSwitchRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -197,21 +198,21 @@ func (decoder *PathSwitchRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SourceAMFUENGAPID", err)
+			err = fmt.Errorf("Read SourceAMFUENGAPID: %w", err)
 			return
 		}
 		msg.SourceAMFUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = tmp
 	case ProtocolIEID_UESecurityCapabilities:
 		var tmp UESecurityCapabilities
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UESecurityCapabilities", err)
+			err = fmt.Errorf("Read UESecurityCapabilities: %w", err)
 			return
 		}
 		msg.UESecurityCapabilities = tmp
@@ -222,7 +223,7 @@ func (decoder *PathSwitchRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 		}
 		fn := func() *PDUSessionResourceToBeSwitchedDLItem { return new(PDUSessionResourceToBeSwitchedDLItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceToBeSwitchedDLList", err)
+			err = fmt.Errorf("Read PDUSessionResourceToBeSwitchedDLList: %w", err)
 			return
 		}
 		msg.PDUSessionResourceToBeSwitchedDLList = []PDUSessionResourceToBeSwitchedDLItem{}
@@ -236,7 +237,7 @@ func (decoder *PathSwitchRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 		}
 		fn := func() *PDUSessionResourceFailedToSetupItemPSReq { return new(PDUSessionResourceFailedToSetupItemPSReq) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceFailedToSetupListPSReq", err)
+			err = fmt.Errorf("Read PDUSessionResourceFailedToSetupListPSReq: %w", err)
 			return
 		}
 		msg.PDUSessionResourceFailedToSetupListPSReq = []PDUSessionResourceFailedToSetupItemPSReq{}

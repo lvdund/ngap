@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverFailure struct {
@@ -120,21 +119,21 @@ func (decoder *HandoverFailureDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyResponse struct {
@@ -161,7 +160,7 @@ func (decoder *PDUSessionResourceModifyResponseDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -171,7 +170,7 @@ func (decoder *PDUSessionResourceModifyResponseDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -182,7 +181,7 @@ func (decoder *PDUSessionResourceModifyResponseDecoder) decodeIE(r *aper.AperRea
 		}
 		fn := func() *PDUSessionResourceModifyItemModRes { return new(PDUSessionResourceModifyItemModRes) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceModifyListModRes", err)
+			err = fmt.Errorf("Read PDUSessionResourceModifyListModRes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceModifyListModRes = []PDUSessionResourceModifyItemModRes{}
@@ -198,7 +197,7 @@ func (decoder *PDUSessionResourceModifyResponseDecoder) decodeIE(r *aper.AperRea
 			return new(PDUSessionResourceFailedToModifyItemModRes)
 		}
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceFailedToModifyListModRes", err)
+			err = fmt.Errorf("Read PDUSessionResourceFailedToModifyListModRes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceFailedToModifyListModRes = []PDUSessionResourceFailedToModifyItemModRes{}
@@ -208,14 +207,14 @@ func (decoder *PDUSessionResourceModifyResponseDecoder) decodeIE(r *aper.AperRea
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = &tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

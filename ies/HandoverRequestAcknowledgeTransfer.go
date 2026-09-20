@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverRequestAcknowledgeTransfer struct {
@@ -38,18 +38,18 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
 	}
 	w.WriteBits(optionals, 5)
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode DLNGUUPTNLInformation: %w", err)
 		return
 	}
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Encode DLForwardingUPTNLInformation: %w", err)
 			return
 		}
 	}
 	if ie.SecurityResult != nil {
 		if err = ie.SecurityResult.Encode(w); err != nil {
-			err = utils.WrapError("Encode SecurityResult", err)
+			err = fmt.Errorf("Encode SecurityResult: %w", err)
 			return
 		}
 	}
@@ -63,11 +63,13 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowSetupResponseList", err)
+			err = fmt.Errorf("Encode QosFlowSetupResponseList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("QosFlowSetupResponseList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("QosFlowSetupResponseList is nil: %w", err)
+		}
 		return
 	}
 	if len(ie.QosFlowFailedToSetupList) > 0 {
@@ -80,7 +82,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowFailedToSetupList", err)
+			err = fmt.Errorf("Encode QosFlowFailedToSetupList: %w", err)
 			return
 		}
 	}
@@ -94,7 +96,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode DataForwardingResponseDRBList", err)
+			err = fmt.Errorf("Encode DataForwardingResponseDRBList: %w", err)
 			return
 		}
 	}
@@ -112,13 +114,13 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Read DLNGUUPTNLInformation: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Read DLForwardingUPTNLInformation: %w", err)
 			return
 		}
 		ie.DLForwardingUPTNLInformation = tmp
@@ -126,7 +128,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(SecurityResult)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SecurityResult", err)
+			err = fmt.Errorf("Read SecurityResult: %w", err)
 			return
 		}
 		ie.SecurityResult = tmp
@@ -137,7 +139,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {
 	}
 	fn := func() *QosFlowItemWithDataForwarding { return new(QosFlowItemWithDataForwarding) }
 	if err = tmp_QosFlowSetupResponseList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read QosFlowSetupResponseList", err)
+		err = fmt.Errorf("Read QosFlowSetupResponseList: %w", err)
 		return
 	}
 	ie.QosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
@@ -151,7 +153,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToSetupList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowFailedToSetupList", err)
+			err = fmt.Errorf("Read QosFlowFailedToSetupList: %w", err)
 			return
 		}
 		ie.QosFlowFailedToSetupList = []QosFlowWithCauseItem{}
@@ -166,7 +168,7 @@ func (ie *HandoverRequestAcknowledgeTransfer) Decode(wire []byte) (err error) {
 		}
 		fn := func() *DataForwardingResponseDRBItem { return new(DataForwardingResponseDRBItem) }
 		if err = tmp_DataForwardingResponseDRBList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read DataForwardingResponseDRBList", err)
+			err = fmt.Errorf("Read DataForwardingResponseDRBList: %w", err)
 			return
 		}
 		ie.DataForwardingResponseDRBList = []DataForwardingResponseDRBItem{}

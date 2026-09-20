@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceSetupResponse struct {
@@ -153,7 +152,7 @@ func (decoder *PDUSessionResourceSetupResponseDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -163,7 +162,7 @@ func (decoder *PDUSessionResourceSetupResponseDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -174,7 +173,7 @@ func (decoder *PDUSessionResourceSetupResponseDecoder) decodeIE(r *aper.AperRead
 		}
 		fn := func() *PDUSessionResourceSetupItemSURes { return new(PDUSessionResourceSetupItemSURes) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceSetupListSURes", err)
+			err = fmt.Errorf("Read PDUSessionResourceSetupListSURes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceSetupListSURes = []PDUSessionResourceSetupItemSURes{}
@@ -188,7 +187,7 @@ func (decoder *PDUSessionResourceSetupResponseDecoder) decodeIE(r *aper.AperRead
 		}
 		fn := func() *PDUSessionResourceFailedToSetupItemSURes { return new(PDUSessionResourceFailedToSetupItemSURes) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceFailedToSetupListSURes", err)
+			err = fmt.Errorf("Read PDUSessionResourceFailedToSetupListSURes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceFailedToSetupListSURes = []PDUSessionResourceFailedToSetupItemSURes{}
@@ -198,7 +197,7 @@ func (decoder *PDUSessionResourceSetupResponseDecoder) decodeIE(r *aper.AperRead
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

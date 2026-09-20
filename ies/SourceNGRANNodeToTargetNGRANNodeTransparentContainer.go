@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SourceNGRANNodeToTargetNGRANNodeTransparentContainer struct {
@@ -36,7 +36,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode() (b []by
 	w.WriteBits(optionals, 4)
 	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
-		err = utils.WrapError("Encode RRCContainer", err)
+		err = fmt.Errorf("Encode RRCContainer: %w", err)
 		return
 	}
 	if len(ie.PDUSessionResourceInformationList) > 0 {
@@ -49,7 +49,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode() (b []by
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode PDUSessionResourceInformationList", err)
+			err = fmt.Errorf("Encode PDUSessionResourceInformationList: %w", err)
 			return
 		}
 	}
@@ -63,18 +63,18 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode() (b []by
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode ERABInformationList", err)
+			err = fmt.Errorf("Encode ERABInformationList: %w", err)
 			return
 		}
 	}
 	if err = ie.TargetCellID.Encode(w); err != nil {
-		err = utils.WrapError("Encode TargetCellID", err)
+		err = fmt.Errorf("Encode TargetCellID: %w", err)
 		return
 	}
 	if ie.IndexToRFSP != nil {
 		tmp_IndexToRFSP := NewINTEGER(*ie.IndexToRFSP, aper.Constraint{Lb: 1, Ub: 256}, true)
 		if err = tmp_IndexToRFSP.Encode(w); err != nil {
-			err = utils.WrapError("Encode IndexToRFSP", err)
+			err = fmt.Errorf("Encode IndexToRFSP: %w", err)
 			return
 		}
 	}
@@ -88,11 +88,13 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Encode() (b []by
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode UEHistoryInformation", err)
+			err = fmt.Errorf("Encode UEHistoryInformation: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("UEHistoryInformation is nil", err)
+		if err != nil {
+			err = fmt.Errorf("UEHistoryInformation is nil: %w", err)
+		}
 		return
 	}
 	err = w.Close()
@@ -113,7 +115,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(wire []by
 		ext: false,
 	}
 	if err = tmp_RRCContainer.Decode(r); err != nil {
-		err = utils.WrapError("Read RRCContainer", err)
+		err = fmt.Errorf("Read RRCContainer: %w", err)
 		return
 	}
 	ie.RRCContainer = tmp_RRCContainer.Value
@@ -124,7 +126,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(wire []by
 		}
 		fn := func() *PDUSessionResourceInformationItem { return new(PDUSessionResourceInformationItem) }
 		if err = tmp_PDUSessionResourceInformationList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceInformationList", err)
+			err = fmt.Errorf("Read PDUSessionResourceInformationList: %w", err)
 			return
 		}
 		ie.PDUSessionResourceInformationList = []PDUSessionResourceInformationItem{}
@@ -139,7 +141,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(wire []by
 		}
 		fn := func() *ERABInformationItem { return new(ERABInformationItem) }
 		if err = tmp_ERABInformationList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read ERABInformationList", err)
+			err = fmt.Errorf("Read ERABInformationList: %w", err)
 			return
 		}
 		ie.ERABInformationList = []ERABInformationItem{}
@@ -148,7 +150,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(wire []by
 		}
 	}
 	if err = ie.TargetCellID.Decode(r); err != nil {
-		err = utils.WrapError("Read TargetCellID", err)
+		err = fmt.Errorf("Read TargetCellID: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 3) {
@@ -157,7 +159,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(wire []by
 			ext: true,
 		}
 		if err = tmp_IndexToRFSP.Decode(r); err != nil {
-			err = utils.WrapError("Read IndexToRFSP", err)
+			err = fmt.Errorf("Read IndexToRFSP: %w", err)
 			return
 		}
 		ie.IndexToRFSP = (*int64)(&tmp_IndexToRFSP.Value)
@@ -168,7 +170,7 @@ func (ie *SourceNGRANNodeToTargetNGRANNodeTransparentContainer) Decode(wire []by
 	}
 	fn := func() *LastVisitedCellItem { return new(LastVisitedCellItem) }
 	if err = tmp_UEHistoryInformation.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read UEHistoryInformation", err)
+		err = fmt.Errorf("Read UEHistoryInformation: %w", err)
 		return
 	}
 	ie.UEHistoryInformation = []LastVisitedCellItem{}

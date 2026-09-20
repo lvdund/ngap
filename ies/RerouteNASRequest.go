@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type RerouteNASRequest struct {
@@ -168,7 +167,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -178,7 +177,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = (*int64)(&tmp.Value)
@@ -188,7 +187,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NGAPMessage", err)
+			err = fmt.Errorf("Read NGAPMessage: %w", err)
 			return
 		}
 		msg.NGAPMessage = tmp.Value
@@ -198,7 +197,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFSetID", err)
+			err = fmt.Errorf("Read AMFSetID: %w", err)
 			return
 		}
 		msg.AMFSetID = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -209,7 +208,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 		}
 		fn := func() *AllowedNSSAIItem { return new(AllowedNSSAIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AllowedNSSAI", err)
+			err = fmt.Errorf("Read AllowedNSSAI: %w", err)
 			return
 		}
 		msg.AllowedNSSAI = []AllowedNSSAIItem{}
@@ -219,7 +218,7 @@ func (decoder *RerouteNASRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Ng
 	case ProtocolIEID_SourceToTargetAMFInformationReroute:
 		var tmp SourceToTargetAMFInformationReroute
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SourceToTargetAMFInformationReroute", err)
+			err = fmt.Errorf("Read SourceToTargetAMFInformationReroute: %w", err)
 			return
 		}
 		msg.SourceToTargetAMFInformationReroute = &tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type EndpointIPAddressAndPort struct {
@@ -19,12 +20,12 @@ func (ie *EndpointIPAddressAndPort) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_EndpointIPAddress := NewBITSTRING(ie.EndpointIPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_EndpointIPAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode EndpointIPAddress", err)
+		err = fmt.Errorf("Encode EndpointIPAddress: %w", err)
 		return
 	}
 	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_PortNumber.Encode(w); err != nil {
-		err = utils.WrapError("Encode PortNumber", err)
+		err = fmt.Errorf("Encode PortNumber: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *EndpointIPAddressAndPort) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_EndpointIPAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read EndpointIPAddress", err)
+		err = fmt.Errorf("Read EndpointIPAddress: %w", err)
 		return
 	}
 	ie.EndpointIPAddress = aper.BitString{Bytes: tmp_EndpointIPAddress.Value.Bytes, NumBits: tmp_EndpointIPAddress.Value.NumBits}
@@ -50,7 +51,7 @@ func (ie *EndpointIPAddressAndPort) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PortNumber.Decode(r); err != nil {
-		err = utils.WrapError("Read PortNumber", err)
+		err = fmt.Errorf("Read PortNumber: %w", err)
 		return
 	}
 	ie.PortNumber = tmp_PortNumber.Value

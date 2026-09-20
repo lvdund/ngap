@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type OverloadStartNSSAIItem struct {
@@ -34,23 +35,25 @@ func (ie *OverloadStartNSSAIItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode SliceOverloadList", err)
+			err = fmt.Errorf("Encode SliceOverloadList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("SliceOverloadList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("SliceOverloadList is nil: %w", err)
+		}
 		return
 	}
 	if ie.SliceOverloadResponse != nil {
 		if err = ie.SliceOverloadResponse.Encode(w); err != nil {
-			err = utils.WrapError("Encode SliceOverloadResponse", err)
+			err = fmt.Errorf("Encode SliceOverloadResponse: %w", err)
 			return
 		}
 	}
 	if ie.SliceTrafficLoadReductionIndication != nil {
 		tmp_SliceTrafficLoadReductionIndication := NewINTEGER(*ie.SliceTrafficLoadReductionIndication, aper.Constraint{Lb: 1, Ub: 99}, false)
 		if err = tmp_SliceTrafficLoadReductionIndication.Encode(w); err != nil {
-			err = utils.WrapError("Encode SliceTrafficLoadReductionIndication", err)
+			err = fmt.Errorf("Encode SliceTrafficLoadReductionIndication: %w", err)
 			return
 		}
 	}
@@ -70,7 +73,7 @@ func (ie *OverloadStartNSSAIItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *SliceOverloadItem { return new(SliceOverloadItem) }
 	if err = tmp_SliceOverloadList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read SliceOverloadList", err)
+		err = fmt.Errorf("Read SliceOverloadList: %w", err)
 		return
 	}
 	ie.SliceOverloadList = []SliceOverloadItem{}
@@ -80,7 +83,7 @@ func (ie *OverloadStartNSSAIItem) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(OverloadResponse)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SliceOverloadResponse", err)
+			err = fmt.Errorf("Read SliceOverloadResponse: %w", err)
 			return
 		}
 		ie.SliceOverloadResponse = tmp
@@ -91,7 +94,7 @@ func (ie *OverloadStartNSSAIItem) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_SliceTrafficLoadReductionIndication.Decode(r); err != nil {
-			err = utils.WrapError("Read SliceTrafficLoadReductionIndication", err)
+			err = fmt.Errorf("Read SliceTrafficLoadReductionIndication: %w", err)
 			return
 		}
 		ie.SliceTrafficLoadReductionIndication = (*int64)(&tmp_SliceTrafficLoadReductionIndication.Value)

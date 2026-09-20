@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -39,14 +40,14 @@ func (ie *NGRANCGI) Decode(r *aper.AperReader) (err error) {
 	case NGRANCGIPresentNrCgi:
 		var tmp NRCGI
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read NRCGI", err)
+			err = fmt.Errorf("Read NRCGI: %w", err)
 			return
 		}
 		ie.NRCGI = &tmp
 	case NGRANCGIPresentEutraCgi:
 		var tmp EUTRACGI
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read EUTRACGI", err)
+			err = fmt.Errorf("Read EUTRACGI: %w", err)
 			return
 		}
 		ie.EUTRACGI = &tmp

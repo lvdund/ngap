@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceFailedToSetupItemHOAck struct {
@@ -19,12 +20,12 @@ func (ie *PDUSessionResourceFailedToSetupItemHOAck) Encode(w *aper.AperWriter) (
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionID", err)
+		err = fmt.Errorf("Encode PDUSessionID: %w", err)
 		return
 	}
 	tmp_HandoverResourceAllocationUnsuccessfulTransfer := NewOCTETSTRING(ie.HandoverResourceAllocationUnsuccessfulTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverResourceAllocationUnsuccessfulTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Encode HandoverResourceAllocationUnsuccessfulTransfer", err)
+		err = fmt.Errorf("Encode HandoverResourceAllocationUnsuccessfulTransfer: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *PDUSessionResourceFailedToSetupItemHOAck) Decode(r *aper.AperReader) (
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = fmt.Errorf("Read PDUSessionID: %w", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -50,7 +51,7 @@ func (ie *PDUSessionResourceFailedToSetupItemHOAck) Decode(r *aper.AperReader) (
 		ext: false,
 	}
 	if err = tmp_HandoverResourceAllocationUnsuccessfulTransfer.Decode(r); err != nil {
-		err = utils.WrapError("Read HandoverResourceAllocationUnsuccessfulTransfer", err)
+		err = fmt.Errorf("Read HandoverResourceAllocationUnsuccessfulTransfer: %w", err)
 		return
 	}
 	ie.HandoverResourceAllocationUnsuccessfulTransfer = tmp_HandoverResourceAllocationUnsuccessfulTransfer.Value

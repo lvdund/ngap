@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type WriteReplaceWarningRequest struct {
@@ -225,7 +224,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read MessageIdentifier", err)
+			err = fmt.Errorf("Read MessageIdentifier: %w", err)
 			return
 		}
 		msg.MessageIdentifier = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -235,14 +234,14 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SerialNumber", err)
+			err = fmt.Errorf("Read SerialNumber: %w", err)
 			return
 		}
 		msg.SerialNumber = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_WarningAreaList:
 		var tmp WarningAreaList
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read WarningAreaList", err)
+			err = fmt.Errorf("Read WarningAreaList: %w", err)
 			return
 		}
 		msg.WarningAreaList = &tmp
@@ -252,7 +251,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RepetitionPeriod", err)
+			err = fmt.Errorf("Read RepetitionPeriod: %w", err)
 			return
 		}
 		msg.RepetitionPeriod = int64(tmp.Value)
@@ -262,7 +261,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NumberOfBroadcastsRequested", err)
+			err = fmt.Errorf("Read NumberOfBroadcastsRequested: %w", err)
 			return
 		}
 		msg.NumberOfBroadcastsRequested = int64(tmp.Value)
@@ -272,7 +271,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read WarningType", err)
+			err = fmt.Errorf("Read WarningType: %w", err)
 			return
 		}
 		msg.WarningType = tmp.Value
@@ -282,7 +281,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read WarningSecurityInfo", err)
+			err = fmt.Errorf("Read WarningSecurityInfo: %w", err)
 			return
 		}
 		msg.WarningSecurityInfo = tmp.Value
@@ -292,7 +291,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read DataCodingScheme", err)
+			err = fmt.Errorf("Read DataCodingScheme: %w", err)
 			return
 		}
 		msg.DataCodingScheme = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -302,14 +301,14 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read WarningMessageContents", err)
+			err = fmt.Errorf("Read WarningMessageContents: %w", err)
 			return
 		}
 		msg.WarningMessageContents = tmp.Value
 	case ProtocolIEID_ConcurrentWarningMessageInd:
 		var tmp ConcurrentWarningMessageInd
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read ConcurrentWarningMessageInd", err)
+			err = fmt.Errorf("Read ConcurrentWarningMessageInd: %w", err)
 			return
 		}
 		msg.ConcurrentWarningMessageInd = &tmp
@@ -319,7 +318,7 @@ func (decoder *WriteReplaceWarningRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read WarningAreaCoordinates", err)
+			err = fmt.Errorf("Read WarningAreaCoordinates: %w", err)
 			return
 		}
 		msg.WarningAreaCoordinates = tmp.Value

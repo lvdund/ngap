@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SecondaryRATDataUsageReportTransfer struct {
@@ -25,7 +25,7 @@ func (ie *SecondaryRATDataUsageReportTransfer) Encode() (b []byte, err error) {
 	w.WriteBits(optionals, 2)
 	if ie.SecondaryRATUsageInformation != nil {
 		if err = ie.SecondaryRATUsageInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode SecondaryRATUsageInformation", err)
+			err = fmt.Errorf("Encode SecondaryRATUsageInformation: %w", err)
 			return
 		}
 	}
@@ -45,7 +45,7 @@ func (ie *SecondaryRATDataUsageReportTransfer) Decode(wire []byte) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(SecondaryRATUsageInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SecondaryRATUsageInformation", err)
+			err = fmt.Errorf("Read SecondaryRATUsageInformation: %w", err)
 			return
 		}
 		ie.SecondaryRATUsageInformation = tmp

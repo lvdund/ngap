@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SecondaryRATDataUsageReport struct {
@@ -57,7 +56,9 @@ func (msg *SecondaryRATDataUsageReport) toIes() (ies []NgapMessageIE, err error)
 			Value:       &tmp_PDUSessionResourceSecondaryRATUsageList,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceSecondaryRATUsageList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceSecondaryRATUsageList is nil: %w", err)
+		}
 		return
 	}
 	if msg.HandoverFlag != nil {
@@ -158,7 +159,7 @@ func (decoder *SecondaryRATDataUsageReportDecoder) decodeIE(r *aper.AperReader) 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -168,7 +169,7 @@ func (decoder *SecondaryRATDataUsageReportDecoder) decodeIE(r *aper.AperReader) 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -179,7 +180,7 @@ func (decoder *SecondaryRATDataUsageReportDecoder) decodeIE(r *aper.AperReader) 
 		}
 		fn := func() *PDUSessionResourceSecondaryRATUsageItem { return new(PDUSessionResourceSecondaryRATUsageItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceSecondaryRATUsageList", err)
+			err = fmt.Errorf("Read PDUSessionResourceSecondaryRATUsageList: %w", err)
 			return
 		}
 		msg.PDUSessionResourceSecondaryRATUsageList = []PDUSessionResourceSecondaryRATUsageItem{}
@@ -189,14 +190,14 @@ func (decoder *SecondaryRATDataUsageReportDecoder) decodeIE(r *aper.AperReader) 
 	case ProtocolIEID_HandoverFlag:
 		var tmp HandoverFlag
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read HandoverFlag", err)
+			err = fmt.Errorf("Read HandoverFlag: %w", err)
 			return
 		}
 		msg.HandoverFlag = &tmp
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = &tmp

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type NGReset struct {
@@ -106,14 +105,14 @@ func (decoder *NGResetDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessageI
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp
 	case ProtocolIEID_ResetType:
 		var tmp ResetType
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read ResetType", err)
+			err = fmt.Errorf("Read ResetType: %w", err)
 			return
 		}
 		msg.ResetType = tmp

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UEContextModificationRequest struct {
@@ -216,7 +215,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -226,7 +225,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -236,7 +235,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANPagingPriority", err)
+			err = fmt.Errorf("Read RANPagingPriority: %w", err)
 			return
 		}
 		msg.RANPagingPriority = (*int64)(&tmp.Value)
@@ -246,7 +245,7 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SecurityKey", err)
+			err = fmt.Errorf("Read SecurityKey: %w", err)
 			return
 		}
 		msg.SecurityKey = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -256,35 +255,35 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read IndexToRFSP", err)
+			err = fmt.Errorf("Read IndexToRFSP: %w", err)
 			return
 		}
 		msg.IndexToRFSP = (*int64)(&tmp.Value)
 	case ProtocolIEID_UEAggregateMaximumBitRate:
 		var tmp UEAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UEAggregateMaximumBitRate", err)
+			err = fmt.Errorf("Read UEAggregateMaximumBitRate: %w", err)
 			return
 		}
 		msg.UEAggregateMaximumBitRate = &tmp
 	case ProtocolIEID_UESecurityCapabilities:
 		var tmp UESecurityCapabilities
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UESecurityCapabilities", err)
+			err = fmt.Errorf("Read UESecurityCapabilities: %w", err)
 			return
 		}
 		msg.UESecurityCapabilities = &tmp
 	case ProtocolIEID_CoreNetworkAssistanceInformationForInactive:
 		var tmp CoreNetworkAssistanceInformationForInactive
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CoreNetworkAssistanceInformationForInactive", err)
+			err = fmt.Errorf("Read CoreNetworkAssistanceInformationForInactive: %w", err)
 			return
 		}
 		msg.CoreNetworkAssistanceInformationForInactive = &tmp
 	case ProtocolIEID_EmergencyFallbackIndicator:
 		var tmp EmergencyFallbackIndicator
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read EmergencyFallbackIndicator", err)
+			err = fmt.Errorf("Read EmergencyFallbackIndicator: %w", err)
 			return
 		}
 		msg.EmergencyFallbackIndicator = &tmp
@@ -294,28 +293,28 @@ func (decoder *UEContextModificationRequestDecoder) decodeIE(r *aper.AperReader)
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NewAMFUENGAPID", err)
+			err = fmt.Errorf("Read NewAMFUENGAPID: %w", err)
 			return
 		}
 		msg.NewAMFUENGAPID = (*int64)(&tmp.Value)
 	case ProtocolIEID_RRCInactiveTransitionReportRequest:
 		var tmp RRCInactiveTransitionReportRequest
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RRCInactiveTransitionReportRequest", err)
+			err = fmt.Errorf("Read RRCInactiveTransitionReportRequest: %w", err)
 			return
 		}
 		msg.RRCInactiveTransitionReportRequest = &tmp
 	case ProtocolIEID_NewGUAMI:
 		var tmp GUAMI
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NewGUAMI", err)
+			err = fmt.Errorf("Read NewGUAMI: %w", err)
 			return
 		}
 		msg.NewGUAMI = &tmp
 	case ProtocolIEID_CNAssistedRANTuning:
 		var tmp CNAssistedRANTuning
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CNAssistedRANTuning", err)
+			err = fmt.Errorf("Read CNAssistedRANTuning: %w", err)
 			return
 		}
 		msg.CNAssistedRANTuning = &tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UERadioCapabilityForPaging struct {
@@ -26,14 +27,14 @@ func (ie *UERadioCapabilityForPaging) Encode(w *aper.AperWriter) (err error) {
 	if ie.UERadioCapabilityForPagingOfNR != nil {
 		tmp_UERadioCapabilityForPagingOfNR := NewOCTETSTRING(ie.UERadioCapabilityForPagingOfNR, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_UERadioCapabilityForPagingOfNR.Encode(w); err != nil {
-			err = utils.WrapError("Encode UERadioCapabilityForPagingOfNR", err)
+			err = fmt.Errorf("Encode UERadioCapabilityForPagingOfNR: %w", err)
 			return
 		}
 	}
 	if ie.UERadioCapabilityForPagingOfEUTRA != nil {
 		tmp_UERadioCapabilityForPagingOfEUTRA := NewOCTETSTRING(ie.UERadioCapabilityForPagingOfEUTRA, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp_UERadioCapabilityForPagingOfEUTRA.Encode(w); err != nil {
-			err = utils.WrapError("Encode UERadioCapabilityForPagingOfEUTRA", err)
+			err = fmt.Errorf("Encode UERadioCapabilityForPagingOfEUTRA: %w", err)
 			return
 		}
 	}
@@ -53,7 +54,7 @@ func (ie *UERadioCapabilityForPaging) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_UERadioCapabilityForPagingOfNR.Decode(r); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPagingOfNR", err)
+			err = fmt.Errorf("Read UERadioCapabilityForPagingOfNR: %w", err)
 			return
 		}
 		ie.UERadioCapabilityForPagingOfNR = tmp_UERadioCapabilityForPagingOfNR.Value
@@ -64,7 +65,7 @@ func (ie *UERadioCapabilityForPaging) Decode(r *aper.AperReader) (err error) {
 			ext: false,
 		}
 		if err = tmp_UERadioCapabilityForPagingOfEUTRA.Decode(r); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPagingOfEUTRA", err)
+			err = fmt.Errorf("Read UERadioCapabilityForPagingOfEUTRA: %w", err)
 			return
 		}
 		ie.UERadioCapabilityForPagingOfEUTRA = tmp_UERadioCapabilityForPagingOfEUTRA.Value

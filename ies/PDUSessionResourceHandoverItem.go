@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceHandoverItem struct {
@@ -19,12 +20,12 @@ func (ie *PDUSessionResourceHandoverItem) Encode(w *aper.AperWriter) (err error)
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionID", err)
+		err = fmt.Errorf("Encode PDUSessionID: %w", err)
 		return
 	}
 	tmp_HandoverCommandTransfer := NewOCTETSTRING(ie.HandoverCommandTransfer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_HandoverCommandTransfer.Encode(w); err != nil {
-		err = utils.WrapError("Encode HandoverCommandTransfer", err)
+		err = fmt.Errorf("Encode HandoverCommandTransfer: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *PDUSessionResourceHandoverItem) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = fmt.Errorf("Read PDUSessionID: %w", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -50,7 +51,7 @@ func (ie *PDUSessionResourceHandoverItem) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_HandoverCommandTransfer.Decode(r); err != nil {
-		err = utils.WrapError("Read HandoverCommandTransfer", err)
+		err = fmt.Errorf("Read HandoverCommandTransfer: %w", err)
 		return
 	}
 	ie.HandoverCommandTransfer = tmp_HandoverCommandTransfer.Value

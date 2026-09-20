@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UEContextReleaseRequest struct {
@@ -145,7 +144,7 @@ func (decoder *UEContextReleaseRequestDecoder) decodeIE(r *aper.AperReader) (msg
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -155,7 +154,7 @@ func (decoder *UEContextReleaseRequestDecoder) decodeIE(r *aper.AperReader) (msg
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -166,7 +165,7 @@ func (decoder *UEContextReleaseRequestDecoder) decodeIE(r *aper.AperReader) (msg
 		}
 		fn := func() *PDUSessionResourceItemCxtRelReq { return new(PDUSessionResourceItemCxtRelReq) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceListCxtRelReq", err)
+			err = fmt.Errorf("Read PDUSessionResourceListCxtRelReq: %w", err)
 			return
 		}
 		msg.PDUSessionResourceListCxtRelReq = []PDUSessionResourceItemCxtRelReq{}
@@ -176,7 +175,7 @@ func (decoder *UEContextReleaseRequestDecoder) decodeIE(r *aper.AperReader) (msg
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp

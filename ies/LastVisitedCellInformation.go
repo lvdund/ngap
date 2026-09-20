@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -50,28 +51,28 @@ func (ie *LastVisitedCellInformation) Decode(r *aper.AperReader) (err error) {
 	case LastVisitedCellInformationPresentNgrancell:
 		var tmp LastVisitedNGRANCellInformation
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read NGRANCell", err)
+			err = fmt.Errorf("Read NGRANCell: %w", err)
 			return
 		}
 		ie.NGRANCell = &tmp
 	case LastVisitedCellInformationPresentEutrancell:
 		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read EUTRANCell", err)
+			err = fmt.Errorf("Read EUTRANCell: %w", err)
 			return
 		}
 		ie.EUTRANCell = tmp.Value
 	case LastVisitedCellInformationPresentUtrancell:
 		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UTRANCell", err)
+			err = fmt.Errorf("Read UTRANCell: %w", err)
 			return
 		}
 		ie.UTRANCell = tmp.Value
 	case LastVisitedCellInformationPresentGerancell:
 		tmp := NewOCTETSTRING(nil, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read GERANCell", err)
+			err = fmt.Errorf("Read GERANCell: %w", err)
 			return
 		}
 		ie.GERANCell = tmp.Value

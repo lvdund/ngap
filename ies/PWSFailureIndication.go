@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PWSFailureIndication struct {
@@ -106,14 +105,14 @@ func (decoder *PWSFailureIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe 
 	case ProtocolIEID_PWSFailedCellIDList:
 		var tmp PWSFailedCellIDList
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PWSFailedCellIDList", err)
+			err = fmt.Errorf("Read PWSFailedCellIDList: %w", err)
 			return
 		}
 		msg.PWSFailedCellIDList = tmp
 	case ProtocolIEID_GlobalRANNodeID:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read GlobalRANNodeID", err)
+			err = fmt.Errorf("Read GlobalRANNodeID: %w", err)
 			return
 		}
 		msg.GlobalRANNodeID = tmp

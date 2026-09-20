@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionUsageReport struct {
@@ -18,7 +19,7 @@ func (ie *PDUSessionUsageReport) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.RATType.Encode(w); err != nil {
-		err = utils.WrapError("Encode RATType", err)
+		err = fmt.Errorf("Encode RATType: %w", err)
 		return
 	}
 	if len(ie.PDUSessionTimedReportList) > 0 {
@@ -31,11 +32,13 @@ func (ie *PDUSessionUsageReport) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode PDUSessionTimedReportList", err)
+			err = fmt.Errorf("Encode PDUSessionTimedReportList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("PDUSessionTimedReportList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionTimedReportList is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -48,7 +51,7 @@ func (ie *PDUSessionUsageReport) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.RATType.Decode(r); err != nil {
-		err = utils.WrapError("Read RATType", err)
+		err = fmt.Errorf("Read RATType: %w", err)
 		return
 	}
 	tmp_PDUSessionTimedReportList := Sequence[*VolumeTimedReportItem]{
@@ -57,7 +60,7 @@ func (ie *PDUSessionUsageReport) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *VolumeTimedReportItem { return new(VolumeTimedReportItem) }
 	if err = tmp_PDUSessionTimedReportList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read PDUSessionTimedReportList", err)
+		err = fmt.Errorf("Read PDUSessionTimedReportList: %w", err)
 		return
 	}
 	ie.PDUSessionTimedReportList = []VolumeTimedReportItem{}

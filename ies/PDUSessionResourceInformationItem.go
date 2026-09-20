@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceInformationItem struct {
@@ -23,7 +24,7 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 	w.WriteBits(optionals, 2)
 	tmp_PDUSessionID := NewINTEGER(ie.PDUSessionID, aper.Constraint{Lb: 0, Ub: 255}, false)
 	if err = tmp_PDUSessionID.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionID", err)
+		err = fmt.Errorf("Encode PDUSessionID: %w", err)
 		return
 	}
 	if len(ie.QosFlowInformationList) > 0 {
@@ -36,11 +37,13 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowInformationList", err)
+			err = fmt.Errorf("Encode QosFlowInformationList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("QosFlowInformationList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("QosFlowInformationList is nil: %w", err)
+		}
 		return
 	}
 	if len(ie.DRBsToQosFlowsMappingList) > 0 {
@@ -53,7 +56,7 @@ func (ie *PDUSessionResourceInformationItem) Encode(w *aper.AperWriter) (err err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode DRBsToQosFlowsMappingList", err)
+			err = fmt.Errorf("Encode DRBsToQosFlowsMappingList: %w", err)
 			return
 		}
 	}
@@ -72,7 +75,7 @@ func (ie *PDUSessionResourceInformationItem) Decode(r *aper.AperReader) (err err
 		ext: false,
 	}
 	if err = tmp_PDUSessionID.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionID", err)
+		err = fmt.Errorf("Read PDUSessionID: %w", err)
 		return
 	}
 	ie.PDUSessionID = int64(tmp_PDUSessionID.Value)
@@ -82,7 +85,7 @@ func (ie *PDUSessionResourceInformationItem) Decode(r *aper.AperReader) (err err
 	}
 	fn := func() *QosFlowInformationItem { return new(QosFlowInformationItem) }
 	if err = tmp_QosFlowInformationList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read QosFlowInformationList", err)
+		err = fmt.Errorf("Read QosFlowInformationList: %w", err)
 		return
 	}
 	ie.QosFlowInformationList = []QosFlowInformationItem{}
@@ -96,7 +99,7 @@ func (ie *PDUSessionResourceInformationItem) Decode(r *aper.AperReader) (err err
 		}
 		fn := func() *DRBsToQosFlowsMappingItem { return new(DRBsToQosFlowsMappingItem) }
 		if err = tmp_DRBsToQosFlowsMappingList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read DRBsToQosFlowsMappingList", err)
+			err = fmt.Errorf("Read DRBsToQosFlowsMappingList: %w", err)
 			return
 		}
 		ie.DRBsToQosFlowsMappingList = []DRBsToQosFlowsMappingItem{}

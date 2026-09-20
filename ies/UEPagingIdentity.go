@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -35,7 +36,7 @@ func (ie *UEPagingIdentity) Decode(r *aper.AperReader) (err error) {
 	case UEPagingIdentityPresentFivegSTmsi:
 		var tmp FiveGSTMSI
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read FiveGSTMSI", err)
+			err = fmt.Errorf("Read FiveGSTMSI: %w", err)
 			return
 		}
 		ie.FiveGSTMSI = &tmp

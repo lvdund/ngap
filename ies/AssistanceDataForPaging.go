@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AssistanceDataForPaging struct {
@@ -25,13 +26,13 @@ func (ie *AssistanceDataForPaging) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	if ie.AssistanceDataForRecommendedCells != nil {
 		if err = ie.AssistanceDataForRecommendedCells.Encode(w); err != nil {
-			err = utils.WrapError("Encode AssistanceDataForRecommendedCells", err)
+			err = fmt.Errorf("Encode AssistanceDataForRecommendedCells: %w", err)
 			return
 		}
 	}
 	if ie.PagingAttemptInformation != nil {
 		if err = ie.PagingAttemptInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode PagingAttemptInformation", err)
+			err = fmt.Errorf("Encode PagingAttemptInformation: %w", err)
 			return
 		}
 	}
@@ -48,7 +49,7 @@ func (ie *AssistanceDataForPaging) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(AssistanceDataForRecommendedCells)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read AssistanceDataForRecommendedCells", err)
+			err = fmt.Errorf("Read AssistanceDataForRecommendedCells: %w", err)
 			return
 		}
 		ie.AssistanceDataForRecommendedCells = tmp
@@ -56,7 +57,7 @@ func (ie *AssistanceDataForPaging) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(PagingAttemptInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read PagingAttemptInformation", err)
+			err = fmt.Errorf("Read PagingAttemptInformation: %w", err)
 			return
 		}
 		ie.PagingAttemptInformation = tmp

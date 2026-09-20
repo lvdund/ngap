@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type CriticalityDiagnosticsIEItem struct {
@@ -19,15 +20,15 @@ func (ie *CriticalityDiagnosticsIEItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.IECriticality.Encode(w); err != nil {
-		err = utils.WrapError("Encode IECriticality", err)
+		err = fmt.Errorf("Encode IECriticality: %w", err)
 		return
 	}
 	if err = ie.IEID.Encode(w); err != nil {
-		err = utils.WrapError("Encode IEID", err)
+		err = fmt.Errorf("Encode IEID: %w", err)
 		return
 	}
 	if err = ie.TypeOfError.Encode(w); err != nil {
-		err = utils.WrapError("Encode TypeOfError", err)
+		err = fmt.Errorf("Encode TypeOfError: %w", err)
 		return
 	}
 	return
@@ -40,15 +41,15 @@ func (ie *CriticalityDiagnosticsIEItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.IECriticality.Decode(r); err != nil {
-		err = utils.WrapError("Read IECriticality", err)
+		err = fmt.Errorf("Read IECriticality: %w", err)
 		return
 	}
 	if err = ie.IEID.Decode(r); err != nil {
-		err = utils.WrapError("Read IEID", err)
+		err = fmt.Errorf("Read IEID: %w", err)
 		return
 	}
 	if err = ie.TypeOfError.Decode(r); err != nil {
-		err = utils.WrapError("Read TypeOfError", err)
+		err = fmt.Errorf("Read TypeOfError: %w", err)
 		return
 	}
 	return

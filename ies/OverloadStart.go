@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type OverloadStart struct {
@@ -110,7 +109,7 @@ func (decoder *OverloadStartDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMe
 	case ProtocolIEID_AMFOverloadResponse:
 		var tmp OverloadResponse
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFOverloadResponse", err)
+			err = fmt.Errorf("Read AMFOverloadResponse: %w", err)
 			return
 		}
 		msg.AMFOverloadResponse = &tmp
@@ -120,7 +119,7 @@ func (decoder *OverloadStartDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMe
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFTrafficLoadReductionIndication", err)
+			err = fmt.Errorf("Read AMFTrafficLoadReductionIndication: %w", err)
 			return
 		}
 		msg.AMFTrafficLoadReductionIndication = (*int64)(&tmp.Value)
@@ -131,7 +130,7 @@ func (decoder *OverloadStartDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMe
 		}
 		fn := func() *OverloadStartNSSAIItem { return new(OverloadStartNSSAIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read OverloadStartNSSAIList", err)
+			err = fmt.Errorf("Read OverloadStartNSSAIList: %w", err)
 			return
 		}
 		msg.OverloadStartNSSAIList = []OverloadStartNSSAIItem{}

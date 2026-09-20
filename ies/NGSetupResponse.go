@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type NGSetupResponse struct {
@@ -50,7 +49,9 @@ func (msg *NGSetupResponse) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_ServedGUAMIList,
 		})
 	} else {
-		err = utils.WrapError("ServedGUAMIList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("ServedGUAMIList is nil: %w", err)
+		}
 		return
 	}
 	ies = append(ies, NgapMessageIE{
@@ -75,7 +76,9 @@ func (msg *NGSetupResponse) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_PLMNSupportList,
 		})
 	} else {
-		err = utils.WrapError("PLMNSupportList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PLMNSupportList is nil: %w", err)
+		}
 		return
 	}
 	if msg.CriticalityDiagnostics != nil {
@@ -185,7 +188,7 @@ func (decoder *NGSetupResponseDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFName", err)
+			err = fmt.Errorf("Read AMFName: %w", err)
 			return
 		}
 		msg.AMFName = tmp.Value
@@ -196,7 +199,7 @@ func (decoder *NGSetupResponseDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 		}
 		fn := func() *ServedGUAMIItem { return new(ServedGUAMIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read ServedGUAMIList", err)
+			err = fmt.Errorf("Read ServedGUAMIList: %w", err)
 			return
 		}
 		msg.ServedGUAMIList = []ServedGUAMIItem{}
@@ -209,7 +212,7 @@ func (decoder *NGSetupResponseDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RelativeAMFCapacity", err)
+			err = fmt.Errorf("Read RelativeAMFCapacity: %w", err)
 			return
 		}
 		msg.RelativeAMFCapacity = int64(tmp.Value)
@@ -220,7 +223,7 @@ func (decoder *NGSetupResponseDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 		}
 		fn := func() *PLMNSupportItem { return new(PLMNSupportItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PLMNSupportList", err)
+			err = fmt.Errorf("Read PLMNSupportList: %w", err)
 			return
 		}
 		msg.PLMNSupportList = []PLMNSupportItem{}
@@ -230,14 +233,14 @@ func (decoder *NGSetupResponseDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp
 	case ProtocolIEID_UERetentionInformation:
 		var tmp UERetentionInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERetentionInformation", err)
+			err = fmt.Errorf("Read UERetentionInformation: %w", err)
 			return
 		}
 		msg.UERetentionInformation = &tmp

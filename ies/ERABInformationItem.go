@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type ERABInformationItem struct {
@@ -22,12 +23,12 @@ func (ie *ERABInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	tmp_ERABID := NewINTEGER(ie.ERABID, aper.Constraint{Lb: 0, Ub: 15}, true)
 	if err = tmp_ERABID.Encode(w); err != nil {
-		err = utils.WrapError("Encode ERABID", err)
+		err = fmt.Errorf("Encode ERABID: %w", err)
 		return
 	}
 	if ie.DLForwarding != nil {
 		if err = ie.DLForwarding.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLForwarding", err)
+			err = fmt.Errorf("Encode DLForwarding: %w", err)
 			return
 		}
 	}
@@ -46,14 +47,14 @@ func (ie *ERABInformationItem) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_ERABID.Decode(r); err != nil {
-		err = utils.WrapError("Read ERABID", err)
+		err = fmt.Errorf("Read ERABID: %w", err)
 		return
 	}
 	ie.ERABID = int64(tmp_ERABID.Value)
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(DLForwarding)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLForwarding", err)
+			err = fmt.Errorf("Read DLForwarding: %w", err)
 			return
 		}
 		ie.DLForwarding = tmp

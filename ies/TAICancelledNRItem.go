@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TAICancelledNRItem struct {
@@ -18,7 +19,7 @@ func (ie *TAICancelledNRItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Encode TAI", err)
+		err = fmt.Errorf("Encode TAI: %w", err)
 		return
 	}
 	if len(ie.CancelledCellsInTAINR) > 0 {
@@ -31,11 +32,13 @@ func (ie *TAICancelledNRItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode CancelledCellsInTAINR", err)
+			err = fmt.Errorf("Encode CancelledCellsInTAINR: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("CancelledCellsInTAINR is nil", err)
+		if err != nil {
+			err = fmt.Errorf("CancelledCellsInTAINR is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -48,7 +51,7 @@ func (ie *TAICancelledNRItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TAI.Decode(r); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = fmt.Errorf("Read TAI: %w", err)
 		return
 	}
 	tmp_CancelledCellsInTAINR := Sequence[*CancelledCellsInTAINRItem]{
@@ -57,7 +60,7 @@ func (ie *TAICancelledNRItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *CancelledCellsInTAINRItem { return new(CancelledCellsInTAINRItem) }
 	if err = tmp_CancelledCellsInTAINR.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read CancelledCellsInTAINR", err)
+		err = fmt.Errorf("Read CancelledCellsInTAINR: %w", err)
 		return
 	}
 	ie.CancelledCellsInTAINR = []CancelledCellsInTAINRItem{}

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SONInformationReply struct {
@@ -21,7 +22,7 @@ func (ie *SONInformationReply) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	if ie.XnTNLConfigurationInfo != nil {
 		if err = ie.XnTNLConfigurationInfo.Encode(w); err != nil {
-			err = utils.WrapError("Encode XnTNLConfigurationInfo", err)
+			err = fmt.Errorf("Encode XnTNLConfigurationInfo: %w", err)
 			return
 		}
 	}
@@ -38,7 +39,7 @@ func (ie *SONInformationReply) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(XnTNLConfigurationInfo)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read XnTNLConfigurationInfo", err)
+			err = fmt.Errorf("Read XnTNLConfigurationInfo: %w", err)
 			return
 		}
 		ie.XnTNLConfigurationInfo = tmp

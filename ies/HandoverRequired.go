@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverRequired struct {
@@ -82,7 +81,9 @@ func (msg *HandoverRequired) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_PDUSessionResourceListHORqd,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceListHORqd is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceListHORqd is nil: %w", err)
+		}
 		return
 	}
 	ies = append(ies, NgapMessageIE{
@@ -213,7 +214,7 @@ func (decoder *HandoverRequiredDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -223,35 +224,35 @@ func (decoder *HandoverRequiredDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_HandoverType:
 		var tmp HandoverType
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read HandoverType", err)
+			err = fmt.Errorf("Read HandoverType: %w", err)
 			return
 		}
 		msg.HandoverType = tmp
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp
 	case ProtocolIEID_TargetID:
 		var tmp TargetID
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TargetID", err)
+			err = fmt.Errorf("Read TargetID: %w", err)
 			return
 		}
 		msg.TargetID = tmp
 	case ProtocolIEID_DirectForwardingPathAvailability:
 		var tmp DirectForwardingPathAvailability
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read DirectForwardingPathAvailability", err)
+			err = fmt.Errorf("Read DirectForwardingPathAvailability: %w", err)
 			return
 		}
 		msg.DirectForwardingPathAvailability = &tmp
@@ -262,7 +263,7 @@ func (decoder *HandoverRequiredDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 		}
 		fn := func() *PDUSessionResourceItemHORqd { return new(PDUSessionResourceItemHORqd) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceListHORqd", err)
+			err = fmt.Errorf("Read PDUSessionResourceListHORqd: %w", err)
 			return
 		}
 		msg.PDUSessionResourceListHORqd = []PDUSessionResourceItemHORqd{}
@@ -275,7 +276,7 @@ func (decoder *HandoverRequiredDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SourceToTargetTransparentContainer", err)
+			err = fmt.Errorf("Read SourceToTargetTransparentContainer: %w", err)
 			return
 		}
 		msg.SourceToTargetTransparentContainer = tmp.Value

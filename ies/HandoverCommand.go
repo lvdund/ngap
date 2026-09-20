@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverCommand struct {
@@ -197,7 +196,7 @@ func (decoder *HandoverCommandDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -207,14 +206,14 @@ func (decoder *HandoverCommandDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_HandoverType:
 		var tmp HandoverType
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read HandoverType", err)
+			err = fmt.Errorf("Read HandoverType: %w", err)
 			return
 		}
 		msg.HandoverType = tmp
@@ -224,7 +223,7 @@ func (decoder *HandoverCommandDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NASSecurityParametersFromNGRAN", err)
+			err = fmt.Errorf("Read NASSecurityParametersFromNGRAN: %w", err)
 			return
 		}
 		msg.NASSecurityParametersFromNGRAN = tmp.Value
@@ -235,7 +234,7 @@ func (decoder *HandoverCommandDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 		}
 		fn := func() *PDUSessionResourceHandoverItem { return new(PDUSessionResourceHandoverItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceHandoverList", err)
+			err = fmt.Errorf("Read PDUSessionResourceHandoverList: %w", err)
 			return
 		}
 		msg.PDUSessionResourceHandoverList = []PDUSessionResourceHandoverItem{}
@@ -249,7 +248,7 @@ func (decoder *HandoverCommandDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 		}
 		fn := func() *PDUSessionResourceToReleaseItemHOCmd { return new(PDUSessionResourceToReleaseItemHOCmd) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceToReleaseListHOCmd", err)
+			err = fmt.Errorf("Read PDUSessionResourceToReleaseListHOCmd: %w", err)
 			return
 		}
 		msg.PDUSessionResourceToReleaseListHOCmd = []PDUSessionResourceToReleaseItemHOCmd{}
@@ -262,14 +261,14 @@ func (decoder *HandoverCommandDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TargetToSourceTransparentContainer", err)
+			err = fmt.Errorf("Read TargetToSourceTransparentContainer: %w", err)
 			return
 		}
 		msg.TargetToSourceTransparentContainer = tmp.Value
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

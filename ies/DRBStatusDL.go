@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -39,14 +40,14 @@ func (ie *DRBStatusDL) Decode(r *aper.AperReader) (err error) {
 	case DRBStatusDLPresentDrbstatusdl12:
 		var tmp DRBStatusDL12
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DRBStatusDL12", err)
+			err = fmt.Errorf("Read DRBStatusDL12: %w", err)
 			return
 		}
 		ie.DRBStatusDL12 = &tmp
 	case DRBStatusDLPresentDrbstatusdl18:
 		var tmp DRBStatusDL18
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DRBStatusDL18", err)
+			err = fmt.Errorf("Read DRBStatusDL18: %w", err)
 			return
 		}
 		ie.DRBStatusDL18 = &tmp

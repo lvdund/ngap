@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type InfoOnRecommendedCellsAndRANNodesForPaging struct {
@@ -18,11 +19,11 @@ func (ie *InfoOnRecommendedCellsAndRANNodesForPaging) Encode(w *aper.AperWriter)
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.RecommendedCellsForPaging.Encode(w); err != nil {
-		err = utils.WrapError("Encode RecommendedCellsForPaging", err)
+		err = fmt.Errorf("Encode RecommendedCellsForPaging: %w", err)
 		return
 	}
 	if err = ie.RecommendRANNodesForPaging.Encode(w); err != nil {
-		err = utils.WrapError("Encode RecommendRANNodesForPaging", err)
+		err = fmt.Errorf("Encode RecommendRANNodesForPaging: %w", err)
 		return
 	}
 	return
@@ -35,11 +36,11 @@ func (ie *InfoOnRecommendedCellsAndRANNodesForPaging) Decode(r *aper.AperReader)
 		return
 	}
 	if err = ie.RecommendedCellsForPaging.Decode(r); err != nil {
-		err = utils.WrapError("Read RecommendedCellsForPaging", err)
+		err = fmt.Errorf("Read RecommendedCellsForPaging: %w", err)
 		return
 	}
 	if err = ie.RecommendRANNodesForPaging.Decode(r); err != nil {
-		err = utils.WrapError("Read RecommendRANNodesForPaging", err)
+		err = fmt.Errorf("Read RecommendRANNodesForPaging: %w", err)
 		return
 	}
 	return

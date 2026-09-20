@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type CoreNetworkAssistanceInformationForInactive struct {
@@ -31,23 +32,23 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 	}
 	w.WriteBits(optionals, 4)
 	if err = ie.UEIdentityIndexValue.Encode(w); err != nil {
-		err = utils.WrapError("Encode UEIdentityIndexValue", err)
+		err = fmt.Errorf("Encode UEIdentityIndexValue: %w", err)
 		return
 	}
 	if ie.UESpecificDRX != nil {
 		if err = ie.UESpecificDRX.Encode(w); err != nil {
-			err = utils.WrapError("Encode UESpecificDRX", err)
+			err = fmt.Errorf("Encode UESpecificDRX: %w", err)
 			return
 		}
 	}
 	tmp_PeriodicRegistrationUpdateTimer := NewBITSTRING(ie.PeriodicRegistrationUpdateTimer, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_PeriodicRegistrationUpdateTimer.Encode(w); err != nil {
-		err = utils.WrapError("Encode PeriodicRegistrationUpdateTimer", err)
+		err = fmt.Errorf("Encode PeriodicRegistrationUpdateTimer: %w", err)
 		return
 	}
 	if ie.MICOModeIndication != nil {
 		if err = ie.MICOModeIndication.Encode(w); err != nil {
-			err = utils.WrapError("Encode MICOModeIndication", err)
+			err = fmt.Errorf("Encode MICOModeIndication: %w", err)
 			return
 		}
 	}
@@ -61,16 +62,18 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Encode(w *aper.AperWriter
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode TAIListForInactive", err)
+			err = fmt.Errorf("Encode TAIListForInactive: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("TAIListForInactive is nil", err)
+		if err != nil {
+			err = fmt.Errorf("TAIListForInactive is nil: %w", err)
+		}
 		return
 	}
 	if ie.ExpectedUEBehaviour != nil {
 		if err = ie.ExpectedUEBehaviour.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedUEBehaviour", err)
+			err = fmt.Errorf("Encode ExpectedUEBehaviour: %w", err)
 			return
 		}
 	}
@@ -85,13 +88,13 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		return
 	}
 	if err = ie.UEIdentityIndexValue.Decode(r); err != nil {
-		err = utils.WrapError("Read UEIdentityIndexValue", err)
+		err = fmt.Errorf("Read UEIdentityIndexValue: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(PagingDRX)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UESpecificDRX", err)
+			err = fmt.Errorf("Read UESpecificDRX: %w", err)
 			return
 		}
 		ie.UESpecificDRX = tmp
@@ -101,14 +104,14 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 		ext: false,
 	}
 	if err = tmp_PeriodicRegistrationUpdateTimer.Decode(r); err != nil {
-		err = utils.WrapError("Read PeriodicRegistrationUpdateTimer", err)
+		err = fmt.Errorf("Read PeriodicRegistrationUpdateTimer: %w", err)
 		return
 	}
 	ie.PeriodicRegistrationUpdateTimer = aper.BitString{Bytes: tmp_PeriodicRegistrationUpdateTimer.Value.Bytes, NumBits: tmp_PeriodicRegistrationUpdateTimer.Value.NumBits}
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(MICOModeIndication)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read MICOModeIndication", err)
+			err = fmt.Errorf("Read MICOModeIndication: %w", err)
 			return
 		}
 		ie.MICOModeIndication = tmp
@@ -119,7 +122,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 	}
 	fn := func() *TAIListForInactiveItem { return new(TAIListForInactiveItem) }
 	if err = tmp_TAIListForInactive.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read TAIListForInactive", err)
+		err = fmt.Errorf("Read TAIListForInactive: %w", err)
 		return
 	}
 	ie.TAIListForInactive = []TAIListForInactiveItem{}
@@ -129,7 +132,7 @@ func (ie *CoreNetworkAssistanceInformationForInactive) Decode(r *aper.AperReader
 	if aper.IsBitSet(optionals, 3) {
 		tmp := new(ExpectedUEBehaviour)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ExpectedUEBehaviour", err)
+			err = fmt.Errorf("Read ExpectedUEBehaviour: %w", err)
 			return
 		}
 		ie.ExpectedUEBehaviour = tmp

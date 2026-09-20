@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AMFTNLAssociationToRemoveItem struct {
@@ -17,7 +18,7 @@ func (ie *AMFTNLAssociationToRemoveItem) Encode(w *aper.AperWriter) (err error) 
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AMFTNLAssociationAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode AMFTNLAssociationAddress", err)
+		err = fmt.Errorf("Encode AMFTNLAssociationAddress: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *AMFTNLAssociationToRemoveItem) Decode(r *aper.AperReader) (err error) 
 		return
 	}
 	if err = ie.AMFTNLAssociationAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read AMFTNLAssociationAddress", err)
+		err = fmt.Errorf("Read AMFTNLAssociationAddress: %w", err)
 		return
 	}
 	return

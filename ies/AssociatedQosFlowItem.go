@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AssociatedQosFlowItem struct {
@@ -22,12 +23,12 @@ func (ie *AssociatedQosFlowItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Encode QosFlowIdentifier", err)
+		err = fmt.Errorf("Encode QosFlowIdentifier: %w", err)
 		return
 	}
 	if ie.QosFlowMappingIndication != nil {
 		if err = ie.QosFlowMappingIndication.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowMappingIndication", err)
+			err = fmt.Errorf("Encode QosFlowMappingIndication: %w", err)
 			return
 		}
 	}
@@ -46,14 +47,14 @@ func (ie *AssociatedQosFlowItem) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = fmt.Errorf("Read QosFlowIdentifier: %w", err)
 		return
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(QosFlowMappingIndication)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read QosFlowMappingIndication", err)
+			err = fmt.Errorf("Read QosFlowMappingIndication: %w", err)
 			return
 		}
 		ie.QosFlowMappingIndication = tmp

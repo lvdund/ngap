@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PathSwitchRequestAcknowledgeTransfer struct {
@@ -29,13 +29,13 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Encode() (b []byte, err error) {
 	w.WriteBits(optionals, 3)
 	if ie.ULNGUUPTNLInformation != nil {
 		if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Encode ULNGUUPTNLInformation: %w", err)
 			return
 		}
 	}
 	if ie.SecurityIndication != nil {
 		if err = ie.SecurityIndication.Encode(w); err != nil {
-			err = utils.WrapError("Encode SecurityIndication", err)
+			err = fmt.Errorf("Encode SecurityIndication: %w", err)
 			return
 		}
 	}
@@ -55,7 +55,7 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Decode(wire []byte) (err error) 
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read ULNGUUPTNLInformation: %w", err)
 			return
 		}
 		ie.ULNGUUPTNLInformation = tmp
@@ -63,7 +63,7 @@ func (ie *PathSwitchRequestAcknowledgeTransfer) Decode(wire []byte) (err error) 
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(SecurityIndication)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SecurityIndication", err)
+			err = fmt.Errorf("Read SecurityIndication: %w", err)
 			return
 		}
 		ie.SecurityIndication = tmp

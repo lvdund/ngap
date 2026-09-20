@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type RANConfigurationUpdateFailure struct {
@@ -107,21 +106,21 @@ func (decoder *RANConfigurationUpdateFailureDecoder) decodeIE(r *aper.AperReader
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp
 	case ProtocolIEID_TimeToWait:
 		var tmp TimeToWait
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TimeToWait", err)
+			err = fmt.Errorf("Read TimeToWait: %w", err)
 			return
 		}
 		msg.TimeToWait = &tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

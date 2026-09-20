@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type GlobalN3IWFID struct {
@@ -19,11 +20,11 @@ func (ie *GlobalN3IWFID) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Encode PLMNIdentity", err)
+		err = fmt.Errorf("Encode PLMNIdentity: %w", err)
 		return
 	}
 	if err = ie.N3IWFID.Encode(w); err != nil {
-		err = utils.WrapError("Encode N3IWFID", err)
+		err = fmt.Errorf("Encode N3IWFID: %w", err)
 		return
 	}
 	return
@@ -40,12 +41,12 @@ func (ie *GlobalN3IWFID) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = fmt.Errorf("Read PLMNIdentity: %w", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
 	if err = ie.N3IWFID.Decode(r); err != nil {
-		err = utils.WrapError("Read N3IWFID", err)
+		err = fmt.Errorf("Read N3IWFID: %w", err)
 		return
 	}
 	return

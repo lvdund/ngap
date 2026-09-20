@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TraceStart struct {
@@ -130,7 +129,7 @@ func (decoder *TraceStartDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessa
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -140,14 +139,14 @@ func (decoder *TraceStartDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapMessa
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_TraceActivation:
 		var tmp TraceActivation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TraceActivation", err)
+			err = fmt.Errorf("Read TraceActivation: %w", err)
 			return
 		}
 		msg.TraceActivation = tmp

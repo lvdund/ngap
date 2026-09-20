@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PagingAttemptInformation struct {
@@ -23,17 +24,17 @@ func (ie *PagingAttemptInformation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	tmp_PagingAttemptCount := NewINTEGER(ie.PagingAttemptCount, aper.Constraint{Lb: 1, Ub: 16}, true)
 	if err = tmp_PagingAttemptCount.Encode(w); err != nil {
-		err = utils.WrapError("Encode PagingAttemptCount", err)
+		err = fmt.Errorf("Encode PagingAttemptCount: %w", err)
 		return
 	}
 	tmp_IntendedNumberOfPagingAttempts := NewINTEGER(ie.IntendedNumberOfPagingAttempts, aper.Constraint{Lb: 1, Ub: 16}, true)
 	if err = tmp_IntendedNumberOfPagingAttempts.Encode(w); err != nil {
-		err = utils.WrapError("Encode IntendedNumberOfPagingAttempts", err)
+		err = fmt.Errorf("Encode IntendedNumberOfPagingAttempts: %w", err)
 		return
 	}
 	if ie.NextPagingAreaScope != nil {
 		if err = ie.NextPagingAreaScope.Encode(w); err != nil {
-			err = utils.WrapError("Encode NextPagingAreaScope", err)
+			err = fmt.Errorf("Encode NextPagingAreaScope: %w", err)
 			return
 		}
 	}
@@ -52,7 +53,7 @@ func (ie *PagingAttemptInformation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_PagingAttemptCount.Decode(r); err != nil {
-		err = utils.WrapError("Read PagingAttemptCount", err)
+		err = fmt.Errorf("Read PagingAttemptCount: %w", err)
 		return
 	}
 	ie.PagingAttemptCount = int64(tmp_PagingAttemptCount.Value)
@@ -61,14 +62,14 @@ func (ie *PagingAttemptInformation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_IntendedNumberOfPagingAttempts.Decode(r); err != nil {
-		err = utils.WrapError("Read IntendedNumberOfPagingAttempts", err)
+		err = fmt.Errorf("Read IntendedNumberOfPagingAttempts: %w", err)
 		return
 	}
 	ie.IntendedNumberOfPagingAttempts = int64(tmp_IntendedNumberOfPagingAttempts.Value)
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(NextPagingAreaScope)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read NextPagingAreaScope", err)
+			err = fmt.Errorf("Read NextPagingAreaScope: %w", err)
 			return
 		}
 		ie.NextPagingAreaScope = tmp

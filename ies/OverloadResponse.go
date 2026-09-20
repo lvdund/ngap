@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -35,7 +36,7 @@ func (ie *OverloadResponse) Decode(r *aper.AperReader) (err error) {
 	case OverloadResponsePresentOverloadaction:
 		var tmp OverloadAction
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read OverloadAction", err)
+			err = fmt.Errorf("Read OverloadAction: %w", err)
 			return
 		}
 		ie.OverloadAction = &tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -43,21 +44,21 @@ func (ie *GlobalRANNodeID) Decode(r *aper.AperReader) (err error) {
 	case GlobalRANNodeIDPresentGlobalgnbId:
 		var tmp GlobalGNBID
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read GlobalGNBID", err)
+			err = fmt.Errorf("Read GlobalGNBID: %w", err)
 			return
 		}
 		ie.GlobalGNBID = &tmp
 	case GlobalRANNodeIDPresentGlobalngenbId:
 		var tmp GlobalNgENBID
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read GlobalNgENBID", err)
+			err = fmt.Errorf("Read GlobalNgENBID: %w", err)
 			return
 		}
 		ie.GlobalNgENBID = &tmp
 	case GlobalRANNodeIDPresentGlobaln3IwfId:
 		var tmp GlobalN3IWFID
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read GlobalN3IWFID", err)
+			err = fmt.Errorf("Read GlobalN3IWFID: %w", err)
 			return
 		}
 		ie.GlobalN3IWFID = &tmp

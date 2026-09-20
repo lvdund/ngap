@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceSetupRequestTransfer struct {
@@ -99,7 +98,9 @@ func (msg *PDUSessionResourceSetupRequestTransfer) toIes() (ies []NgapMessageIE,
 			Value:       &tmp_QosFlowSetupRequestList,
 		})
 	} else {
-		err = utils.WrapError("QosFlowSetupRequestList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("QosFlowSetupRequestList is nil: %w", err)
+		}
 		return
 	}
 	if msg.CommonNetworkInstance != nil {
@@ -193,14 +194,14 @@ func (decoder *PDUSessionResourceSetupRequestTransferDecoder) decodeIE(r *aper.A
 	case ProtocolIEID_PDUSessionAggregateMaximumBitRate:
 		var tmp PDUSessionAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PDUSessionAggregateMaximumBitRate", err)
+			err = fmt.Errorf("Read PDUSessionAggregateMaximumBitRate: %w", err)
 			return
 		}
 		msg.PDUSessionAggregateMaximumBitRate = &tmp
 	case ProtocolIEID_ULNGUUPTNLInformation:
 		var tmp UPTransportLayerInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read ULNGUUPTNLInformation: %w", err)
 			return
 		}
 		msg.ULNGUUPTNLInformation = tmp
@@ -211,7 +212,7 @@ func (decoder *PDUSessionResourceSetupRequestTransferDecoder) decodeIE(r *aper.A
 		}
 		fn := func() *UPTransportLayerInformationItem { return new(UPTransportLayerInformationItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AdditionalULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read AdditionalULNGUUPTNLInformation: %w", err)
 			return
 		}
 		msg.AdditionalULNGUUPTNLInformation = []UPTransportLayerInformationItem{}
@@ -221,21 +222,21 @@ func (decoder *PDUSessionResourceSetupRequestTransferDecoder) decodeIE(r *aper.A
 	case ProtocolIEID_DataForwardingNotPossible:
 		var tmp DataForwardingNotPossible
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read DataForwardingNotPossible", err)
+			err = fmt.Errorf("Read DataForwardingNotPossible: %w", err)
 			return
 		}
 		msg.DataForwardingNotPossible = &tmp
 	case ProtocolIEID_PDUSessionType:
 		var tmp PDUSessionType
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PDUSessionType", err)
+			err = fmt.Errorf("Read PDUSessionType: %w", err)
 			return
 		}
 		msg.PDUSessionType = tmp
 	case ProtocolIEID_SecurityIndication:
 		var tmp SecurityIndication
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SecurityIndication", err)
+			err = fmt.Errorf("Read SecurityIndication: %w", err)
 			return
 		}
 		msg.SecurityIndication = &tmp
@@ -245,7 +246,7 @@ func (decoder *PDUSessionResourceSetupRequestTransferDecoder) decodeIE(r *aper.A
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NetworkInstance", err)
+			err = fmt.Errorf("Read NetworkInstance: %w", err)
 			return
 		}
 		msg.NetworkInstance = (*int64)(&tmp.Value)
@@ -256,7 +257,7 @@ func (decoder *PDUSessionResourceSetupRequestTransferDecoder) decodeIE(r *aper.A
 		}
 		fn := func() *QosFlowSetupRequestItem { return new(QosFlowSetupRequestItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read QosFlowSetupRequestList", err)
+			err = fmt.Errorf("Read QosFlowSetupRequestList: %w", err)
 			return
 		}
 		msg.QosFlowSetupRequestList = []QosFlowSetupRequestItem{}
@@ -269,7 +270,7 @@ func (decoder *PDUSessionResourceSetupRequestTransferDecoder) decodeIE(r *aper.A
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CommonNetworkInstance", err)
+			err = fmt.Errorf("Read CommonNetworkInstance: %w", err)
 			return
 		}
 		msg.CommonNetworkInstance = tmp.Value

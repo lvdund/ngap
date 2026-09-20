@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceNotify struct {
@@ -153,7 +152,7 @@ func (decoder *PDUSessionResourceNotifyDecoder) decodeIE(r *aper.AperReader) (ms
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -163,7 +162,7 @@ func (decoder *PDUSessionResourceNotifyDecoder) decodeIE(r *aper.AperReader) (ms
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -174,7 +173,7 @@ func (decoder *PDUSessionResourceNotifyDecoder) decodeIE(r *aper.AperReader) (ms
 		}
 		fn := func() *PDUSessionResourceNotifyItem { return new(PDUSessionResourceNotifyItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceNotifyList", err)
+			err = fmt.Errorf("Read PDUSessionResourceNotifyList: %w", err)
 			return
 		}
 		msg.PDUSessionResourceNotifyList = []PDUSessionResourceNotifyItem{}
@@ -188,7 +187,7 @@ func (decoder *PDUSessionResourceNotifyDecoder) decodeIE(r *aper.AperReader) (ms
 		}
 		fn := func() *PDUSessionResourceReleasedItemNot { return new(PDUSessionResourceReleasedItemNot) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceReleasedListNot", err)
+			err = fmt.Errorf("Read PDUSessionResourceReleasedListNot: %w", err)
 			return
 		}
 		msg.PDUSessionResourceReleasedListNot = []PDUSessionResourceReleasedItemNot{}
@@ -198,7 +197,7 @@ func (decoder *PDUSessionResourceNotifyDecoder) decodeIE(r *aper.AperReader) (ms
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = &tmp

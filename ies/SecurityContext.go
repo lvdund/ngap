@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SecurityContext struct {
@@ -19,12 +20,12 @@ func (ie *SecurityContext) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_NextHopChainingCount := NewINTEGER(ie.NextHopChainingCount, aper.Constraint{Lb: 0, Ub: 7}, false)
 	if err = tmp_NextHopChainingCount.Encode(w); err != nil {
-		err = utils.WrapError("Encode NextHopChainingCount", err)
+		err = fmt.Errorf("Encode NextHopChainingCount: %w", err)
 		return
 	}
 	tmp_NextHopNH := NewBITSTRING(ie.NextHopNH, aper.Constraint{Lb: 256, Ub: 256}, false)
 	if err = tmp_NextHopNH.Encode(w); err != nil {
-		err = utils.WrapError("Encode NextHopNH", err)
+		err = fmt.Errorf("Encode NextHopNH: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *SecurityContext) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_NextHopChainingCount.Decode(r); err != nil {
-		err = utils.WrapError("Read NextHopChainingCount", err)
+		err = fmt.Errorf("Read NextHopChainingCount: %w", err)
 		return
 	}
 	ie.NextHopChainingCount = int64(tmp_NextHopChainingCount.Value)
@@ -50,7 +51,7 @@ func (ie *SecurityContext) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_NextHopNH.Decode(r); err != nil {
-		err = utils.WrapError("Read NextHopNH", err)
+		err = fmt.Errorf("Read NextHopNH: %w", err)
 		return
 	}
 	ie.NextHopNH = aper.BitString{Bytes: tmp_NextHopNH.Value.Bytes, NumBits: tmp_NextHopNH.Value.NumBits}

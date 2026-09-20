@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AreaOfInterest struct {
@@ -37,7 +38,7 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AreaOfInterestTAIList", err)
+			err = fmt.Errorf("Encode AreaOfInterestTAIList: %w", err)
 			return
 		}
 	}
@@ -51,7 +52,7 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AreaOfInterestCellList", err)
+			err = fmt.Errorf("Encode AreaOfInterestCellList: %w", err)
 			return
 		}
 	}
@@ -65,7 +66,7 @@ func (ie *AreaOfInterest) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AreaOfInterestRANNodeList", err)
+			err = fmt.Errorf("Encode AreaOfInterestRANNodeList: %w", err)
 			return
 		}
 	}
@@ -86,7 +87,7 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestTAIItem { return new(AreaOfInterestTAIItem) }
 		if err = tmp_AreaOfInterestTAIList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AreaOfInterestTAIList", err)
+			err = fmt.Errorf("Read AreaOfInterestTAIList: %w", err)
 			return
 		}
 		ie.AreaOfInterestTAIList = []AreaOfInterestTAIItem{}
@@ -101,7 +102,7 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestCellItem { return new(AreaOfInterestCellItem) }
 		if err = tmp_AreaOfInterestCellList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AreaOfInterestCellList", err)
+			err = fmt.Errorf("Read AreaOfInterestCellList: %w", err)
 			return
 		}
 		ie.AreaOfInterestCellList = []AreaOfInterestCellItem{}
@@ -116,7 +117,7 @@ func (ie *AreaOfInterest) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestRANNodeItem { return new(AreaOfInterestRANNodeItem) }
 		if err = tmp_AreaOfInterestRANNodeList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AreaOfInterestRANNodeList", err)
+			err = fmt.Errorf("Read AreaOfInterestRANNodeList: %w", err)
 			return
 		}
 		ie.AreaOfInterestRANNodeList = []AreaOfInterestRANNodeItem{}

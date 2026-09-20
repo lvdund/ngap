@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type FiveGSTMSI struct {
@@ -20,17 +21,17 @@ func (ie *FiveGSTMSI) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_AMFSetID := NewBITSTRING(ie.AMFSetID, aper.Constraint{Lb: 10, Ub: 10}, false)
 	if err = tmp_AMFSetID.Encode(w); err != nil {
-		err = utils.WrapError("Encode AMFSetID", err)
+		err = fmt.Errorf("Encode AMFSetID: %w", err)
 		return
 	}
 	tmp_AMFPointer := NewBITSTRING(ie.AMFPointer, aper.Constraint{Lb: 6, Ub: 6}, false)
 	if err = tmp_AMFPointer.Encode(w); err != nil {
-		err = utils.WrapError("Encode AMFPointer", err)
+		err = fmt.Errorf("Encode AMFPointer: %w", err)
 		return
 	}
 	tmp_FiveGTMSI := NewOCTETSTRING(ie.FiveGTMSI, aper.Constraint{Lb: 4, Ub: 4}, false)
 	if err = tmp_FiveGTMSI.Encode(w); err != nil {
-		err = utils.WrapError("Encode FiveGTMSI", err)
+		err = fmt.Errorf("Encode FiveGTMSI: %w", err)
 		return
 	}
 	return
@@ -47,7 +48,7 @@ func (ie *FiveGSTMSI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_AMFSetID.Decode(r); err != nil {
-		err = utils.WrapError("Read AMFSetID", err)
+		err = fmt.Errorf("Read AMFSetID: %w", err)
 		return
 	}
 	ie.AMFSetID = aper.BitString{Bytes: tmp_AMFSetID.Value.Bytes, NumBits: tmp_AMFSetID.Value.NumBits}
@@ -56,7 +57,7 @@ func (ie *FiveGSTMSI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_AMFPointer.Decode(r); err != nil {
-		err = utils.WrapError("Read AMFPointer", err)
+		err = fmt.Errorf("Read AMFPointer: %w", err)
 		return
 	}
 	ie.AMFPointer = aper.BitString{Bytes: tmp_AMFPointer.Value.Bytes, NumBits: tmp_AMFPointer.Value.NumBits}
@@ -65,7 +66,7 @@ func (ie *FiveGSTMSI) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_FiveGTMSI.Decode(r); err != nil {
-		err = utils.WrapError("Read FiveGTMSI", err)
+		err = fmt.Errorf("Read FiveGTMSI: %w", err)
 		return
 	}
 	ie.FiveGTMSI = tmp_FiveGTMSI.Value

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type NGResetAcknowledge struct {
@@ -103,7 +102,7 @@ func (decoder *NGResetAcknowledgeDecoder) decodeIE(r *aper.AperReader) (msgIe *N
 		}
 		fn := func() *UEassociatedLogicalNGconnectionItem { return new(UEassociatedLogicalNGconnectionItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read UEassociatedLogicalNGconnectionList", err)
+			err = fmt.Errorf("Read UEassociatedLogicalNGconnectionList: %w", err)
 			return
 		}
 		msg.UEassociatedLogicalNGconnectionList = []UEassociatedLogicalNGconnectionItem{}
@@ -113,7 +112,7 @@ func (decoder *NGResetAcknowledgeDecoder) decodeIE(r *aper.AperReader) (msgIe *N
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

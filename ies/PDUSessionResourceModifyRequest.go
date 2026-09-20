@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyRequest struct {
@@ -66,7 +65,9 @@ func (msg *PDUSessionResourceModifyRequest) toIes() (ies []NgapMessageIE, err er
 			Value:       &tmp_PDUSessionResourceModifyListModReq,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceModifyListModReq is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceModifyListModReq is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -153,7 +154,7 @@ func (decoder *PDUSessionResourceModifyRequestDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -163,7 +164,7 @@ func (decoder *PDUSessionResourceModifyRequestDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -173,7 +174,7 @@ func (decoder *PDUSessionResourceModifyRequestDecoder) decodeIE(r *aper.AperRead
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANPagingPriority", err)
+			err = fmt.Errorf("Read RANPagingPriority: %w", err)
 			return
 		}
 		msg.RANPagingPriority = (*int64)(&tmp.Value)
@@ -184,7 +185,7 @@ func (decoder *PDUSessionResourceModifyRequestDecoder) decodeIE(r *aper.AperRead
 		}
 		fn := func() *PDUSessionResourceModifyItemModReq { return new(PDUSessionResourceModifyItemModReq) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceModifyListModReq", err)
+			err = fmt.Errorf("Read PDUSessionResourceModifyListModReq: %w", err)
 			return
 		}
 		msg.PDUSessionResourceModifyListModReq = []PDUSessionResourceModifyItemModReq{}

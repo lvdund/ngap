@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type NGSetupRequest struct {
@@ -56,7 +55,9 @@ func (msg *NGSetupRequest) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_SupportedTAList,
 		})
 	} else {
-		err = utils.WrapError("SupportedTAList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("SupportedTAList is nil: %w", err)
+		}
 		return
 	}
 	ies = append(ies, NgapMessageIE{
@@ -152,7 +153,7 @@ func (decoder *NGSetupRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 	case ProtocolIEID_GlobalRANNodeID:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read GlobalRANNodeID", err)
+			err = fmt.Errorf("Read GlobalRANNodeID: %w", err)
 			return
 		}
 		msg.GlobalRANNodeID = tmp
@@ -162,7 +163,7 @@ func (decoder *NGSetupRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANNodeName", err)
+			err = fmt.Errorf("Read RANNodeName: %w", err)
 			return
 		}
 		msg.RANNodeName = tmp.Value
@@ -173,7 +174,7 @@ func (decoder *NGSetupRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 		}
 		fn := func() *SupportedTAItem { return new(SupportedTAItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read SupportedTAList", err)
+			err = fmt.Errorf("Read SupportedTAList: %w", err)
 			return
 		}
 		msg.SupportedTAList = []SupportedTAItem{}
@@ -183,14 +184,14 @@ func (decoder *NGSetupRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 	case ProtocolIEID_DefaultPagingDRX:
 		var tmp PagingDRX
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read DefaultPagingDRX", err)
+			err = fmt.Errorf("Read DefaultPagingDRX: %w", err)
 			return
 		}
 		msg.DefaultPagingDRX = tmp
 	case ProtocolIEID_UERetentionInformation:
 		var tmp UERetentionInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERetentionInformation", err)
+			err = fmt.Errorf("Read UERetentionInformation: %w", err)
 			return
 		}
 		msg.UERetentionInformation = &tmp

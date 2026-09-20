@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverCommandTransfer struct {
@@ -33,7 +33,7 @@ func (ie *HandoverCommandTransfer) Encode() (b []byte, err error) {
 	w.WriteBits(optionals, 4)
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Encode DLForwardingUPTNLInformation: %w", err)
 			return
 		}
 	}
@@ -47,7 +47,7 @@ func (ie *HandoverCommandTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowToBeForwardedList", err)
+			err = fmt.Errorf("Encode QosFlowToBeForwardedList: %w", err)
 			return
 		}
 	}
@@ -61,7 +61,7 @@ func (ie *HandoverCommandTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode DataForwardingResponseDRBList", err)
+			err = fmt.Errorf("Encode DataForwardingResponseDRBList: %w", err)
 			return
 		}
 	}
@@ -81,7 +81,7 @@ func (ie *HandoverCommandTransfer) Decode(wire []byte) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Read DLForwardingUPTNLInformation: %w", err)
 			return
 		}
 		ie.DLForwardingUPTNLInformation = tmp
@@ -93,7 +93,7 @@ func (ie *HandoverCommandTransfer) Decode(wire []byte) (err error) {
 		}
 		fn := func() *QosFlowToBeForwardedItem { return new(QosFlowToBeForwardedItem) }
 		if err = tmp_QosFlowToBeForwardedList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowToBeForwardedList", err)
+			err = fmt.Errorf("Read QosFlowToBeForwardedList: %w", err)
 			return
 		}
 		ie.QosFlowToBeForwardedList = []QosFlowToBeForwardedItem{}
@@ -108,7 +108,7 @@ func (ie *HandoverCommandTransfer) Decode(wire []byte) (err error) {
 		}
 		fn := func() *DataForwardingResponseDRBItem { return new(DataForwardingResponseDRBItem) }
 		if err = tmp_DataForwardingResponseDRBList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read DataForwardingResponseDRBList", err)
+			err = fmt.Errorf("Read DataForwardingResponseDRBList: %w", err)
 			return
 		}
 		ie.DataForwardingResponseDRBList = []DataForwardingResponseDRBItem{}

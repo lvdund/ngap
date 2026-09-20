@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceReleaseResponse struct {
@@ -57,7 +56,9 @@ func (msg *PDUSessionResourceReleaseResponse) toIes() (ies []NgapMessageIE, err 
 			Value:       &tmp_PDUSessionResourceReleasedListRelRes,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceReleasedListRelRes is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceReleasedListRelRes is nil: %w", err)
+		}
 		return
 	}
 	if msg.UserLocationInformation != nil {
@@ -158,7 +159,7 @@ func (decoder *PDUSessionResourceReleaseResponseDecoder) decodeIE(r *aper.AperRe
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -168,7 +169,7 @@ func (decoder *PDUSessionResourceReleaseResponseDecoder) decodeIE(r *aper.AperRe
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -179,7 +180,7 @@ func (decoder *PDUSessionResourceReleaseResponseDecoder) decodeIE(r *aper.AperRe
 		}
 		fn := func() *PDUSessionResourceReleasedItemRelRes { return new(PDUSessionResourceReleasedItemRelRes) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceReleasedListRelRes", err)
+			err = fmt.Errorf("Read PDUSessionResourceReleasedListRelRes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceReleasedListRelRes = []PDUSessionResourceReleasedItemRelRes{}
@@ -189,14 +190,14 @@ func (decoder *PDUSessionResourceReleaseResponseDecoder) decodeIE(r *aper.AperRe
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = &tmp
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

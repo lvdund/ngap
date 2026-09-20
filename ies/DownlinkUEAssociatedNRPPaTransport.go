@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type DownlinkUEAssociatedNRPPaTransport struct {
@@ -151,7 +150,7 @@ func (decoder *DownlinkUEAssociatedNRPPaTransportDecoder) decodeIE(r *aper.AperR
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -161,7 +160,7 @@ func (decoder *DownlinkUEAssociatedNRPPaTransportDecoder) decodeIE(r *aper.AperR
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -171,7 +170,7 @@ func (decoder *DownlinkUEAssociatedNRPPaTransportDecoder) decodeIE(r *aper.AperR
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RoutingID", err)
+			err = fmt.Errorf("Read RoutingID: %w", err)
 			return
 		}
 		msg.RoutingID = tmp.Value
@@ -181,7 +180,7 @@ func (decoder *DownlinkUEAssociatedNRPPaTransportDecoder) decodeIE(r *aper.AperR
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NRPPaPDU", err)
+			err = fmt.Errorf("Read NRPPaPDU: %w", err)
 			return
 		}
 		msg.NRPPaPDU = tmp.Value

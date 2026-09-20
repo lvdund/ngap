@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type LocationReportingRequestType struct {
@@ -26,11 +27,11 @@ func (ie *LocationReportingRequestType) Encode(w *aper.AperWriter) (err error) {
 	}
 	w.WriteBits(optionals, 3)
 	if err = ie.EventType.Encode(w); err != nil {
-		err = utils.WrapError("Encode EventType", err)
+		err = fmt.Errorf("Encode EventType: %w", err)
 		return
 	}
 	if err = ie.ReportArea.Encode(w); err != nil {
-		err = utils.WrapError("Encode ReportArea", err)
+		err = fmt.Errorf("Encode ReportArea: %w", err)
 		return
 	}
 	if len(ie.AreaOfInterestList) > 0 {
@@ -43,14 +44,14 @@ func (ie *LocationReportingRequestType) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AreaOfInterestList", err)
+			err = fmt.Errorf("Encode AreaOfInterestList: %w", err)
 			return
 		}
 	}
 	if ie.LocationReportingReferenceIDToBeCancelled != nil {
 		tmp_LocationReportingReferenceIDToBeCancelled := NewINTEGER(*ie.LocationReportingReferenceIDToBeCancelled, aper.Constraint{Lb: 1, Ub: 64}, true)
 		if err = tmp_LocationReportingReferenceIDToBeCancelled.Encode(w); err != nil {
-			err = utils.WrapError("Encode LocationReportingReferenceIDToBeCancelled", err)
+			err = fmt.Errorf("Encode LocationReportingReferenceIDToBeCancelled: %w", err)
 			return
 		}
 	}
@@ -65,11 +66,11 @@ func (ie *LocationReportingRequestType) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.EventType.Decode(r); err != nil {
-		err = utils.WrapError("Read EventType", err)
+		err = fmt.Errorf("Read EventType: %w", err)
 		return
 	}
 	if err = ie.ReportArea.Decode(r); err != nil {
-		err = utils.WrapError("Read ReportArea", err)
+		err = fmt.Errorf("Read ReportArea: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -79,7 +80,7 @@ func (ie *LocationReportingRequestType) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *AreaOfInterestItem { return new(AreaOfInterestItem) }
 		if err = tmp_AreaOfInterestList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AreaOfInterestList", err)
+			err = fmt.Errorf("Read AreaOfInterestList: %w", err)
 			return
 		}
 		ie.AreaOfInterestList = []AreaOfInterestItem{}
@@ -93,7 +94,7 @@ func (ie *LocationReportingRequestType) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_LocationReportingReferenceIDToBeCancelled.Decode(r); err != nil {
-			err = utils.WrapError("Read LocationReportingReferenceIDToBeCancelled", err)
+			err = fmt.Errorf("Read LocationReportingReferenceIDToBeCancelled: %w", err)
 			return
 		}
 		ie.LocationReportingReferenceIDToBeCancelled = (*int64)(&tmp_LocationReportingReferenceIDToBeCancelled.Value)

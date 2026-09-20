@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UERadioCapabilityCheckRequest struct {
@@ -126,7 +125,7 @@ func (decoder *UERadioCapabilityCheckRequestDecoder) decodeIE(r *aper.AperReader
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -136,7 +135,7 @@ func (decoder *UERadioCapabilityCheckRequestDecoder) decodeIE(r *aper.AperReader
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -146,7 +145,7 @@ func (decoder *UERadioCapabilityCheckRequestDecoder) decodeIE(r *aper.AperReader
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERadioCapability", err)
+			err = fmt.Errorf("Read UERadioCapability: %w", err)
 			return
 		}
 		msg.UERadioCapability = tmp.Value

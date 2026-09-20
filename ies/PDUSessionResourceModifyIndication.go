@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyIndication struct {
@@ -55,7 +54,9 @@ func (msg *PDUSessionResourceModifyIndication) toIes() (ies []NgapMessageIE, err
 			Value:       &tmp_PDUSessionResourceModifyListModInd,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceModifyListModInd is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceModifyListModInd is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -142,7 +143,7 @@ func (decoder *PDUSessionResourceModifyIndicationDecoder) decodeIE(r *aper.AperR
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -152,7 +153,7 @@ func (decoder *PDUSessionResourceModifyIndicationDecoder) decodeIE(r *aper.AperR
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -163,7 +164,7 @@ func (decoder *PDUSessionResourceModifyIndicationDecoder) decodeIE(r *aper.AperR
 		}
 		fn := func() *PDUSessionResourceModifyItemModInd { return new(PDUSessionResourceModifyItemModInd) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceModifyListModInd", err)
+			err = fmt.Errorf("Read PDUSessionResourceModifyListModInd: %w", err)
 			return
 		}
 		msg.PDUSessionResourceModifyListModInd = []PDUSessionResourceModifyItemModInd{}

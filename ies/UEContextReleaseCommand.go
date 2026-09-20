@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UEContextReleaseCommand struct {
@@ -106,14 +105,14 @@ func (decoder *UEContextReleaseCommandDecoder) decodeIE(r *aper.AperReader) (msg
 	case ProtocolIEID_UENGAPIDs:
 		var tmp UENGAPIDs
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UENGAPIDs", err)
+			err = fmt.Errorf("Read UENGAPIDs: %w", err)
 			return
 		}
 		msg.UENGAPIDs = tmp
 	case ProtocolIEID_Cause:
 		var tmp Cause
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read Cause", err)
+			err = fmt.Errorf("Read Cause: %w", err)
 			return
 		}
 		msg.Cause = tmp

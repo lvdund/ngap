@@ -49,7 +49,7 @@ func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr aper.BitString) {
 		}
 
 		ipAddr = aper.BitString{
-			Bytes: ipBytes,
+			Bytes:   ipBytes,
 			NumBits: 160,
 		}
 
@@ -59,7 +59,7 @@ func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr aper.BitString) {
 		ipBytes := []byte{ipv4NetIP[0], ipv4NetIP[1], ipv4NetIP[2], ipv4NetIP[3]}
 
 		ipAddr = aper.BitString{
-			Bytes: ipBytes,
+			Bytes:   ipBytes,
 			NumBits: 32,
 		}
 
@@ -72,7 +72,7 @@ func IPAddressToNgap(ipv4Addr, ipv6Addr string) (ipAddr aper.BitString) {
 		}
 
 		ipAddr = aper.BitString{
-			Bytes: ipBytes,
+			Bytes:   ipBytes,
 			NumBits: 128,
 		}
 

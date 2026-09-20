@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TraceActivation struct {
@@ -21,21 +22,21 @@ func (ie *TraceActivation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_NGRANTraceID := NewOCTETSTRING(ie.NGRANTraceID, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_NGRANTraceID.Encode(w); err != nil {
-		err = utils.WrapError("Encode NGRANTraceID", err)
+		err = fmt.Errorf("Encode NGRANTraceID: %w", err)
 		return
 	}
 	tmp_InterfacesToTrace := NewBITSTRING(ie.InterfacesToTrace, aper.Constraint{Lb: 8, Ub: 8}, false)
 	if err = tmp_InterfacesToTrace.Encode(w); err != nil {
-		err = utils.WrapError("Encode InterfacesToTrace", err)
+		err = fmt.Errorf("Encode InterfacesToTrace: %w", err)
 		return
 	}
 	if err = ie.TraceDepth.Encode(w); err != nil {
-		err = utils.WrapError("Encode TraceDepth", err)
+		err = fmt.Errorf("Encode TraceDepth: %w", err)
 		return
 	}
 	tmp_TraceCollectionEntityIPAddress := NewBITSTRING(ie.TraceCollectionEntityIPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_TraceCollectionEntityIPAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode TraceCollectionEntityIPAddress", err)
+		err = fmt.Errorf("Encode TraceCollectionEntityIPAddress: %w", err)
 		return
 	}
 	return
@@ -52,7 +53,7 @@ func (ie *TraceActivation) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_NGRANTraceID.Decode(r); err != nil {
-		err = utils.WrapError("Read NGRANTraceID", err)
+		err = fmt.Errorf("Read NGRANTraceID: %w", err)
 		return
 	}
 	ie.NGRANTraceID = tmp_NGRANTraceID.Value
@@ -61,12 +62,12 @@ func (ie *TraceActivation) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_InterfacesToTrace.Decode(r); err != nil {
-		err = utils.WrapError("Read InterfacesToTrace", err)
+		err = fmt.Errorf("Read InterfacesToTrace: %w", err)
 		return
 	}
 	ie.InterfacesToTrace = aper.BitString{Bytes: tmp_InterfacesToTrace.Value.Bytes, NumBits: tmp_InterfacesToTrace.Value.NumBits}
 	if err = ie.TraceDepth.Decode(r); err != nil {
-		err = utils.WrapError("Read TraceDepth", err)
+		err = fmt.Errorf("Read TraceDepth: %w", err)
 		return
 	}
 	tmp_TraceCollectionEntityIPAddress := BITSTRING{
@@ -74,7 +75,7 @@ func (ie *TraceActivation) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_TraceCollectionEntityIPAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read TraceCollectionEntityIPAddress", err)
+		err = fmt.Errorf("Read TraceCollectionEntityIPAddress: %w", err)
 		return
 	}
 	ie.TraceCollectionEntityIPAddress = aper.BitString{Bytes: tmp_TraceCollectionEntityIPAddress.Value.Bytes, NumBits: tmp_TraceCollectionEntityIPAddress.Value.NumBits}

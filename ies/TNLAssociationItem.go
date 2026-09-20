@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TNLAssociationItem struct {
@@ -18,11 +19,11 @@ func (ie *TNLAssociationItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TNLAssociationAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode TNLAssociationAddress", err)
+		err = fmt.Errorf("Encode TNLAssociationAddress: %w", err)
 		return
 	}
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Encode Cause", err)
+		err = fmt.Errorf("Encode Cause: %w", err)
 		return
 	}
 	return
@@ -35,11 +36,11 @@ func (ie *TNLAssociationItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TNLAssociationAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read TNLAssociationAddress", err)
+		err = fmt.Errorf("Read TNLAssociationAddress: %w", err)
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = fmt.Errorf("Read Cause: %w", err)
 		return
 	}
 	return

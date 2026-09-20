@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyConfirmTransfer struct {
@@ -39,15 +39,17 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode() (b []byte, err error
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowModifyConfirmList", err)
+			err = fmt.Errorf("Encode QosFlowModifyConfirmList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("QosFlowModifyConfirmList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("QosFlowModifyConfirmList is nil: %w", err)
+		}
 		return
 	}
 	if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode ULNGUUPTNLInformation: %w", err)
 		return
 	}
 	if len(ie.AdditionalNGUUPTNLInformation) > 0 {
@@ -60,7 +62,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode() (b []byte, err error
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AdditionalNGUUPTNLInformation", err)
+			err = fmt.Errorf("Encode AdditionalNGUUPTNLInformation: %w", err)
 			return
 		}
 	}
@@ -74,7 +76,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Encode() (b []byte, err error
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowFailedToModifyList", err)
+			err = fmt.Errorf("Encode QosFlowFailedToModifyList: %w", err)
 			return
 		}
 	}
@@ -97,7 +99,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(wire []byte) (err erro
 	}
 	fn := func() *QosFlowModifyConfirmItem { return new(QosFlowModifyConfirmItem) }
 	if err = tmp_QosFlowModifyConfirmList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read QosFlowModifyConfirmList", err)
+		err = fmt.Errorf("Read QosFlowModifyConfirmList: %w", err)
 		return
 	}
 	ie.QosFlowModifyConfirmList = []QosFlowModifyConfirmItem{}
@@ -105,7 +107,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(wire []byte) (err erro
 		ie.QosFlowModifyConfirmList = append(ie.QosFlowModifyConfirmList, *i)
 	}
 	if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+		err = fmt.Errorf("Read ULNGUUPTNLInformation: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -115,7 +117,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(wire []byte) (err erro
 		}
 		fn := func() *UPTransportLayerInformationPairItem { return new(UPTransportLayerInformationPairItem) }
 		if err = tmp_AdditionalNGUUPTNLInformation.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AdditionalNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read AdditionalNGUUPTNLInformation: %w", err)
 			return
 		}
 		ie.AdditionalNGUUPTNLInformation = []UPTransportLayerInformationPairItem{}
@@ -130,7 +132,7 @@ func (ie *PDUSessionResourceModifyConfirmTransfer) Decode(wire []byte) (err erro
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToModifyList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowFailedToModifyList", err)
+			err = fmt.Errorf("Read QosFlowFailedToModifyList: %w", err)
 			return
 		}
 		ie.QosFlowFailedToModifyList = []QosFlowWithCauseItem{}

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PWSCancelRequest struct {
@@ -133,7 +132,7 @@ func (decoder *PWSCancelRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read MessageIdentifier", err)
+			err = fmt.Errorf("Read MessageIdentifier: %w", err)
 			return
 		}
 		msg.MessageIdentifier = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -143,21 +142,21 @@ func (decoder *PWSCancelRequestDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SerialNumber", err)
+			err = fmt.Errorf("Read SerialNumber: %w", err)
 			return
 		}
 		msg.SerialNumber = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_WarningAreaList:
 		var tmp WarningAreaList
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read WarningAreaList", err)
+			err = fmt.Errorf("Read WarningAreaList: %w", err)
 			return
 		}
 		msg.WarningAreaList = &tmp
 	case ProtocolIEID_CancelAllWarningMessages:
 		var tmp CancelAllWarningMessages
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CancelAllWarningMessages", err)
+			err = fmt.Errorf("Read CancelAllWarningMessages: %w", err)
 			return
 		}
 		msg.CancelAllWarningMessages = &tmp

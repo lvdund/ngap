@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SourceToTargetAMFInformationReroute struct {
@@ -30,21 +31,21 @@ func (ie *SourceToTargetAMFInformationReroute) Encode(w *aper.AperWriter) (err e
 	if ie.ConfiguredNSSAI != nil {
 		tmp_ConfiguredNSSAI := NewOCTETSTRING(ie.ConfiguredNSSAI, aper.Constraint{Lb: 128, Ub: 128}, false)
 		if err = tmp_ConfiguredNSSAI.Encode(w); err != nil {
-			err = utils.WrapError("Encode ConfiguredNSSAI", err)
+			err = fmt.Errorf("Encode ConfiguredNSSAI: %w", err)
 			return
 		}
 	}
 	if ie.RejectedNSSAIinPLMN != nil {
 		tmp_RejectedNSSAIinPLMN := NewOCTETSTRING(ie.RejectedNSSAIinPLMN, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinPLMN.Encode(w); err != nil {
-			err = utils.WrapError("Encode RejectedNSSAIinPLMN", err)
+			err = fmt.Errorf("Encode RejectedNSSAIinPLMN: %w", err)
 			return
 		}
 	}
 	if ie.RejectedNSSAIinTA != nil {
 		tmp_RejectedNSSAIinTA := NewOCTETSTRING(ie.RejectedNSSAIinTA, aper.Constraint{Lb: 32, Ub: 32}, false)
 		if err = tmp_RejectedNSSAIinTA.Encode(w); err != nil {
-			err = utils.WrapError("Encode RejectedNSSAIinTA", err)
+			err = fmt.Errorf("Encode RejectedNSSAIinTA: %w", err)
 			return
 		}
 	}
@@ -64,7 +65,7 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_ConfiguredNSSAI.Decode(r); err != nil {
-			err = utils.WrapError("Read ConfiguredNSSAI", err)
+			err = fmt.Errorf("Read ConfiguredNSSAI: %w", err)
 			return
 		}
 		ie.ConfiguredNSSAI = tmp_ConfiguredNSSAI.Value
@@ -75,7 +76,7 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_RejectedNSSAIinPLMN.Decode(r); err != nil {
-			err = utils.WrapError("Read RejectedNSSAIinPLMN", err)
+			err = fmt.Errorf("Read RejectedNSSAIinPLMN: %w", err)
 			return
 		}
 		ie.RejectedNSSAIinPLMN = tmp_RejectedNSSAIinPLMN.Value
@@ -86,7 +87,7 @@ func (ie *SourceToTargetAMFInformationReroute) Decode(r *aper.AperReader) (err e
 			ext: false,
 		}
 		if err = tmp_RejectedNSSAIinTA.Decode(r); err != nil {
-			err = utils.WrapError("Read RejectedNSSAIinTA", err)
+			err = fmt.Errorf("Read RejectedNSSAIinTA: %w", err)
 			return
 		}
 		ie.RejectedNSSAIinTA = tmp_RejectedNSSAIinTA.Value

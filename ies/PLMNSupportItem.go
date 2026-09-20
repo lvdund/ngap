@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PLMNSupportItem struct {
@@ -19,7 +20,7 @@ func (ie *PLMNSupportItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PLMNIdentity := NewOCTETSTRING(ie.PLMNIdentity, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_PLMNIdentity.Encode(w); err != nil {
-		err = utils.WrapError("Encode PLMNIdentity", err)
+		err = fmt.Errorf("Encode PLMNIdentity: %w", err)
 		return
 	}
 	if len(ie.SliceSupportList) > 0 {
@@ -32,11 +33,13 @@ func (ie *PLMNSupportItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode SliceSupportList", err)
+			err = fmt.Errorf("Encode SliceSupportList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("SliceSupportList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("SliceSupportList is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -53,7 +56,7 @@ func (ie *PLMNSupportItem) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PLMNIdentity.Decode(r); err != nil {
-		err = utils.WrapError("Read PLMNIdentity", err)
+		err = fmt.Errorf("Read PLMNIdentity: %w", err)
 		return
 	}
 	ie.PLMNIdentity = tmp_PLMNIdentity.Value
@@ -63,7 +66,7 @@ func (ie *PLMNSupportItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *SliceSupportItem { return new(SliceSupportItem) }
 	if err = tmp_SliceSupportList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read SliceSupportList", err)
+		err = fmt.Errorf("Read SliceSupportList: %w", err)
 		return
 	}
 	ie.SliceSupportList = []SliceSupportItem{}

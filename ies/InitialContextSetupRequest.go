@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type InitialContextSetupRequest struct {
@@ -117,7 +116,9 @@ func (msg *InitialContextSetupRequest) toIes() (ies []NgapMessageIE, err error) 
 			Value:       &tmp_AllowedNSSAI,
 		})
 	} else {
-		err = utils.WrapError("AllowedNSSAI is nil", err)
+		if err != nil {
+			err = fmt.Errorf("AllowedNSSAI is nil: %w", err)
+		}
 		return
 	}
 	ies = append(ies, NgapMessageIE{
@@ -342,7 +343,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -352,7 +353,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -362,28 +363,28 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read OldAMF", err)
+			err = fmt.Errorf("Read OldAMF: %w", err)
 			return
 		}
 		msg.OldAMF = tmp.Value
 	case ProtocolIEID_UEAggregateMaximumBitRate:
 		var tmp UEAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UEAggregateMaximumBitRate", err)
+			err = fmt.Errorf("Read UEAggregateMaximumBitRate: %w", err)
 			return
 		}
 		msg.UEAggregateMaximumBitRate = &tmp
 	case ProtocolIEID_CoreNetworkAssistanceInformationForInactive:
 		var tmp CoreNetworkAssistanceInformationForInactive
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CoreNetworkAssistanceInformationForInactive", err)
+			err = fmt.Errorf("Read CoreNetworkAssistanceInformationForInactive: %w", err)
 			return
 		}
 		msg.CoreNetworkAssistanceInformationForInactive = &tmp
 	case ProtocolIEID_GUAMI:
 		var tmp GUAMI
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read GUAMI", err)
+			err = fmt.Errorf("Read GUAMI: %w", err)
 			return
 		}
 		msg.GUAMI = tmp
@@ -394,7 +395,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 		}
 		fn := func() *PDUSessionResourceSetupItemCxtReq { return new(PDUSessionResourceSetupItemCxtReq) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceSetupListCxtReq", err)
+			err = fmt.Errorf("Read PDUSessionResourceSetupListCxtReq: %w", err)
 			return
 		}
 		msg.PDUSessionResourceSetupListCxtReq = []PDUSessionResourceSetupItemCxtReq{}
@@ -408,7 +409,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 		}
 		fn := func() *AllowedNSSAIItem { return new(AllowedNSSAIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AllowedNSSAI", err)
+			err = fmt.Errorf("Read AllowedNSSAI: %w", err)
 			return
 		}
 		msg.AllowedNSSAI = []AllowedNSSAIItem{}
@@ -418,7 +419,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 	case ProtocolIEID_UESecurityCapabilities:
 		var tmp UESecurityCapabilities
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UESecurityCapabilities", err)
+			err = fmt.Errorf("Read UESecurityCapabilities: %w", err)
 			return
 		}
 		msg.UESecurityCapabilities = tmp
@@ -428,21 +429,21 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SecurityKey", err)
+			err = fmt.Errorf("Read SecurityKey: %w", err)
 			return
 		}
 		msg.SecurityKey = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case ProtocolIEID_TraceActivation:
 		var tmp TraceActivation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TraceActivation", err)
+			err = fmt.Errorf("Read TraceActivation: %w", err)
 			return
 		}
 		msg.TraceActivation = &tmp
 	case ProtocolIEID_MobilityRestrictionList:
 		var tmp MobilityRestrictionList
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read MobilityRestrictionList", err)
+			err = fmt.Errorf("Read MobilityRestrictionList: %w", err)
 			return
 		}
 		msg.MobilityRestrictionList = &tmp
@@ -452,7 +453,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERadioCapability", err)
+			err = fmt.Errorf("Read UERadioCapability: %w", err)
 			return
 		}
 		msg.UERadioCapability = tmp.Value
@@ -462,7 +463,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read IndexToRFSP", err)
+			err = fmt.Errorf("Read IndexToRFSP: %w", err)
 			return
 		}
 		msg.IndexToRFSP = (*int64)(&tmp.Value)
@@ -472,7 +473,7 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read MaskedIMEISV", err)
+			err = fmt.Errorf("Read MaskedIMEISV: %w", err)
 			return
 		}
 		msg.MaskedIMEISV = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
@@ -482,49 +483,49 @@ func (decoder *InitialContextSetupRequestDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = fmt.Errorf("Read NASPDU: %w", err)
 			return
 		}
 		msg.NASPDU = tmp.Value
 	case ProtocolIEID_EmergencyFallbackIndicator:
 		var tmp EmergencyFallbackIndicator
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read EmergencyFallbackIndicator", err)
+			err = fmt.Errorf("Read EmergencyFallbackIndicator: %w", err)
 			return
 		}
 		msg.EmergencyFallbackIndicator = &tmp
 	case ProtocolIEID_RRCInactiveTransitionReportRequest:
 		var tmp RRCInactiveTransitionReportRequest
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RRCInactiveTransitionReportRequest", err)
+			err = fmt.Errorf("Read RRCInactiveTransitionReportRequest: %w", err)
 			return
 		}
 		msg.RRCInactiveTransitionReportRequest = &tmp
 	case ProtocolIEID_UERadioCapabilityForPaging:
 		var tmp UERadioCapabilityForPaging
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UERadioCapabilityForPaging", err)
+			err = fmt.Errorf("Read UERadioCapabilityForPaging: %w", err)
 			return
 		}
 		msg.UERadioCapabilityForPaging = &tmp
 	case ProtocolIEID_RedirectionVoiceFallback:
 		var tmp RedirectionVoiceFallback
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RedirectionVoiceFallback", err)
+			err = fmt.Errorf("Read RedirectionVoiceFallback: %w", err)
 			return
 		}
 		msg.RedirectionVoiceFallback = &tmp
 	case ProtocolIEID_LocationReportingRequestType:
 		var tmp LocationReportingRequestType
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read LocationReportingRequestType", err)
+			err = fmt.Errorf("Read LocationReportingRequestType: %w", err)
 			return
 		}
 		msg.LocationReportingRequestType = &tmp
 	case ProtocolIEID_CNAssistedRANTuning:
 		var tmp CNAssistedRANTuning
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CNAssistedRANTuning", err)
+			err = fmt.Errorf("Read CNAssistedRANTuning: %w", err)
 			return
 		}
 		msg.CNAssistedRANTuning = &tmp

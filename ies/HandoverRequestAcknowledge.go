@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverRequestAcknowledge struct {
@@ -58,7 +57,9 @@ func (msg *HandoverRequestAcknowledge) toIes() (ies []NgapMessageIE, err error) 
 			Value:       &tmp_PDUSessionResourceAdmittedList,
 		})
 	} else {
-		err = utils.WrapError("PDUSessionResourceAdmittedList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("PDUSessionResourceAdmittedList is nil: %w", err)
+		}
 		return
 	}
 	if len(msg.PDUSessionResourceFailedToSetupListHOAck) > 0 {
@@ -183,7 +184,7 @@ func (decoder *HandoverRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -193,7 +194,7 @@ func (decoder *HandoverRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -204,7 +205,7 @@ func (decoder *HandoverRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader) (
 		}
 		fn := func() *PDUSessionResourceAdmittedItem { return new(PDUSessionResourceAdmittedItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceAdmittedList", err)
+			err = fmt.Errorf("Read PDUSessionResourceAdmittedList: %w", err)
 			return
 		}
 		msg.PDUSessionResourceAdmittedList = []PDUSessionResourceAdmittedItem{}
@@ -218,7 +219,7 @@ func (decoder *HandoverRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader) (
 		}
 		fn := func() *PDUSessionResourceFailedToSetupItemHOAck { return new(PDUSessionResourceFailedToSetupItemHOAck) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceFailedToSetupListHOAck", err)
+			err = fmt.Errorf("Read PDUSessionResourceFailedToSetupListHOAck: %w", err)
 			return
 		}
 		msg.PDUSessionResourceFailedToSetupListHOAck = []PDUSessionResourceFailedToSetupItemHOAck{}
@@ -231,14 +232,14 @@ func (decoder *HandoverRequestAcknowledgeDecoder) decodeIE(r *aper.AperReader) (
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TargetToSourceTransparentContainer", err)
+			err = fmt.Errorf("Read TargetToSourceTransparentContainer: %w", err)
 			return
 		}
 		msg.TargetToSourceTransparentContainer = tmp.Value
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

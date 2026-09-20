@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type CompletedCellsInEAIEUTRAItem struct {
@@ -17,7 +18,7 @@ func (ie *CompletedCellsInEAIEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.EUTRACGI.Encode(w); err != nil {
-		err = utils.WrapError("Encode EUTRACGI", err)
+		err = fmt.Errorf("Encode EUTRACGI: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *CompletedCellsInEAIEUTRAItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.EUTRACGI.Decode(r); err != nil {
-		err = utils.WrapError("Read EUTRACGI", err)
+		err = fmt.Errorf("Read EUTRACGI: %w", err)
 		return
 	}
 	return

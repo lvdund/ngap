@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type DeactivateTrace struct {
@@ -133,7 +132,7 @@ func (decoder *DeactivateTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -143,7 +142,7 @@ func (decoder *DeactivateTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -153,7 +152,7 @@ func (decoder *DeactivateTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Ngap
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NGRANTraceID", err)
+			err = fmt.Errorf("Read NGRANTraceID: %w", err)
 			return
 		}
 		msg.NGRANTraceID = tmp.Value

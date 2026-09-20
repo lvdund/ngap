@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UplinkNASTransport struct {
@@ -148,7 +147,7 @@ func (decoder *UplinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe *N
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -158,7 +157,7 @@ func (decoder *UplinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe *N
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -168,14 +167,14 @@ func (decoder *UplinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe *N
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = fmt.Errorf("Read NASPDU: %w", err)
 			return
 		}
 		msg.NASPDU = tmp.Value
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = tmp

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AMFStatusIndication struct {
@@ -37,7 +36,9 @@ func (msg *AMFStatusIndication) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_UnavailableGUAMIList,
 		})
 	} else {
-		err = utils.WrapError("UnavailableGUAMIList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("UnavailableGUAMIList is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -107,7 +108,7 @@ func (decoder *AMFStatusIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe *
 		}
 		fn := func() *UnavailableGUAMIItem { return new(UnavailableGUAMIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read UnavailableGUAMIList", err)
+			err = fmt.Errorf("Read UnavailableGUAMIList: %w", err)
 			return
 		}
 		msg.UnavailableGUAMIList = []UnavailableGUAMIItem{}

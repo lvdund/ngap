@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -78,7 +79,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EUTRACGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EUTRACGIListForWarning", err)
+			err = fmt.Errorf("Read EUTRACGIListForWarning: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -90,7 +91,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(NRCGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read NRCGIListForWarning", err)
+			err = fmt.Errorf("Read NRCGIListForWarning: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -102,7 +103,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(TAI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read TAIListForWarning", err)
+			err = fmt.Errorf("Read TAIListForWarning: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -114,7 +115,7 @@ func (ie *WarningAreaList) Decode(r *aper.AperReader) (err error) {
 			return new(EmergencyAreaID)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EmergencyAreaIDList", err)
+			err = fmt.Errorf("Read EmergencyAreaIDList: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {

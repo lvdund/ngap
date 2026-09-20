@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -56,7 +57,7 @@ func (ie *PWSFailedCellIDList) Decode(r *aper.AperReader) (err error) {
 			return new(EUTRACGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read EUTRACGIPWSFailedList", err)
+			err = fmt.Errorf("Read EUTRACGIPWSFailedList: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {
@@ -68,7 +69,7 @@ func (ie *PWSFailedCellIDList) Decode(r *aper.AperReader) (err error) {
 			return new(NRCGI)
 		}
 		if err = tmp.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read NRCGIPWSFailedList", err)
+			err = fmt.Errorf("Read NRCGIPWSFailedList: %w", err)
 			return
 		}
 		for _, i := range tmp.Value {

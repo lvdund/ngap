@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceModifyRequestTransfer struct {
@@ -165,7 +164,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 	case ProtocolIEID_PDUSessionAggregateMaximumBitRate:
 		var tmp PDUSessionAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read PDUSessionAggregateMaximumBitRate", err)
+			err = fmt.Errorf("Read PDUSessionAggregateMaximumBitRate: %w", err)
 			return
 		}
 		msg.PDUSessionAggregateMaximumBitRate = &tmp
@@ -176,7 +175,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 		}
 		fn := func() *ULNGUUPTNLModifyItem { return new(ULNGUUPTNLModifyItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read ULNGUUPTNLModifyList", err)
+			err = fmt.Errorf("Read ULNGUUPTNLModifyList: %w", err)
 			return
 		}
 		msg.ULNGUUPTNLModifyList = []ULNGUUPTNLModifyItem{}
@@ -189,7 +188,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NetworkInstance", err)
+			err = fmt.Errorf("Read NetworkInstance: %w", err)
 			return
 		}
 		msg.NetworkInstance = (*int64)(&tmp.Value)
@@ -200,7 +199,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 		}
 		fn := func() *QosFlowAddOrModifyRequestItem { return new(QosFlowAddOrModifyRequestItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read QosFlowAddOrModifyRequestList", err)
+			err = fmt.Errorf("Read QosFlowAddOrModifyRequestList: %w", err)
 			return
 		}
 		msg.QosFlowAddOrModifyRequestList = []QosFlowAddOrModifyRequestItem{}
@@ -214,7 +213,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read QosFlowToReleaseList", err)
+			err = fmt.Errorf("Read QosFlowToReleaseList: %w", err)
 			return
 		}
 		msg.QosFlowToReleaseList = []QosFlowWithCauseItem{}
@@ -228,7 +227,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 		}
 		fn := func() *UPTransportLayerInformationItem { return new(UPTransportLayerInformationItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AdditionalULNGUUPTNLInformation", err)
+			err = fmt.Errorf("Read AdditionalULNGUUPTNLInformation: %w", err)
 			return
 		}
 		msg.AdditionalULNGUUPTNLInformation = []UPTransportLayerInformationItem{}
@@ -241,7 +240,7 @@ func (decoder *PDUSessionResourceModifyRequestTransferDecoder) decodeIE(r *aper.
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CommonNetworkInstance", err)
+			err = fmt.Errorf("Read CommonNetworkInstance: %w", err)
 			return
 		}
 		msg.CommonNetworkInstance = tmp.Value

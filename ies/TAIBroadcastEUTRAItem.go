@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TAIBroadcastEUTRAItem struct {
@@ -18,7 +19,7 @@ func (ie *TAIBroadcastEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.TAI.Encode(w); err != nil {
-		err = utils.WrapError("Encode TAI", err)
+		err = fmt.Errorf("Encode TAI: %w", err)
 		return
 	}
 	if len(ie.CompletedCellsInTAIEUTRA) > 0 {
@@ -31,11 +32,13 @@ func (ie *TAIBroadcastEUTRAItem) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode CompletedCellsInTAIEUTRA", err)
+			err = fmt.Errorf("Encode CompletedCellsInTAIEUTRA: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("CompletedCellsInTAIEUTRA is nil", err)
+		if err != nil {
+			err = fmt.Errorf("CompletedCellsInTAIEUTRA is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -48,7 +51,7 @@ func (ie *TAIBroadcastEUTRAItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.TAI.Decode(r); err != nil {
-		err = utils.WrapError("Read TAI", err)
+		err = fmt.Errorf("Read TAI: %w", err)
 		return
 	}
 	tmp_CompletedCellsInTAIEUTRA := Sequence[*CompletedCellsInTAIEUTRAItem]{
@@ -57,7 +60,7 @@ func (ie *TAIBroadcastEUTRAItem) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *CompletedCellsInTAIEUTRAItem { return new(CompletedCellsInTAIEUTRAItem) }
 	if err = tmp_CompletedCellsInTAIEUTRA.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read CompletedCellsInTAIEUTRA", err)
+		err = fmt.Errorf("Read CompletedCellsInTAIEUTRA: %w", err)
 		return
 	}
 	ie.CompletedCellsInTAIEUTRA = []CompletedCellsInTAIEUTRAItem{}

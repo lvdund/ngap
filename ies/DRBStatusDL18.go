@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type DRBStatusDL18 struct {
@@ -17,7 +18,7 @@ func (ie *DRBStatusDL18) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.DLCOUNTValue.Encode(w); err != nil {
-		err = utils.WrapError("Encode DLCOUNTValue", err)
+		err = fmt.Errorf("Encode DLCOUNTValue: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *DRBStatusDL18) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.DLCOUNTValue.Decode(r); err != nil {
-		err = utils.WrapError("Read DLCOUNTValue", err)
+		err = fmt.Errorf("Read DLCOUNTValue: %w", err)
 		return
 	}
 	return

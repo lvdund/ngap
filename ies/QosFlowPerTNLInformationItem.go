@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type QosFlowPerTNLInformationItem struct {
@@ -17,7 +18,7 @@ func (ie *QosFlowPerTNLInformationItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.QosFlowPerTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode QosFlowPerTNLInformation", err)
+		err = fmt.Errorf("Encode QosFlowPerTNLInformation: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *QosFlowPerTNLInformationItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.QosFlowPerTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read QosFlowPerTNLInformation", err)
+		err = fmt.Errorf("Read QosFlowPerTNLInformation: %w", err)
 		return
 	}
 	return

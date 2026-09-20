@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type ExpectedUEActivityBehaviour struct {
@@ -30,20 +31,20 @@ func (ie *ExpectedUEActivityBehaviour) Encode(w *aper.AperWriter) (err error) {
 	if ie.ExpectedActivityPeriod != nil {
 		tmp_ExpectedActivityPeriod := NewINTEGER(*ie.ExpectedActivityPeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
 		if err = tmp_ExpectedActivityPeriod.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedActivityPeriod", err)
+			err = fmt.Errorf("Encode ExpectedActivityPeriod: %w", err)
 			return
 		}
 	}
 	if ie.ExpectedIdlePeriod != nil {
 		tmp_ExpectedIdlePeriod := NewINTEGER(*ie.ExpectedIdlePeriod, aper.Constraint{Lb: 1, Ub: 181}, true)
 		if err = tmp_ExpectedIdlePeriod.Encode(w); err != nil {
-			err = utils.WrapError("Encode ExpectedIdlePeriod", err)
+			err = fmt.Errorf("Encode ExpectedIdlePeriod: %w", err)
 			return
 		}
 	}
 	if ie.SourceOfUEActivityBehaviourInformation != nil {
 		if err = ie.SourceOfUEActivityBehaviourInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode SourceOfUEActivityBehaviourInformation", err)
+			err = fmt.Errorf("Encode SourceOfUEActivityBehaviourInformation: %w", err)
 			return
 		}
 	}
@@ -63,7 +64,7 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_ExpectedActivityPeriod.Decode(r); err != nil {
-			err = utils.WrapError("Read ExpectedActivityPeriod", err)
+			err = fmt.Errorf("Read ExpectedActivityPeriod: %w", err)
 			return
 		}
 		ie.ExpectedActivityPeriod = (*int64)(&tmp_ExpectedActivityPeriod.Value)
@@ -74,7 +75,7 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_ExpectedIdlePeriod.Decode(r); err != nil {
-			err = utils.WrapError("Read ExpectedIdlePeriod", err)
+			err = fmt.Errorf("Read ExpectedIdlePeriod: %w", err)
 			return
 		}
 		ie.ExpectedIdlePeriod = (*int64)(&tmp_ExpectedIdlePeriod.Value)
@@ -82,7 +83,7 @@ func (ie *ExpectedUEActivityBehaviour) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 3) {
 		tmp := new(SourceOfUEActivityBehaviourInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SourceOfUEActivityBehaviourInformation", err)
+			err = fmt.Errorf("Read SourceOfUEActivityBehaviourInformation: %w", err)
 			return
 		}
 		ie.SourceOfUEActivityBehaviourInformation = tmp

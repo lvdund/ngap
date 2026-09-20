@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type EmergencyAreaIDBroadcastNRItem struct {
@@ -19,7 +20,7 @@ func (ie *EmergencyAreaIDBroadcastNRItem) Encode(w *aper.AperWriter) (err error)
 	w.WriteBits(optionals, 1)
 	tmp_EmergencyAreaID := NewOCTETSTRING(ie.EmergencyAreaID, aper.Constraint{Lb: 3, Ub: 3}, false)
 	if err = tmp_EmergencyAreaID.Encode(w); err != nil {
-		err = utils.WrapError("Encode EmergencyAreaID", err)
+		err = fmt.Errorf("Encode EmergencyAreaID: %w", err)
 		return
 	}
 	if len(ie.CompletedCellsInEAINR) > 0 {
@@ -32,11 +33,13 @@ func (ie *EmergencyAreaIDBroadcastNRItem) Encode(w *aper.AperWriter) (err error)
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode CompletedCellsInEAINR", err)
+			err = fmt.Errorf("Encode CompletedCellsInEAINR: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("CompletedCellsInEAINR is nil", err)
+		if err != nil {
+			err = fmt.Errorf("CompletedCellsInEAINR is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -53,7 +56,7 @@ func (ie *EmergencyAreaIDBroadcastNRItem) Decode(r *aper.AperReader) (err error)
 		ext: false,
 	}
 	if err = tmp_EmergencyAreaID.Decode(r); err != nil {
-		err = utils.WrapError("Read EmergencyAreaID", err)
+		err = fmt.Errorf("Read EmergencyAreaID: %w", err)
 		return
 	}
 	ie.EmergencyAreaID = tmp_EmergencyAreaID.Value
@@ -63,7 +66,7 @@ func (ie *EmergencyAreaIDBroadcastNRItem) Decode(r *aper.AperReader) (err error)
 	}
 	fn := func() *CompletedCellsInEAINRItem { return new(CompletedCellsInEAINRItem) }
 	if err = tmp_CompletedCellsInEAINR.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read CompletedCellsInEAINR", err)
+		err = fmt.Errorf("Read CompletedCellsInEAINR: %w", err)
 		return
 	}
 	ie.CompletedCellsInEAINR = []CompletedCellsInEAINRItem{}

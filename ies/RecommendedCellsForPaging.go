@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type RecommendedCellsForPaging struct {
@@ -26,11 +27,13 @@ func (ie *RecommendedCellsForPaging) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode RecommendedCellList", err)
+			err = fmt.Errorf("Encode RecommendedCellList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("RecommendedCellList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("RecommendedCellList is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -48,7 +51,7 @@ func (ie *RecommendedCellsForPaging) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *RecommendedCellItem { return new(RecommendedCellItem) }
 	if err = tmp_RecommendedCellList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read RecommendedCellList", err)
+		err = fmt.Errorf("Read RecommendedCellList: %w", err)
 		return
 	}
 	ie.RecommendedCellList = []RecommendedCellItem{}

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type QosFlowPerTNLInformation struct {
@@ -18,7 +19,7 @@ func (ie *QosFlowPerTNLInformation) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.UPTransportLayerInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode UPTransportLayerInformation", err)
+		err = fmt.Errorf("Encode UPTransportLayerInformation: %w", err)
 		return
 	}
 	if len(ie.AssociatedQosFlowList) > 0 {
@@ -31,11 +32,13 @@ func (ie *QosFlowPerTNLInformation) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AssociatedQosFlowList", err)
+			err = fmt.Errorf("Encode AssociatedQosFlowList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("AssociatedQosFlowList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("AssociatedQosFlowList is nil: %w", err)
+		}
 		return
 	}
 	return
@@ -48,7 +51,7 @@ func (ie *QosFlowPerTNLInformation) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.UPTransportLayerInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read UPTransportLayerInformation", err)
+		err = fmt.Errorf("Read UPTransportLayerInformation: %w", err)
 		return
 	}
 	tmp_AssociatedQosFlowList := Sequence[*AssociatedQosFlowItem]{
@@ -57,7 +60,7 @@ func (ie *QosFlowPerTNLInformation) Decode(r *aper.AperReader) (err error) {
 	}
 	fn := func() *AssociatedQosFlowItem { return new(AssociatedQosFlowItem) }
 	if err = tmp_AssociatedQosFlowList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read AssociatedQosFlowList", err)
+		err = fmt.Errorf("Read AssociatedQosFlowList: %w", err)
 		return
 	}
 	ie.AssociatedQosFlowList = []AssociatedQosFlowItem{}

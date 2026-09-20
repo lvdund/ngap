@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type CompletedCellsInTAINRItem struct {
@@ -17,7 +18,7 @@ func (ie *CompletedCellsInTAINRItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.NRCGI.Encode(w); err != nil {
-		err = utils.WrapError("Encode NRCGI", err)
+		err = fmt.Errorf("Encode NRCGI: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *CompletedCellsInTAINRItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.NRCGI.Decode(r); err != nil {
-		err = utils.WrapError("Read NRCGI", err)
+		err = fmt.Errorf("Read NRCGI: %w", err)
 		return
 	}
 	return

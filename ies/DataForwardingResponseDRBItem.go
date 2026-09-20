@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type DataForwardingResponseDRBItem struct {
@@ -26,18 +27,18 @@ func (ie *DataForwardingResponseDRBItem) Encode(w *aper.AperWriter) (err error) 
 	w.WriteBits(optionals, 3)
 	tmp_DRBID := NewINTEGER(ie.DRBID, aper.Constraint{Lb: 1, Ub: 32}, true)
 	if err = tmp_DRBID.Encode(w); err != nil {
-		err = utils.WrapError("Encode DRBID", err)
+		err = fmt.Errorf("Encode DRBID: %w", err)
 		return
 	}
 	if ie.DLForwardingUPTNLInformation != nil {
 		if err = ie.DLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Encode DLForwardingUPTNLInformation: %w", err)
 			return
 		}
 	}
 	if ie.ULForwardingUPTNLInformation != nil {
 		if err = ie.ULForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode ULForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Encode ULForwardingUPTNLInformation: %w", err)
 			return
 		}
 	}
@@ -56,14 +57,14 @@ func (ie *DataForwardingResponseDRBItem) Decode(r *aper.AperReader) (err error) 
 		ext: true,
 	}
 	if err = tmp_DRBID.Decode(r); err != nil {
-		err = utils.WrapError("Read DRBID", err)
+		err = fmt.Errorf("Read DRBID: %w", err)
 		return
 	}
 	ie.DRBID = int64(tmp_DRBID.Value)
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Read DLForwardingUPTNLInformation: %w", err)
 			return
 		}
 		ie.DLForwardingUPTNLInformation = tmp
@@ -71,7 +72,7 @@ func (ie *DataForwardingResponseDRBItem) Decode(r *aper.AperReader) (err error) 
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ULForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Read ULForwardingUPTNLInformation: %w", err)
 			return
 		}
 		ie.ULForwardingUPTNLInformation = tmp

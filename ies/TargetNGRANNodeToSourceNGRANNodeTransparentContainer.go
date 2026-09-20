@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TargetNGRANNodeToSourceNGRANNodeTransparentContainer struct {
@@ -22,7 +22,7 @@ func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Encode() (b []by
 	w.WriteBits(optionals, 1)
 	tmp_RRCContainer := NewOCTETSTRING(ie.RRCContainer, aper.Constraint{Lb: 0, Ub: 0}, false)
 	if err = tmp_RRCContainer.Encode(w); err != nil {
-		err = utils.WrapError("Encode RRCContainer", err)
+		err = fmt.Errorf("Encode RRCContainer: %w", err)
 		return
 	}
 	err = w.Close()
@@ -42,7 +42,7 @@ func (ie *TargetNGRANNodeToSourceNGRANNodeTransparentContainer) Decode(wire []by
 		ext: false,
 	}
 	if err = tmp_RRCContainer.Decode(r); err != nil {
-		err = utils.WrapError("Read RRCContainer", err)
+		err = fmt.Errorf("Read RRCContainer: %w", err)
 		return
 	}
 	ie.RRCContainer = tmp_RRCContainer.Value

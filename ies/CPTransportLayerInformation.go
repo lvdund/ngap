@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -36,7 +37,7 @@ func (ie *CPTransportLayerInformation) Decode(r *aper.AperReader) (err error) {
 	case CPTransportLayerInformationPresentEndpointipaddress:
 		tmp := BITSTRING{c: aper.Constraint{Lb: 1, Ub: 160}, ext: false}
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read EndpointIPAddress", err)
+			err = fmt.Errorf("Read EndpointIPAddress: %w", err)
 			return
 		}
 		ie.EndpointIPAddress = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}

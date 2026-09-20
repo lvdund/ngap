@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AreaOfInterestItem struct {
@@ -18,12 +19,12 @@ func (ie *AreaOfInterestItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.AreaOfInterest.Encode(w); err != nil {
-		err = utils.WrapError("Encode AreaOfInterest", err)
+		err = fmt.Errorf("Encode AreaOfInterest: %w", err)
 		return
 	}
 	tmp_LocationReportingReferenceID := NewINTEGER(ie.LocationReportingReferenceID, aper.Constraint{Lb: 1, Ub: 64}, true)
 	if err = tmp_LocationReportingReferenceID.Encode(w); err != nil {
-		err = utils.WrapError("Encode LocationReportingReferenceID", err)
+		err = fmt.Errorf("Encode LocationReportingReferenceID: %w", err)
 		return
 	}
 	return
@@ -36,7 +37,7 @@ func (ie *AreaOfInterestItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.AreaOfInterest.Decode(r); err != nil {
-		err = utils.WrapError("Read AreaOfInterest", err)
+		err = fmt.Errorf("Read AreaOfInterest: %w", err)
 		return
 	}
 	tmp_LocationReportingReferenceID := INTEGER{
@@ -44,7 +45,7 @@ func (ie *AreaOfInterestItem) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_LocationReportingReferenceID.Decode(r); err != nil {
-		err = utils.WrapError("Read LocationReportingReferenceID", err)
+		err = fmt.Errorf("Read LocationReportingReferenceID: %w", err)
 		return
 	}
 	ie.LocationReportingReferenceID = int64(tmp_LocationReportingReferenceID.Value)

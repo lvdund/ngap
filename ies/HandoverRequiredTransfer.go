@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type HandoverRequiredTransfer struct {
@@ -25,7 +25,7 @@ func (ie *HandoverRequiredTransfer) Encode() (b []byte, err error) {
 	w.WriteBits(optionals, 2)
 	if ie.DirectForwardingPathAvailability != nil {
 		if err = ie.DirectForwardingPathAvailability.Encode(w); err != nil {
-			err = utils.WrapError("Encode DirectForwardingPathAvailability", err)
+			err = fmt.Errorf("Encode DirectForwardingPathAvailability: %w", err)
 			return
 		}
 	}
@@ -45,7 +45,7 @@ func (ie *HandoverRequiredTransfer) Decode(wire []byte) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(DirectForwardingPathAvailability)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DirectForwardingPathAvailability", err)
+			err = fmt.Errorf("Read DirectForwardingPathAvailability: %w", err)
 			return
 		}
 		ie.DirectForwardingPathAvailability = tmp

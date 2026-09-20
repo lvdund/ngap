@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UserLocationInformationN3IWF struct {
@@ -19,12 +20,12 @@ func (ie *UserLocationInformationN3IWF) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_IPAddress := NewBITSTRING(ie.IPAddress, aper.Constraint{Lb: 1, Ub: 160}, true)
 	if err = tmp_IPAddress.Encode(w); err != nil {
-		err = utils.WrapError("Encode IPAddress", err)
+		err = fmt.Errorf("Encode IPAddress: %w", err)
 		return
 	}
 	tmp_PortNumber := NewOCTETSTRING(ie.PortNumber, aper.Constraint{Lb: 2, Ub: 2}, false)
 	if err = tmp_PortNumber.Encode(w); err != nil {
-		err = utils.WrapError("Encode PortNumber", err)
+		err = fmt.Errorf("Encode PortNumber: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *UserLocationInformationN3IWF) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_IPAddress.Decode(r); err != nil {
-		err = utils.WrapError("Read IPAddress", err)
+		err = fmt.Errorf("Read IPAddress: %w", err)
 		return
 	}
 	ie.IPAddress = aper.BitString{Bytes: tmp_IPAddress.Value.Bytes, NumBits: tmp_IPAddress.Value.NumBits}
@@ -50,7 +51,7 @@ func (ie *UserLocationInformationN3IWF) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PortNumber.Decode(r); err != nil {
-		err = utils.WrapError("Read PortNumber", err)
+		err = fmt.Errorf("Read PortNumber: %w", err)
 		return
 	}
 	ie.PortNumber = tmp_PortNumber.Value

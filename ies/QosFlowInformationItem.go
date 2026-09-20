@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type QosFlowInformationItem struct {
@@ -22,12 +23,12 @@ func (ie *QosFlowInformationItem) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 2)
 	tmp_QosFlowIdentifier := NewINTEGER(ie.QosFlowIdentifier, aper.Constraint{Lb: 0, Ub: 63}, true)
 	if err = tmp_QosFlowIdentifier.Encode(w); err != nil {
-		err = utils.WrapError("Encode QosFlowIdentifier", err)
+		err = fmt.Errorf("Encode QosFlowIdentifier: %w", err)
 		return
 	}
 	if ie.DLForwarding != nil {
 		if err = ie.DLForwarding.Encode(w); err != nil {
-			err = utils.WrapError("Encode DLForwarding", err)
+			err = fmt.Errorf("Encode DLForwarding: %w", err)
 			return
 		}
 	}
@@ -46,14 +47,14 @@ func (ie *QosFlowInformationItem) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_QosFlowIdentifier.Decode(r); err != nil {
-		err = utils.WrapError("Read QosFlowIdentifier", err)
+		err = fmt.Errorf("Read QosFlowIdentifier: %w", err)
 		return
 	}
 	ie.QosFlowIdentifier = int64(tmp_QosFlowIdentifier.Value)
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(DLForwarding)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read DLForwarding", err)
+			err = fmt.Errorf("Read DLForwarding: %w", err)
 			return
 		}
 		ie.DLForwarding = tmp

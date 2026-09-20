@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type DownlinkRANConfigurationTransfer struct {
@@ -95,7 +94,7 @@ func (decoder *DownlinkRANConfigurationTransferDecoder) decodeIE(r *aper.AperRea
 	case ProtocolIEID_SONConfigurationTransferDL:
 		var tmp SONConfigurationTransfer
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read SONConfigurationTransferDL", err)
+			err = fmt.Errorf("Read SONConfigurationTransferDL: %w", err)
 			return
 		}
 		msg.SONConfigurationTransferDL = &tmp
@@ -105,7 +104,7 @@ func (decoder *DownlinkRANConfigurationTransferDecoder) decodeIE(r *aper.AperRea
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read ENDCSONConfigurationTransferDL", err)
+			err = fmt.Errorf("Read ENDCSONConfigurationTransferDL: %w", err)
 			return
 		}
 		msg.ENDCSONConfigurationTransferDL = tmp.Value

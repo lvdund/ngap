@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AMFConfigurationUpdate struct {
@@ -176,7 +175,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFName", err)
+			err = fmt.Errorf("Read AMFName: %w", err)
 			return
 		}
 		msg.AMFName = tmp.Value
@@ -187,7 +186,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *ServedGUAMIItem { return new(ServedGUAMIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read ServedGUAMIList", err)
+			err = fmt.Errorf("Read ServedGUAMIList: %w", err)
 			return
 		}
 		msg.ServedGUAMIList = []ServedGUAMIItem{}
@@ -200,7 +199,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RelativeAMFCapacity", err)
+			err = fmt.Errorf("Read RelativeAMFCapacity: %w", err)
 			return
 		}
 		msg.RelativeAMFCapacity = (*int64)(&tmp.Value)
@@ -211,7 +210,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *PLMNSupportItem { return new(PLMNSupportItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PLMNSupportList", err)
+			err = fmt.Errorf("Read PLMNSupportList: %w", err)
 			return
 		}
 		msg.PLMNSupportList = []PLMNSupportItem{}
@@ -225,7 +224,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *AMFTNLAssociationToAddItem { return new(AMFTNLAssociationToAddItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AMFTNLAssociationToAddList", err)
+			err = fmt.Errorf("Read AMFTNLAssociationToAddList: %w", err)
 			return
 		}
 		msg.AMFTNLAssociationToAddList = []AMFTNLAssociationToAddItem{}
@@ -239,7 +238,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *AMFTNLAssociationToRemoveItem { return new(AMFTNLAssociationToRemoveItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AMFTNLAssociationToRemoveList", err)
+			err = fmt.Errorf("Read AMFTNLAssociationToRemoveList: %w", err)
 			return
 		}
 		msg.AMFTNLAssociationToRemoveList = []AMFTNLAssociationToRemoveItem{}
@@ -253,7 +252,7 @@ func (decoder *AMFConfigurationUpdateDecoder) decodeIE(r *aper.AperReader) (msgI
 		}
 		fn := func() *AMFTNLAssociationToUpdateItem { return new(AMFTNLAssociationToUpdateItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AMFTNLAssociationToUpdateList", err)
+			err = fmt.Errorf("Read AMFTNLAssociationToUpdateList: %w", err)
 			return
 		}
 		msg.AMFTNLAssociationToUpdateList = []AMFTNLAssociationToUpdateItem{}

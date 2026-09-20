@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -39,14 +40,14 @@ func (ie *AMFPagingTarget) Decode(r *aper.AperReader) (err error) {
 	case AMFPagingTargetPresentGlobalrannodeid:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read GlobalRANNodeID", err)
+			err = fmt.Errorf("Read GlobalRANNodeID: %w", err)
 			return
 		}
 		ie.GlobalRANNodeID = &tmp
 	case AMFPagingTargetPresentTai:
 		var tmp TAI
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read TAI", err)
+			err = fmt.Errorf("Read TAI: %w", err)
 			return
 		}
 		ie.TAI = &tmp

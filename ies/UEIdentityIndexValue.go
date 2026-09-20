@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -36,7 +37,7 @@ func (ie *UEIdentityIndexValue) Decode(r *aper.AperReader) (err error) {
 	case UEIdentityIndexValuePresentIndexlength10:
 		tmp := BITSTRING{c: aper.Constraint{Lb: 10, Ub: 10}, ext: false}
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read IndexLength10", err)
+			err = fmt.Errorf("Read IndexLength10: %w", err)
 			return
 		}
 		ie.IndexLength10 = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}

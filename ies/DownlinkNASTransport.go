@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type DownlinkNASTransport struct {
@@ -197,7 +196,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -207,7 +206,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -217,7 +216,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read OldAMF", err)
+			err = fmt.Errorf("Read OldAMF: %w", err)
 			return
 		}
 		msg.OldAMF = tmp.Value
@@ -227,7 +226,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANPagingPriority", err)
+			err = fmt.Errorf("Read RANPagingPriority: %w", err)
 			return
 		}
 		msg.RANPagingPriority = (*int64)(&tmp.Value)
@@ -237,14 +236,14 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NASPDU", err)
+			err = fmt.Errorf("Read NASPDU: %w", err)
 			return
 		}
 		msg.NASPDU = tmp.Value
 	case ProtocolIEID_MobilityRestrictionList:
 		var tmp MobilityRestrictionList
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read MobilityRestrictionList", err)
+			err = fmt.Errorf("Read MobilityRestrictionList: %w", err)
 			return
 		}
 		msg.MobilityRestrictionList = &tmp
@@ -254,14 +253,14 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read IndexToRFSP", err)
+			err = fmt.Errorf("Read IndexToRFSP: %w", err)
 			return
 		}
 		msg.IndexToRFSP = (*int64)(&tmp.Value)
 	case ProtocolIEID_UEAggregateMaximumBitRate:
 		var tmp UEAggregateMaximumBitRate
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UEAggregateMaximumBitRate", err)
+			err = fmt.Errorf("Read UEAggregateMaximumBitRate: %w", err)
 			return
 		}
 		msg.UEAggregateMaximumBitRate = &tmp
@@ -272,7 +271,7 @@ func (decoder *DownlinkNASTransportDecoder) decodeIE(r *aper.AperReader) (msgIe 
 		}
 		fn := func() *AllowedNSSAIItem { return new(AllowedNSSAIItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AllowedNSSAI", err)
+			err = fmt.Errorf("Read AllowedNSSAI: %w", err)
 			return
 		}
 		msg.AllowedNSSAI = []AllowedNSSAIItem{}

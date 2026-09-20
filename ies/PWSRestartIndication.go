@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PWSRestartIndication struct {
@@ -50,7 +49,9 @@ func (msg *PWSRestartIndication) toIes() (ies []NgapMessageIE, err error) {
 			Value:       &tmp_TAIListForRestart,
 		})
 	} else {
-		err = utils.WrapError("TAIListForRestart is nil", err)
+		if err != nil {
+			err = fmt.Errorf("TAIListForRestart is nil: %w", err)
+		}
 		return
 	}
 	if len(msg.EmergencyAreaIDListForRestart) > 0 {
@@ -148,14 +149,14 @@ func (decoder *PWSRestartIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe 
 	case ProtocolIEID_CellIDListForRestart:
 		var tmp CellIDListForRestart
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CellIDListForRestart", err)
+			err = fmt.Errorf("Read CellIDListForRestart: %w", err)
 			return
 		}
 		msg.CellIDListForRestart = tmp
 	case ProtocolIEID_GlobalRANNodeID:
 		var tmp GlobalRANNodeID
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read GlobalRANNodeID", err)
+			err = fmt.Errorf("Read GlobalRANNodeID: %w", err)
 			return
 		}
 		msg.GlobalRANNodeID = tmp
@@ -166,7 +167,7 @@ func (decoder *PWSRestartIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe 
 		}
 		fn := func() *TAI { return new(TAI) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read TAIListForRestart", err)
+			err = fmt.Errorf("Read TAIListForRestart: %w", err)
 			return
 		}
 		msg.TAIListForRestart = []TAI{}
@@ -180,7 +181,7 @@ func (decoder *PWSRestartIndicationDecoder) decodeIE(r *aper.AperReader) (msgIe 
 		}
 		fn := func() *EmergencyAreaID { return new(EmergencyAreaID) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read EmergencyAreaIDListForRestart", err)
+			err = fmt.Errorf("Read EmergencyAreaIDListForRestart: %w", err)
 			return
 		}
 		msg.EmergencyAreaIDListForRestart = []EmergencyAreaID{}

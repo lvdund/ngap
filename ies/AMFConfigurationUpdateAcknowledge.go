@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AMFConfigurationUpdateAcknowledge struct {
@@ -118,7 +117,7 @@ func (decoder *AMFConfigurationUpdateAcknowledgeDecoder) decodeIE(r *aper.AperRe
 		}
 		fn := func() *AMFTNLAssociationSetupItem { return new(AMFTNLAssociationSetupItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AMFTNLAssociationSetupList", err)
+			err = fmt.Errorf("Read AMFTNLAssociationSetupList: %w", err)
 			return
 		}
 		msg.AMFTNLAssociationSetupList = []AMFTNLAssociationSetupItem{}
@@ -132,7 +131,7 @@ func (decoder *AMFConfigurationUpdateAcknowledgeDecoder) decodeIE(r *aper.AperRe
 		}
 		fn := func() *TNLAssociationItem { return new(TNLAssociationItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read AMFTNLAssociationFailedToSetupList", err)
+			err = fmt.Errorf("Read AMFTNLAssociationFailedToSetupList: %w", err)
 			return
 		}
 		msg.AMFTNLAssociationFailedToSetupList = []TNLAssociationItem{}
@@ -142,7 +141,7 @@ func (decoder *AMFConfigurationUpdateAcknowledgeDecoder) decodeIE(r *aper.AperRe
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

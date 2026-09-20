@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceNotifyTransfer struct {
@@ -37,7 +37,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowNotifyList", err)
+			err = fmt.Errorf("Encode QosFlowNotifyList: %w", err)
 			return
 		}
 	}
@@ -51,7 +51,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Encode() (b []byte, err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowReleasedList", err)
+			err = fmt.Errorf("Encode QosFlowReleasedList: %w", err)
 			return
 		}
 	}
@@ -75,7 +75,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Decode(wire []byte) (err error) {
 		}
 		fn := func() *QosFlowNotifyItem { return new(QosFlowNotifyItem) }
 		if err = tmp_QosFlowNotifyList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowNotifyList", err)
+			err = fmt.Errorf("Read QosFlowNotifyList: %w", err)
 			return
 		}
 		ie.QosFlowNotifyList = []QosFlowNotifyItem{}
@@ -90,7 +90,7 @@ func (ie *PDUSessionResourceNotifyTransfer) Decode(wire []byte) (err error) {
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowReleasedList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowReleasedList", err)
+			err = fmt.Errorf("Read QosFlowReleasedList: %w", err)
 			return
 		}
 		ie.QosFlowReleasedList = []QosFlowWithCauseItem{}

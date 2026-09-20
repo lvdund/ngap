@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type LocationReport struct {
@@ -160,7 +159,7 @@ func (decoder *LocationReportDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -170,14 +169,14 @@ func (decoder *LocationReportDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
 	case ProtocolIEID_UserLocationInformation:
 		var tmp UserLocationInformation
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read UserLocationInformation", err)
+			err = fmt.Errorf("Read UserLocationInformation: %w", err)
 			return
 		}
 		msg.UserLocationInformation = tmp
@@ -188,7 +187,7 @@ func (decoder *LocationReportDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 		}
 		fn := func() *UEPresenceInAreaOfInterestItem { return new(UEPresenceInAreaOfInterestItem) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read UEPresenceInAreaOfInterestList", err)
+			err = fmt.Errorf("Read UEPresenceInAreaOfInterestList: %w", err)
 			return
 		}
 		msg.UEPresenceInAreaOfInterestList = []UEPresenceInAreaOfInterestItem{}
@@ -198,7 +197,7 @@ func (decoder *LocationReportDecoder) decodeIE(r *aper.AperReader) (msgIe *NgapM
 	case ProtocolIEID_LocationReportingRequestType:
 		var tmp LocationReportingRequestType
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read LocationReportingRequestType", err)
+			err = fmt.Errorf("Read LocationReportingRequestType: %w", err)
 			return
 		}
 		msg.LocationReportingRequestType = tmp

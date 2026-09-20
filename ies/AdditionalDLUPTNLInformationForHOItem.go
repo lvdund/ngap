@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AdditionalDLUPTNLInformationForHOItem struct {
@@ -22,7 +23,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.AdditionalDLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode AdditionalDLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode AdditionalDLNGUUPTNLInformation: %w", err)
 		return
 	}
 	if len(ie.AdditionalQosFlowSetupResponseList) > 0 {
@@ -35,16 +36,18 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Encode(w *aper.AperWriter) (err
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AdditionalQosFlowSetupResponseList", err)
+			err = fmt.Errorf("Encode AdditionalQosFlowSetupResponseList: %w", err)
 			return
 		}
 	} else {
-		err = utils.WrapError("AdditionalQosFlowSetupResponseList is nil", err)
+		if err != nil {
+			err = fmt.Errorf("AdditionalQosFlowSetupResponseList is nil: %w", err)
+		}
 		return
 	}
 	if ie.AdditionalDLForwardingUPTNLInformation != nil {
 		if err = ie.AdditionalDLForwardingUPTNLInformation.Encode(w); err != nil {
-			err = utils.WrapError("Encode AdditionalDLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Encode AdditionalDLForwardingUPTNLInformation: %w", err)
 			return
 		}
 	}
@@ -59,7 +62,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 		return
 	}
 	if err = ie.AdditionalDLNGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read AdditionalDLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Read AdditionalDLNGUUPTNLInformation: %w", err)
 		return
 	}
 	tmp_AdditionalQosFlowSetupResponseList := Sequence[*QosFlowItemWithDataForwarding]{
@@ -68,7 +71,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 	}
 	fn := func() *QosFlowItemWithDataForwarding { return new(QosFlowItemWithDataForwarding) }
 	if err = tmp_AdditionalQosFlowSetupResponseList.Decode(r, fn); err != nil {
-		err = utils.WrapError("Read AdditionalQosFlowSetupResponseList", err)
+		err = fmt.Errorf("Read AdditionalQosFlowSetupResponseList: %w", err)
 		return
 	}
 	ie.AdditionalQosFlowSetupResponseList = []QosFlowItemWithDataForwarding{}
@@ -78,7 +81,7 @@ func (ie *AdditionalDLUPTNLInformationForHOItem) Decode(r *aper.AperReader) (err
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(UPTransportLayerInformation)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read AdditionalDLForwardingUPTNLInformation", err)
+			err = fmt.Errorf("Read AdditionalDLForwardingUPTNLInformation: %w", err)
 			return
 		}
 		ie.AdditionalDLForwardingUPTNLInformation = tmp

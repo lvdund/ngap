@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type CellTrafficTrace struct {
@@ -167,7 +166,7 @@ func (decoder *CellTrafficTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -177,7 +176,7 @@ func (decoder *CellTrafficTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -187,14 +186,14 @@ func (decoder *CellTrafficTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NGRANTraceID", err)
+			err = fmt.Errorf("Read NGRANTraceID: %w", err)
 			return
 		}
 		msg.NGRANTraceID = tmp.Value
 	case ProtocolIEID_NGRANCGI:
 		var tmp NGRANCGI
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NGRANCGI", err)
+			err = fmt.Errorf("Read NGRANCGI: %w", err)
 			return
 		}
 		msg.NGRANCGI = tmp
@@ -204,7 +203,7 @@ func (decoder *CellTrafficTraceDecoder) decodeIE(r *aper.AperReader) (msgIe *Nga
 			ext: true,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read TraceCollectionEntityIPAddress", err)
+			err = fmt.Errorf("Read TraceCollectionEntityIPAddress: %w", err)
 			return
 		}
 		msg.TraceCollectionEntityIPAddress = aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type InitialContextSetupResponse struct {
@@ -153,7 +152,7 @@ func (decoder *InitialContextSetupResponseDecoder) decodeIE(r *aper.AperReader) 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		msg.AMFUENGAPID = int64(tmp.Value)
@@ -163,7 +162,7 @@ func (decoder *InitialContextSetupResponseDecoder) decodeIE(r *aper.AperReader) 
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RANUENGAPID", err)
+			err = fmt.Errorf("Read RANUENGAPID: %w", err)
 			return
 		}
 		msg.RANUENGAPID = int64(tmp.Value)
@@ -174,7 +173,7 @@ func (decoder *InitialContextSetupResponseDecoder) decodeIE(r *aper.AperReader) 
 		}
 		fn := func() *PDUSessionResourceSetupItemCxtRes { return new(PDUSessionResourceSetupItemCxtRes) }
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceSetupListCxtRes", err)
+			err = fmt.Errorf("Read PDUSessionResourceSetupListCxtRes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceSetupListCxtRes = []PDUSessionResourceSetupItemCxtRes{}
@@ -190,7 +189,7 @@ func (decoder *InitialContextSetupResponseDecoder) decodeIE(r *aper.AperReader) 
 			return new(PDUSessionResourceFailedToSetupItemCxtRes)
 		}
 		if err = tmp.Decode(ieR, fn); err != nil {
-			err = utils.WrapError("Read PDUSessionResourceFailedToSetupListCxtRes", err)
+			err = fmt.Errorf("Read PDUSessionResourceFailedToSetupListCxtRes: %w", err)
 			return
 		}
 		msg.PDUSessionResourceFailedToSetupListCxtRes = []PDUSessionResourceFailedToSetupItemCxtRes{}
@@ -200,7 +199,7 @@ func (decoder *InitialContextSetupResponseDecoder) decodeIE(r *aper.AperReader) 
 	case ProtocolIEID_CriticalityDiagnostics:
 		var tmp CriticalityDiagnostics
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		msg.CriticalityDiagnostics = &tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -51,35 +52,35 @@ func (ie *Cause) Decode(r *aper.AperReader) (err error) {
 	case CausePresentRadionetwork:
 		var tmp CauseRadioNetwork
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read RadioNetwork", err)
+			err = fmt.Errorf("Read RadioNetwork: %w", err)
 			return
 		}
 		ie.RadioNetwork = &tmp
 	case CausePresentTransport:
 		var tmp CauseTransport
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read Transport", err)
+			err = fmt.Errorf("Read Transport: %w", err)
 			return
 		}
 		ie.Transport = &tmp
 	case CausePresentNas:
 		var tmp CauseNas
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read Nas", err)
+			err = fmt.Errorf("Read Nas: %w", err)
 			return
 		}
 		ie.Nas = &tmp
 	case CausePresentProtocol:
 		var tmp CauseProtocol
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read Protocol", err)
+			err = fmt.Errorf("Read Protocol: %w", err)
 			return
 		}
 		ie.Protocol = &tmp
 	case CausePresentMisc:
 		var tmp CauseMisc
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read Misc", err)
+			err = fmt.Errorf("Read Misc: %w", err)
 			return
 		}
 		ie.Misc = &tmp

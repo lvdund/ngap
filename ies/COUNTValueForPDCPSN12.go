@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type COUNTValueForPDCPSN12 struct {
@@ -19,12 +20,12 @@ func (ie *COUNTValueForPDCPSN12) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 1)
 	tmp_PDCPSN12 := NewINTEGER(ie.PDCPSN12, aper.Constraint{Lb: 0, Ub: 4095}, false)
 	if err = tmp_PDCPSN12.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDCPSN12", err)
+		err = fmt.Errorf("Encode PDCPSN12: %w", err)
 		return
 	}
 	tmp_HFNPDCPSN12 := NewINTEGER(ie.HFNPDCPSN12, aper.Constraint{Lb: 0, Ub: 1048575}, false)
 	if err = tmp_HFNPDCPSN12.Encode(w); err != nil {
-		err = utils.WrapError("Encode HFNPDCPSN12", err)
+		err = fmt.Errorf("Encode HFNPDCPSN12: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *COUNTValueForPDCPSN12) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_PDCPSN12.Decode(r); err != nil {
-		err = utils.WrapError("Read PDCPSN12", err)
+		err = fmt.Errorf("Read PDCPSN12: %w", err)
 		return
 	}
 	ie.PDCPSN12 = int64(tmp_PDCPSN12.Value)
@@ -50,7 +51,7 @@ func (ie *COUNTValueForPDCPSN12) Decode(r *aper.AperReader) (err error) {
 		ext: false,
 	}
 	if err = tmp_HFNPDCPSN12.Decode(r); err != nil {
-		err = utils.WrapError("Read HFNPDCPSN12", err)
+		err = fmt.Errorf("Read HFNPDCPSN12: %w", err)
 		return
 	}
 	ie.HFNPDCPSN12 = int64(tmp_HFNPDCPSN12.Value)

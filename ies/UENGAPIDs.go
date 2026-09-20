@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -40,14 +41,14 @@ func (ie *UENGAPIDs) Decode(r *aper.AperReader) (err error) {
 	case UENGAPIDsPresentUeNgapIdPair:
 		var tmp UENGAPIDpair
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UENGAPIDpair", err)
+			err = fmt.Errorf("Read UENGAPIDpair: %w", err)
 			return
 		}
 		ie.UENGAPIDpair = &tmp
 	case UENGAPIDsPresentAmfUeNgapId:
 		tmp := NewINTEGER(0, aper.Constraint{Lb: 0, Ub: 0}, false)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read AMFUENGAPID", err)
+			err = fmt.Errorf("Read AMFUENGAPID: %w", err)
 			return
 		}
 		ie.AMFUENGAPID = (*int64)(&tmp.Value)

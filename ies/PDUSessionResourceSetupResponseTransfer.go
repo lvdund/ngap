@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceSetupResponseTransfer struct {
@@ -33,7 +33,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error
 	}
 	w.WriteBits(optionals, 4)
 	if err = ie.DLQosFlowPerTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode DLQosFlowPerTNLInformation", err)
+		err = fmt.Errorf("Encode DLQosFlowPerTNLInformation: %w", err)
 		return
 	}
 	if len(ie.AdditionalDLQosFlowPerTNLInformation) > 0 {
@@ -46,13 +46,13 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode AdditionalDLQosFlowPerTNLInformation", err)
+			err = fmt.Errorf("Encode AdditionalDLQosFlowPerTNLInformation: %w", err)
 			return
 		}
 	}
 	if ie.SecurityResult != nil {
 		if err = ie.SecurityResult.Encode(w); err != nil {
-			err = utils.WrapError("Encode SecurityResult", err)
+			err = fmt.Errorf("Encode SecurityResult: %w", err)
 			return
 		}
 	}
@@ -66,7 +66,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Encode() (b []byte, err error
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowFailedToSetupList", err)
+			err = fmt.Errorf("Encode QosFlowFailedToSetupList: %w", err)
 			return
 		}
 	}
@@ -84,7 +84,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 		return
 	}
 	if err = ie.DLQosFlowPerTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read DLQosFlowPerTNLInformation", err)
+		err = fmt.Errorf("Read DLQosFlowPerTNLInformation: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
@@ -94,7 +94,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 		}
 		fn := func() *QosFlowPerTNLInformationItem { return new(QosFlowPerTNLInformationItem) }
 		if err = tmp_AdditionalDLQosFlowPerTNLInformation.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read AdditionalDLQosFlowPerTNLInformation", err)
+			err = fmt.Errorf("Read AdditionalDLQosFlowPerTNLInformation: %w", err)
 			return
 		}
 		ie.AdditionalDLQosFlowPerTNLInformation = []QosFlowPerTNLInformationItem{}
@@ -105,7 +105,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 	if aper.IsBitSet(optionals, 2) {
 		tmp := new(SecurityResult)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read SecurityResult", err)
+			err = fmt.Errorf("Read SecurityResult: %w", err)
 			return
 		}
 		ie.SecurityResult = tmp
@@ -117,7 +117,7 @@ func (ie *PDUSessionResourceSetupResponseTransfer) Decode(wire []byte) (err erro
 		}
 		fn := func() *QosFlowWithCauseItem { return new(QosFlowWithCauseItem) }
 		if err = tmp_QosFlowFailedToSetupList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowFailedToSetupList", err)
+			err = fmt.Errorf("Read QosFlowFailedToSetupList: %w", err)
 			return
 		}
 		ie.QosFlowFailedToSetupList = []QosFlowWithCauseItem{}

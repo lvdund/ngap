@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type UplinkNonUEAssociatedNRPPaTransport struct {
@@ -115,7 +114,7 @@ func (decoder *UplinkNonUEAssociatedNRPPaTransportDecoder) decodeIE(r *aper.Aper
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read RoutingID", err)
+			err = fmt.Errorf("Read RoutingID: %w", err)
 			return
 		}
 		msg.RoutingID = tmp.Value
@@ -125,7 +124,7 @@ func (decoder *UplinkNonUEAssociatedNRPPaTransportDecoder) decodeIE(r *aper.Aper
 			ext: false,
 		}
 		if err = tmp.Decode(ieR); err != nil {
-			err = utils.WrapError("Read NRPPaPDU", err)
+			err = fmt.Errorf("Read NRPPaPDU: %w", err)
 			return
 		}
 		msg.NRPPaPDU = tmp.Value

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -43,21 +44,21 @@ func (ie *UserLocationInformation) Decode(r *aper.AperReader) (err error) {
 	case UserLocationInformationPresentUserlocationinformationeutra:
 		var tmp UserLocationInformationEUTRA
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UserLocationInformationEUTRA", err)
+			err = fmt.Errorf("Read UserLocationInformationEUTRA: %w", err)
 			return
 		}
 		ie.UserLocationInformationEUTRA = &tmp
 	case UserLocationInformationPresentUserlocationinformationnr:
 		var tmp UserLocationInformationNR
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UserLocationInformationNR", err)
+			err = fmt.Errorf("Read UserLocationInformationNR: %w", err)
 			return
 		}
 		ie.UserLocationInformationNR = &tmp
 	case UserLocationInformationPresentUserlocationinformationn3Iwf:
 		var tmp UserLocationInformationN3IWF
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read UserLocationInformationN3IWF", err)
+			err = fmt.Errorf("Read UserLocationInformationN3IWF: %w", err)
 			return
 		}
 		ie.UserLocationInformationN3IWF = &tmp

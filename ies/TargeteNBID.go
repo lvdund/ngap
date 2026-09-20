@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type TargeteNBID struct {
@@ -18,11 +19,11 @@ func (ie *TargeteNBID) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.GlobalENBID.Encode(w); err != nil {
-		err = utils.WrapError("Encode GlobalENBID", err)
+		err = fmt.Errorf("Encode GlobalENBID: %w", err)
 		return
 	}
 	if err = ie.SelectedEPSTAI.Encode(w); err != nil {
-		err = utils.WrapError("Encode SelectedEPSTAI", err)
+		err = fmt.Errorf("Encode SelectedEPSTAI: %w", err)
 		return
 	}
 	return
@@ -35,11 +36,11 @@ func (ie *TargeteNBID) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.GlobalENBID.Decode(r); err != nil {
-		err = utils.WrapError("Read GlobalENBID", err)
+		err = fmt.Errorf("Read GlobalENBID: %w", err)
 		return
 	}
 	if err = ie.SelectedEPSTAI.Decode(r); err != nil {
-		err = utils.WrapError("Read SelectedEPSTAI", err)
+		err = fmt.Errorf("Read SelectedEPSTAI: %w", err)
 		return
 	}
 	return

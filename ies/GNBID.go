@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -36,7 +37,7 @@ func (ie *GNBID) Decode(r *aper.AperReader) (err error) {
 	case GNBIDPresentGnbId:
 		tmp := BITSTRING{c: aper.Constraint{Lb: 22, Ub: 32}, ext: false}
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read GNBID", err)
+			err = fmt.Errorf("Read GNBID: %w", err)
 			return
 		}
 		ie.GNBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}

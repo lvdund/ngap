@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type AssistanceDataForRecommendedCells struct {
@@ -17,7 +18,7 @@ func (ie *AssistanceDataForRecommendedCells) Encode(w *aper.AperWriter) (err err
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.RecommendedCellsForPaging.Encode(w); err != nil {
-		err = utils.WrapError("Encode RecommendedCellsForPaging", err)
+		err = fmt.Errorf("Encode RecommendedCellsForPaging: %w", err)
 		return
 	}
 	return
@@ -30,7 +31,7 @@ func (ie *AssistanceDataForRecommendedCells) Decode(r *aper.AperReader) (err err
 		return
 	}
 	if err = ie.RecommendedCellsForPaging.Decode(r); err != nil {
-		err = utils.WrapError("Read RecommendedCellsForPaging", err)
+		err = fmt.Errorf("Read RecommendedCellsForPaging: %w", err)
 		return
 	}
 	return

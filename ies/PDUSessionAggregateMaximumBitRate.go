@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionAggregateMaximumBitRate struct {
@@ -19,12 +20,12 @@ func (ie *PDUSessionAggregateMaximumBitRate) Encode(w *aper.AperWriter) (err err
 	w.WriteBits(optionals, 1)
 	tmp_PDUSessionAggregateMaximumBitRateDL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateDL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_PDUSessionAggregateMaximumBitRateDL.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionAggregateMaximumBitRateDL", err)
+		err = fmt.Errorf("Encode PDUSessionAggregateMaximumBitRateDL: %w", err)
 		return
 	}
 	tmp_PDUSessionAggregateMaximumBitRateUL := NewINTEGER(ie.PDUSessionAggregateMaximumBitRateUL, aper.Constraint{Lb: 0, Ub: 4000000000000}, true)
 	if err = tmp_PDUSessionAggregateMaximumBitRateUL.Encode(w); err != nil {
-		err = utils.WrapError("Encode PDUSessionAggregateMaximumBitRateUL", err)
+		err = fmt.Errorf("Encode PDUSessionAggregateMaximumBitRateUL: %w", err)
 		return
 	}
 	return
@@ -41,7 +42,7 @@ func (ie *PDUSessionAggregateMaximumBitRate) Decode(r *aper.AperReader) (err err
 		ext: true,
 	}
 	if err = tmp_PDUSessionAggregateMaximumBitRateDL.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionAggregateMaximumBitRateDL", err)
+		err = fmt.Errorf("Read PDUSessionAggregateMaximumBitRateDL: %w", err)
 		return
 	}
 	ie.PDUSessionAggregateMaximumBitRateDL = int64(tmp_PDUSessionAggregateMaximumBitRateDL.Value)
@@ -50,7 +51,7 @@ func (ie *PDUSessionAggregateMaximumBitRate) Decode(r *aper.AperReader) (err err
 		ext: true,
 	}
 	if err = tmp_PDUSessionAggregateMaximumBitRateUL.Decode(r); err != nil {
-		err = utils.WrapError("Read PDUSessionAggregateMaximumBitRateUL", err)
+		err = fmt.Errorf("Read PDUSessionAggregateMaximumBitRateUL: %w", err)
 		return
 	}
 	ie.PDUSessionAggregateMaximumBitRateUL = int64(tmp_PDUSessionAggregateMaximumBitRateUL.Value)

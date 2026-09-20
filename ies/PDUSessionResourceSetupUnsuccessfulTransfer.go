@@ -2,9 +2,9 @@ package ies
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type PDUSessionResourceSetupUnsuccessfulTransfer struct {
@@ -25,12 +25,12 @@ func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Encode() (b []byte, err e
 	}
 	w.WriteBits(optionals, 2)
 	if err = ie.Cause.Encode(w); err != nil {
-		err = utils.WrapError("Encode Cause", err)
+		err = fmt.Errorf("Encode Cause: %w", err)
 		return
 	}
 	if ie.CriticalityDiagnostics != nil {
 		if err = ie.CriticalityDiagnostics.Encode(w); err != nil {
-			err = utils.WrapError("Encode CriticalityDiagnostics", err)
+			err = fmt.Errorf("Encode CriticalityDiagnostics: %w", err)
 			return
 		}
 	}
@@ -48,13 +48,13 @@ func (ie *PDUSessionResourceSetupUnsuccessfulTransfer) Decode(wire []byte) (err 
 		return
 	}
 	if err = ie.Cause.Decode(r); err != nil {
-		err = utils.WrapError("Read Cause", err)
+		err = fmt.Errorf("Read Cause: %w", err)
 		return
 	}
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(CriticalityDiagnostics)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read CriticalityDiagnostics", err)
+			err = fmt.Errorf("Read CriticalityDiagnostics: %w", err)
 			return
 		}
 		ie.CriticalityDiagnostics = tmp

@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type SecondaryRATUsageInformation struct {
@@ -25,7 +26,7 @@ func (ie *SecondaryRATUsageInformation) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 3)
 	if ie.PDUSessionUsageReport != nil {
 		if err = ie.PDUSessionUsageReport.Encode(w); err != nil {
-			err = utils.WrapError("Encode PDUSessionUsageReport", err)
+			err = fmt.Errorf("Encode PDUSessionUsageReport: %w", err)
 			return
 		}
 	}
@@ -39,7 +40,7 @@ func (ie *SecondaryRATUsageInformation) Encode(w *aper.AperWriter) (err error) {
 			tmp.Value = append(tmp.Value, &i)
 		}
 		if err = tmp.Encode(w); err != nil {
-			err = utils.WrapError("Encode QosFlowsUsageReportList", err)
+			err = fmt.Errorf("Encode QosFlowsUsageReportList: %w", err)
 			return
 		}
 	}
@@ -56,7 +57,7 @@ func (ie *SecondaryRATUsageInformation) Decode(r *aper.AperReader) (err error) {
 	if aper.IsBitSet(optionals, 1) {
 		tmp := new(PDUSessionUsageReport)
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read PDUSessionUsageReport", err)
+			err = fmt.Errorf("Read PDUSessionUsageReport: %w", err)
 			return
 		}
 		ie.PDUSessionUsageReport = tmp
@@ -68,7 +69,7 @@ func (ie *SecondaryRATUsageInformation) Decode(r *aper.AperReader) (err error) {
 		}
 		fn := func() *QoSFlowsUsageReportItem { return new(QoSFlowsUsageReportItem) }
 		if err = tmp_QosFlowsUsageReportList.Decode(r, fn); err != nil {
-			err = utils.WrapError("Read QosFlowsUsageReportList", err)
+			err = fmt.Errorf("Read QosFlowsUsageReportList: %w", err)
 			return
 		}
 		ie.QosFlowsUsageReportList = []QoSFlowsUsageReportItem{}

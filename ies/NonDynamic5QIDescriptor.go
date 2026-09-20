@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type NonDynamic5QIDescriptor struct {
@@ -30,27 +31,27 @@ func (ie *NonDynamic5QIDescriptor) Encode(w *aper.AperWriter) (err error) {
 	w.WriteBits(optionals, 4)
 	tmp_FiveQI := NewINTEGER(ie.FiveQI, aper.Constraint{Lb: 0, Ub: 255}, true)
 	if err = tmp_FiveQI.Encode(w); err != nil {
-		err = utils.WrapError("Encode FiveQI", err)
+		err = fmt.Errorf("Encode FiveQI: %w", err)
 		return
 	}
 	if ie.PriorityLevelQos != nil {
 		tmp_PriorityLevelQos := NewINTEGER(*ie.PriorityLevelQos, aper.Constraint{Lb: 1, Ub: 127}, true)
 		if err = tmp_PriorityLevelQos.Encode(w); err != nil {
-			err = utils.WrapError("Encode PriorityLevelQos", err)
+			err = fmt.Errorf("Encode PriorityLevelQos: %w", err)
 			return
 		}
 	}
 	if ie.AveragingWindow != nil {
 		tmp_AveragingWindow := NewINTEGER(*ie.AveragingWindow, aper.Constraint{Lb: 0, Ub: 4095}, true)
 		if err = tmp_AveragingWindow.Encode(w); err != nil {
-			err = utils.WrapError("Encode AveragingWindow", err)
+			err = fmt.Errorf("Encode AveragingWindow: %w", err)
 			return
 		}
 	}
 	if ie.MaximumDataBurstVolume != nil {
 		tmp_MaximumDataBurstVolume := NewINTEGER(*ie.MaximumDataBurstVolume, aper.Constraint{Lb: 0, Ub: 4095}, true)
 		if err = tmp_MaximumDataBurstVolume.Encode(w); err != nil {
-			err = utils.WrapError("Encode MaximumDataBurstVolume", err)
+			err = fmt.Errorf("Encode MaximumDataBurstVolume: %w", err)
 			return
 		}
 	}
@@ -69,7 +70,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 		ext: true,
 	}
 	if err = tmp_FiveQI.Decode(r); err != nil {
-		err = utils.WrapError("Read FiveQI", err)
+		err = fmt.Errorf("Read FiveQI: %w", err)
 		return
 	}
 	ie.FiveQI = int64(tmp_FiveQI.Value)
@@ -79,7 +80,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_PriorityLevelQos.Decode(r); err != nil {
-			err = utils.WrapError("Read PriorityLevelQos", err)
+			err = fmt.Errorf("Read PriorityLevelQos: %w", err)
 			return
 		}
 		ie.PriorityLevelQos = (*int64)(&tmp_PriorityLevelQos.Value)
@@ -90,7 +91,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_AveragingWindow.Decode(r); err != nil {
-			err = utils.WrapError("Read AveragingWindow", err)
+			err = fmt.Errorf("Read AveragingWindow: %w", err)
 			return
 		}
 		ie.AveragingWindow = (*int64)(&tmp_AveragingWindow.Value)
@@ -101,7 +102,7 @@ func (ie *NonDynamic5QIDescriptor) Decode(r *aper.AperReader) (err error) {
 			ext: true,
 		}
 		if err = tmp_MaximumDataBurstVolume.Decode(r); err != nil {
-			err = utils.WrapError("Read MaximumDataBurstVolume", err)
+			err = fmt.Errorf("Read MaximumDataBurstVolume: %w", err)
 			return
 		}
 		ie.MaximumDataBurstVolume = (*int64)(&tmp_MaximumDataBurstVolume.Value)

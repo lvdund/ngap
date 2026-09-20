@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 const (
@@ -46,21 +47,21 @@ func (ie *NgENBID) Decode(r *aper.AperReader) (err error) {
 	case NgENBIDPresentMacrongenbId:
 		tmp := BITSTRING{c: aper.Constraint{Lb: 20, Ub: 20}, ext: false}
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read MacroNgENBID", err)
+			err = fmt.Errorf("Read MacroNgENBID: %w", err)
 			return
 		}
 		ie.MacroNgENBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case NgENBIDPresentShortmacrongenbId:
 		tmp := BITSTRING{c: aper.Constraint{Lb: 18, Ub: 18}, ext: false}
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read ShortMacroNgENBID", err)
+			err = fmt.Errorf("Read ShortMacroNgENBID: %w", err)
 			return
 		}
 		ie.ShortMacroNgENBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}
 	case NgENBIDPresentLongmacrongenbId:
 		tmp := BITSTRING{c: aper.Constraint{Lb: 21, Ub: 21}, ext: false}
 		if err = tmp.Decode(r); err != nil {
-			err = utils.WrapError("Read LongMacroNgENBID", err)
+			err = fmt.Errorf("Read LongMacroNgENBID: %w", err)
 			return
 		}
 		ie.LongMacroNgENBID = &aper.BitString{Bytes: tmp.Value.Bytes, NumBits: tmp.Value.NumBits}

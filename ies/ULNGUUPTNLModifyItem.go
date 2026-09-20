@@ -1,8 +1,9 @@
 package ies
 
 import (
+	"fmt"
+
 	"github.com/lvdund/ngap/aper"
-	"github.com/reogac/utils"
 )
 
 type ULNGUUPTNLModifyItem struct {
@@ -18,11 +19,11 @@ func (ie *ULNGUUPTNLModifyItem) Encode(w *aper.AperWriter) (err error) {
 	optionals := []byte{0x0}
 	w.WriteBits(optionals, 1)
 	if err = ie.ULNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode ULNGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode ULNGUUPTNLInformation: %w", err)
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Encode(w); err != nil {
-		err = utils.WrapError("Encode DLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Encode DLNGUUPTNLInformation: %w", err)
 		return
 	}
 	return
@@ -35,11 +36,11 @@ func (ie *ULNGUUPTNLModifyItem) Decode(r *aper.AperReader) (err error) {
 		return
 	}
 	if err = ie.ULNGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read ULNGUUPTNLInformation", err)
+		err = fmt.Errorf("Read ULNGUUPTNLInformation: %w", err)
 		return
 	}
 	if err = ie.DLNGUUPTNLInformation.Decode(r); err != nil {
-		err = utils.WrapError("Read DLNGUUPTNLInformation", err)
+		err = fmt.Errorf("Read DLNGUUPTNLInformation: %w", err)
 		return
 	}
 	return
