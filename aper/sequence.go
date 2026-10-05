@@ -61,10 +61,10 @@ func WriteSequenceOf[T AperMarshaller](items []T, aw *AperWriter, c *Constraint,
 			return
 		}
 	}
-
-	// with case up_bound = low_bound
-	err = aw.flush()
-
+	// No alignment after the last item: a SEQUENCE OF is not octet-aligned at
+	// its end in APER, and ReadSequenceOf does not skip padding there, so an
+	// encoder that pads desynchronises the reader whenever the items end
+	// mid-octet - two QoS flows in a PDUSessionResourceInformationItem, say.
 	return
 }
 
