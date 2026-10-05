@@ -51,10 +51,9 @@ func encodeMessage(w io.Writer, present uint8, procedureCode int64, criticality 
 	if err = cr.Encode(aw); err != nil {
 		return
 	}
-	if len(ies) == 0 {
-		err = fmt.Errorf("empty message")
-		return
-	}
+	// No IEs is a valid message - protocolIEs is SIZE (0..maxProtocolIEs) - and
+	// a common one: an NG Reset Acknowledge for the whole interface, a RAN or
+	// AMF Configuration Update Acknowledge, carry only optional IEs.
 
 	var buf bytes.Buffer
 	cW := aper.NewWriter(&buf) //container writer
